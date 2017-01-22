@@ -1,7 +1,7 @@
 ## Interface: 70100
 ## Title: Dejunk
 ## Author: Dethanyel
-## Version: 1.0
+## Version: 1.01
 ## Notes: Easy, customizable junk selling.
 ## SavedVariables: DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
