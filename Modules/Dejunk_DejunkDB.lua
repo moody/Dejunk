@@ -116,6 +116,7 @@ function DejunkDB:GetDefaultGlobalSettings()
 
   -- Add
   settings.ColorScheme = "Default"
+  settings.Minimap = { hide = false }
 
   return settings
 end

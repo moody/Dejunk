@@ -210,5 +210,5 @@ Colors.DefaultColors =
 -- Here we add the ConstantColors' and DefaultColors' keys to Colors.
 -- This allows us to call GetColor like so: Colors:GetColor(Colors.Key)
 -- Where "Key" is a key (color name) in ConstantColors or DefaultColors
-for k, v in pairs(Colors.ConstantColors) do Colors[k] = k end
-for k, v in pairs(Colors.DefaultColors) do Colors[k] = k end
+for k in pairs(Colors.ConstantColors) do Colors[k] = k end
+for k in pairs(Colors.DefaultColors) do Colors[k] = k end

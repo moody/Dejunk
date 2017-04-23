@@ -66,6 +66,13 @@ function TitleFrame:Initialize()
     self:SetEnabled(enabled)
   end)
 
+  -- Minimap Icon check button
+  ui.MinimapIconCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
+    "Small", L.MINIMAP_CHECKBUTTON_TEXT, nil, L.MINIMAP_CHECKBUTTON_TOOLTIP)
+  ui.MinimapIconCheckButton:SetPoint("TOPLEFT", ui.CharSpecCheckButton, "BOTTOMLEFT", 0, 0)
+  ui.MinimapIconCheckButton:SetChecked(not DejunkGlobal.Minimap.hide)
+  ui.MinimapIconCheckButton:SetScript("OnClick", function(self) DJ.MinimapIcon:Toggle() end)
+
   -- Title
   ui.TitleFontString = FrameFactory:CreateFontString(ui.Frame,
     "OVERLAY", "NumberFontNormalHuge", Colors.BaseFrameTitle,
@@ -140,25 +147,32 @@ function TitleFrame:Resize()
   local titleHeight = ui.TitleFontString:GetStringHeight()
 
   local charSpecWidth = (ui.CharSpecCheckButton:GetMinWidth() + Tools:Padding())
-  --local charSpecHeight = ui.CharSpecCheckButton:GetMinHeight()
+  local charSpecHeight = (ui.CharSpecCheckButton:GetMinHeight() + Tools:Padding())
+
+  local minimapWidth = (ui.MinimapIconCheckButton:GetMinWidth() + Tools:Padding())
+  local minimapHeightHeight = ui.MinimapIconCheckButton:GetMinHeight()
 
   ui.CloseButton:Resize()
-  local closeButtonWidth = (ui.CloseButton:GetWidth() + 1)
-  --local closeButtonHeight = ui.CloseButton:GetHeight()
+  local closeButtonWidth = (ui.CloseButton:GetWidth() + 1) -- 1px padding
+  local closeButtonHeight = ui.CloseButton:GetHeight()
 
   ui.ScaleButton:Resize()
   local scaleButtonWidth = (ui.ScaleButton:GetWidth() + Tools:Padding(0.25))
-  --local scaleButtonHeight = ui.ScaleButton:GetHeight()
+  local scaleButtonHeight = ui.ScaleButton:GetHeight()
 
   -- Width
-  local leftSideWidth = charSpecWidth
+  local leftSideWidth = max(charSpecWidth, minimapWidth)
   local rightSideWith = (closeButtonWidth + scaleButtonWidth)
 
   local newWidth = (max(leftSideWidth, rightSideWith) * 2)
   newWidth = ((newWidth + titleWidth) + Tools:Padding(2))
 
   -- Height
-  local newHeight = (titleHeight + Tools:Padding())
+  local leftSideHeight = (charSpecHeight + minimapHeightHeight)
+  local rightSideHeight = max(closeButtonHeight, scaleButtonHeight)
+  local titleHeight = (titleHeight + Tools:Padding())
+
+  local newHeight = max(titleHeight, max(leftSideHeight, rightSideHeight))
 
   ui.Frame:SetWidth(newWidth)
   ui.Frame:SetHeight(newHeight)

@@ -32,6 +32,7 @@ DJ.Tools = {}
 DJ.Dejunker = {}
 DJ.Repairer = {}
 DJ.MerchantButton = {}
+DJ.MinimapIcon = {}
 
 DJ.FramePooler = {}
 DJ.FrameFactory = {}

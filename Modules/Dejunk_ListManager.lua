@@ -273,6 +273,7 @@ function ListManager:DestroyList(listName)
     coloredListName = Tools:GetExclusionsString()
   end
 
+  if not (#list > 0) then return end
   for k in pairs(list) do list[k] = nil end
   for k in pairs(sv) do sv[k] = nil end
 

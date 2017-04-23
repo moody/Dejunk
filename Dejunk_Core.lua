@@ -68,6 +68,7 @@ function Core:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
   DJ.MerchantButton:Initialize()
+  DJ.MinimapIcon:Initialize()
 
   BaseFrame:Initialize()
   BaseFrame:SetCurrentChild(BasicChildFrame)

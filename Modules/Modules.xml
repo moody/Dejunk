@@ -11,6 +11,7 @@
   <Script file="Modules\Dejunk_Dejunker.lua"/>
   <Script file="Modules\Dejunk_Repairer.lua"/>
   <Script file="Modules\Dejunk_MerchantButton.lua"/>
+  <Script file="Modules\Dejunk_MinimapIcon.lua"/>
 
   <Script file="Modules\Dejunk_FramePooler.lua"/>
   <Script file="Modules\Dejunk_FrameFactory.lua"/>
