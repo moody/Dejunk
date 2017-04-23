@@ -16,7 +16,7 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk: deDE (German) localization file. 
+-- Dejunk: deDE (German) localization file.
 -- Translation by pas06 (https://wow.curseforge.com/members/pas06).
 
 local AddonName, AddonTable = ...
@@ -52,8 +52,8 @@ L["REPAIRED_NO_ITEMS"] = "Nicht genug Geld f\195\188r Reparatur."
 L["SAFE_MODE_MESSAGE"] = "Sicherer Modus aktiviert: Es werden nur 12 Gegenst\195\164nde verkauft."
 L["SAFE_MODE_TEXT"] = "Sicherer Modus"
 L["SAFE_MODE_TOOLTIP"] = "Verkauft nur bis zu 12 Gegenst\195\164nde gleichzeitig."
-L["SCROLL_FRAME_ADD_TOOLTIP"] = "F\195\188ge einen Gegenstand hinzu, indem du ihn in das untenstehende Fenster ziehst. (Gegenst\195\164nde k\195\182nnen nur von deinem Inventar aus hinzugef\195\188gt werden.)"
-L["SCROLL_FRAME_REM_TOOLTIP"] = "Du kannst einen Gegenstand entfernen, indem du einen Eintrag markierst und mit der rechten Maustaste klickst."
+L["LIST_FRAME_ADD_TOOLTIP"] = "F\195\188ge einen Gegenstand hinzu, indem du ihn in das untenstehende Fenster ziehst. (Gegenst\195\164nde k\195\182nnen nur von deinem Inventar aus hinzugef\195\188gt werden.)"
+L["LIST_FRAME_REM_TOOLTIP"] = "Du kannst einen Gegenstand entfernen, indem du einen Eintrag markierst und mit der rechten Maustaste klickst."
 L["SELL_ALL_TEXT"] = "Alle verkaufen:"
 L["SELL_ALL_TOOLTIP"] = "Verkauft alle Gegenst\195\164nde von dieser Qualit\195\164t."
 L["SILENT_MODE_TEXT"] = "Lautlosmodus"

@@ -1,0 +1,25 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="Modules\Modules.lua"/>
+
+  <Script file="Modules\Dejunk_Consts.lua"/>
+	<Script file="Modules\Dejunk_Colors.lua"/>
+  <Script file="Modules\Dejunk_DejunkDB.lua"/>
+  <Script file="Modules\Dejunk_ListManager.lua"/>
+  <Script file="Modules\Dejunk_Tools.lua"/>
+
+  <Script file="Modules\Dejunk_Dejunker.lua"/>
+  <Script file="Modules\Dejunk_Repairer.lua"/>
+  <Script file="Modules\Dejunk_MerchantButton.lua"/>
+
+  <Script file="Modules\Dejunk_FramePooler.lua"/>
+  <Script file="Modules\Dejunk_FrameFactory.lua"/>
+	<Script file="Modules\Dejunk_FrameFader.lua"/>
+
+	<Script file="Modules\Dejunk_BaseFrame.lua"/>
+	<Script file="Modules\Dejunk_TitleFrame.lua"/>
+	<Script file="Modules\Dejunk_BasicOptionsFrame.lua"/>
+  <Script file="Modules\Dejunk_BasicListsFrame.lua"/>
+  <Script file="Modules\Dejunk_BasicChildFrame.lua"/>
+  <Script file="Modules\Dejunk_TransportChildFrame.lua"/>
+</Ui>
