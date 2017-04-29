@@ -16,7 +16,7 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_BaseFrame: displays the TitleFrame and a child frame such as BasicChildFrame.
+-- Dejunk_ParentFrame: displays the TitleFrame and a child frame such as BasicChildFrame.
 
 local AddonName, DJ = ...
 
@@ -24,19 +24,16 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local BaseFrame = DJ.BaseFrame
+local ParentFrame = DJ.DejunkFrames.ParentFrame
 
 local Colors = DJ.Colors
 local Consts = DJ.Consts
 local Tools = DJ.Tools
 local FrameFactory = DJ.FrameFactory
 local FrameFader = DJ.FrameFader
-local TitleFrame = DJ.TitleFrame
+local TitleFrame = DJ.DejunkFrames.TitleFrame
 
 -- Variables
-BaseFrame.Initialized = false
-BaseFrame.UI = {}
-
 local currentChild = nil -- currently displayed child frame
 
 --[[
@@ -45,13 +42,11 @@ local currentChild = nil -- currently displayed child frame
 //*******************************************************************
 --]]
 
--- Initializes the frame.
-function BaseFrame:Initialize()
-  if self.Initialized then return end
-
+-- @Override
+function ParentFrame:OnInitialize()
   local ui = self.UI
 
-  ui.Frame = FrameFactory:CreateFrame(nil, Colors.BaseFrame)
+  ui.Frame:SetColors(Colors.ParentFrame)
   ui.Frame:SetWidth(Consts.MIN_WIDTH)
 	ui.Frame:SetHeight(Consts.MIN_HEIGHT)
 	ui.Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
@@ -68,24 +63,12 @@ function BaseFrame:Initialize()
   TitleFrame:Initialize()
   TitleFrame:SetPoint({"TOPLEFT", ui.Frame})
   TitleFrame:SetParent(ui.Frame)
-
-  self.Initialized = true
 end
 
--- Deinitializes the frame.
-function BaseFrame:Deinitialize()
-  if not self.Initialized then return end
-
+-- @Override
+function ParentFrame:OnDeinitialize()
   TitleFrame:Deinitialize()
-
-  if currentChild then
-    currentChild:Deinitialize()
-    currentChild = nil
-  end
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Initialized = false
+  if currentChild then currentChild:Deinitialize() end
 end
 
 --[[
@@ -94,30 +77,17 @@ end
 //*******************************************************************
 --]]
 
--- Displays the frame.
-function BaseFrame:Show()
-  if not self.UI.Frame:IsVisible() then
+do -- Hook Show
+  local show = ParentFrame.Show
+
+  function ParentFrame:Show()
     self:Resize()
-    self.UI.Frame:Show()
+    show(self)
   end
 end
 
--- Hides the frame.
-function BaseFrame:Hide()
-  self.UI.Frame:Hide()
-end
-
--- Toggles the frame.
-function BaseFrame:Toggle()
-  if self.UI.Frame:IsVisible() then
-    self.UI.Frame:Hide()
-  else
-    self:Show()
-  end
-end
-
--- Enables the frame.
-function BaseFrame:Enable()
+-- @Override
+function ParentFrame:Enable()
   TitleFrame:Enable()
 
   if currentChild then
@@ -126,8 +96,8 @@ function BaseFrame:Enable()
   self.UI.Frame:SetAlpha(1)
 end
 
--- Disables the frame.
-function BaseFrame:Disable()
+-- @Override
+function ParentFrame:Disable()
   TitleFrame:Disable()
 
   if currentChild then
@@ -136,22 +106,26 @@ function BaseFrame:Disable()
   self.UI.Frame:SetAlpha(0.75)
 end
 
--- Refreshes the frame.
-function BaseFrame:Refresh()
-  TitleFrame:Refresh()
-  if currentChild then currentChild:Refresh() end
+do -- Hook Refresh
+  local refresh = ParentFrame.Refresh
 
-  FrameFactory:RefreshUI(self.UI)
+  function ParentFrame:Refresh()
+    refresh(self)
+    TitleFrame:Refresh()
+    if currentChild then
+      currentChild:Refresh()
+    end
+  end
 end
 
--- Resizes the frame.
-function BaseFrame:Resize()
-  --[[ Resize Base Frame Algorithm
+-- @Override
+function ParentFrame:Resize()
+  --[[ Resize Algorithm
     1. Resize each child frame
     2. Get longest width of child frames (max() calls between child frames)
     3. Get total height of child frames (sum of all child frame heights)
     4. SetWidth on all child frames to the width calculated in step 2.
-    5. Set width and height on Base Frame as found in step 2 and 3.
+    5. Set width and height on parent frame as found in step 2 and 3.
   ]]
 
   local newWidth = 0
@@ -165,9 +139,11 @@ function BaseFrame:Resize()
     newHeight = (newHeight + childFrame:GetHeight() + Tools:Padding())
   end
 
+  --[[ Well, I changed my mind.
   -- 16:10 width if possible. It just looks better than a square, okay?
   local ratioWidth = ((newHeight / 10) * 16)
   newWidth = max(newWidth, ratioWidth)
+  --]]
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)
@@ -179,49 +155,19 @@ end
 //*******************************************************************
 --]]
 
--- Gets the width of the frame.
--- @return - the width of the frame
-function BaseFrame:GetWidth()
-  return self.UI.Frame:GetWidth()
-end
+do -- Hook SetWidth
+  local setWidth = ParentFrame.SetWidth
 
--- Sets the width of the frame.
--- @param width - the new width
-function BaseFrame:SetWidth(width)
-  self.UI.Frame:SetWidth(width)
-
-  TitleFrame:SetWidth(width)
-  if currentChild then currentChild:SetWidth(width) end
-end
-
--- Gets the height of the frame.
--- @return - the height of the frame
-function BaseFrame:GetHeight()
-  return self.UI.Frame:GetHeight()
-end
-
--- Sets the height of the frame.
--- @param height - the new height
-function BaseFrame:SetHeight(height)
-  self.UI.Frame:SetHeight(height)
-end
-
--- Sets the parent of the frame.
--- @param parent - the new parent
-function BaseFrame:SetParent(parent)
-  self.UI.Frame:SetParent(parent)
-end
-
--- Sets the point of the frame.
--- @param point - the new point
-function BaseFrame:SetPoint(point)
-  self.UI.Frame:ClearAllPoints()
-  self.UI.Frame:SetPoint(unpack(point))
+  function ParentFrame:SetWidth(width)
+    setWidth(self, width)
+    TitleFrame:SetWidth(width)
+    if currentChild then currentChild:SetWidth(width) end
+  end
 end
 
 -- Gets the current child being displayed.
 -- @return - the current child
-function BaseFrame:GetCurrentChild()
+function ParentFrame:GetCurrentChild()
   return currentChild
 end
 
@@ -229,7 +175,7 @@ end
 -- @param newChild - a Dejunk frame to be set as the new child
 -- @param callback - a function to be called once the new child has been set
 -- @param fadeTime - the time in seconds to fade in and fade out child frames
-function BaseFrame:SetCurrentChild(newChild, callback, fadeTime)
+function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
   assert(newChild ~= nil, "newChild cannot be nil")
 
   local point = {"TOPLEFT", TitleFrame.UI.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}

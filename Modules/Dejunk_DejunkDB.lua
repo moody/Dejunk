@@ -36,40 +36,13 @@ DejunkDB.SV = nil
 -- Initializes the database.
 function DejunkDB:Initialize()
   if self.Initialized then return end
-
-  if DejunkGlobal == nil then
-    DejunkGlobal = self:GetDefaultGlobalSettings()
-  end
-
-  if DejunkPerChar == nil then
-    DejunkPerChar = self:GetDefaultPerCharSettings()
-  end
-
-  self:ConvertListFormat()
-  self:Update()
-
   self.Initialized = true
-end
 
--- Converts legacy lists to the newest format.
-function DejunkDB:ConvertListFormat()
-  local convert = function(list)
-    local newEntries = {}
+  self:FormatGlobalSettings()
+  self:FormatPerCharSettings()
+  self:FormatLists()
 
-    for k, v in pairs(list) do
-      if (type(v) == "table") then
-        local itemID = tostring(v.ItemID)
-        newEntries[itemID] = true
-        list[k] = nil
-      end
-    end
-
-    for k in pairs(newEntries) do
-      list[k] = true end
-  end
-
-  for k, v in pairs({DejunkGlobal, DejunkPerChar}) do
-    convert(v.Inclusions) convert(v.Exclusions) end
+  self:Update()
 end
 
 -- Updates the Database's reference to the saved variables.
@@ -83,31 +56,117 @@ end
 
 --[[
 //*******************************************************************
+//                        Format Functions
+//*******************************************************************
+--]]
+
+-- Adds default values to the global settings and removes deprecated values.
+function DejunkDB:FormatGlobalSettings()
+  local newSettings = self:GetDefaultGlobalSettings()
+
+  if (DejunkGlobal == nil) then
+    DejunkGlobal = newSettings
+    return
+  end
+
+  -- Add missing global values
+  for k, v in pairs(newSettings) do
+    if (DejunkGlobal[k] == nil) then
+      DejunkGlobal[k] = v end
+  end
+
+  -- Remove deprecated global values
+  for k, v in pairs(DejunkGlobal) do
+    if (newSettings[k] == nil) then
+      DejunkGlobal[k] = nil end
+  end
+end
+
+-- Adds default values to the per character settings and removes deprecated values.
+function DejunkDB:FormatPerCharSettings()
+  local newSettings = self:GetDefaultPerCharSettings()
+
+  if (DejunkPerChar == nil) then
+    DejunkPerChar = newSettings
+    return
+  end
+
+  -- Add missing PerChar values
+  for k, v in pairs(newSettings) do
+    if (DejunkPerChar[k] == nil) then
+      DejunkPerChar[k] = v end
+  end
+
+  -- Remove deprecated PerChar values
+  for k, v in pairs(DejunkPerChar) do
+    if (newSettings[k] == nil) then
+      DejunkPerChar[k] = nil end
+  end
+end
+
+-- Converts legacy item lists to the newest format.
+function DejunkDB:FormatLists()
+  local convert = function(list)
+    local newEntries = {}
+
+    for k, v in pairs(list) do
+      if (type(v) == "table" and v.ItemID) then
+        local itemID = tostring(v.ItemID)
+        newEntries[itemID] = true
+        list[k] = nil
+      end
+    end
+
+    for k in pairs(newEntries) do
+      list[k] = true
+    end
+  end
+
+  -- Perform conversions
+  for k, v in pairs({DejunkGlobal, DejunkPerChar}) do
+    convert(v.Inclusions)
+    convert(v.Exclusions)
+  end
+end
+
+--[[
+//*******************************************************************
 //                        Settings Functions
 //*******************************************************************
 --]]
 
--- Returns the default saved variables.
+-- Returns the base default saved variables.
 function DejunkDB:Defaults()
 	return
 	{
-		-- Sell All options
-		SellPoor = true,
-		SellCommon = false,
-		SellUncommon = false,
-		SellRare = false,
-		SellEpic = false,
-
-		-- Additional options
-		AutoSell = false,
+    -- General options
+    AutoSell = false,
     AutoRepair = false,
-		SafeMode = true,
-		SilentMode = false,
+    SafeMode = true,
+    SilentMode = false,
 
-		-- Lists, table of itemIDs: { ["itemID"] = true }
-		Inclusions = {},
-		Exclusions = {},
-	}
+    -- Sell options
+    SellPoor = true,
+    SellCommon = false,
+    SellUncommon = false,
+    SellRare = false,
+    SellEpic = false,
+
+    SellUnsuitable = false,
+
+    -- Ignore options
+    IgnoreBattlePets = false,
+    IgnoreConsumables = false,
+    IgnoreGems = false,
+    IgnoreGlyphs = false,
+    IgnoreItemEnhancements = false,
+    IgnoreRecipes = false,
+    IgnoreTradeGoods = false,
+
+    -- Lists, table of itemIDs: { ["itemID"] = true }
+    Inclusions = {},
+    Exclusions = {},
+  }
 end
 
 -- Returns the default global saved variables.
@@ -117,6 +176,7 @@ function DejunkDB:GetDefaultGlobalSettings()
   -- Add
   settings.ColorScheme = "Default"
   settings.Minimap = { hide = false }
+  settings.ItemTooltip = true
 
   return settings
 end

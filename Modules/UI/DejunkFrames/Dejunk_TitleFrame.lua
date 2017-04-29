@@ -24,35 +24,26 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local TitleFrame = DJ.TitleFrame
+local TitleFrame = DJ.DejunkFrames.TitleFrame
 
 local Colors = DJ.Colors
-local Consts = DJ.Consts
 local Tools = DJ.Tools
-local DejunkDB = DJ.DejunkDB
 local FrameFactory = DJ.FrameFactory
-local BaseFrame = DJ.BaseFrame
+local ParentFrame = DJ.DejunkFrames.ParentFrame
 
--- variables
-TitleFrame.Initialized = false
-TitleFrame.UI = {}
-
+-- Variables
 local Scales = {1, 0.75, 0.5}
 local scaleIndex = 1
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
+//                       General Frame Functions
 //*******************************************************************
 --]]
 
--- Initializes the frame.
-function TitleFrame:Initialize()
-  if self.Initialized then return end
-
+-- @Override
+function TitleFrame:OnInitialize()
   local ui = self.UI
-
-  ui.Frame = FrameFactory:CreateFrame()
 
   -- Character Specific Settings check button
   ui.CharSpecCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
@@ -73,17 +64,25 @@ function TitleFrame:Initialize()
   ui.MinimapIconCheckButton:SetChecked(not DejunkGlobal.Minimap.hide)
   ui.MinimapIconCheckButton:SetScript("OnClick", function(self) DJ.MinimapIcon:Toggle() end)
 
+  -- Item tooltip check button
+  ui.ItemTooltipCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
+    "Small", L.ITEM_TOOLTIP_TEXT, nil, L.ITEM_TOOLTIP_TOOLTIP)
+  ui.ItemTooltipCheckButton:SetPoint("LEFT", ui.MinimapIconCheckButton.Text, "RIGHT", Tools:Padding(0.5), 0)
+  ui.ItemTooltipCheckButton:SetChecked(DejunkGlobal.ItemTooltip)
+  ui.ItemTooltipCheckButton:SetScript("OnClick", function(self)
+    DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip end)
+
   -- Title
   ui.TitleFontString = FrameFactory:CreateFontString(ui.Frame,
-    "OVERLAY", "NumberFontNormalHuge", Colors.BaseFrameTitle,
-    {2, -1.5}, Colors.BaseFrameTitleShadow)
+    "OVERLAY", "NumberFontNormalHuge", Colors.Title,
+    {2, -1.5}, Colors.TitleShadow)
   ui.TitleFontString:SetPoint("TOP", 0, -Tools:Padding())
   ui.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
 
   -- Close Button
   ui.CloseButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormal", "X")
   ui.CloseButton:SetPoint("TOPRIGHT", ui.Frame, "TOPRIGHT", -1, -1)
-	ui.CloseButton:SetScript("OnClick", function(self) BaseFrame:Hide() end)
+  ui.CloseButton:SetScript("OnClick", function(self) ParentFrame:Hide() end)
 
   -- Scale button
   ui.ScaleButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormal", L.SCALE_TEXT)
@@ -91,67 +90,29 @@ function TitleFrame:Initialize()
   ui.ScaleButton:SetScript("OnClick", function(self, button, down)
     scaleIndex = ((scaleIndex + 1) % (#Scales + 1))
     if scaleIndex == 0 then scaleIndex = 1 end
-    BaseFrame.UI.Frame:SetScale(Scales[scaleIndex])
-    BaseFrame:Resize()
+    ParentFrame.UI.Frame:SetScale(Scales[scaleIndex])
+    ParentFrame:Resize()
   end)
-
-  self.Initialized = true
 end
 
--- Deinitializes the frame.
-function TitleFrame:Deinitialize()
-  if not self.Initialized then return end
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Initialized = false
-end
-
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
-
--- Displays the frame.
-function TitleFrame:Show()
-  if not self.UI.Frame:IsVisible() then
-    self.UI.Frame:Show() end
-end
-
--- Hides the frame.
-function TitleFrame:Hide()
-  self.UI.Frame:Hide()
-end
-
--- Enables the frame.
-function TitleFrame:Enable()
-  -- Nothing to do
-end
-
--- Disables the frame.
-function TitleFrame:Disable()
-  -- Nothing to do
-end
-
--- Refreshes the frame.
-function TitleFrame:Refresh()
-  FrameFactory:RefreshUI(self.UI)
-end
-
--- Resizes the frame.
+-- @Override
 function TitleFrame:Resize()
   local ui = self.UI
 
   local titleWidth = ui.TitleFontString:GetStringWidth()
   local titleHeight = ui.TitleFontString:GetStringHeight()
 
+  -- Left side
   local charSpecWidth = (ui.CharSpecCheckButton:GetMinWidth() + Tools:Padding())
   local charSpecHeight = (ui.CharSpecCheckButton:GetMinHeight() + Tools:Padding())
 
   local minimapWidth = (ui.MinimapIconCheckButton:GetMinWidth() + Tools:Padding())
   local minimapHeightHeight = ui.MinimapIconCheckButton:GetMinHeight()
 
+  local tooltipWidth = ui.ItemTooltipCheckButton:GetMinWidth() + Tools:Padding(0.5)
+  local tooltipHeight = ui.ItemTooltipCheckButton:GetMinHeight()
+
+  -- Right side
   ui.CloseButton:Resize()
   local closeButtonWidth = (ui.CloseButton:GetWidth() + 1) -- 1px padding
   local closeButtonHeight = ui.CloseButton:GetHeight()
@@ -161,14 +122,14 @@ function TitleFrame:Resize()
   local scaleButtonHeight = ui.ScaleButton:GetHeight()
 
   -- Width
-  local leftSideWidth = max(charSpecWidth, minimapWidth)
+  local leftSideWidth = max(charSpecWidth, (minimapWidth + tooltipWidth))
   local rightSideWith = (closeButtonWidth + scaleButtonWidth)
 
   local newWidth = (max(leftSideWidth, rightSideWith) * 2)
-  newWidth = ((newWidth + titleWidth) + Tools:Padding(2))
+  newWidth = ((newWidth + titleWidth) + Tools:Padding(4))
 
   -- Height
-  local leftSideHeight = (charSpecHeight + minimapHeightHeight)
+  local leftSideHeight = (charSpecHeight + max(minimapHeightHeight, tooltipHeight))
   local rightSideHeight = max(closeButtonHeight, scaleButtonHeight)
   local titleHeight = (titleHeight + Tools:Padding())
 
@@ -176,47 +137,4 @@ function TitleFrame:Resize()
 
   ui.Frame:SetWidth(newWidth)
   ui.Frame:SetHeight(newHeight)
-end
-
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
-
--- Gets the width of the frame.
--- @return - the width of the frame
-function TitleFrame:GetWidth()
-  return self.UI.Frame:GetWidth()
-end
-
--- Sets the width of the frame.
--- @param width - the new width
-function TitleFrame:SetWidth(width)
-  self.UI.Frame:SetWidth(width)
-end
-
--- Gets the height of the frame.
--- @return - the height of the frame
-function TitleFrame:GetHeight()
-  return self.UI.Frame:GetHeight()
-end
-
--- Sets the height of the frame.
--- @param height - the new height
-function TitleFrame:SetHeight(height)
-  self.UI.Frame:SetHeight(height)
-end
-
--- Sets the parent of the frame.
--- @param parent - the new parent
-function TitleFrame:SetParent(parent)
-  self.UI.Frame:SetParent(parent)
-end
-
--- Sets the point of the frame.
--- @param point - the new point
-function TitleFrame:SetPoint(point)
-  self.UI.Frame:ClearAllPoints()
-  self.UI.Frame:SetPoint(unpack(point))
 end

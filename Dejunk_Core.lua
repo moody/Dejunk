@@ -28,11 +28,12 @@ local Core = DJ.Core
 
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
+local Dejunker = DJ.Dejunker
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
-local BaseFrame = DJ.BaseFrame
-local BasicChildFrame = DJ.BasicChildFrame
-local TransportChildFrame = DJ.TransportChildFrame
+local ParentFrame = DJ.DejunkFrames.ParentFrame
+local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
+local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 
 -- Variables
 Core.Debugging = false
@@ -45,16 +46,21 @@ Core.Debugging = false
 
 local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
 
-coreFrame:SetScript("OnEvent", function(frame, event, ...)
+function coreFrame:OnEvent(event, ...)
   if (event == "ADDON_LOADED") then
     if (... == AddonName) then
-      frame:UnregisterEvent(event)
+      self:UnregisterEvent(event)
       Core:Initialize()
     end
+  elseif (event == "PLAYER_ENTERING_WORLD") then
+    self:UnregisterEvent(event)
+    DJ.Consts:Initialize()
   end
-end)
+end
 
+coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
 coreFrame:RegisterEvent("ADDON_LOADED")
+coreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 --[[
 //*******************************************************************
@@ -70,13 +76,13 @@ function Core:Initialize()
   DJ.MerchantButton:Initialize()
   DJ.MinimapIcon:Initialize()
 
-  BaseFrame:Initialize()
-  BaseFrame:SetCurrentChild(BasicChildFrame)
+  ParentFrame:Initialize()
+  ParentFrame:SetCurrentChild(BasicChildFrame)
 
   -- Setup slash command
 	SLASH_DEJUNK1 = "/dejunk"
 	SlashCmdList["DEJUNK"] = function (msg, editBox)
-		BaseFrame:Toggle() end
+		ParentFrame:Toggle() end
 end
 
 -- Prints a formatted message ("[Dejunk] msg").
@@ -111,17 +117,17 @@ local previousChild = nil
 
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
-  BaseFrame:Toggle()
+  ParentFrame:Toggle()
 end
 
 -- Enables Dejunk's GUI.
 function Core:EnableGUI()
-  BaseFrame:Enable()
+  ParentFrame:Enable()
 end
 
 -- Disables Dejunk's GUI.
 function Core:DisableGUI()
-  BaseFrame:Disable()
+  ParentFrame:Disable()
 end
 
 -- Switches between global and character specific settings.
@@ -130,31 +136,80 @@ function Core:ToggleCharacterSpecificSettings()
   DejunkDB:Update()
   ListManager:Update()
 
-  if (BaseFrame:GetCurrentChild() ~= BasicChildFrame) then
-    BaseFrame:SetCurrentChild(BasicChildFrame) end
+  if (ParentFrame:GetCurrentChild() ~= BasicChildFrame) then
+    ParentFrame:SetCurrentChild(BasicChildFrame) end
 
-  BaseFrame:Refresh()
+  ParentFrame:Refresh()
 end
 
--- Sets the BaseFrame's child to BasicChildFrame.
+-- Sets the ParentFrame's child to BasicChildFrame.
 function Core:ShowBasicChild()
   previousChild = nil
-  BaseFrame:SetCurrentChild(BasicChildFrame)
+  ParentFrame:SetCurrentChild(BasicChildFrame)
 end
 
--- Sets the BaseFrame's child to TransportChildFrame.
+-- Sets the ParentFrame's child to TransportChildFrame.
 -- @param listName - the name of the list used for transport operations
 -- @param transportType - the type of transport operations to perform
 function Core:ShowTransportChild(listName, transportType)
-  previousChild = BaseFrame:GetCurrentChild()
+  previousChild = ParentFrame:GetCurrentChild()
 
-  BaseFrame:SetCurrentChild(TransportChildFrame, function()
+  ParentFrame:SetCurrentChild(TransportChildFrame, function()
     TransportChildFrame:SetData(listName, transportType)
   end)
 end
 
--- Sets the BaseFrame's child to the previously displayed child.
+-- Sets the ParentFrame's child to the previously displayed child.
 function Core:ShowPreviousChild()
   if not previousChild then return end
-  BaseFrame:SetCurrentChild(previousChild)
+  ParentFrame:SetCurrentChild(previousChild)
+end
+
+--[[
+//*******************************************************************
+//                            Tooltip Hook
+//*******************************************************************
+--]]
+
+do
+  local tooltipAdded = false
+
+  local function OnTooltipSetItem(self, ...)
+  	if not DejunkGlobal.ItemTooltip or tooltipAdded then return end
+
+    -- Validate item link
+  	local itemLink = select(2, self:GetItem())
+    if not itemLink then return end
+
+    -- Find item in bags
+    local bag, slot = Tools:FindItemInBags(itemLink)
+    if not (bag and slot) then return end
+
+    -- Get item info
+    local _, _, _, _, _, _, _, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+    if not (not noValue and itemID) then return end
+
+    -- Get additional item info
+    local _, _, quality, itemLevel, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
+    if not (quality and itemLevel and reqLevel and class and subClass and equipSlot and price) then return end
+
+    -- Return if item cannot be sold
+    if not Tools:ItemCanBeSold(price, quality) then return end
+
+    -- Display an appropriate tooltip if the item is junk
+    local isJunkItem = Dejunker:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class, subClass, equipSlot)
+    local dejunkText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
+    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions)) or
+      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
+
+    self:AddDoubleLine(dejunkText, tipText)
+    tooltipAdded = true
+  end
+
+  local function OnTooltipCleared(self, ...)
+     tooltipAdded = false
+  end
+
+  GameTooltip:HookScript("OnTooltipSetItem", OnTooltipSetItem)
+  GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end

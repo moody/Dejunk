@@ -98,6 +98,7 @@ function Tools:ShowTooltip(owner, anchorType, title, ...)
 	GameTooltip:SetText(title, 1.0, 0.82, 0)
 
 	for k, v in ipairs({...}) do
+    --if (type(v) == "function") then v = v() end
 		GameTooltip:AddLine(v, 1, 1, 1, true)
 	end
 
@@ -206,6 +207,31 @@ end
 //  					    			      Item Functions
 //*******************************************************************
 --]]
+
+-- Gets the item id from a specified item link.
+-- @return - the item id, or nil
+function Tools:GetItemIDFromLink(itemLink)
+  return (itemLink and itemLink:match("item:(%d+)")) or nil
+end
+
+-- Searches the player's bags for the location of an item with a specified link.
+-- @return bag and slot index pair, or nil if the item was not found
+function Tools:FindItemInBags(itemLink)
+  local itemID = self:GetItemIDFromLink(itemLink)
+
+  if itemID then -- search bags for item
+    for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+      for slot = 1, GetContainerNumSlots(bag) do
+        local link = GetContainerItemLink(bag, slot)
+
+        if link and link:find(itemID) then
+          return bag, slot end
+      end
+    end
+  end
+
+  return nil
+end
 
 -- Checks whether or not an item can be sold based on price and quality.
 -- @param price - the price of an item

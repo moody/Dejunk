@@ -43,7 +43,7 @@ local totalRepairCost = 0
 
 local repairFrame = CreateFrame("Frame", AddonName.."RepairerFrame")
 
-repairFrame:SetScript("OnEvent", function(frame, event, ...)
+function repairFrame:OnEvent(event, ...)
   if (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
@@ -52,8 +52,9 @@ repairFrame:SetScript("OnEvent", function(frame, event, ...)
       guildRepairError = true
     end
   end
-end)
+end
 
+repairFrame:SetScript("OnEvent", repairFrame.OnEvent)
 repairFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 --[[
