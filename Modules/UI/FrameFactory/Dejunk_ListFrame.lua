@@ -31,6 +31,7 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
+local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -50,7 +51,7 @@ local Tools = DJ.Tools
 function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titleColor, titleColorHi, tooltip)
   assert(ListManager[listName] ~= nil)
 
-  local listFrame = self:CreateFrame(parent)
+  local listFrame = FramePooler:CreateFrame(parent)
   listFrame.FF_ObjectType = "ListFrame"
   listFrame.ItemList = ListManager.Lists[listName]
 
@@ -247,6 +248,32 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
   return listFrame
 end
 
+-- Enables a list frame created by FrameFactory.
+-- @param listFrame - the list frame to be enabled
+function FrameFactory:EnableListFrame(listFrame)
+  listFrame:SetScript("OnUpdate", listFrame.Update)
+
+  listFrame.TitleButton:SetEnabled(true)
+  listFrame.ImportButton:SetEnabled(true)
+  listFrame.ExportButton:SetEnabled(true)
+
+  for i, button in pairs(listFrame.ButtonFrame.Buttons) do
+    button:SetEnabled(true) end
+end
+
+-- Disables a list frame created by FrameFactory.
+-- @param listFrame - the list frame to be disabled
+function FrameFactory:DisableListFrame(listFrame)
+  listFrame:SetScript("OnUpdate", nil)
+
+  listFrame.TitleButton:SetEnabled(false)
+  listFrame.ImportButton:SetEnabled(false)
+  listFrame.ExportButton:SetEnabled(false)
+
+  for i, button in pairs(listFrame.ButtonFrame.Buttons) do
+    button:SetEnabled(false) end
+end
+
 -- Releases a list frame created by FrameFactory.
 -- @param listFrame - the list frame to release
 function FrameFactory:ReleaseListFrame(listFrame)
@@ -284,5 +311,5 @@ function FrameFactory:ReleaseListFrame(listFrame)
   listFrame.Resize = nil
   listFrame.Refresh = nil
 
-  self:ReleaseFrame(listFrame)
+  FramePooler:ReleaseFrame(listFrame)
 end

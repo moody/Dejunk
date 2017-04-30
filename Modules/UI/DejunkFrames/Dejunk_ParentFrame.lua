@@ -205,7 +205,9 @@ function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
       self:Resize()
 
       currentChild.UI.Frame:SetAlpha(0)
-      FrameFader:FadeIn(currentChild.UI.Frame, time)
+      currentChild:Disable()
+      FrameFader:FadeIn(currentChild.UI.Frame, time, function()
+        currentChild:Enable() end)
     end
 
     -- if currentChild is nil, just fade in the new one

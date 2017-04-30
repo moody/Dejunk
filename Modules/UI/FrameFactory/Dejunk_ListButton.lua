@@ -102,6 +102,9 @@ function FrameFactory:CreateListButton(parent, listName)
     end
   end)
 
+  button:SetScript("OnEnable", function(self) self:SetAlpha(1) end)
+  button:SetScript("OnDisable", function(self) self:SetAlpha(0.3) end)
+
   button:SetScript("OnEnter", function(self)
     self.Texture:SetColorTexture(unpack(Colors:GetColor(Colors.ListButtonHi)))
     Tools:ShowItemTooltip(self, "ANCHOR_TOP", button.Item.Link) end)
