@@ -24,7 +24,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local TransportChildFrame = DJ.TransportChildFrame
+local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 
 local Core = DJ.Core
 local Colors = DJ.Colors
@@ -33,9 +33,6 @@ local ListManager = DJ.ListManager
 local FrameFactory = DJ.FrameFactory
 
 -- Variables
-TransportChildFrame.Initialized = false
-TransportChildFrame.UI = {}
-
 TransportChildFrame.Types =
 {
   ["Import"] = true,
@@ -55,26 +52,9 @@ local currentType = nil
 //*******************************************************************
 --]]
 
--- Initializes the frame.
-function TransportChildFrame:Initialize()
-  if self.Initialized then return end
-
-  local ui = self.UI
-
-  ui.Frame = FrameFactory:CreateFrame()
-
+-- @Override
+function TransportChildFrame:OnInitialize()
   self:CreateTransportFrame()
-
-  self.Initialized = true
-end
-
--- Deinitializes the frame.
-function TransportChildFrame:Deinitialize()
-  if not self.Initialized then return end
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Initialized = false
 end
 
 --[[
@@ -83,53 +63,29 @@ end
 //*******************************************************************
 --]]
 
--- Displays the frame.
-function TransportChildFrame:Show()
-  if not self.UI.Frame:IsVisible() then
-    self.UI.Frame:Show() end
-end
+do -- Hook Refresh
+  local refresh = TransportChildFrame.Refresh
 
--- Hides the frame.
-function TransportChildFrame:Hide()
-  self.UI.Frame:Hide()
-end
+  function TransportChildFrame:Refresh()
+    -- This is to recolor the title text
+    local listName = nil
+    if (currentList == ListManager.Inclusions) then
+      listName = Tools:GetInclusionsString()
+    else -- Exclusions
+      listName = Tools:GetExclusionsString()
+    end
 
--- Enables the frame.
-function TransportChildFrame:Enable()
-  for k, v in pairs(self.UI) do
-    if v.SetEnabled then
-      v:SetEnabled(true) end
+    if (currentType == self.Import) then
+      self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
+    else -- Export
+      self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
+    end
+
+    refresh(self)
   end
 end
 
--- Disables the frame.
-function TransportChildFrame:Disable()
-  for k, v in pairs(self.UI) do
-    if v.SetEnabled then
-      v:SetEnabled(false) end
-  end
-end
-
--- Refreshes the frame.
-function TransportChildFrame:Refresh()
-  -- This is to recolor the title text
-  local listName = nil
-  if (currentList == ListManager.Inclusions) then
-    listName = Tools:GetInclusionsString()
-  else -- Exclusions
-    listName = Tools:GetExclusionsString()
-  end
-
-  if (currentType == self.Import) then
-    self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
-  else -- Export
-    self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
-  end
-
-  FrameFactory:RefreshUI(self.UI)
-end
-
--- Resizes the frame.
+-- @Override
 function TransportChildFrame:Resize()
   local ui = self.UI
 
@@ -157,43 +113,6 @@ end
 //                         Get & Set Functions
 //*******************************************************************
 --]]
-
--- Gets the width of the frame.
--- @return - the width of the frame
-function TransportChildFrame:GetWidth()
-  return self.UI.Frame:GetWidth()
-end
-
--- Sets the width of the frame.
--- @param width - the new width
-function TransportChildFrame:SetWidth(width)
-  self.UI.Frame:SetWidth(width)
-end
-
--- Gets the height of the frame.
--- @return - the height of the frame
-function TransportChildFrame:GetHeight()
-  return self.UI.Frame:GetHeight()
-end
-
--- Sets the height of the frame.
--- @param height - the new height
-function TransportChildFrame:SetHeight(height)
-  self.UI.Frame:SetHeight(height)
-end
-
--- Sets the parent of the frame.
--- @param parent - the new parent
-function TransportChildFrame:SetParent(parent)
-  self.UI.Frame:SetParent(parent)
-end
-
--- Sets the point of the frame.
--- @param point - the new point
-function TransportChildFrame:SetPoint(point)
-  self.UI.Frame:ClearAllPoints()
-  self.UI.Frame:SetPoint(unpack(point))
-end
 
 -- Sets the list and transport type for the frame.
 -- @param listName - the name of the list used for transport operations

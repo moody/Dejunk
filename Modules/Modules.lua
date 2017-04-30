@@ -31,6 +31,8 @@ DJ.Tools = {}
 
 DJ.Dejunker = {}
 DJ.Repairer = {}
+
+--[[
 DJ.MerchantButton = {}
 DJ.MinimapIcon = {}
 
@@ -44,3 +46,25 @@ DJ.BasicOptionsFrame = {}
 DJ.BasicListsFrame = {}
 DJ.BasicChildFrame = {}
 DJ.TransportChildFrame = {}
+--]]
+
+-- /UI/
+DJ.MerchantButton = {}
+DJ.MinimapIcon = {}
+
+-- /UI/FrameUtils/
+DJ.FramePooler = {}
+DJ.FrameFader = {}
+
+-- /UI/FrameFactory/
+DJ.FrameFactory = {}
+
+-- /UI/DejunkFrames/
+DJ.DejunkFrames = {
+  ParentFrame = {},
+  TitleFrame = {},
+  BasicOptionsFrame = {},
+  BasicListsFrame = {},
+  BasicChildFrame = {},
+  TransportChildFrame = {},
+}

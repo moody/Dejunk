@@ -25,13 +25,18 @@ local FrameFader = DJ.FrameFader
 local FADE_DELAY = 0.025
 local fadeInterval = 0
 
--- Create frame
+
+--[[
+//*******************************************************************
+//                            Fader Frame
+//*******************************************************************
+--]]
+
 local faderFrame = CreateFrame("Frame", AddonName.."FaderFrame")
 faderFrame.Scripts = {} -- Currently active scripts
 faderFrame.ScriptQueue = {} -- Queued scripts
 
--- Set OnUpdate script
-faderFrame:SetScript("OnUpdate", function(self, elapsed)
+function faderFrame:OnUpdate(elapsed)
   -- Pull scripts from queue
   for i, script in pairs(self.ScriptQueue) do
     self.Scripts[#self.Scripts+1] = script
@@ -39,7 +44,7 @@ faderFrame:SetScript("OnUpdate", function(self, elapsed)
   end
 
   fadeInterval = (fadeInterval + elapsed)
-  if fadeInterval >= FADE_DELAY then
+  if (fadeInterval >= FADE_DELAY) then
     fadeInterval = 0
 
     -- Update scripts
@@ -47,7 +52,9 @@ faderFrame:SetScript("OnUpdate", function(self, elapsed)
       if script() then self.Scripts[i] = nil end
     end
   end
-end)
+end
+
+faderFrame:SetScript("OnUpdate", faderFrame.OnUpdate)
 
 --[[
 //*******************************************************************

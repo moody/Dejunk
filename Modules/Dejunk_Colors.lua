@@ -115,10 +115,10 @@ end
 function Colors.ColorSchemes:Redscale()
   return
   {
-    BaseFrame = {0.05, 0, 0, 0.95},
+    ParentFrame = {0.05, 0, 0, 0.95},
 
-    BaseFrameTitle = {0.5, 0.247, 0.247, 1},
-    BaseFrameTitleShadow = {0.2, 0.05, 0.05, 1},
+    Title = {0.5, 0.247, 0.247, 1},
+    TitleShadow = {0.2, 0.05, 0.05, 1},
 
     Button   = {0.15, 0.05, 0.05, 1},
     ButtonHi = {0.3, 0.15, 0.15, 1},
@@ -168,10 +168,10 @@ Colors.ConstantColors =
 -- Default Dejunk colors
 Colors.DefaultColors =
 {
-  BaseFrame = {0, 0, 0.05, 0.95},
+  ParentFrame = {0, 0, 0.05, 0.95},
 
-  BaseFrameTitle = {0.247, 0.247, 0.5, 1},
-  BaseFrameTitleShadow = {0.05, 0.05, 0.2, 1},
+  Title = {0.247, 0.247, 0.5, 1},
+  TitleShadow = {0.05, 0.05, 0.2, 1},
 
   Button   = {0.05, 0.05, 0.15, 1},
   ButtonHi = {0.15, 0.15, 0.3, 1},

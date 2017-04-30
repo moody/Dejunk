@@ -28,29 +28,70 @@ local FramePooler = DJ.FramePooler
 
 local Tools = DJ.Tools
 
+-- Variables
+local ScriptHandlers =
+{
+  "OnAttributeChanged",
+  "OnChar",
+  "OnClick",
+  "OnDisable",
+  "OnDragStart",
+  "OnDragStop",
+  "OnEnable",
+  "OnEnter",
+  "OnEnterPressed",
+  "OnEscapePressed",
+  "OnEvent",
+  "OnEditFocusGained",
+  "OnEditFocusLost",
+  "OnHide",
+  "OnKeyDown",
+  "OnKeyUp",
+  "OnLeave",
+  "OnLoad",
+  "OnMouseDown",
+  "OnMouseUp",
+  "OnMouseWheel",
+  "OnReceiveDrag",
+  "OnShow",
+  "OnSizeChanged",
+  "OnUpdate"
+}
+
 --[[
 //*******************************************************************
 //  					    			    General Functions
 //*******************************************************************
 --]]
 
--- Performs generic reset operations on a specified UIObject.
--- @param object - the UIObject to perform reset operations on
-function FramePooler:GenericReset(object)
-  Tools:ClearAllScripts(object)
+-- Performs generic reset operations on a specified frame.
+-- @param frame - the frame to perform reset operations on
+function FramePooler:GenericReset(frame)
+  self:ClearAllScripts(frame)
 
-  if object.SetEnabled then
-    object:SetEnabled(true)
+  if frame.SetEnabled then
+    frame:SetEnabled(true)
   end
 
-  if object.SetClipsChildren then
-    object:SetClipsChildren(false)
+  if frame.SetClipsChildren then
+    frame:SetClipsChildren(false)
   end
 
-  object:SetParent(UIParent)
-  object:ClearAllPoints()
-  object:SetAlpha(1)
-  object:Hide()
+  frame:SetParent(UIParent)
+  frame:ClearAllPoints()
+  frame:SetAlpha(1)
+  frame:Hide()
+end
+
+-- Clears all scripts from the specified frame.
+-- @param frame - the frame to clear scripts from
+function FramePooler:ClearAllScripts(frame)
+  if not frame.SetScript then return end
+
+  for i, script in pairs(ScriptHandlers) do
+    local hasScript = pcall(frame.GetScript, frame, script)
+    if hasScript then frame:SetScript(script, nil) end
+  end
 end
 
 --[[

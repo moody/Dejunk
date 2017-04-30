@@ -24,9 +24,10 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Upvalues
-local pairs, next, tonumber = pairs, next, tonumber
+local assert, pairs, next = assert, pairs, next
 local insert, remove = table.insert, table.remove
 local sort, concat = table.sort, table.concat
+local tonumber, tostring = tonumber, tostring
 
 -- Dejunk
 local ListManager = DJ.ListManager
@@ -87,18 +88,13 @@ function ListManager:Update()
   inclusionsSV = DejunkDB.SV.Inclusions
   exclusionsSV = DejunkDB.SV.Exclusions
 
-  local inCount = 0 -- debug
-  local exCount = 0 -- debug
-
   -- Load inclusions and exclusions items
   for itemID in pairs(inclusionsSV) do
     parseFrame.InclusionsToAdd[itemID] = true
-    inCount = inCount + 1
   end
 
   for itemID in pairs(exclusionsSV) do
     parseFrame.ExclusionsToAdd[itemID] = true
-    exCount = exCount + 1
   end
 end
 
@@ -129,7 +125,6 @@ end
 -- @param itemID - the item id of the item to add
 function ListManager:AddToList(listName, itemID)
   assert(self[listName] ~= nil)
-
   itemID = tostring(itemID)
 
   -- Initialize data
@@ -150,22 +145,17 @@ function ListManager:AddToList(listName, itemID)
   end
 
   -- Don't add if the item is already being parsed
-  local beingParsed = toAdd[itemID]
-  if beingParsed then return end
+  if toAdd[itemID] then return end
 
   -- Don't add if the item is already on the list
-  if self:IsOnList(listName, itemID) then
-    -- TODO: Maybe try and improve this? It runs slow when mass importing duplicate items, but this shouldn't be an issue for the average user.
-    -- Could try to parse the link and if it doesn't return then don't print anything.
-    local item = self:GetItemFromList(listName, itemID)
-    Core:Print(format(L.ITEM_ALREADY_ON_LIST, item.Link, coloredListName))
+  local existingItem = self:GetItemFromList(listName, itemID)
+  if existingItem then
+    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.Link, coloredListName))
     return
   end
 
   -- If the item is on the other list, remove it first
-  if otherSV[itemID] then
-    self:RemoveFromList(otherListName, itemID)
-  end
+  self:RemoveFromList(otherListName, itemID)
 
   -- Finally, add the item for parsing
   toAdd[itemID] = true
@@ -176,23 +166,14 @@ end
 -- @param itemID - the item id of the item to remove
 function ListManager:RemoveFromList(listName, itemID)
   assert(self[listName] ~= nil)
-
   itemID = tostring(itemID)
 
-  -- Initialize data
-  local toRemove, sv
+  if not self:IsOnList(listName, itemID) then return end
 
-  if (listName == self.Inclusions) then
-    toRemove = parseFrame.InclusionsToRemove
-    sv = inclusionsSV
-  else -- Exclusions
-    toRemove = parseFrame.ExclusionsToRemove
-    sv = exclusionsSV
-  end
+  local toRemove = (listName == self.Inclusions) and
+    parseFrame.InclusionsToRemove or parseFrame.ExclusionsToRemove
 
-  -- Don't remove item if it doesn't need to be
-  if sv[itemID] then
-    toRemove[itemID] = true end
+  toRemove[itemID] = true
 end
 
 -- Checks whether or not an item exists in the specified list.
@@ -201,19 +182,10 @@ end
 -- @return - boolean
 function ListManager:IsOnList(listName, itemID)
   assert(self[listName] ~= nil)
-
   itemID = tostring(itemID)
 
-  -- Initialize data
-  local sv
-
-  if (listName == self.Inclusions) then
-    sv = inclusionsSV
-  else -- Exclusions
-    sv = exclusionsSV
-  end
-
-  return (sv[itemID] ~= nil)
+  return (listName == self.Inclusions) and
+    inclusionsSV[itemID] or exclusionsSV[itemID]
 end
 
 -- Searches for and returns an item in the specified list.
@@ -222,22 +194,17 @@ end
 -- @return - an item if it exists in the list, or nil
 function ListManager:GetItemFromList(listName, itemID)
   assert(self[listName] ~= nil)
-
   itemID = tostring(itemID)
 
+  if not self:IsOnList(listName, itemID) then return nil end
+
   -- Initialize data
-  local list
+  local list = (listName == self.Inclusions) and
+    self.InclusionsList or self.ExclusionsList
 
-  if (listName == self.Inclusions) then
-    list = self.InclusionsList
-  else -- Exclusions
-    list = self.ExclusionsList
-  end
-
-  -- Functionality
-  for k, v in pairs(list) do
-    if (v.ItemID == itemID) then
-      return v end
+  for i=1, #list do
+    if (list[i].ItemID == itemID) then
+      return list[i] end
   end
 
   return nil
@@ -307,13 +274,7 @@ function ListManager:ExportFromList(listName)
   assert(self[listName] ~= nil)
 
   -- Initialize data
-  local sv
-
-  if (listName == self.Inclusions) then
-    sv = inclusionsSV
-  else -- Exclusions
-    sv = exclusionsSV
-  end
+  local sv = (listName == self.Inclusions) and inclusionsSV or exclusionsSV
 
   local itemIDs = {}
 
@@ -333,7 +294,7 @@ end
 local MAX_PARSE_ATTEMPTS = 100
 
 -- Set OnUpdate script
-parseFrame:SetScript("OnUpdate", function(self, elapsed)
+function parseFrame:OnUpdate(elapsed)
   if DJ.Dejunker:IsDejunking() then return end
 
   -- Removals
@@ -347,7 +308,9 @@ parseFrame:SetScript("OnUpdate", function(self, elapsed)
     ListManager:ParseList(ListManager.Inclusions) end
   if next(self.ExclusionsToAdd) then
     ListManager:ParseList(ListManager.Exclusions) end
-end)
+end
+
+parseFrame:SetScript("OnUpdate", parseFrame.OnUpdate)
 
 -- Cleans the specified list by removing queued entries.
 -- @param listName - the name of the list to clean

@@ -24,16 +24,12 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local BasicListsFrame = DJ.BasicListsFrame
+local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
 local ListManager = DJ.ListManager
 local FrameFactory = DJ.FrameFactory
-
--- Variables
-BasicListsFrame.Initialized = false
-BasicListsFrame.UI = {}
 
 --[[
 //*******************************************************************
@@ -41,24 +37,9 @@ BasicListsFrame.UI = {}
 //*******************************************************************
 --]]
 
--- Initializes the frame.
-function BasicListsFrame:Initialize()
-  if self.Initialized then return end
-
-  self.UI.Frame = FrameFactory:CreateFrame()
-
+-- @Override
+function BasicListsFrame:OnInitialize()
   self:CreateListFrames()
-
-  self.Initialized = true
-end
-
--- Deinitializes the frame.
-function BasicListsFrame:Deinitialize()
-  if not self.Initialized then return end
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Initialized = false
 end
 
 --[[
@@ -67,33 +48,7 @@ end
 //*******************************************************************
 --]]
 
--- Displays the frame.
-function BasicListsFrame:Show()
-  if not self.UI.Frame:IsVisible() then
-    self.UI.Frame:Show() end
-end
-
--- Hides the frame.
-function BasicListsFrame:Hide()
-  self.UI.Frame:Hide()
-end
-
--- Enables the frame.
-function BasicListsFrame:Enable()
-  -- Nothing to do
-end
-
--- Disables the frame.
-function BasicListsFrame:Disable()
-  -- Nothing to do
-end
-
--- Refreshes the frame.
-function BasicListsFrame:Refresh()
-  FrameFactory:RefreshUI(self.UI)
-end
-
--- Resizes the frame.
+-- @Override
 function BasicListsFrame:Resize()
   local ui = self.UI
 
@@ -111,49 +66,6 @@ end
 
 --[[
 //*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
-
--- Gets the width of the frame.
--- @return - the width of the frame
-function BasicListsFrame:GetWidth()
-  return self.UI.Frame:GetWidth()
-end
-
--- Sets the width of the frame.
--- @param width - the new width
-function BasicListsFrame:SetWidth(width)
-  self.UI.Frame:SetWidth(width)
-end
-
--- Gets the height of the frame.
--- @return - the height of the frame
-function BasicListsFrame:GetHeight()
-  return self.UI.Frame:GetHeight()
-end
-
--- Sets the height of the frame.
--- @param height - the new height
-function BasicListsFrame:SetHeight(height)
-  self.UI.Frame:SetHeight(height)
-end
-
--- Sets the parent of the frame.
--- @param parent - the new parent
-function BasicListsFrame:SetParent(parent)
-  self.UI.Frame:SetParent(parent)
-end
-
--- Sets the point of the frame.
--- @param point - the new point
-function BasicListsFrame:SetPoint(point)
-  self.UI.Frame:ClearAllPoints()
-  self.UI.Frame:SetPoint(unpack(point))
-end
-
---[[
-//*******************************************************************
 //                       UI Creation Functions
 //*******************************************************************
 --]]
@@ -161,7 +73,7 @@ end
 -- Creates the Inclusions and Exclusions list frames.
 function BasicListsFrame:CreateListFrames()
   local ui = self.UI
-  local buttonCount = 6
+  local buttonCount = 5
   local listName = nil
   local tooltip = nil
 

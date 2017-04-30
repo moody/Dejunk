@@ -57,7 +57,7 @@ local SoldItems = {}
 
 local dejunkerFrame = CreateFrame("Frame", AddonName.."DejunkerFrame")
 
-dejunkerFrame:SetScript("OnEvent", function(frame, event, ...)
+function dejunkerFrame:OnEvent(event, ...)
   if (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
@@ -71,8 +71,9 @@ dejunkerFrame:SetScript("OnEvent", function(frame, event, ...)
 			end
 		end
   end
-end)
+end
 
+dejunkerFrame:SetScript("OnEvent", dejunkerFrame.OnEvent)
 dejunkerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 --[[
@@ -291,29 +292,34 @@ end
 
 -- Returns the item in the specified bag slot if it is dejunkable.
 -- @return - a dejunkable item, or nil
-function Dejunker:GetDejunkableItemFromBag(bag, slot, itemID)
-  local item = nil
+function Dejunker:GetDejunkableItemFromBag(bag, slot)
+  -- Get item info
+  local _, quantity, locked, quality, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+  if not (quantity and not locked and quality and itemLink and not noValue and itemID) then
+    return nil end
 
-  local itemID = (itemID or GetContainerItemID(bag, slot))
-  local _, quantity, locked, quality, _, _,
-    itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+  -- Get additional item info
+  local _, _, _, itemLevel, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
+  if not (itemLevel and reqLevel and class and subClass and equipSlot and price) then
+    return nil end
 
-  if (itemID and itemLink and quality and quantity and not locked and not noValue) then
-    local price = select(11, GetItemInfo(itemLink)) -- Incorrect prices on scaled/upgraded items unless itemLink is used
+  if not Tools:ItemCanBeSold(price, quality) then
+    return nil end
 
-    if (price and self:IsJunkItem(itemID, price, quality)) then
-      item = {}
-      item.Bag = bag
-      item.Slot = slot
-      item.ItemID = itemID
-      item.Link = itemLink
-      item.Quality = quality
-      item.Quantity = quantity
-      item.Price = price
-    end
-  end
+  -- Verify that the item is junk
+  if not self:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class, subClass, equipSlot) then
+    return nil end
 
-  return item
+  return -- the item to be sold
+  {
+    Bag = bag,
+    Slot = slot,
+    ItemID = itemID,
+    Link = itemLink,
+    Quality = quality,
+    Quantity = quantity,
+    Price = price,
+  }
 end
 
 -- Checks if an item is a junk item based on Dejunk's settings.
@@ -321,40 +327,126 @@ end
 -- @param price - the price of the item
 -- @param quality - the quality of the item
 -- @return - true if the item is considered junk, and false otherwise
-function Dejunker:IsJunkItem(itemID, price, quality)
+function Dejunker:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class, subClass, equipSlot)
   --[[ Priority
-  1. Can item be sold?
-  2. Is it excluded?
-  3. Is it included?
-  4. Custom checks
-  5. Is it a Sell All item?
-  6. Don't sell
+  1. Is it excluded?
+  2. Is it included?
+  3. Custom checks
+  4. Is it a sell by quality item?
   ]]
 
-	-- 1
-  -- NOTE: some items which cannot be sold do not return a true noValue field from GetContainerItemInfo
-  if not Tools:ItemCanBeSold(price, quality) then
-    return false end
-
-  -- 2
+  -- 1
   if ListManager:IsOnList(ListManager.Exclusions, itemID) then
     return false end
 
-  -- 3
+  -- 2
   if ListManager:IsOnList(ListManager.Inclusions, itemID) then
 		return true end
 
-  -- 4, custom checks can go here, if ever necessary
+  -- 3. Custom checks
 
-	-- 5
-	if ((quality == LE_ITEM_QUALITY_POOR) and DejunkDB.SV.SellPoor) or
-	   ((quality == LE_ITEM_QUALITY_COMMON) and DejunkDB.SV.SellCommon) or
-	   ((quality == LE_ITEM_QUALITY_UNCOMMON) and DejunkDB.SV.SellUncommon) or
-	   ((quality == LE_ITEM_QUALITY_RARE) and DejunkDB.SV.SellRare) or
-	   ((quality == LE_ITEM_QUALITY_EPIC) and DejunkDB.SV.SellEpic) then
-    return true -- such fat, much huge, wow
+  -- Sell options
+  if self:IsUnsuitableItem(class, subClass, equipSlot) then
+    return true end
+
+  -- Ignore options
+  if self:IsIgnoredBattlePetItem(class, subClass) then
+    return false end
+  if self:IsIgnoredConsumableItem(class, quality) then
+    return false end
+  if self:IsIgnoredGemItem(class) then
+    return false end
+  if self:IsIgnoredGlyphItem(class) then
+    return false end
+  if self:IsIgnoredItemEnhancementItem(class) then
+    return false end
+  if self:IsIgnoredRecipeItem(class) then
+    return false end
+  if self:IsIgnoredTradeGoodsItem(class) then
+    return false end
+
+	-- 4
+  return self:IsSellByQualityItem(quality)
+end
+
+--[[
+//*******************************************************************
+//                        Filter Functions
+//*******************************************************************
+--]]
+
+-- [[ SELL OPTIONS ]] --
+
+function Dejunker:IsSellByQualityItem(quality)
+  return ((quality == LE_ITEM_QUALITY_POOR) and DejunkDB.SV.SellPoor) or
+         ((quality == LE_ITEM_QUALITY_COMMON) and DejunkDB.SV.SellCommon) or
+         ((quality == LE_ITEM_QUALITY_UNCOMMON) and DejunkDB.SV.SellUncommon) or
+         ((quality == LE_ITEM_QUALITY_RARE) and DejunkDB.SV.SellRare) or
+         ((quality == LE_ITEM_QUALITY_EPIC) and DejunkDB.SV.SellEpic)
+end
+
+function Dejunker:IsUnsuitableItem(class, subClass, equipSlot)
+  if not DejunkDB.SV.SellUnsuitable then return false end
+
+  local suitable = true
+
+  if (class == Consts.ARMOR_CLASS) then
+    local index = Consts.ARMOR_SUBCLASSES[subClass]
+    suitable = (Consts.SUITABLE_ARMOR[index] or (equipSlot == "INVTYPE_CLOAK"))
+  elseif (class == Consts.WEAPON_CLASS) then
+    local index = Consts.WEAPON_SUBCLASSES[subClass]
+    suitable = Consts.SUITABLE_WEAPONS[index]
   end
 
-  -- 6
+  return not suitable
+end
+
+-- [[ IGNORE OPTIONS ]] --
+
+function Dejunker:IsIgnoredBattlePetItem(class, subClass)
+  if not DejunkDB.SV.IgnoreBattlePets then return false end
+
+  return (class == Consts.BATTLEPET_CLASS) or
+         (subClass == Consts.COMPANION_SUBCLASS)
+end
+
+function Dejunker:IsIgnoredConsumableItem(class, quality)
+  if not DejunkDB.SV.IgnoreConsumables then return false end
+
+  if (class == Consts.CONSUMABLE_CLASS) then
+    -- we ignore poor quality consumables to avoid confusion
+    return (quality ~= LE_ITEM_QUALITY_POOR)
+  end
+
   return false
+end
+
+function Dejunker:IsIgnoredGemItem(class)
+  if not DejunkDB.SV.IgnoreGems then return false end
+
+  return (class == Consts.GEM_CLASS)
+end
+
+function Dejunker:IsIgnoredGlyphItem(class)
+  if not DejunkDB.SV.IgnoreGlyphs then return false end
+
+  return (class == Consts.GLYPH_CLASS)
+end
+
+function Dejunker:IsIgnoredItemEnhancementItem(class)
+  if not DejunkDB.SV.IgnoreItemEnhancements then return false end
+
+  return (class == Consts.ITEM_ENHANCEMENT_CLASS)
+end
+
+function Dejunker:IsIgnoredRecipeItem(class)
+  if not DejunkDB.SV.IgnoreRecipes then return false end
+
+  return (class == Consts.RECIPE_CLASS)
+end
+
+function Dejunker:IsIgnoredTradeGoodsItem(class)
+  if not DejunkDB.SV.IgnoreTradeGoods then return false end
+
+  return (class == Consts.TRADEGOODS_CLASS)
 end
