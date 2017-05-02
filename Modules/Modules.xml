@@ -30,7 +30,6 @@
   <Script file="Modules\UI\FrameFactory\Dejunk_Frame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_ListButton.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_ListFrame.lua"/>
-  <Script file="Modules\UI\FrameFactory\Dejunk_OptionFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_ScrollFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_ScrollingOptionsFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_Slider.lua"/>
