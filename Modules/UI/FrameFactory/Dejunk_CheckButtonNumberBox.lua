@@ -132,25 +132,3 @@ function FrameFactory:DisableCheckButtonNumberBox(cbnBox)
   cbnBox.CheckButton:SetEnabled(false)
   cbnBox.EditBoxFrame.EditBox:SetEnabled(false)
 end
-
---[[
-function FrameFactory:ReleaseCheckButtonNumberBox(cbnBox)
-  -- Objects
-  self:ReleaseCheckButton(cbnBox.CheckButton)
-  cbnBox.CheckButton = nil
-
-  self:ReleaseEditBoxFrame(cbnBox.EditBoxFrame)
-  cbnBox.EditBoxFrame = nil
-
-  -- Variables
-  cbnBox.FF_ObjectType = nil
-
-  -- Functions
-  cbnBox.GetMinWidth = nil
-  cbnBox.GetMinHeight = nil
-  cbnBox.Resize = nil
-  cbnBox.Refresh = nil
-
-  FramePooler:ReleaseFrame(cbnBox)
-end
---]]

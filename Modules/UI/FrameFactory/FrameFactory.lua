@@ -70,27 +70,11 @@ function FrameFactory:RefreshUI(ui)
   for k, v in pairs(ui) do v:Refresh() end
 end
 
+-- Releases a table of objects created by FrameFactory.
+-- @param ui - the table of objects to be released
 function FrameFactory:ReleaseUI(ui)
   for k, v in pairs(ui) do
     v:Release()
     ui[k] = nil
   end
 end
-
---[[
--- Releases a table of objects created by FrameFactory.
--- @param ui - the table of objects to be released
-function FrameFactory:ReleaseUI(ui)
-  for k, v in pairs(ui) do
-    assert(type(v.FF_ObjectType) == "string")
-
-    -- This looks ugly, but it just does this: self:func(v)
-    -- So, if the object's type is "Frame", self:ReleaseFrame(v) will be called
-    -- I'm doing this to avoid coding a tedious if-elseif based on the object's type
-    local func = ("Release"..v.FF_ObjectType)
-    self[func](self, v)
-
-    ui[k] = nil
-  end
-end
---]]

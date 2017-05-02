@@ -173,32 +173,3 @@ end
 function FrameFactory:DisableScrollFrame(scrollFrame)
   self:DisableUI(scrollFrame.UI)
 end
-
---[[
--- Releases a scroll frame created by FrameFactory.
--- @param scrollFrame - the scroll frame to release
-function FrameFactory:ReleaseScrollFrame(scrollFrame)
-  -- Objects
-  FramePooler:ReleaseTexture(scrollFrame.Texture)
-  scrollFrame.Texture = nil
-
-  FramePooler:ReleaseFrame(scrollFrame.ScrollChild)
-  scrollFrame.ScrollChild = nil
-
-  self:ReleaseSlider(scrollFrame.Slider)
-  scrollFrame.Slider = nil
-
-  self:ReleaseUI(scrollFrame.UI)
-  scrollFrame.UI = nil
-
-  -- Variables
-  scrollFrame.FF_ObjectType = nil
-
-  -- Functions
-  scrollFrame.AddObject = nil
-  scrollFrame.Resize = nil
-  scrollFrame.Refresh = nil
-
-  FramePooler:ReleaseScrollFrame(scrollFrame)
-end
---]]

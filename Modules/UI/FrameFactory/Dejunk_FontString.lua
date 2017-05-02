@@ -81,20 +81,3 @@ function FrameFactory:CreateFontString(parent, layer, font, color, shadowOffset,
 
   return fontString
 end
-
---[[
--- Releases a font string created by FrameFactory.
--- @param fontString - the font string to release
-function FrameFactory:ReleaseFontString(fontString)
-  -- Variables
-  fontString.FF_ObjectType = nil
-  fontString.Color = nil
-  fontString.ShadowColor = nil
-
-  -- Functions
-  fontString.Refresh = nil
-  fontString.SetColors = nil
-
-  FramePooler:ReleaseFontString(fontString)
-end
---]]

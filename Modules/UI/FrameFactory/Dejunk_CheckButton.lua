@@ -148,26 +148,3 @@ function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, 
 
   return checkButton
 end
-
---[[
--- Releases a check button created by FrameFactory.
--- @param checkButton - the check button to release
-function FrameFactory:ReleaseCheckButton(checkButton)
-  -- Objects
-  FramePooler:ReleaseFontString(checkButton.Text)
-  checkButton.Text = nil
-
-  -- Variables
-  checkButton.FF_ObjectType = nil
-  checkButton.SVKey = nil
-  checkButton.TextColor = nil
-
-  -- Functions
-  checkButton.GetMinWidth = nil
-  checkButton.GetMinHeight = nil
-  checkButton.Refresh = nil
-  checkButton.SetColors = nil
-
-  FramePooler:ReleaseCheckButton(checkButton)
-end
---]]

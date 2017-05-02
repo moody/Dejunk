@@ -156,27 +156,3 @@ end
 function FrameFactory:DisableScrollingOptionsFrame(soFrame)
   self:DisableScrollFrame(soFrame.ScrollFrame)
 end
-
---[[
-function FrameFactory:ReleaseScrollingOptionsFrame(soFrame)
-  -- Objects
-  self:ReleaseButton(soFrame.TitleButton)
-  soFrame.TitleButton = nil
-
-  self:ReleaseScrollFrame(soFrame.ScrollFrame)
-  soFrame.ScrollFrame = nil
-
-  -- Variables
-  soFrame.FF_ObjectType = nil
-
-  -- Functions
-  soFrame.ShowSlider = nil
-  soFrame.HideSlider = nil
-  soFrame.UpdateSliderState = nil
-  soFrame.AddOption = nil
-  soFrame.Resize = nil
-  soFrame.Refresh = nil
-
-  FramePooler:ReleaseFrame(soFrame)
-end
---]]

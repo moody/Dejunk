@@ -133,32 +133,3 @@ function FrameFactory:CreateButton(parent, font, text, color, colorHi, textColor
 
   return button
 end
-
---[[
--- Releases a button created by Button.
--- @param button - the button to release
-function FrameFactory:ReleaseButton(button)
-  -- Objects
-  FramePooler:ReleaseTexture(button.Texture)
-  button.Texture = nil
-
-  FramePooler:ReleaseFontString(button.Text)
-  button.Text = nil
-
-  -- Variables
-  button.FF_ObjectType = nil
-  button.Color = nil
-  button.ColorHi = nil
-  button.TextColor = nil
-  button.TextColorHi = nil
-
-  -- Functions
-  button.Resize = nil
-  button.GetMinWidth = nil
-  button.GetMinHeight = nil
-  button.Refresh = nil
-  button.SetColors = nil
-
-  FramePooler:ReleaseButton(button)
-end
---]]

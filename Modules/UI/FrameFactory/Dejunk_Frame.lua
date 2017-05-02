@@ -86,25 +86,3 @@ function FrameFactory:CreateFrame(parent, color)
 
   return frame
 end
-
---[[
--- Releases a frame created by Frame.
--- @param frame - the frame to release
-function FrameFactory:ReleaseFrame(frame)
-  -- Objects
-  if frame.Texture then
-    FramePooler:ReleaseTexture(frame.Texture)
-    frame.Texture = nil
-  end
-
-  -- Variables
-  frame.FF_ObjectType = nil
-  frame.Color = nil
-
-  -- Functions
-  frame.Refresh = nil
-  frame.SetColors = nil
-
-  FramePooler:ReleaseFrame(frame)
-end
---]]

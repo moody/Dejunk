@@ -114,30 +114,3 @@ function FrameFactory:CreateTextField(parent, font)
 
   return textField
 end
-
---[[
--- Releases a text field created by FrameFactory.
--- @param textField - the text field to release
-function FrameFactory:ReleaseTextField(textField)
-  -- Objects
-  self:ReleaseFontString(textField.LabelFontString)
-  textField.LabelFontString = nil
-
-  self:ReleaseFontString(textField.HelperFontString)
-  textField.HelperFontString = nil
-
-  self:ReleaseEditBoxFrame(textField.EditBoxFrame)
-  textField.EditBoxFrame = nil
-
-  -- Variables
-  textField.FF_ObjectType = nil
-
-  -- Functions
-  textField.SetLabelText = nil
-  textField.SetHelperText = nil
-  textField.Resize = nil
-  textField.Refresh = nil
-
-  FramePooler:ReleaseFrame(textField)
-end
---]]

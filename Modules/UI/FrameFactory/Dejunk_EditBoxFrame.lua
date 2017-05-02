@@ -103,25 +103,3 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
 
   return editBoxFrame
 end
-
---[[
--- Releases an edit box frame created by FrameFactory.
--- @param editBoxFrame - the edit box frame to release
-function FrameFactory:ReleaseEditBoxFrame(editBoxFrame)
-  -- Objects
-  self:ReleaseTexture(editBoxFrame.Texture)
-  editBoxFrame.Texture = nil
-
-  FramePooler:ReleaseEditBox(editBoxFrame.EditBox)
-  editBoxFrame.EditBox = nil
-
-  -- Variables
-  editBoxFrame.FF_ObjectType = nil
-
-  -- Functions
-  editBoxFrame.Resize = nil
-  editBoxFrame.Refresh = nil
-
-  FramePooler:ReleaseFrame(editBoxFrame)
-end
---]]

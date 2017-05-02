@@ -137,23 +137,6 @@ function FramePooler:CreateFrame(parent)
 end
 
 --[[
--- Releases a frame created by FramePooler.
--- @param frame - the frame to release
-function FramePooler:ReleaseFrame(frame)
-  assert(frame and frame:GetObjectType() == "Frame")
-
-  self.FramePool[#self.FramePool+1] = frame
-
-  -- Reset
-  frame:EnableMouse(false)
-	frame:SetMovable(false)
-  frame:RegisterForDrag() -- no arg disables dragging
-
-  self:GenericReset(frame)
-end
---]]
-
---[[
 //*******************************************************************
 //  					    			    Button Functions
 //*******************************************************************
@@ -193,21 +176,6 @@ function FramePooler:CreateButton(parent)
 end
 
 --[[
--- Releases a button created by FramePooler.
--- @param button - the button to release
-function FramePooler:ReleaseButton(button)
-  assert(button and button:GetObjectType() == "Button")
-
-  self.ButtonPool[#self.ButtonPool+1] = button
-
-  -- Reset
-  button:RegisterForClicks(nil)
-
-  self:GenericReset(button)
-end
---]]
-
---[[
 //*******************************************************************
 //  					    			Check Button Functions
 //*******************************************************************
@@ -243,21 +211,6 @@ function FramePooler:CreateCheckButton(parent)
 
   return checkButton
 end
-
---[[
--- Releases a check button created by FramePooler.
--- @param checkButton - the check button to release
-function FramePooler:ReleaseCheckButton(checkButton)
-  assert(checkButton and checkButton:GetObjectType() == "CheckButton")
-
-  self.CheckButtonPool[#self.CheckButtonPool+1] = checkButton
-
-  -- Reset
-  checkButton:SetChecked(false)
-
-  self:GenericReset(checkButton)
-end
---]]
 
 --[[
 //*******************************************************************
@@ -307,22 +260,6 @@ function FramePooler:CreateTexture(parent, layer, color)
 
   return texture
 end
-
---[[
--- Releases a texture created by FramePooler.
--- @param texture - the texture to release
-function FramePooler:ReleaseTexture(texture)
-  assert(texture and texture:GetObjectType() == "Texture")
-
-  self.TexturePool[#self.TexturePool+1] = texture
-
-  -- Reset
-  texture:SetTexture(nil)
-  texture:SetColorTexture(0, 0, 0, 0)
-
-  self:GenericReset(texture)
-end
---]]
 
 --[[
 //*******************************************************************
@@ -382,27 +319,6 @@ function FramePooler:CreateFontString(parent, layer, font, color, shadowOffset, 
 end
 
 --[[
--- Releases a font string created by FramePooler.
--- @param fontString - the font string to release
-function FramePooler:ReleaseFontString(fontString)
-  assert(fontString and fontString:GetObjectType() == "FontString")
-
-  self.FontStringPool[#self.FontStringPool+1] = fontString
-
-  -- Reset
-  fontString:SetText("")
-  fontString:SetTextColor(1, 1, 1, 1)
-  fontString:SetShadowOffset(0, 0)
-  fontString:SetShadowColor(0, 0, 0, 1)
-  fontString:SetWordWrap(true)
-  fontString:SetJustifyH("CENTER")
-  fontString:SetJustifyV("CENTER")
-
-  self:GenericReset(fontString)
-end
---]]
-
---[[
 //*******************************************************************
 //  					    			 ScrollFrame Functions
 //*******************************************************************
@@ -438,19 +354,6 @@ function FramePooler:CreateScrollFrame(parent)
 
   return scrollFrame
 end
-
---[[
--- Releases a scroll frame created by FramePooler.
--- @param scrollFrame - the scroll frame to release
-function FramePooler:ReleaseScrollFrame(scrollFrame)
-  assert(scrollFrame and scrollFrame.SetScrollChild)
-
-  self.ScrollFramePool[#self.ScrollFramePool+1] = scrollFrame
-
-  -- Reset
-  self:GenericReset(scrollFrame)
-end
---]]
 
 --[[
 //*******************************************************************
@@ -490,23 +393,6 @@ function FramePooler:CreateSlider(parent)
 
   return slider
 end
-
---[[
--- Releases a slider created by FramePooler.
--- @param slider - the slider to release
-function FramePooler:ReleaseSlider(slider)
-  assert(slider and slider:GetObjectType() == "Slider")
-
-  self.SliderPool[#self.SliderPool+1] = slider
-
-  -- Reset
-  slider:SetMinMaxValues(0, 0)
-  slider:SetValueStep(0)
-  slider:SetValue(0)
-
-  self:GenericReset(slider)
-end
---]]
 
 --[[
 //*******************************************************************
@@ -560,23 +446,3 @@ function FramePooler:CreateEditBox(parent, font, color, maxLetters)
 
   return editBox
 end
-
---[[
--- Releases an edit box created by FramePooler.
--- @param editBox - the edit box to release
-function FramePooler:ReleaseEditBox(editBox)
-  assert(editBox and editBox:GetObjectType() == "EditBox")
-
-  self.EditBoxPool[#self.EditBoxPool+1] = editBox
-
-  -- Reset
-  editBox:SetText("")
-  editBox:SetTextColor(1, 1, 1, 1)
-  editBox:SetMultiLine(false)
-  editBox:SetAutoFocus(false)
-  editBox:HighlightText(0, 0)
-  editBox:ClearFocus()
-
-  self:GenericReset(editBox)
-end
---]]

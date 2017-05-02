@@ -92,25 +92,3 @@ function FrameFactory:CreateSlider(parent)
 
   return slider
 end
-
---[[
--- Releases a slider created by FrameFactory.
--- @param slider - the slider to release
-function FrameFactory:ReleaseSlider(slider)
-  -- Objects
-  FramePooler:ReleaseTexture(slider.Texture)
-  slider.Texture = nil
-
-  FramePooler:ReleaseTexture(slider.Thumb)
-  slider.Thumb = nil
-  slider:SetThumbTexture(nil)
-
-  -- Variables
-  slider.FF_ObjectType = nil
-
-  -- Functions
-  slider.Refresh = nil
-
-  FramePooler:ReleaseSlider(slider)
-end
---]]

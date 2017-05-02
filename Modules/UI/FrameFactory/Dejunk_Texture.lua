@@ -72,19 +72,3 @@ function FrameFactory:CreateTexture(parent, layer, color)
 
   return texture
 end
-
---[[
--- Releases a texture created by FrameFactory.
--- @param texture - the texture to release
-function FrameFactory:ReleaseTexture(texture)
-  -- Variables
-  texture.FF_ObjectType = nil
-  texture.Color = nil
-
-  -- Functions
-  texture.Refresh = nil
-  texture.SetColors = nil
-
-  FramePooler:ReleaseTexture(texture)
-end
---]]
