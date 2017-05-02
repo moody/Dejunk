@@ -63,9 +63,31 @@ function FrameFactory:CreateFrame(parent, color)
 
   if color then frame:SetColors(color) end
 
+  -- Pre-hook Release function
+  local release = frame.Release
+
+  function frame:Release()
+    -- Objects
+    if self.Texture then
+      self.Texture:Release()
+      self.Texture = nil
+    end
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.Color = nil
+
+    -- Functions
+    self.Refresh = nil
+    self.SetColors = nil
+
+    release(self)
+  end
+
   return frame
 end
 
+--[[
 -- Releases a frame created by Frame.
 -- @param frame - the frame to release
 function FrameFactory:ReleaseFrame(frame)
@@ -85,3 +107,4 @@ function FrameFactory:ReleaseFrame(frame)
 
   FramePooler:ReleaseFrame(frame)
 end
+--]]

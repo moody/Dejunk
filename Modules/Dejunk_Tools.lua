@@ -144,7 +144,7 @@ function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
   local width = sizer:GetWidth()
   local height = sizer:GetHeight()
 
-  FramePooler:ReleaseTexture(sizer)
+  sizer:Release()
 
   return width, height
 end

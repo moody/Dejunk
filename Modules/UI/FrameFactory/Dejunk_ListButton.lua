@@ -114,9 +114,35 @@ function FrameFactory:CreateListButton(parent, listName)
 
   button:Refresh()
 
+  -- Pre-hook Release function
+  local release = button.Release
+
+  function button:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    self.Icon:Release()
+    self.Icon = nil
+
+    self.Text:Release()
+    self.Text = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.Item = nil
+
+    -- Functions
+    self.SetItem = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return button
 end
 
+--[[
 -- Releases a list button created by FrameFactory.
 -- @param button - the list button to release
 function FrameFactory:ReleaseListButton(button)
@@ -140,3 +166,4 @@ function FrameFactory:ReleaseListButton(button)
 
   FramePooler:ReleaseButton(button)
 end
+--]]

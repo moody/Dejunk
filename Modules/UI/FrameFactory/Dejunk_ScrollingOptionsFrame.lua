@@ -121,6 +121,31 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   soFrame:Refresh()
 
+  -- Pre-hook Release function
+  local release = soFrame.Release
+
+  function soFrame:Release()
+    -- Objects
+    self.TitleButton:Release()
+    self.TitleButton = nil
+
+    self.ScrollFrame:Release()
+    self.ScrollFrame = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.ShowSlider = nil
+    self.HideSlider = nil
+    self.UpdateSliderState = nil
+    self.AddOption = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return soFrame
 end
 
@@ -132,6 +157,7 @@ function FrameFactory:DisableScrollingOptionsFrame(soFrame)
   self:DisableScrollFrame(soFrame.ScrollFrame)
 end
 
+--[[
 function FrameFactory:ReleaseScrollingOptionsFrame(soFrame)
   -- Objects
   self:ReleaseButton(soFrame.TitleButton)
@@ -153,3 +179,4 @@ function FrameFactory:ReleaseScrollingOptionsFrame(soFrame)
 
   FramePooler:ReleaseFrame(soFrame)
 end
+--]]

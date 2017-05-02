@@ -80,9 +80,31 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
 
   editBoxFrame:Refresh()
 
+  -- Pre-hook Release function
+  local release = editBoxFrame.Release
+
+  function editBoxFrame:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    self.EditBox:Release()
+    self.EditBox = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return editBoxFrame
 end
 
+--[[
 -- Releases an edit box frame created by FrameFactory.
 -- @param editBoxFrame - the edit box frame to release
 function FrameFactory:ReleaseEditBoxFrame(editBoxFrame)
@@ -102,3 +124,4 @@ function FrameFactory:ReleaseEditBoxFrame(editBoxFrame)
 
   FramePooler:ReleaseFrame(editBoxFrame)
 end
+--]]

@@ -131,6 +131,34 @@ function FrameFactory:CreateScrollFrame(parent)
 
   scrollFrame:Refresh()
 
+  -- Pre-hook Release function
+  local release = scrollFrame.Release
+
+  function scrollFrame:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    self.ScrollChild:Release()
+    self.ScrollChild = nil
+
+    self.Slider:Release()
+    self.Slider = nil
+
+    FrameFactory:ReleaseUI(self.UI)
+    self.UI = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.AddObject = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return scrollFrame
 end
 
@@ -146,6 +174,7 @@ function FrameFactory:DisableScrollFrame(scrollFrame)
   self:DisableUI(scrollFrame.UI)
 end
 
+--[[
 -- Releases a scroll frame created by FrameFactory.
 -- @param scrollFrame - the scroll frame to release
 function FrameFactory:ReleaseScrollFrame(scrollFrame)
@@ -172,3 +201,4 @@ function FrameFactory:ReleaseScrollFrame(scrollFrame)
 
   FramePooler:ReleaseScrollFrame(scrollFrame)
 end
+--]]

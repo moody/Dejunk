@@ -97,6 +97,29 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
 
   cbnBox:Refresh()
 
+  -- Pre-hook Release function
+  local release = cbnBox.Release
+
+  function cbnBox:Release()
+    -- Objects
+    self.CheckButton:Release()
+    self.CheckButton = nil
+
+    self.EditBoxFrame:Release()
+    self.EditBoxFrame = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return cbnBox
 end
 
@@ -110,6 +133,7 @@ function FrameFactory:DisableCheckButtonNumberBox(cbnBox)
   cbnBox.EditBoxFrame.EditBox:SetEnabled(false)
 end
 
+--[[
 function FrameFactory:ReleaseCheckButtonNumberBox(cbnBox)
   -- Objects
   self:ReleaseCheckButton(cbnBox.CheckButton)
@@ -129,3 +153,4 @@ function FrameFactory:ReleaseCheckButtonNumberBox(cbnBox)
 
   FramePooler:ReleaseFrame(cbnBox)
 end
+--]]

@@ -70,6 +70,14 @@ function FrameFactory:RefreshUI(ui)
   for k, v in pairs(ui) do v:Refresh() end
 end
 
+function FrameFactory:ReleaseUI(ui)
+  for k, v in pairs(ui) do
+    v:Release()
+    ui[k] = nil
+  end
+end
+
+--[[
 -- Releases a table of objects created by FrameFactory.
 -- @param ui - the table of objects to be released
 function FrameFactory:ReleaseUI(ui)
@@ -85,3 +93,4 @@ function FrameFactory:ReleaseUI(ui)
     ui[k] = nil
   end
 end
+--]]

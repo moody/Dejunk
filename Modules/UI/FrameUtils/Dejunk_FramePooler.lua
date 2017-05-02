@@ -82,6 +82,8 @@ function FramePooler:GenericReset(frame)
   frame:ClearAllPoints()
   frame:SetAlpha(1)
   frame:Hide()
+
+  frame.Release = nil
 end
 
 -- Clears all scripts from the specified frame.
@@ -109,7 +111,8 @@ FramePooler.FrameCount = 0
 -- @return - a basic frame
 function FramePooler:CreateFrame(parent)
   -- Check the pool for an existing resource
-  local frame = remove(self.FramePool)
+  local pool = self.FramePool
+  local frame = remove(pool)
 
   if frame then
     frame:Show()
@@ -120,9 +123,20 @@ function FramePooler:CreateFrame(parent)
     frame = CreateFrame("Frame", name, parent)
   end
 
+  -- Releases the object back into the pool.
+  function frame:Release()
+    self:EnableMouse(false)
+    self:SetMovable(false)
+    self:RegisterForDrag() -- no arg disables dragging
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return frame
 end
 
+--[[
 -- Releases a frame created by FramePooler.
 -- @param frame - the frame to release
 function FramePooler:ReleaseFrame(frame)
@@ -137,6 +151,7 @@ function FramePooler:ReleaseFrame(frame)
 
   self:GenericReset(frame)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -152,7 +167,8 @@ FramePooler.ButtonCount = 0
 -- @return - a basic button
 function FramePooler:CreateButton(parent)
   -- Check the pool for an existing resource
-  local button = remove(self.ButtonPool)
+  local pool = self.ButtonPool
+  local button = remove(pool)
 
   if button then
     button:Show()
@@ -165,9 +181,18 @@ function FramePooler:CreateButton(parent)
 
   button:RegisterForClicks("LeftButtonUp")
 
+  -- Releases the object back into the pool.
+  function button:Release()
+    self:RegisterForClicks(nil)
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return button
 end
 
+--[[
 -- Releases a button created by FramePooler.
 -- @param button - the button to release
 function FramePooler:ReleaseButton(button)
@@ -180,6 +205,7 @@ function FramePooler:ReleaseButton(button)
 
   self:GenericReset(button)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -195,7 +221,8 @@ FramePooler.CheckButtonCount = 0
 -- @return - a basic check button
 function FramePooler:CreateCheckButton(parent)
   -- Check the pool for an existing resource
-  local checkButton = remove(self.CheckButtonPool)
+  local pool = self.CheckButtonPool
+  local checkButton = remove(pool)
 
   if checkButton then
     checkButton:Show()
@@ -206,9 +233,18 @@ function FramePooler:CreateCheckButton(parent)
     checkButton = CreateFrame("CheckButton", name, parent, "UICheckButtonTemplate")
   end
 
+  -- Releases the object back into the pool.
+  function checkButton:Release()
+    self:SetChecked(false)
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return checkButton
 end
 
+--[[
 -- Releases a check button created by FramePooler.
 -- @param checkButton - the check button to release
 function FramePooler:ReleaseCheckButton(checkButton)
@@ -221,6 +257,7 @@ function FramePooler:ReleaseCheckButton(checkButton)
 
   self:GenericReset(checkButton)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -238,7 +275,8 @@ FramePooler.TextureCount = 0
 -- @return - a basic texture
 function FramePooler:CreateTexture(parent, layer, color)
   -- Check the pool for an existing resource
-  local texture = remove(self.TexturePool)
+  local pool = self.TexturePool
+  local texture = remove(pool)
 
   if texture then
     texture:Show()
@@ -251,16 +289,26 @@ function FramePooler:CreateTexture(parent, layer, color)
   end
 
   if color then
-    texture:SetColorTexture(color[1], color[2], color[3], color[4] or 1)
+    texture:SetColorTexture(unpack(color))
   else
     texture:SetColorTexture(0, 0, 0, 0)
   end
 
   texture:SetAllPoints()
 
+  -- Releases the object back into the pool.
+  function texture:Release()
+    self:SetTexture(nil)
+    self:SetColorTexture(0, 0, 0, 0)
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return texture
 end
 
+--[[
 -- Releases a texture created by FramePooler.
 -- @param texture - the texture to release
 function FramePooler:ReleaseTexture(texture)
@@ -274,6 +322,7 @@ function FramePooler:ReleaseTexture(texture)
 
   self:GenericReset(texture)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -294,7 +343,8 @@ FramePooler.FontStringCount = 0
 -- @return - a basic font string
 function FramePooler:CreateFontString(parent, layer, font, color, shadowOffset, shadowColor)
   -- Check the pool for an existing resource
-  local fontString = remove(self.FontStringPool)
+  local pool = self.FontStringPool
+  local fontString = remove(pool)
 
   if fontString then
     fontString:Show()
@@ -314,9 +364,24 @@ function FramePooler:CreateFontString(parent, layer, font, color, shadowOffset, 
   if shadowOffset then fontString:SetShadowOffset(unpack(shadowOffset)) end
   if shadowColor then fontString:SetShadowColor(unpack(shadowColor)) end
 
+  -- Releases the object back into the pool.
+  function fontString:Release()
+    self:SetText("")
+    self:SetTextColor(1, 1, 1, 1)
+    self:SetShadowOffset(0, 0)
+    self:SetShadowColor(0, 0, 0, 1)
+    self:SetWordWrap(true)
+    self:SetJustifyH("CENTER")
+    self:SetJustifyV("CENTER")
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return fontString
 end
 
+--[[
 -- Releases a font string created by FramePooler.
 -- @param fontString - the font string to release
 function FramePooler:ReleaseFontString(fontString)
@@ -335,6 +400,7 @@ function FramePooler:ReleaseFontString(fontString)
 
   self:GenericReset(fontString)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -350,7 +416,8 @@ FramePooler.ScrollFrameCount = 0
 -- @return - a basic scroll frame
 function FramePooler:CreateScrollFrame(parent)
   -- Check the pool for an existing resource
-  local scrollFrame = remove(self.ScrollFramePool)
+  local pool = self.ScrollFramePool
+  local scrollFrame = remove(pool)
 
   if scrollFrame then
     scrollFrame:Show()
@@ -363,9 +430,16 @@ function FramePooler:CreateScrollFrame(parent)
 
   scrollFrame:SetClipsChildren(true)
 
+  -- Releases the object back into the pool.
+  function scrollFrame:Release()
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return scrollFrame
 end
 
+--[[
 -- Releases a scroll frame created by FramePooler.
 -- @param scrollFrame - the scroll frame to release
 function FramePooler:ReleaseScrollFrame(scrollFrame)
@@ -376,6 +450,7 @@ function FramePooler:ReleaseScrollFrame(scrollFrame)
   -- Reset
   self:GenericReset(scrollFrame)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -391,7 +466,8 @@ FramePooler.SliderCount = 0
 -- @return - a basic slider
 function FramePooler:CreateSlider(parent)
   -- Check the pool for an existing resource
-  local slider = remove(self.SliderPool)
+  local pool = self.SliderPool
+  local slider = remove(pool)
 
   if slider then
     slider:Show()
@@ -402,9 +478,20 @@ function FramePooler:CreateSlider(parent)
     slider = CreateFrame("Slider", name, parent)
   end
 
+  -- Releases the object back into the pool.
+  function slider:Release()
+    self:SetMinMaxValues(0, 0)
+    self:SetValueStep(0)
+    self:SetValue(0)
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return slider
 end
 
+--[[
 -- Releases a slider created by FramePooler.
 -- @param slider - the slider to release
 function FramePooler:ReleaseSlider(slider)
@@ -419,6 +506,7 @@ function FramePooler:ReleaseSlider(slider)
 
   self:GenericReset(slider)
 end
+--]]
 
 --[[
 //*******************************************************************
@@ -434,7 +522,8 @@ FramePooler.EditBoxCount = 0
 -- @return - a basic edit box
 function FramePooler:CreateEditBox(parent, font, color, maxLetters)
   -- Check the pool for an existing resource
-  local editBox = remove(self.EditBoxPool)
+  local pool = self.EditBoxPool
+  local editBox = remove(pool)
 
   if editBox then
     editBox:Show()
@@ -456,9 +545,23 @@ function FramePooler:CreateEditBox(parent, font, color, maxLetters)
     editBox:SetTextColor(1, 1, 1, 1)
   end
 
+  -- Releases the object back into the pool.
+  function editBox:Release()
+    self:SetText("")
+    self:SetTextColor(1, 1, 1, 1)
+    self:SetMultiLine(false)
+    self:SetAutoFocus(false)
+    self:HighlightText(0, 0)
+    self:ClearFocus()
+
+    FramePooler:GenericReset(self)
+    pool[#pool+1] = self
+  end
+
   return editBox
 end
 
+--[[
 -- Releases an edit box created by FramePooler.
 -- @param editBox - the edit box to release
 function FramePooler:ReleaseEditBox(editBox)
@@ -476,3 +579,4 @@ function FramePooler:ReleaseEditBox(editBox)
 
   self:GenericReset(editBox)
 end
+--]]

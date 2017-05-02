@@ -244,6 +244,46 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
   listFrame:Refresh()
   listFrame:Update()
 
+  -- Pre-hook Release function
+  local release = listFrame.Release
+
+  function listFrame:Release()
+    -- Objects
+    self.TitleButton:Release()
+    self.TitleButton = nil
+
+    self.ImportButton:Release()
+    self.ImportButton = nil
+
+    self.ExportButton:Release()
+    self.ExportButton = nil
+
+    for i, button in pairs(self.ButtonFrame.Buttons) do button:Release() end
+    self.ButtonFrame.Buttons = nil
+
+    self.ButtonFrame:Release()
+    self.ButtonFrame.DropItem = nil
+    self.ButtonFrame = nil
+
+    self.Slider:Release()
+    self.Slider = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.ItemList = nil
+
+    -- Functions
+    self.ShowSlider = nil
+    self.HideSlider = nil
+    self.Update = nil
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return listFrame
 end
 
@@ -273,6 +313,7 @@ function FrameFactory:DisableListFrame(listFrame)
     button:SetEnabled(false) end
 end
 
+--[[
 -- Releases a list frame created by FrameFactory.
 -- @param listFrame - the list frame to release
 function FrameFactory:ReleaseListFrame(listFrame)
@@ -312,3 +353,4 @@ function FrameFactory:ReleaseListFrame(listFrame)
 
   self:ReleaseFrame(listFrame)
 end
+--]]
