@@ -57,6 +57,7 @@ end
 //*******************************************************************
 --]]
 
+-- @Override
 function BasicOptionsFrame:Resize()
   local newWidth = 0
   local newHeight = 0
@@ -160,9 +161,10 @@ function BasicOptionsFrame:CreateSellOptions()
   local options = {}
 
   -- By Quality text
-  options[#options+1] = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  local byQuality = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  options[#options]:SetText(L.BY_QUALITY_TEXT)
+  byQuality:SetText(L.BY_QUALITY_TEXT)
+  options[#options+1] = byQuality
 
   -- Sell by quality check buttons
   options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
@@ -177,9 +179,10 @@ function BasicOptionsFrame:CreateSellOptions()
     L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic)
 
   -- By Type text
-  options[#options+1] = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  options[#options]:SetText(L.BY_TYPE_TEXT)
+  byType:SetText(L.BY_TYPE_TEXT)
+  options[#options+1] = byType
 
   -- Unsuitable Equipment
   options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
@@ -201,10 +204,11 @@ function BasicOptionsFrame:CreateIgnoreOptions()
 
   local options = {}
 
-  -- By Classification text
-  options[#options+1] = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  -- By Type text
+  local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  options[#options]:SetText(L.BY_TYPE_TEXT)
+  byType:SetText(L.BY_TYPE_TEXT)
+  options[#options+1] = byType
 
   -- Battle Pets
   options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",

@@ -16,7 +16,7 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_ChedditBox: contains FrameFactory functions to create and release a CheckButton & EditBox combo frame.
+-- Dejunk_CheckButtonNumberBox: contains FrameFactory functions to create and release a CheckButton & EditBox combo frame.
 
 local AddonName, DJ = ...
 
@@ -24,7 +24,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Upvalues
-local abs, tonumber = math.abs, tonumber
+local abs, tonumber = abs, tonumber
 
 -- Dejunk
 local FrameFactory = DJ.FrameFactory

@@ -21,7 +21,8 @@ This file is part of Dejunk.
 local AddonName, DJ = ...
 
 -- Upvalues
-local remove = table.remove
+local assert, pairs, pcall, remove = assert, pairs, pcall, table.remove
+local CreateFrame, UIParent = CreateFrame, UIParent
 
 -- Dejunk
 local FramePooler = DJ.FramePooler
@@ -125,7 +126,7 @@ end
 -- Releases a frame created by FramePooler.
 -- @param frame - the frame to release
 function FramePooler:ReleaseFrame(frame)
-  assert(frame ~= nil)
+  assert(frame and frame:GetObjectType() == "Frame")
 
   self.FramePool[#self.FramePool+1] = frame
 
@@ -170,7 +171,7 @@ end
 -- Releases a button created by FramePooler.
 -- @param button - the button to release
 function FramePooler:ReleaseButton(button)
-  assert(button ~= nil)
+  assert(button and button:GetObjectType() == "Button")
 
   self.ButtonPool[#self.ButtonPool+1] = button
 
@@ -211,7 +212,7 @@ end
 -- Releases a check button created by FramePooler.
 -- @param checkButton - the check button to release
 function FramePooler:ReleaseCheckButton(checkButton)
-  assert(checkButton ~= nil)
+  assert(checkButton and checkButton:GetObjectType() == "CheckButton")
 
   self.CheckButtonPool[#self.CheckButtonPool+1] = checkButton
 
@@ -263,7 +264,7 @@ end
 -- Releases a texture created by FramePooler.
 -- @param texture - the texture to release
 function FramePooler:ReleaseTexture(texture)
-  assert(texture ~= nil)
+  assert(texture and texture:GetObjectType() == "Texture")
 
   self.TexturePool[#self.TexturePool+1] = texture
 
@@ -319,7 +320,7 @@ end
 -- Releases a font string created by FramePooler.
 -- @param fontString - the font string to release
 function FramePooler:ReleaseFontString(fontString)
-  assert(fontString ~= nil)
+  assert(fontString and fontString:GetObjectType() == "FontString")
 
   self.FontStringPool[#self.FontStringPool+1] = fontString
 
@@ -368,7 +369,7 @@ end
 -- Releases a scroll frame created by FramePooler.
 -- @param scrollFrame - the scroll frame to release
 function FramePooler:ReleaseScrollFrame(scrollFrame)
-  assert(scrollFrame ~= nil)
+  assert(scrollFrame and scrollFrame.SetScrollChild)
 
   self.ScrollFramePool[#self.ScrollFramePool+1] = scrollFrame
 
@@ -407,7 +408,7 @@ end
 -- Releases a slider created by FramePooler.
 -- @param slider - the slider to release
 function FramePooler:ReleaseSlider(slider)
-  assert(slider ~= nil)
+  assert(slider and slider:GetObjectType() == "Slider")
 
   self.SliderPool[#self.SliderPool+1] = slider
 
@@ -461,7 +462,7 @@ end
 -- Releases an edit box created by FramePooler.
 -- @param editBox - the edit box to release
 function FramePooler:ReleaseEditBox(editBox)
-  assert(editBox ~= nil)
+  assert(editBox and editBox:GetObjectType() == "EditBox")
 
   self.EditBoxPool[#self.EditBoxPool+1] = editBox
 
