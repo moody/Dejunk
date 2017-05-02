@@ -24,7 +24,8 @@
 
   <Script file="Modules\UI\FrameFactory\Dejunk_Button.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_CheckButton.lua"/>
-  <Script file="Modules\UI\FrameFactory\Dejunk_EditBox.lua"/>
+  <Script file="Modules\UI\FrameFactory\Dejunk_CheckButtonNumberBox.lua"/>
+  <Script file="Modules\UI\FrameFactory\Dejunk_EditBoxFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_FontString.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_Frame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_ListButton.lua"/>
@@ -45,5 +46,4 @@
   <Script file="Modules\UI\DejunkFrames\Dejunk_BasicListsFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_BasicChildFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_TransportChildFrame.lua"/>
-  -->
 </Ui>

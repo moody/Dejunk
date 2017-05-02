@@ -31,7 +31,6 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -51,7 +50,7 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titleColor, titleColorHi, tooltip)
   assert(ListManager[listName] ~= nil)
 
-  local listFrame = FramePooler:CreateFrame(parent)
+  local listFrame = self:CreateFrame(parent)
   listFrame.FF_ObjectType = "ListFrame"
   listFrame.ItemList = ListManager.Lists[listName]
 
@@ -311,5 +310,5 @@ function FrameFactory:ReleaseListFrame(listFrame)
   listFrame.Resize = nil
   listFrame.Refresh = nil
 
-  FramePooler:ReleaseFrame(listFrame)
+  self:ReleaseFrame(listFrame)
 end

@@ -153,6 +153,10 @@ function DejunkDB:Defaults()
     SellEpic = false,
 
     SellUnsuitable = false,
+    SellEquipmentBelowILVL = {
+      Enabled = false,
+      Value = 1,
+    },
 
     -- Ignore options
     IgnoreBattlePets = false,

@@ -62,11 +62,14 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
     self:HighlightText(0, 0)
     self:ClearFocus() end)
 
+  editBox:SetScript("OnEnable", function(self) self:SetAlpha(1) end)
+  editBox:SetScript("OnDisable", function(self) self:SetAlpha(0.3) end)
+
   function editBoxFrame:Resize()
     local _, fontHeight = editBox:GetFont()
     local newHeight= (fontHeight + Tools:Padding())
 
-    self:SetWidth(Consts.TEXT_FIELD_MIN_WIDTH)
+    self:SetWidth(Consts.EDIT_BOX_MIN_WIDTH)
     self:SetHeight(newHeight)
   end
 

@@ -16,9 +16,10 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_Core: contains all of dejunk's core functionality.
+-- Dejunk_Core: initializes Dejunk.
 
 local AddonName, DJ = ...
+_G["DEJUNK_ADDON_TABLE"] = DJ
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
@@ -34,9 +35,6 @@ local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
 local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
-
--- Variables
-Core.Debugging = false
 
 --[[
 //*******************************************************************
@@ -91,17 +89,6 @@ function Core:Print(msg)
   if DejunkDB.SV.SilentMode then return end
 
   local title = Tools:GetColorString("[Dejunk]",
-    Colors:GetColor(Colors.LabelText))
-
-  print(format("%s %s", title, msg))
-end
-
--- Prints a debug message ("[Dejunk][Debug] msg").
--- @param msg - the debug message to print
-function Core:Debug(msg)
-  if not self.Debugging then return end
-
-  local title = Tools:GetColorString("[DJ-Debug]",
     Colors:GetColor(Colors.LabelText))
 
   print(format("%s %s", title, msg))

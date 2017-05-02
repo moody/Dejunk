@@ -16,7 +16,7 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_ListFrame: contains FrameFactory functions to create and release a frame for displaying list data.
+-- Dejunk_ScrollingOptionsFrame: contains FrameFactory functions to create and release a scrollable frame containing Dejunk options.
 
 local AddonName, DJ = ...
 
@@ -24,9 +24,11 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
+local FrameFactory = DJ.FrameFactory
+
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FrameFactory = DJ.FrameFactory
+local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -35,7 +37,7 @@ local FrameFactory = DJ.FrameFactory
 --]]
 
 function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
-  local soFrame = self:CreateFrame(parent)
+  local soFrame = FramePooler:CreateFrame(parent)
   soFrame.FF_ObjectType = "ScrollingOptionsFrame"
   soFrame.UI = {}
 
@@ -149,5 +151,5 @@ function FrameFactory:ReleaseScrollingOptionsFrame(soFrame)
   soFrame.Resize = nil
   soFrame.Refresh = nil
 
-  self:ReleaseFrame(soFrame)
+  FramePooler:ReleaseFrame(soFrame)
 end

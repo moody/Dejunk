@@ -162,6 +162,8 @@ function FramePooler:CreateButton(parent)
     button = CreateFrame("Button", name, parent)
   end
 
+  button:RegisterForClicks("LeftButtonUp")
+
   return button
 end
 
@@ -173,6 +175,8 @@ function FramePooler:ReleaseButton(button)
   self.ButtonPool[#self.ButtonPool+1] = button
 
   -- Reset
+  button:RegisterForClicks(nil)
+
   self:GenericReset(button)
 end
 

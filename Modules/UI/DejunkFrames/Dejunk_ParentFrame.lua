@@ -68,7 +68,11 @@ end
 -- @Override
 function ParentFrame:OnDeinitialize()
   TitleFrame:Deinitialize()
-  if currentChild then currentChild:Deinitialize() end
+  
+  if currentChild then
+    currentChild:Deinitialize()
+    currentChild = nil
+  end
 end
 
 --[[

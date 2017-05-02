@@ -89,8 +89,8 @@ Consts.LIST_BUTTON_ICON_SIZE = 20
 Consts.SLIDER_DEFAULT_WIDTH = 16
 Consts.THUMB_DEFAULT_HEIGHT = 32
 
--- TextField
-Consts.TEXT_FIELD_MIN_WIDTH = 150
+-- EditBox
+Consts.EDIT_BOX_MIN_WIDTH = 75
 
 -- ScrollFrame
 Consts.SCROLL_FRAME_MIN_HEIGHT = 100
@@ -271,9 +271,9 @@ function Consts:BuildSuitables()
   end
 
   -- Generic suitables
-  self.SUITABLE_ARMOR[LE_ITEM_ARMOR_GENERIC] = true
+  self.SUITABLE_ARMOR[LE_ITEM_ARMOR_GENERIC] = true -- Miscellaneous
   self.SUITABLE_ARMOR[LE_ITEM_ARMOR_COSMETIC] = true
 
-  self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_GENERIC] = true
+  self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_GENERIC] = true -- Miscellaneous
   self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_FISHINGPOLE] = true
 end

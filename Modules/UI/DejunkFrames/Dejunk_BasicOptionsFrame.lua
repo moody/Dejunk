@@ -48,7 +48,7 @@ end
 
 -- @Override
 function BasicOptionsFrame:OnDeinitialize()
-  for i=1, #self.Frames do self.Frames[i] = nil end
+  for k in pairs(self.Frames) do self.Frames[k] = nil end
 end
 
 --[[
@@ -184,6 +184,10 @@ function BasicOptionsFrame:CreateSellOptions()
   -- Unsuitable Equipment
   options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
     L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable)
+
+  -- Equipment below ilvl
+  options[#options+1] = FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
+    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL)
 
   for i=1, #options do
     ui.SellOptionsFrame:AddOption(options[i])
