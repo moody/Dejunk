@@ -23,51 +23,57 @@ local AddonName, DJ = ...
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
+-- Upvalues
+local GetItemClassInfo, GetItemSubClassInfo = GetItemClassInfo, GetItemSubClassInfo
+
 -- Dejunk
 local Consts = DJ.Consts
 
 -- Called from Dejunk_Core during the PLAYER_ENTERING_WORLD event.
 function Consts:Initialize()
   if self.Initialized then return end
+  self.Initialized = true
 
+  -- Player class
   self.PLAYER_CLASS = select(2, UnitClass("PLAYER"))
   self:BuildSuitables()
 
-  self.Initialized = true
+  -- Item classes
+  self.BATTLEPET_CLASS = GetItemClassInfo(LE_ITEM_CLASS_BATTLEPET)
+  self.CONSUMABLE_CLASS = GetItemClassInfo(LE_ITEM_CLASS_CONSUMABLE)
+  self.GEM_CLASS = GetItemClassInfo(LE_ITEM_CLASS_GEM)
+  self.GLYPH_CLASS = GetItemClassInfo(LE_ITEM_CLASS_GLYPH)
+  self.ITEM_ENHANCEMENT_CLASS = GetItemClassInfo(LE_ITEM_CLASS_ITEM_ENHANCEMENT)
+  self.RECIPE_CLASS = GetItemClassInfo(LE_ITEM_CLASS_RECIPE)
+  self.TRADEGOODS_CLASS = GetItemClassInfo(LE_ITEM_CLASS_TRADEGOODS)
+
+  -- Item subclasses
+  self.COMPANION_SUBCLASS = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2)
+
+  -- Armor class and subclasses
+  self.ARMOR_CLASS = GetItemClassInfo(LE_ITEM_CLASS_ARMOR)
+  self.ARMOR_SUBCLASSES = {}
+  for i=0, (NUM_LE_ITEM_ARMORS - 1) do -- Add localized armor types to the table
+    local name = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, i)
+    self.ARMOR_SUBCLASSES[name] = i
+  end
+
+  -- Weapon class and subclasses
+  self.WEAPON_CLASS = GetItemClassInfo(LE_ITEM_CLASS_WEAPON)
+  self.WEAPON_SUBCLASSES = {}
+  for i=0, (NUM_LE_ITEM_WEAPONS - 1) do -- Add localized weapon types to the table
+    local name = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, i)
+    self.WEAPON_SUBCLASSES[name] = i
+  end
 end
 
 --[[
 //*******************************************************************
-//  					    			    Filter Constants
+//  					    			    General Constants
 //*******************************************************************
 --]]
 
 Consts.SAFE_MODE_MAX = 12
-
--- Item classes and subclasses
-Consts.BATTLEPET_CLASS = GetItemClassInfo(LE_ITEM_CLASS_BATTLEPET)
-Consts.CONSUMABLE_CLASS = GetItemClassInfo(LE_ITEM_CLASS_CONSUMABLE)
-Consts.GEM_CLASS = GetItemClassInfo(LE_ITEM_CLASS_GEM)
-Consts.GLYPH_CLASS = GetItemClassInfo(LE_ITEM_CLASS_GLYPH)
-Consts.ITEM_ENHANCEMENT_CLASS = GetItemClassInfo(LE_ITEM_CLASS_ITEM_ENHANCEMENT)
-Consts.RECIPE_CLASS = GetItemClassInfo(LE_ITEM_CLASS_RECIPE)
-Consts.TRADEGOODS_CLASS = GetItemClassInfo(LE_ITEM_CLASS_TRADEGOODS)
-
-Consts.COMPANION_SUBCLASS = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2)
-
-Consts.ARMOR_CLASS = GetItemClassInfo(LE_ITEM_CLASS_ARMOR)
-Consts.ARMOR_SUBCLASSES = {}
-for i=0, (NUM_LE_ITEM_ARMORS - 1) do -- Add localized armor types to the table
-  local name = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, i)
-  Consts.ARMOR_SUBCLASSES[name] = i
-end
-
-Consts.WEAPON_CLASS = GetItemClassInfo(LE_ITEM_CLASS_WEAPON)
-Consts.WEAPON_SUBCLASSES = {}
-for i=0, (NUM_LE_ITEM_WEAPONS - 1) do -- Add localized weapon types to the table
-  local name = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, i)
-  Consts.WEAPON_SUBCLASSES[name] = i
-end
 
 --[[
 //*******************************************************************
@@ -75,9 +81,11 @@ end
 //*******************************************************************
 --]]
 
+-- ParentFrame (these aren't used much, might remove in the future)
 Consts.MIN_WIDTH = 685
 Consts.MIN_HEIGHT = 390
 
+-- The padding function exists in Tools. Is that dumb? Probably.
 Consts.PADDING = 10
 
 -- List

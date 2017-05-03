@@ -45,20 +45,14 @@ local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
 
 function coreFrame:OnEvent(event, ...)
-  if (event == "ADDON_LOADED") then
-    if (... == AddonName) then
-      self:UnregisterEvent(event)
-      Core:Initialize()
-    end
-  elseif (event == "PLAYER_ENTERING_WORLD") then
+  if (event == "PLAYER_LOGIN") then
     self:UnregisterEvent(event)
-    DJ.Consts:Initialize()
+    Core:Initialize()
   end
 end
 
 coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-coreFrame:RegisterEvent("ADDON_LOADED")
-coreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+coreFrame:RegisterEvent("PLAYER_LOGIN")
 
 --[[
 //*******************************************************************
@@ -66,21 +60,19 @@ coreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 //*******************************************************************
 --]]
 
--- Initializes all modules.
+-- Initializes modules.
 function Core:Initialize()
   DejunkDB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
+  DJ.Consts:Initialize()
   DJ.MerchantButton:Initialize()
   DJ.MinimapIcon:Initialize()
-
-  ParentFrame:Initialize()
-  ParentFrame:SetCurrentChild(BasicChildFrame)
 
   -- Setup slash command
 	SLASH_DEJUNK1 = "/dejunk"
 	SlashCmdList["DEJUNK"] = function (msg, editBox)
-		ParentFrame:Toggle() end
+		self:ToggleGUI() end
 end
 
 -- Prints a formatted message ("[Dejunk] msg").
@@ -104,16 +96,23 @@ local previousChild = nil
 
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
+  if not ParentFrame.Initialized then
+    ParentFrame:Initialize()
+    ParentFrame:SetCurrentChild(BasicChildFrame)
+  end
+
   ParentFrame:Toggle()
 end
 
 -- Enables Dejunk's GUI.
 function Core:EnableGUI()
+  if not ParentFrame.Initialized then return end
   ParentFrame:Enable()
 end
 
 -- Disables Dejunk's GUI.
 function Core:DisableGUI()
+  if not ParentFrame.Initialized then return end
   ParentFrame:Disable()
 end
 

@@ -31,10 +31,6 @@ local Tools = DJ.Tools
 local DejunkDB = DJ.DejunkDB
 local FrameFactory = DJ.FrameFactory
 
--- Variables
-BasicOptionsFrame.Frames = {}
-local ui = BasicOptionsFrame.UI
-
 --[[
 //*******************************************************************
 //                       Init/Deinit Functions
@@ -46,11 +42,6 @@ function BasicOptionsFrame:OnInitialize()
   self:CreateOptions()
 end
 
--- @Override
-function BasicOptionsFrame:OnDeinitialize()
-  for k in pairs(self.Frames) do self.Frames[k] = nil end
-end
-
 --[[
 //*******************************************************************
 //                       General Frame Functions
@@ -59,25 +50,33 @@ end
 
 -- @Override
 function BasicOptionsFrame:Resize()
+  local ui = self.UI
+
   local newWidth = 0
   local newHeight = 0
 
+  local frames = {
+    ui.GeneralOptionsFrame,
+    ui.SellOptionsFrame,
+    ui.IgnoreOptionsFrame,
+  }
+
   -- Get largest width and height of options frames
-  for i, v in ipairs(self.Frames) do
+  for i, v in ipairs(frames) do
     v:Resize()
     newWidth = max(newWidth, v:GetWidth())
     newHeight = max(newHeight, v:GetHeight())
   end
 
   -- Even the sizes of the frames
-  for i, v in ipairs(self.Frames) do
+  for i, v in ipairs(frames) do
     v:SetWidth(newWidth)
     v:SetHeight(newHeight)
   end
 
   -- Resize positioner to keep frames centered
-  newWidth = Tools:Measure(ui.Frame, self.Frames[1],
-    self.Frames[#self.Frames], "LEFT", "RIGHT")
+  newWidth = Tools:Measure(ui.Frame, frames[1],
+    frames[#frames], "LEFT", "RIGHT")
   ui.OptionsPositioner:SetWidth(newWidth)
 
   -- Add left and right side padding
@@ -101,16 +100,24 @@ do -- Hook SetWidth
     setWidth(self, width)
 
     if (width > oldWidth) then -- resize options frames
-      local pad = Tools:Padding(2) + ((#self.Frames - 1) * Tools:Padding());
-      local newWidth = ((width - pad) / #self.Frames)
+      local ui = self.UI
+
+      local frames = {
+        ui.GeneralOptionsFrame,
+        ui.SellOptionsFrame,
+        ui.IgnoreOptionsFrame,
+      }
+
+      local pad = Tools:Padding(2) + ((#frames - 1) * Tools:Padding());
+      local newWidth = ((width - pad) / #frames)
 
       -- Even the widths of the frames
-      for i, v in ipairs(self.Frames) do
+      for i, v in ipairs(frames) do
         v:SetWidth(newWidth) end
 
       -- Resize positioner to keep frames centered
       newWidth = Tools:Measure(ui.Frame,
-        self.Frames[1], self.Frames[#self.Frames], "LEFT", "RIGHT")
+        frames[1], frames[#frames], "LEFT", "RIGHT")
       ui.OptionsPositioner:SetWidth(newWidth)
     end
   end
@@ -123,6 +130,8 @@ end
 --]]
 
 function BasicOptionsFrame:CreateOptions()
+  local ui = self.UI
+
   ui.OptionsPositioner = FrameFactory:CreateTexture(ui.Frame)
   ui.OptionsPositioner:ClearAllPoints()
   ui.OptionsPositioner:SetPoint("TOP")
@@ -133,106 +142,114 @@ function BasicOptionsFrame:CreateOptions()
 end
 
 function BasicOptionsFrame:CreateGeneralOptions()
+  local ui = self.UI
+
   ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.GENERAL_TEXT, "GameFontNormal")
   ui.GeneralOptionsFrame:SetPoint("TOPLEFT", ui.OptionsPositioner)
-  self.Frames[#self.Frames+1] = ui.GeneralOptionsFrame
 
-  local options = {}
-
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, DejunkDB.AutoRepair)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.SAFE_MODE_TEXT, Colors.LabelText, L.SAFE_MODE_TOOLTIP, DejunkDB.SafeMode)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode)
-
-  for i=1, #options do
-    ui.GeneralOptionsFrame:AddOption(options[i])
+  local add = function(option)
+    ui.GeneralOptionsFrame:AddOption(option)
   end
+
+  -- Auto sell
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell))
+
+  -- Auto repair
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, DejunkDB.AutoRepair))
+
+  -- Safe mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.SAFE_MODE_TEXT, Colors.LabelText, L.SAFE_MODE_TOOLTIP, DejunkDB.SafeMode))
+
+  -- Silent mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
 end
 
 function BasicOptionsFrame:CreateSellOptions()
+  local ui = self.UI
+
   ui.SellOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.SELL_TEXT, "GameFontNormal")
   ui.SellOptionsFrame:SetPoint("TOPLEFT", ui.GeneralOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
-  self.Frames[#self.Frames+1] = ui.SellOptionsFrame
 
-  local options = {}
+  local add = function(option)
+    ui.SellOptionsFrame:AddOption(option)
+  end
 
   -- By Quality text
   local byQuality = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byQuality:SetText(L.BY_QUALITY_TEXT)
-  options[#options+1] = byQuality
+  add(byQuality)
 
   -- Sell by quality check buttons
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, L.SELL_ALL_TOOLTIP, DejunkDB.SellPoor)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.COMMON_TEXT, Colors.Common, L.SELL_ALL_TOOLTIP, DejunkDB.SellCommon)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.UNCOMMON_TEXT, Colors.Uncommon, L.SELL_ALL_TOOLTIP, DejunkDB.SellUncommon)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.RARE_TEXT, Colors.Rare, L.SELL_ALL_TOOLTIP, DejunkDB.SellRare)
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.POOR_TEXT, Colors.Poor, L.SELL_ALL_TOOLTIP, DejunkDB.SellPoor))
+
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.COMMON_TEXT, Colors.Common, L.SELL_ALL_TOOLTIP, DejunkDB.SellCommon))
+
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.UNCOMMON_TEXT, Colors.Uncommon, L.SELL_ALL_TOOLTIP, DejunkDB.SellUncommon))
+
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.RARE_TEXT, Colors.Rare, L.SELL_ALL_TOOLTIP, DejunkDB.SellRare))
+
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic))
 
   -- By Type text
   local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)
-  options[#options+1] = byType
+  add(byType)
 
   -- Unsuitable Equipment
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable))
 
   -- Equipment below ilvl
-  options[#options+1] = FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
-    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL)
-
-  for i=1, #options do
-    ui.SellOptionsFrame:AddOption(options[i])
-  end
+  add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
+    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL))
 end
 
 function BasicOptionsFrame:CreateIgnoreOptions()
+  local ui = self.UI
+
   ui.IgnoreOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.IGNORE_TEXT, "GameFontNormal")
   ui.IgnoreOptionsFrame:SetPoint("TOPLEFT", ui.SellOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
-  self.Frames[#self.Frames+1] = ui.IgnoreOptionsFrame
 
-  local options = {}
+  local add = function(option)
+    ui.IgnoreOptionsFrame:AddOption(option)
+  end
 
   -- By Type text
   local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)
-  options[#options+1] = byType
+  add(byType)
 
   -- Battle Pets
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_BATTLEPETS_TEXT, Colors.LabelText, L.IGNORE_BATTLEPETS_TOOLTIP, DejunkDB.IgnoreBattlePets)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_BATTLEPETS_TEXT, Colors.LabelText, L.IGNORE_BATTLEPETS_TOOLTIP, DejunkDB.IgnoreBattlePets))
   -- Consumables
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_CONSUMABLES_TEXT, Colors.LabelText, L.IGNORE_CONSUMABLES_TOOLTIP, DejunkDB.IgnoreConsumables)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_CONSUMABLES_TEXT, Colors.LabelText, L.IGNORE_CONSUMABLES_TOOLTIP, DejunkDB.IgnoreConsumables))
   -- Gems
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_GEMS_TEXT, Colors.LabelText, L.IGNORE_GEMS_TOOLTIP, DejunkDB.IgnoreGems)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_GEMS_TEXT, Colors.LabelText, L.IGNORE_GEMS_TOOLTIP, DejunkDB.IgnoreGems))
   -- Glyphs
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_GLYPHS_TEXT, Colors.LabelText, L.IGNORE_GLYPHS_TOOLTIP, DejunkDB.IgnoreGlyphs)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_GLYPHS_TEXT, Colors.LabelText, L.IGNORE_GLYPHS_TOOLTIP, DejunkDB.IgnoreGlyphs))
   -- Item Enhancements
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_ITEM_ENHANCEMENTS_TEXT, Colors.LabelText, L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP, DejunkDB.IgnoreItemEnhancements)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_ITEM_ENHANCEMENTS_TEXT, Colors.LabelText, L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP, DejunkDB.IgnoreItemEnhancements))
   -- Recipes
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_RECIPES_TEXT, Colors.LabelText, L.IGNORE_RECIPES_TOOLTIP, DejunkDB.IgnoreRecipes)
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_RECIPES_TEXT, Colors.LabelText, L.IGNORE_RECIPES_TOOLTIP, DejunkDB.IgnoreRecipes))
   -- Trade Goods
-  options[#options+1] = FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods)
-
-  for i=1, #options do
-    ui.IgnoreOptionsFrame:AddOption(options[i])
-  end
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods))
 end
