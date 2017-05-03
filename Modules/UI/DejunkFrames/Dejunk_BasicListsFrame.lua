@@ -84,17 +84,17 @@ function BasicListsFrame:CreateListFrames()
   listName = ListManager.Inclusions
   tooltip = format("%s|n|n%s", L.INCLUSIONS_TOOLTIP, baseTooltip)
 
-  ui.InclusionsFrame = FrameFactory:CreateListFrame(ui.Frame, listName,
+  ui.InclusionsFrame = FrameFactory:CreateListFrame(self.Frame, listName,
     buttonCount, L.INCLUSIONS_TEXT, Colors.Inclusions, Colors.InclusionsHi, tooltip)
   ui.InclusionsFrame:SetPoint("TOPLEFT", Tools:Padding(), 0)
-  ui.InclusionsFrame:SetPoint("TOPRIGHT", ui.Frame, "TOP", -Tools:Padding(0.5), 0)
+  ui.InclusionsFrame:SetPoint("TOPRIGHT", self.Frame, "TOP", -Tools:Padding(0.5), 0)
 
   -- Exclusions
   listName = ListManager.Exclusions
   tooltip = format("%s|n|n%s", L.EXCLUSIONS_TOOLTIP, baseTooltip)
 
-  ui.ExclusionsFrame = FrameFactory:CreateListFrame(ui.Frame, listName,
+  ui.ExclusionsFrame = FrameFactory:CreateListFrame(self.Frame, listName,
     buttonCount, L.EXCLUSIONS_TEXT, Colors.Exclusions, Colors.ExclusionsHi, tooltip)
   ui.ExclusionsFrame:SetPoint("TOPRIGHT", -Tools:Padding(), 0)
-  ui.ExclusionsFrame:SetPoint("TOPLEFT", ui.Frame, "TOP", Tools:Padding(0.5), 0)
+  ui.ExclusionsFrame:SetPoint("TOPLEFT", self.Frame, "TOP", Tools:Padding(0.5), 0)
 end

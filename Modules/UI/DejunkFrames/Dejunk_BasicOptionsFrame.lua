@@ -75,7 +75,7 @@ function BasicOptionsFrame:Resize()
   end
 
   -- Resize positioner to keep frames centered
-  newWidth = Tools:Measure(ui.Frame, frames[1],
+  newWidth = Tools:Measure(self.Frame, frames[1],
     frames[#frames], "LEFT", "RIGHT")
   ui.OptionsPositioner:SetWidth(newWidth)
 
@@ -116,7 +116,7 @@ do -- Hook SetWidth
         v:SetWidth(newWidth) end
 
       -- Resize positioner to keep frames centered
-      newWidth = Tools:Measure(ui.Frame,
+      newWidth = Tools:Measure(self.Frame,
         frames[1], frames[#frames], "LEFT", "RIGHT")
       ui.OptionsPositioner:SetWidth(newWidth)
     end
@@ -132,7 +132,7 @@ end
 function BasicOptionsFrame:CreateOptions()
   local ui = self.UI
 
-  ui.OptionsPositioner = FrameFactory:CreateTexture(ui.Frame)
+  ui.OptionsPositioner = FrameFactory:CreateTexture(self.Frame)
   ui.OptionsPositioner:ClearAllPoints()
   ui.OptionsPositioner:SetPoint("TOP")
 
@@ -144,7 +144,7 @@ end
 function BasicOptionsFrame:CreateGeneralOptions()
   local ui = self.UI
 
-  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.GENERAL_TEXT, "GameFontNormal")
+  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.GENERAL_TEXT, "GameFontNormal")
   ui.GeneralOptionsFrame:SetPoint("TOPLEFT", ui.OptionsPositioner)
 
   local add = function(option)
@@ -171,7 +171,7 @@ end
 function BasicOptionsFrame:CreateSellOptions()
   local ui = self.UI
 
-  ui.SellOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.SELL_TEXT, "GameFontNormal")
+  ui.SellOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.SELL_TEXT, "GameFontNormal")
   ui.SellOptionsFrame:SetPoint("TOPLEFT", ui.GeneralOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
 
   local add = function(option)
@@ -218,7 +218,7 @@ end
 function BasicOptionsFrame:CreateIgnoreOptions()
   local ui = self.UI
 
-  ui.IgnoreOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(ui.Frame, L.IGNORE_TEXT, "GameFontNormal")
+  ui.IgnoreOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.IGNORE_TEXT, "GameFontNormal")
   ui.IgnoreOptionsFrame:SetPoint("TOPLEFT", ui.SellOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
 
   local add = function(option)

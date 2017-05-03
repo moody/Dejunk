@@ -38,8 +38,13 @@ function DejunkFrameMixin:Initialize()
   if self.Initialized then return end
   self.Initialized = true
 
-  if not self.UI then self.UI = {} end
-  self.UI.Frame = FrameFactory:CreateFrame()
+  if not self.UI then
+    self.UI = {}
+  end
+
+  if not self.Frame then
+    self.Frame = FrameFactory:CreateFrame()
+  end
 
   self:OnInitialize()
 end
@@ -68,17 +73,17 @@ function DejunkFrameMixin:OnDeinitialize() end
 
 -- Displays the frame.
 function DejunkFrameMixin:Show()
-  self.UI.Frame:Show()
+  self.Frame:Show()
 end
 
 -- Hides the frame.
 function DejunkFrameMixin:Hide()
-  self.UI.Frame:Hide()
+  self.Frame:Hide()
 end
 
 -- Toggles the frame.
 function DejunkFrameMixin:Toggle()
-  if not self.UI.Frame:IsVisible() then
+  if not self.Frame:IsVisible() then
     self:Show()
   else
     self:Hide()
@@ -112,38 +117,38 @@ function DejunkFrameMixin:Resize() end
 -- Gets the width of the frame.
 -- @return - the width of the frame
 function DejunkFrameMixin:GetWidth()
-  return self.UI.Frame:GetWidth()
+  return self.Frame:GetWidth()
 end
 
 -- Sets the width of the frame.
 -- @param width - the new width
 function DejunkFrameMixin:SetWidth(width)
-  self.UI.Frame:SetWidth(width)
+  self.Frame:SetWidth(width)
 end
 
 -- Gets the height of the frame.
 -- @return - the height of the frame
 function DejunkFrameMixin:GetHeight()
-  return self.UI.Frame:GetHeight()
+  return self.Frame:GetHeight()
 end
 
 -- Sets the height of the frame.
 -- @param height - the new height
 function DejunkFrameMixin:SetHeight(height)
-  self.UI.Frame:SetHeight(height)
+  self.Frame:SetHeight(height)
 end
 
 -- Sets the parent of the frame.
 -- @param parent - the new parent
 function DejunkFrameMixin:SetParent(parent)
-  self.UI.Frame:SetParent(parent)
+  self.Frame:SetParent(parent)
 end
 
 -- Sets the point of the frame.
 -- @param point - the new point
 function DejunkFrameMixin:SetPoint(...)
-  self.UI.Frame:ClearAllPoints()
-  self.UI.Frame:SetPoint(unpack(...))
+  self.Frame:ClearAllPoints()
+  self.Frame:SetPoint(unpack(...))
 end
 
 -- Perform mixins

@@ -172,27 +172,28 @@ end
 
 -- Creates the components that make up the transport frame.
 function TransportChildFrame:CreateTransportFrame()
+  local frame = self.Frame
   local ui = self.UI
 
   -- Title
-  ui.TitleFontString = FrameFactory:CreateFontString(ui.Frame, nil, "GameFontNormalHuge", Colors.LabelText)
+  ui.TitleFontString = FrameFactory:CreateFontString(frame, nil, "GameFontNormalHuge", Colors.LabelText)
   ui.TitleFontString:SetPoint("TOP")
 
   -- Left button
-  ui.LeftButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormalSmall")
+  ui.LeftButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall")
   ui.LeftButton:SetPoint("BOTTOMLEFT", Tools:Padding(), 0)
-  ui.LeftButton:SetPoint("BOTTOMRIGHT", ui.Frame, "BOTTOM", -Tools:Padding(0.25), 0)
+  ui.LeftButton:SetPoint("BOTTOMRIGHT", frame, "BOTTOM", -Tools:Padding(0.25), 0)
 
   -- Back button
-  ui.BackButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormalSmall", L.BACK_TEXT)
+  ui.BackButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall", L.BACK_TEXT)
   ui.BackButton:SetPoint("BOTTOMRIGHT", -Tools:Padding(), 0)
-  ui.BackButton:SetPoint("BOTTOMLEFT", ui.Frame, "BOTTOM", Tools:Padding(0.25), 0)
+  ui.BackButton:SetPoint("BOTTOMLEFT", frame, "BOTTOM", Tools:Padding(0.25), 0)
   ui.BackButton:SetScript("OnClick", function(self, button, down)
     Core:ShowPreviousChild()
   end)
 
   -- Text frame
-  ui.TextField = FrameFactory:CreateTextField(ui.Frame, "GameFontNormal")
+  ui.TextField = FrameFactory:CreateTextField(frame, "GameFontNormal")
   ui.TextField:SetPoint("BOTTOMLEFT", ui.LeftButton, "TOPLEFT", 0, Tools:Padding())
   ui.TextField:SetPoint("BOTTOMRIGHT", ui.BackButton, "TOPRIGHT", 0, Tools:Padding())
 end
