@@ -42,9 +42,7 @@ function DejunkFrameMixin:Initialize()
     self.UI = {}
   end
 
-  if not self.Frame then
-    self.Frame = FrameFactory:CreateFrame()
-  end
+  self.Frame = FrameFactory:CreateFrame()
 
   self:OnInitialize()
 end
@@ -60,6 +58,9 @@ function DejunkFrameMixin:Deinitialize()
   self:OnDeinitialize()
 
   FrameFactory:ReleaseUI(self.UI)
+
+  self.Frame:Release()
+  self.Frame = nil
 end
 
 -- Additional deinitialize logic. Override when necessary.

@@ -373,17 +373,21 @@ function ListManager:ParseList(listName)
     list = self.ExclusionsList
   end
 
+  local canBeSold = function(item)
+    if Tools:ItemCanBeSold(item.Price, item.Quality) then
+      return true end
+
+    sv[item.ItemID] = nil
+    toAdd[item.ItemID] = nil
+    Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.Link))
+    return false
+  end
+
+  -- Parse items
   for itemID in pairs(toAdd) do
     local item = Tools:GetItemByID(itemID)
 
-    if item then
-      if not Tools:ItemCanBeSold(item.Price, item.Quality) then
-        sv[itemID] = nil
-        toAdd[itemID] = nil
-        Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.Link))
-        return
-      end
-
+    if item and canBeSold(item) then
       -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
       if not sv[itemID] then
         sv[itemID] = true
@@ -404,8 +408,8 @@ function ListManager:ParseList(listName)
 
       parseFrame.AttemptsToParse[itemID] = attempts
     end
-
-    -- Sort the list once all items have been parsed
-    if not next(toAdd) then ListManager:SortList(list) end
   end
+
+  -- Sort the list once all items have been parsed
+  if not next(toAdd) then ListManager:SortList(list) end
 end

@@ -53,15 +53,17 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
 
   -- Initialize points
   checkButton:SetPoint("TOPLEFT")
-  editBoxFrame:SetPoint("TOPLEFT", checkButton, "BOTTOMLEFT", Tools:Padding(), 0)
+  editBoxFrame:SetPoint("BOTTOMLEFT", Tools:Padding(2), 0)
+  editBoxFrame:SetPoint("BOTTOMRIGHT", -Tools:Padding(2), 0)
 
   -- CheckButton
   checkButton:SetScript("OnClick", function(self)
-    DejunkDB.SV[svKey].Enabled = self:GetChecked() end)
+    local checked = self:GetChecked()
+    DejunkDB.SV[svKey].Enabled = checked
+    editBoxFrame.EditBox:SetEnabled(checked)
+  end)
 
   -- EditBox
-  editBoxFrame.EditBox:SetScript("OnUpdate", function(self, elapsed)
-    self:SetEnabled(checkButton:GetChecked()) end)
   editBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
     local value = tonumber(self:GetText())
     if value then DejunkDB.SV[svKey].Value = floor(abs(value)) end
@@ -91,7 +93,9 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
     checkButton:Refresh()
     editBoxFrame:Refresh()
 
-    checkButton:SetChecked(DejunkDB.SV[svKey].Enabled)
+    local enabled = DejunkDB.SV[svKey].Enabled
+    checkButton:SetChecked(enabled)
+    editBoxFrame.EditBox:SetEnabled(enabled)
     editBoxFrame.EditBox:SetText(DejunkDB.SV[svKey].Value)
   end
 

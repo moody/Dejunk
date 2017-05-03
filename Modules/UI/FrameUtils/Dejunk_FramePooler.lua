@@ -21,7 +21,7 @@ This file is part of Dejunk.
 local AddonName, DJ = ...
 
 -- Upvalues
-local assert, pairs, pcall, remove = assert, pairs, pcall, table.remove
+local pairs, pcall, next = pairs, pcall, next
 local CreateFrame, UIParent = CreateFrame, UIParent
 
 -- Dejunk
@@ -78,8 +78,10 @@ function FramePooler:GenericReset(frame)
     frame:SetClipsChildren(false)
   end
 
-  frame:SetParent(UIParent)
   frame:ClearAllPoints()
+  frame:SetParent(UIParent)
+  frame:SetWidth(0)
+  frame:SetHeight(0)
   frame:SetAlpha(1)
   frame:Hide()
 
@@ -112,10 +114,10 @@ FramePooler.FrameCount = 0
 function FramePooler:CreateFrame(parent)
   -- Check the pool for an existing resource
   local pool = self.FramePool
-  local frame = remove(pool)
+  local frame = next(pool)
 
   if frame then
-    frame:Show()
+    pool[frame] = nil
     frame:SetParent(parent)
   else -- create new resource
     self.FrameCount = (self.FrameCount + 1)
@@ -130,9 +132,10 @@ function FramePooler:CreateFrame(parent)
     self:RegisterForDrag() -- no arg disables dragging
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  frame:Show()
   return frame
 end
 
@@ -151,10 +154,10 @@ FramePooler.ButtonCount = 0
 function FramePooler:CreateButton(parent)
   -- Check the pool for an existing resource
   local pool = self.ButtonPool
-  local button = remove(pool)
+  local button = next(pool)
 
   if button then
-    button:Show()
+    pool[button] = nil
     button:SetParent(parent)
   else -- create new resource
     self.ButtonCount = (self.ButtonCount + 1)
@@ -169,9 +172,10 @@ function FramePooler:CreateButton(parent)
     self:RegisterForClicks(nil)
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  button:Show()
   return button
 end
 
@@ -190,10 +194,10 @@ FramePooler.CheckButtonCount = 0
 function FramePooler:CreateCheckButton(parent)
   -- Check the pool for an existing resource
   local pool = self.CheckButtonPool
-  local checkButton = remove(pool)
+  local checkButton = next(pool)
 
   if checkButton then
-    checkButton:Show()
+    pool[checkButton] = nil
     checkButton:SetParent(parent)
   else -- create new resource
     self.CheckButtonCount = (self.CheckButtonCount + 1)
@@ -206,9 +210,10 @@ function FramePooler:CreateCheckButton(parent)
     self:SetChecked(false)
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  checkButton:Show()
   return checkButton
 end
 
@@ -229,10 +234,10 @@ FramePooler.TextureCount = 0
 function FramePooler:CreateTexture(parent, layer, color)
   -- Check the pool for an existing resource
   local pool = self.TexturePool
-  local texture = remove(pool)
+  local texture = next(pool)
 
   if texture then
-    texture:Show()
+    pool[texture] = nil
     texture:SetParent(parent)
     texture:SetDrawLayer(layer or "BACKGROUND")
   else -- create new resource
@@ -255,9 +260,10 @@ function FramePooler:CreateTexture(parent, layer, color)
     self:SetColorTexture(0, 0, 0, 0)
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  texture:Show()
   return texture
 end
 
@@ -281,10 +287,10 @@ FramePooler.FontStringCount = 0
 function FramePooler:CreateFontString(parent, layer, font, color, shadowOffset, shadowColor)
   -- Check the pool for an existing resource
   local pool = self.FontStringPool
-  local fontString = remove(pool)
+  local fontString = next(pool)
 
   if fontString then
-    fontString:Show()
+    pool[fontString] = nil
     fontString:SetParent(parent)
     fontString:SetDrawLayer(layer or "OVERLAY")
     fontString:SetFontObject(font or "GameFontNormal")
@@ -312,9 +318,10 @@ function FramePooler:CreateFontString(parent, layer, font, color, shadowOffset, 
     self:SetJustifyV("CENTER")
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  fontString:Show()
   return fontString
 end
 
@@ -333,10 +340,10 @@ FramePooler.ScrollFrameCount = 0
 function FramePooler:CreateScrollFrame(parent)
   -- Check the pool for an existing resource
   local pool = self.ScrollFramePool
-  local scrollFrame = remove(pool)
+  local scrollFrame = next(pool)
 
   if scrollFrame then
-    scrollFrame:Show()
+    pool[scrollFrame] = nil
     scrollFrame:SetParent(parent)
   else -- create new resource
     self.ScrollFrameCount = (self.ScrollFrameCount + 1)
@@ -349,9 +356,10 @@ function FramePooler:CreateScrollFrame(parent)
   -- Releases the object back into the pool.
   function scrollFrame:Release()
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  scrollFrame:Show()
   return scrollFrame
 end
 
@@ -370,10 +378,10 @@ FramePooler.SliderCount = 0
 function FramePooler:CreateSlider(parent)
   -- Check the pool for an existing resource
   local pool = self.SliderPool
-  local slider = remove(pool)
+  local slider = next(pool)
 
   if slider then
-    slider:Show()
+    pool[slider] = nil
     slider:SetParent(parent)
   else -- create new resource
     self.SliderCount = (self.SliderCount + 1)
@@ -388,9 +396,10 @@ function FramePooler:CreateSlider(parent)
     self:SetValue(0)
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
+  slider:Show()
   return slider
 end
 
@@ -409,11 +418,12 @@ FramePooler.EditBoxCount = 0
 function FramePooler:CreateEditBox(parent, font, color, maxLetters)
   -- Check the pool for an existing resource
   local pool = self.EditBoxPool
-  local editBox = remove(pool)
+  local editBox = next(pool)
 
   if editBox then
-    editBox:Show()
+    pool[editBox] = nil
     editBox:SetParent(parent)
+    editBox:Show()
   else -- create new resource
     self.EditBoxCount = (self.EditBoxCount + 1)
     local name = (AddonName.."EditBox"..self.EditBoxCount)
@@ -433,15 +443,12 @@ function FramePooler:CreateEditBox(parent, font, color, maxLetters)
 
   -- Releases the object back into the pool.
   function editBox:Release()
-    self:SetText("")
-    self:SetTextColor(1, 1, 1, 1)
-    self:SetMultiLine(false)
-    self:SetAutoFocus(false)
-    self:HighlightText(0, 0)
-    self:ClearFocus()
+    editBox:SetText("")
+    editBox:SetMultiLine(false)
+    editBox:HighlightText(0, 0)
 
     FramePooler:GenericReset(self)
-    pool[#pool+1] = self
+    pool[self] = true
   end
 
   return editBox

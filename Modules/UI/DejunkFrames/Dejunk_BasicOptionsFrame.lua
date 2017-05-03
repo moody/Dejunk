@@ -31,6 +31,9 @@ local Tools = DJ.Tools
 local DejunkDB = DJ.DejunkDB
 local FrameFactory = DJ.FrameFactory
 
+-- Variables
+BasicOptionsFrame.OptionFrames = {}
+
 --[[
 //*******************************************************************
 //                       Init/Deinit Functions
@@ -42,6 +45,12 @@ function BasicOptionsFrame:OnInitialize()
   self:CreateOptions()
 end
 
+-- @Override
+function BasicOptionsFrame:OnDeinitialize()
+  for k in pairs(self.OptionFrames) do
+    self.OptionFrames[k] = nil end
+end
+
 --[[
 //*******************************************************************
 //                       General Frame Functions
@@ -51,32 +60,27 @@ end
 -- @Override
 function BasicOptionsFrame:Resize()
   local ui = self.UI
+  local frames = self.OptionFrames
 
   local newWidth = 0
   local newHeight = 0
 
-  local frames = {
-    ui.GeneralOptionsFrame,
-    ui.SellOptionsFrame,
-    ui.IgnoreOptionsFrame,
-  }
-
   -- Get largest width and height of options frames
-  for i, v in ipairs(frames) do
+  for k, v in pairs(frames) do
     v:Resize()
     newWidth = max(newWidth, v:GetWidth())
     newHeight = max(newHeight, v:GetHeight())
   end
 
   -- Even the sizes of the frames
-  for i, v in ipairs(frames) do
+  for k, v in pairs(frames) do
     v:SetWidth(newWidth)
     v:SetHeight(newHeight)
   end
 
   -- Resize positioner to keep frames centered
-  newWidth = Tools:Measure(self.Frame, frames[1],
-    frames[#frames], "LEFT", "RIGHT")
+  newWidth = Tools:Measure(self.Frame, ui.GeneralOptionsFrame,
+    ui.IgnoreOptionsFrame, "LEFT", "RIGHT")
   ui.OptionsPositioner:SetWidth(newWidth)
 
   -- Add left and right side padding
@@ -101,23 +105,19 @@ do -- Hook SetWidth
 
     if (width > oldWidth) then -- resize options frames
       local ui = self.UI
-
-      local frames = {
-        ui.GeneralOptionsFrame,
-        ui.SellOptionsFrame,
-        ui.IgnoreOptionsFrame,
-      }
+      local frames = self.OptionFrames
 
       local pad = Tools:Padding(2) + ((#frames - 1) * Tools:Padding());
       local newWidth = ((width - pad) / #frames)
 
       -- Even the widths of the frames
-      for i, v in ipairs(frames) do
-        v:SetWidth(newWidth) end
+      for k, v in pairs(frames) do
+        v:SetWidth(newWidth)
+      end
 
       -- Resize positioner to keep frames centered
-      newWidth = Tools:Measure(self.Frame,
-        frames[1], frames[#frames], "LEFT", "RIGHT")
+      newWidth = Tools:Measure(self.Frame, ui.GeneralOptionsFrame,
+        ui.IgnoreOptionsFrame, "LEFT", "RIGHT")
       ui.OptionsPositioner:SetWidth(newWidth)
     end
   end
@@ -136,19 +136,26 @@ function BasicOptionsFrame:CreateOptions()
   ui.OptionsPositioner:ClearAllPoints()
   ui.OptionsPositioner:SetPoint("TOP")
 
-  self:CreateGeneralOptions()
-  self:CreateSellOptions()
-  self:CreateIgnoreOptions()
-end
-
-function BasicOptionsFrame:CreateGeneralOptions()
-  local ui = self.UI
-
   ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.GENERAL_TEXT, "GameFontNormal")
   ui.GeneralOptionsFrame:SetPoint("TOPLEFT", ui.OptionsPositioner)
+  self.OptionFrames[1] = ui.GeneralOptionsFrame
 
+  ui.SellOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.SELL_TEXT, "GameFontNormal")
+  ui.SellOptionsFrame:SetPoint("TOPLEFT", ui.GeneralOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
+  self.OptionFrames[2] = ui.SellOptionsFrame
+
+  ui.IgnoreOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.IGNORE_TEXT, "GameFontNormal")
+  ui.IgnoreOptionsFrame:SetPoint("TOPLEFT", ui.SellOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
+  self.OptionFrames[3] = ui.IgnoreOptionsFrame
+
+  self:PopulateGeneralOptions()
+  self:PopulateSellOptions()
+  self:PopulateIgnoreOptions()
+end
+
+function BasicOptionsFrame:PopulateGeneralOptions()
   local add = function(option)
-    ui.GeneralOptionsFrame:AddOption(option)
+    self.UI.GeneralOptionsFrame:AddOption(option)
   end
 
   -- Auto sell
@@ -168,18 +175,13 @@ function BasicOptionsFrame:CreateGeneralOptions()
     L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
 end
 
-function BasicOptionsFrame:CreateSellOptions()
-  local ui = self.UI
-
-  ui.SellOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.SELL_TEXT, "GameFontNormal")
-  ui.SellOptionsFrame:SetPoint("TOPLEFT", ui.GeneralOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
-
+function BasicOptionsFrame:PopulateSellOptions()
   local add = function(option)
-    ui.SellOptionsFrame:AddOption(option)
+    self.UI.SellOptionsFrame:AddOption(option)
   end
 
   -- By Quality text
-  local byQuality = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  local byQuality = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byQuality:SetText(L.BY_QUALITY_TEXT)
   add(byQuality)
@@ -201,7 +203,7 @@ function BasicOptionsFrame:CreateSellOptions()
     L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic))
 
   -- By Type text
-  local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  local byType = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)
   add(byType)
@@ -210,23 +212,22 @@ function BasicOptionsFrame:CreateSellOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable))
 
+  --[[
   -- Equipment below ilvl
-  add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
-    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL))
+  local ebilvl = FrameFactory:CreateCheckButtonNumberBox(UIParent, "Small",
+    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL)
+  ebilvl.EditBoxFrame.EditBox:SetMaxLetters(4)
+  add(ebilvl)
+    --]]
 end
 
-function BasicOptionsFrame:CreateIgnoreOptions()
-  local ui = self.UI
-
-  ui.IgnoreOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.IGNORE_TEXT, "GameFontNormal")
-  ui.IgnoreOptionsFrame:SetPoint("TOPLEFT", ui.SellOptionsFrame, "TOPRIGHT", Tools:Padding(), 0)
-
+function BasicOptionsFrame:PopulateIgnoreOptions()
   local add = function(option)
-    ui.IgnoreOptionsFrame:AddOption(option)
+    self.UI.IgnoreOptionsFrame:AddOption(option)
   end
 
   -- By Type text
-  local byType = FrameFactory:CreateFontString(ui.SellOptionsFrame,
+  local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)
   add(byType)
