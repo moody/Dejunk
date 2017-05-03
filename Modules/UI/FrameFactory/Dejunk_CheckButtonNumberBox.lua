@@ -64,7 +64,7 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
     self:SetEnabled(checkButton:GetChecked()) end)
   editBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
     local value = tonumber(self:GetText())
-    if value then DejunkDB.SV[svKey].Value = abs(value) end
+    if value then DejunkDB.SV[svKey].Value = floor(abs(value)) end
     self:SetText(DejunkDB.SV[svKey].Value)
   end)
 
