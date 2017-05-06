@@ -172,7 +172,7 @@ do
     if not (bag and slot) then return end
 
     -- Get item info
-    local _, _, _, _, _, _, _, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+    local _, _, _, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
     if not (not noValue and itemID) then return end
 
     -- Get additional item info

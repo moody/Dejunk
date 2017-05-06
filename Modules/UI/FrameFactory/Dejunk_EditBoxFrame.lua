@@ -67,7 +67,7 @@ function FrameFactory:CreateEditBoxFrame(parent, font, maxLetters)
 
   function editBoxFrame:Resize()
     local _, fontHeight = editBox:GetFont()
-    local newHeight= (fontHeight + Tools:Padding())
+    local newHeight = (fontHeight + Tools:Padding())
 
     self:SetWidth(Consts.EDIT_BOX_MIN_WIDTH)
     self:SetHeight(newHeight)

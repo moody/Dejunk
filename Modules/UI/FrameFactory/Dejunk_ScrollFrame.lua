@@ -50,6 +50,8 @@ function FrameFactory:CreateScrollFrame(parent)
   scrollFrame.Texture = FramePooler:CreateTexture(scrollFrame)
 
   local scrollChild = FramePooler:CreateFrame(scrollFrame)
+  scrollChild:SetWidth(1)
+  scrollChild:SetHeight(1)
   scrollFrame.ScrollChild = scrollChild
   scrollFrame:SetScrollChild(scrollChild)
 
@@ -66,8 +68,6 @@ function FrameFactory:CreateScrollFrame(parent)
 
   -- Adds an object to the scroll frame's UI.
   function scrollFrame:AddObject(object)
-    assert(type(object.FF_ObjectType) == "string")
-
     object:SetParent(scrollChild)
 
     local lastObject = self.UI[#self.UI]
@@ -82,15 +82,18 @@ function FrameFactory:CreateScrollFrame(parent)
 
   -- Checks whether or not the slider should be displayed.
   function scrollFrame:IsSliderRequired()
-    return (scrollChild:GetHeight() > self:GetHeight())
+    return (select(2, slider:GetMinMaxValues()) > 0)
   end
 
-  -- Gets the minimum width of the frame.
+  --[[ Gets the minimum width of the scroll frame.
+  The point of using this function instead of GetWidth is that GetWidth will
+  return a different value if the scroll frame's left and right points are set.
+  --]]
   function scrollFrame:GetMinWidth()
     return self.MinWidth
   end
 
-  -- Gets the minimum height of the frame.
+  -- Gets the minimum height of the scroll frame.
   function scrollFrame:GetMinHeight()
     return self.MinHeight
   end
@@ -98,24 +101,21 @@ function FrameFactory:CreateScrollFrame(parent)
   -- Resizes the scroll frame.
   function scrollFrame:Resize()
     local newWidth = 0 -- Widest object in UI + horizontal padding
-    local newHeight = 0 -- Sum of heights of UI objects + vertical padding
 
     for i, v in ipairs(self.UI) do
       if v.Resize then v:Resize() end
       local w = (v.GetMinWidth and v:GetMinWidth()) or v:GetWidth();
-      local h = (v.GetMinHeight and v:GetMinHeight()) or v:GetHeight();
       newWidth = max(newWidth, w)
-      newHeight = newHeight + h + Tools:Padding(0.5);
     end
 
     newWidth = (newWidth + Tools:Padding())
-    scrollChild:SetWidth(newWidth)
-    self.MinWidth = newWidth
+    self.MinWidth = newWidth -- cache min width
 
-    newHeight = (newHeight + Tools:Padding(0.5))
-    scrollChild:SetHeight(newHeight)
+    -- Height of UI objects + vertical padding
+    local uiHeight = ((#self.UI > 0) and select(2, Tools:Measure(self,
+      self.UI[1], self.UI[#self.UI], "TOP", "BOTTOM"))) + Tools:Padding()
 
-    slider:SetMinMaxValues(0, max(newHeight - self.MinHeight, 0))
+    slider:SetMinMaxValues(0, max(uiHeight - self.MinHeight, 0))
     slider:SetHeight(self.MinHeight)
 
     self:SetWidth(newWidth)
@@ -153,6 +153,9 @@ function FrameFactory:CreateScrollFrame(parent)
 
     -- Functions
     self.AddObject = nil
+    self.IsSliderRequired = nil
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
     self.Resize = nil
     self.Refresh = nil
 

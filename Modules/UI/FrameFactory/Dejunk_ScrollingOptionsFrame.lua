@@ -87,8 +87,7 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   -- Gets the minimum width of the frame.
   function soFrame:GetMinWidth()
-    local sfWidth = (scrollFrame:GetMinWidth() +
-      (slider:GetWidth() + Tools:Padding(0.5)))
+    local sfWidth = (scrollFrame:GetMinWidth() + Tools:Padding(0.5) + slider:GetWidth())
 
     return max(titleButton:GetWidth(), sfWidth)
   end
@@ -100,6 +99,7 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   -- Resizes the frame.
   function soFrame:Resize()
+    titleButton:Resize()
     scrollFrame:Resize()
     self:UpdateSliderState()
 

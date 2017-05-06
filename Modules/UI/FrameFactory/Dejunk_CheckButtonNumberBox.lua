@@ -39,7 +39,7 @@ local FramePooler = DJ.FramePooler
 //*******************************************************************
 --]]
 
-function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, tooltip, svKey)
+function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, tooltip, svKey, maxLetters)
   assert(svKey and type(DejunkDB.SV[svKey]) == "table")
 
   local cbnBox = FramePooler:CreateFrame(parent)
@@ -48,13 +48,12 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   local checkButton = self:CreateCheckButton(cbnBox, size, text, textColor, tooltip)
   cbnBox.CheckButton = checkButton
 
-  local editBoxFrame = self:CreateEditBoxFrame(cbnBox, checkButton.Text:GetFontObject())
+  local editBoxFrame = self:CreateEditBoxFrame(cbnBox, checkButton.Text:GetFontObject(), maxLetters)
   cbnBox.EditBoxFrame = editBoxFrame
 
   -- Initialize points
   checkButton:SetPoint("TOPLEFT")
-  editBoxFrame:SetPoint("BOTTOMLEFT", Tools:Padding(2), 0)
-  editBoxFrame:SetPoint("BOTTOMRIGHT", -Tools:Padding(2), 0)
+  editBoxFrame:SetPoint("TOPLEFT", checkButton, "BOTTOMLEFT", Tools:Padding(), 0)
 
   -- CheckButton
   checkButton:SetScript("OnClick", function(self)

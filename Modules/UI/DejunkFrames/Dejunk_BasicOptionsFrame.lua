@@ -79,8 +79,8 @@ function BasicOptionsFrame:Resize()
   end
 
   -- Resize positioner to keep frames centered
-  newWidth = Tools:Measure(self.Frame, ui.GeneralOptionsFrame,
-    ui.IgnoreOptionsFrame, "LEFT", "RIGHT")
+  newWidth = (#frames > 0) and Tools:Measure(self.Frame, frames[1],
+    frames[#frames], "LEFT", "RIGHT") or 1
   ui.OptionsPositioner:SetWidth(newWidth)
 
   -- Add left and right side padding
@@ -116,8 +116,8 @@ do -- Hook SetWidth
       end
 
       -- Resize positioner to keep frames centered
-      newWidth = Tools:Measure(self.Frame, ui.GeneralOptionsFrame,
-        ui.IgnoreOptionsFrame, "LEFT", "RIGHT")
+      newWidth = (#frames > 0) and Tools:Measure(self.Frame, frames[1],
+        frames[#frames], "LEFT", "RIGHT") or 1
       ui.OptionsPositioner:SetWidth(newWidth)
     end
   end
@@ -212,13 +212,12 @@ function BasicOptionsFrame:PopulateSellOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable))
 
-  --[[
+  ---[[ BUG: Adding this option causes stability issues. Random crashses when reloading or switching ParentFrame children.
   -- Equipment below ilvl
-  local ebilvl = FrameFactory:CreateCheckButtonNumberBox(UIParent, "Small",
-    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL)
-  ebilvl.EditBoxFrame.EditBox:SetMaxLetters(4)
-  add(ebilvl)
-    --]]
+  add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
+    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP,
+    DejunkDB.SellEquipmentBelowILVL))
+  --]]
 end
 
 function BasicOptionsFrame:PopulateIgnoreOptions()

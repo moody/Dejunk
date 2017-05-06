@@ -80,8 +80,6 @@ function FramePooler:GenericReset(frame)
 
   frame:ClearAllPoints()
   frame:SetParent(UIParent)
-  frame:SetWidth(0)
-  frame:SetHeight(0)
   frame:SetAlpha(1)
   frame:Hide()
 
