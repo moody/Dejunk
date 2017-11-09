@@ -19,13 +19,14 @@ This file is part of Dejunk.
 -- Dejunk_Core: initializes Dejunk.
 
 local AddonName, DJ = ...
-_G["DEJUNK_ADDON_TABLE"] = DJ
+_G["DEJUNK_ADDON_TABLE"] = DJ -- Debug only
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
 local Core = DJ.Core
+Core.isDebug = true
 
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
@@ -82,6 +83,17 @@ function Core:Print(msg)
 
   local title = Tools:GetColorString("[Dejunk]",
     Colors:GetColor(Colors.LabelText))
+
+  print(format("%s %s", title, msg))
+end
+
+-- Prints a formatted debug message ("[name] msg").
+-- @param msg - the message to print
+function Core:Debug(name, msg)
+  if not self.isDebug then return end
+
+  local title = Tools:GetColorString(format("[%s]", name),
+    Colors:GetColor(Colors.Inclusions))
 
   print(format("%s %s", title, msg))
 end

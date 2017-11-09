@@ -50,21 +50,21 @@ end
 -- Additional initialize logic. Override when necessary.
 function DejunkFrameMixin:OnInitialize() end
 
--- Deinitializes the frame.
-function DejunkFrameMixin:Deinitialize()
-  if not self.Initialized then return end
-  self.Initialized = false
-
-  self:OnDeinitialize()
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Frame:Release()
-  self.Frame = nil
-end
-
--- Additional deinitialize logic. Override when necessary.
-function DejunkFrameMixin:OnDeinitialize() end
+-- -- Deinitializes the frame.
+-- function DejunkFrameMixin:Deinitialize()
+--   if not self.Initialized then return end
+--   self.Initialized = false
+--
+--   self:OnDeinitialize()
+--
+--   FrameFactory:ReleaseUI(self.UI)
+--
+--   self.Frame:Release()
+--   self.Frame = nil
+-- end
+--
+-- -- Additional deinitialize logic. Override when necessary.
+-- function DejunkFrameMixin:OnDeinitialize() end
 
 --[[
 //*******************************************************************
