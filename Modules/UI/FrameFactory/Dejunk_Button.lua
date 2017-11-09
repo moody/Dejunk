@@ -28,7 +28,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -46,12 +46,12 @@ local FramePooler = DJ.FramePooler
 -- @param textColorHi - the color of the text when highlighted [optional]
 -- @return - a Dejunk button
 function FrameFactory:CreateButton(parent, font, text, color, colorHi, textColor, textColorHi)
-  local button = FramePooler:CreateButton(parent)
+  local button = FrameCreator:CreateButton(parent)
   button.FF_ObjectType = "Button"
 
-  button.Texture = FramePooler:CreateTexture(button)
+  button.Texture = FrameCreator:CreateTexture(button)
 
-  button.Text = FramePooler:CreateFontString(button, "OVERLAY", font)
+  button.Text = FrameCreator:CreateFontString(button, "OVERLAY", font)
   button.Text:SetPoint("CENTER", 1, 0)
   button.Text:SetText(text)
 

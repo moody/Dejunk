@@ -29,7 +29,7 @@ local FrameFactory = DJ.FrameFactory
 local Colors = DJ.Colors
 local Consts = DJ.Consts
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -42,14 +42,14 @@ local FramePooler = DJ.FramePooler
 -- @param font - the font style for the edit box to inherit [optional]
 -- @return - a Dejunk edit box frame
 function FrameFactory:CreateEditBoxFrame(parent, font, maxLetters)
-  local editBoxFrame = FramePooler:CreateFrame(parent)
+  local editBoxFrame = FrameCreator:CreateFrame(parent)
   editBoxFrame.FF_ObjectType = "EditBoxFrame"
 
   editBoxFrame:SetClipsChildren(true)
 
   editBoxFrame.Texture = self:CreateTexture(editBoxFrame, nil, Colors.Area)
 
-  local editBox = FramePooler:CreateEditBox(editBoxFrame, font, nil, maxLetters)
+  local editBox = FrameCreator:CreateEditBox(editBoxFrame, font, nil, maxLetters)
   editBoxFrame.EditBox = editBox
 
   editBox:SetPoint("TOPLEFT", Tools:Padding(0.5), -Tools:Padding(0.5))

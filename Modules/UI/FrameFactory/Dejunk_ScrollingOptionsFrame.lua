@@ -28,7 +28,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -37,7 +37,7 @@ local FramePooler = DJ.FramePooler
 --]]
 
 function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
-  local soFrame = FramePooler:CreateFrame(parent)
+  local soFrame = FrameCreator:CreateFrame(parent)
   soFrame.FF_ObjectType = "ScrollingOptionsFrame"
   soFrame.UI = {}
 

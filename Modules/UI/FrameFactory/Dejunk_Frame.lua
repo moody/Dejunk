@@ -27,7 +27,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -40,7 +40,7 @@ local FramePooler = DJ.FramePooler
 -- @param color - the color of the frame [optional]
 -- @return - a Dejunk frame
 function FrameFactory:CreateFrame(parent, color)
-  local frame = FramePooler:CreateFrame(parent)
+  local frame = FrameCreator:CreateFrame(parent)
   frame.FF_ObjectType = "Frame"
 
   -- Refreshes the frame.
@@ -55,7 +55,7 @@ function FrameFactory:CreateFrame(parent, color)
     self.Color = (color or self.Color or Colors.Black)
 
     if not self.Texture then
-      self.Texture = FramePooler:CreateTexture(self)
+      self.Texture = FrameCreator:CreateTexture(self)
     end
 
     self:Refresh()

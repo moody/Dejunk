@@ -28,7 +28,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -40,16 +40,16 @@ local FramePooler = DJ.FramePooler
 -- @param parent - the parent frame
 -- @return - a Dejunk scroll frame
 function FrameFactory:CreateScrollFrame(parent)
-  local scrollFrame = FramePooler:CreateScrollFrame(parent)
+  local scrollFrame = FrameCreator:CreateScrollFrame(parent)
   scrollFrame.FF_ObjectType = "ScrollFrame"
   scrollFrame.UI = {}
 
   scrollFrame.MinWidth = 0
   scrollFrame.MinHeight = DJ.Consts.SCROLL_FRAME_MIN_HEIGHT
 
-  scrollFrame.Texture = FramePooler:CreateTexture(scrollFrame)
+  scrollFrame.Texture = FrameCreator:CreateTexture(scrollFrame)
 
-  local scrollChild = FramePooler:CreateFrame(scrollFrame)
+  local scrollChild = FrameCreator:CreateFrame(scrollFrame)
   scrollChild:SetWidth(1)
   scrollChild:SetHeight(1)
   scrollFrame.ScrollChild = scrollChild

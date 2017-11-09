@@ -17,7 +17,7 @@
 
   <!-- /UI/FrameUtils/ -->
   <Script file="Modules\UI\FrameUtils\Dejunk_FrameFader.lua"/>
-  <Script file="Modules\UI\FrameUtils\Dejunk_FramePooler.lua"/>
+  <Script file="Modules\UI\FrameUtils\Dejunk_FrameCreator.lua"/>
 
   <!-- /UI/FrameFactory/ -->
   <Script file="Modules\UI\FrameFactory\FrameFactory.lua"/>

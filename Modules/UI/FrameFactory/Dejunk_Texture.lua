@@ -24,7 +24,7 @@ local AddonName, DJ = ...
 local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -38,7 +38,7 @@ local FramePooler = DJ.FramePooler
 -- @param color - the color of the texture [optional]
 -- @return - a Dejunk texture
 function FrameFactory:CreateTexture(parent, layer, color)
-  local texture = FramePooler:CreateTexture(parent, layer)
+  local texture = FrameCreator:CreateTexture(parent, layer)
   texture.FF_ObjectType = "Texture"
 
   -- Refreshes the texture.

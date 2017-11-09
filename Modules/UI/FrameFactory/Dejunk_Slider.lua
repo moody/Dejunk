@@ -28,7 +28,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Consts = DJ.Consts
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -40,13 +40,13 @@ local FramePooler = DJ.FramePooler
 -- @param parent - the parent frame
 -- @return - a Dejunk slider
 function FrameFactory:CreateSlider(parent)
-  local slider = FramePooler:CreateSlider(parent)
+  local slider = FrameCreator:CreateSlider(parent)
   slider:SetWidth(Consts.SLIDER_DEFAULT_WIDTH)
   slider.FF_ObjectType = "Slider"
 
-  slider.Texture = FramePooler:CreateTexture(slider)
+  slider.Texture = FrameCreator:CreateTexture(slider)
 
-  slider.Thumb = FramePooler:CreateTexture(slider)
+  slider.Thumb = FrameCreator:CreateTexture(slider)
   slider.Thumb:SetWidth(Consts.SLIDER_DEFAULT_WIDTH)
   slider.Thumb:SetHeight(Consts.THUMB_DEFAULT_HEIGHT)
   slider:SetThumbTexture(slider.Thumb)

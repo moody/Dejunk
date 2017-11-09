@@ -37,7 +37,7 @@ DJ.MerchantButton = {}
 DJ.MinimapIcon = {}
 
 -- /UI/FrameUtils/
-DJ.FramePooler = {}
+DJ.FrameCreator = {}
 DJ.FrameFader = {}
 
 -- /UI/FrameFactory/

@@ -27,7 +27,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -44,7 +44,7 @@ local FramePooler = DJ.FramePooler
 -- @param shadowColor - the color of the font string's shadow [optional]
 -- @return - a Dejunk font string
 function FrameFactory:CreateFontString(parent, layer, font, color, shadowOffset, shadowColor)
-  local fontString = FramePooler:CreateFontString(parent, layer, font, nil, shadowOffset, nil)
+  local fontString = FrameCreator:CreateFontString(parent, layer, font, nil, shadowOffset, nil)
   fontString.FF_ObjectType = "FontString"
 
   -- Refreshes the font string.

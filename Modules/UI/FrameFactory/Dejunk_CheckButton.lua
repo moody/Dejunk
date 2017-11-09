@@ -29,7 +29,7 @@ local FrameFactory = DJ.FrameFactory
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 -- Variables
 local CheckButtonSizes =
@@ -71,13 +71,13 @@ local CheckButtonSizes =
 function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, svKey)
   size = (CheckButtonSizes[size] or error("Unrecognized check button size"))
 
-  local checkButton = FramePooler:CreateCheckButton(parent)
+  local checkButton = FrameCreator:CreateCheckButton(parent)
   checkButton:SetHeight(size.Size)
   checkButton:SetWidth(size.Size)
 
   checkButton.FF_ObjectType = "CheckButton"
 
-  checkButton.Text = FramePooler:CreateFontString(checkButton, "OVERLAY", size.Font)
+  checkButton.Text = FrameCreator:CreateFontString(checkButton, "OVERLAY", size.Font)
   checkButton.Text:SetPoint("LEFT", checkButton, "RIGHT", 0, 0)
   checkButton.Text:SetText(text)
 

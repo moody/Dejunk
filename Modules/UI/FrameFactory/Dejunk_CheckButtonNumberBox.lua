@@ -31,7 +31,7 @@ local FrameFactory = DJ.FrameFactory
 
 local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -42,7 +42,7 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, tooltip, svKey, maxLetters)
   assert(svKey and type(DejunkDB.SV[svKey]) == "table")
 
-  local cbnBox = FramePooler:CreateFrame(parent)
+  local cbnBox = FrameCreator:CreateFrame(parent)
   cbnBox.FF_ObjectType = "CheckButtonNumberBox"
 
   local checkButton = self:CreateCheckButton(cbnBox, size, text, textColor, tooltip)

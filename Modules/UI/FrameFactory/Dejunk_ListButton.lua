@@ -30,7 +30,7 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -45,20 +45,20 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateListButton(parent, listName)
   assert(ListManager[listName] ~= nil)
 
-  local button = FramePooler:CreateButton(parent)
+  local button = FrameCreator:CreateButton(parent)
   button:SetHeight(Consts.LIST_BUTTON_HEIGHT)
   button.FF_ObjectType = "ListButton"
 
-  button.Texture = FramePooler:CreateTexture(button)
+  button.Texture = FrameCreator:CreateTexture(button)
   button.Texture:SetColorTexture(unpack(Colors:GetColor(Colors.ListButton)))
 
-  button.Icon = FramePooler:CreateTexture(button, "ARTWORK")
+  button.Icon = FrameCreator:CreateTexture(button, "ARTWORK")
   button.Icon:ClearAllPoints()
   button.Icon:SetPoint("LEFT", Tools:Padding(0.5), 0)
   button.Icon:SetWidth(Consts.LIST_BUTTON_ICON_SIZE)
   button.Icon:SetHeight(Consts.LIST_BUTTON_ICON_SIZE)
 
-  button.Text = FramePooler:CreateFontString(button, "OVERLAY", "GameFontNormal")
+  button.Text = FrameCreator:CreateFontString(button, "OVERLAY", "GameFontNormal")
   button.Text:SetPoint("LEFT", button.Icon, "RIGHT", Tools:Padding(0.5), 0)
   button.Text:SetPoint("RIGHT", -Tools:Padding(0.5), 0)
   button.Text:SetWordWrap(false)

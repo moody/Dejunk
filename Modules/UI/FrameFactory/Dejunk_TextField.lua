@@ -28,7 +28,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -42,7 +42,7 @@ local FramePooler = DJ.FramePooler
 -- @param font - the font style for the edit box to inherit [optional]
 -- @return - a Dejunk text field
 function FrameFactory:CreateTextField(parent, font)
-  local textField = FramePooler:CreateFrame(parent)
+  local textField = FrameCreator:CreateFrame(parent)
   textField.FF_ObjectType = "TextField"
 
   textField.LabelFontString = self:CreateFontString(textField, nil, "GameFontNormal", Colors.LabelText)
