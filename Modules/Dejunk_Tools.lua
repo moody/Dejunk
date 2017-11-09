@@ -122,52 +122,6 @@ end
 
 --[[
 //*******************************************************************
-//  					    			    Script Functions
-//*******************************************************************
---]]
-
-local ScriptHandlers =
-{
-  "OnAttributeChanged",
-  "OnChar",
-  "OnClick",
-  "OnDisable",
-  "OnDragStart",
-  "OnDragStop",
-  "OnEnable",
-  "OnEnter",
-  "OnEnterPressed",
-  "OnEscapePressed",
-  "OnEvent",
-  "OnEditFocusGained",
-  "OnEditFocusLost",
-  "OnHide",
-  "OnKeyDown",
-  "OnKeyUp",
-  "OnLeave",
-  "OnLoad",
-  "OnMouseDown",
-  "OnMouseUp",
-  "OnMouseWheel",
-  "OnReceiveDrag",
-  "OnShow",
-  "OnSizeChanged",
-  "OnUpdate"
-}
-
--- Clears all scripts from the specified frame.
--- @param frame - the frame to clear scripts from
-function Tools:ClearAllScripts(frame)
-  if not frame.SetScript then return end
-
-  for i, script in pairs(ScriptHandlers) do
-    local hasScript = pcall(frame.GetScript, frame, script)
-    if hasScript then frame:SetScript(script, nil) end
-  end
-end
-
---[[
-//*******************************************************************
 //  					    			      UI Functions
 //*******************************************************************
 --]]
@@ -190,7 +144,7 @@ function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
   local width = sizer:GetWidth()
   local height = sizer:GetHeight()
 
-  FramePooler:ReleaseTexture(sizer)
+  sizer:Release()
 
   return width, height
 end

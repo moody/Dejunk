@@ -348,6 +348,8 @@ function Dejunker:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class,
   -- Sell options
   if self:IsUnsuitableItem(class, subClass, equipSlot) then
     return true end
+  if self:IsEquipmentBelowILVLItem(class, subClass, equipSlot, itemLevel) then
+    return true end
 
   -- Ignore options
   if self:IsIgnoredBattlePetItem(class, subClass) then
@@ -399,6 +401,25 @@ function Dejunker:IsUnsuitableItem(class, subClass, equipSlot)
   end
 
   return not suitable
+end
+
+function Dejunker:IsEquipmentBelowILVLItem(class, subClass, equipSlot, itemLevel)
+  if not DejunkDB.SV.SellEquipmentBelowILVL.Enabled or
+    (itemLevel >= DejunkDB.SV.SellEquipmentBelowILVL.Value) then
+    return false
+  end
+
+  local sell = false
+
+  if (class == Consts.ARMOR_CLASS) then
+    local scValue = Consts.ARMOR_SUBCLASSES[subClass]
+    sell = (scValue ~= LE_ITEM_ARMOR_GENERIC) and (scValue ~= LE_ITEM_ARMOR_COSMETIC)
+  elseif (class == Consts.WEAPON_CLASS) then
+    local scValue = Consts.WEAPON_SUBCLASSES[subClass]
+    sell = (scValue ~= LE_ITEM_WEAPON_GENERIC) and (scValue ~= LE_ITEM_WEAPON_FISHINGPOLE)
+  end
+
+  return sell
 end
 
 -- [[ IGNORE OPTIONS ]] --

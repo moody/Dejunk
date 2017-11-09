@@ -16,7 +16,7 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_ListFrame: contains FrameFactory functions to create and release a frame for displaying list data.
+-- Dejunk_ScrollingOptionsFrame: contains FrameFactory functions to create and release a scrollable frame containing Dejunk options.
 
 local AddonName, DJ = ...
 
@@ -24,9 +24,11 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
+local FrameFactory = DJ.FrameFactory
+
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FrameFactory = DJ.FrameFactory
+local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -35,7 +37,7 @@ local FrameFactory = DJ.FrameFactory
 --]]
 
 function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
-  local soFrame = self:CreateFrame(parent)
+  local soFrame = FramePooler:CreateFrame(parent)
   soFrame.FF_ObjectType = "ScrollingOptionsFrame"
   soFrame.UI = {}
 
@@ -85,8 +87,7 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   -- Gets the minimum width of the frame.
   function soFrame:GetMinWidth()
-    local sfWidth = (scrollFrame:GetMinWidth() +
-      (slider:GetWidth() + Tools:Padding(0.5)))
+    local sfWidth = (scrollFrame:GetMinWidth() + Tools:Padding(0.5) + slider:GetWidth())
 
     return max(titleButton:GetWidth(), sfWidth)
   end
@@ -98,6 +99,7 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   -- Resizes the frame.
   function soFrame:Resize()
+    titleButton:Resize()
     scrollFrame:Resize()
     self:UpdateSliderState()
 
@@ -119,6 +121,31 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
 
   soFrame:Refresh()
 
+  -- Pre-hook Release function
+  local release = soFrame.Release
+
+  function soFrame:Release()
+    -- Objects
+    self.TitleButton:Release()
+    self.TitleButton = nil
+
+    self.ScrollFrame:Release()
+    self.ScrollFrame = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.ShowSlider = nil
+    self.HideSlider = nil
+    self.UpdateSliderState = nil
+    self.AddOption = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return soFrame
 end
 
@@ -128,26 +155,4 @@ end
 
 function FrameFactory:DisableScrollingOptionsFrame(soFrame)
   self:DisableScrollFrame(soFrame.ScrollFrame)
-end
-
-function FrameFactory:ReleaseScrollingOptionsFrame(soFrame)
-  -- Objects
-  self:ReleaseButton(soFrame.TitleButton)
-  soFrame.TitleButton = nil
-
-  self:ReleaseScrollFrame(soFrame.ScrollFrame)
-  soFrame.ScrollFrame = nil
-
-  -- Variables
-  soFrame.FF_ObjectType = nil
-
-  -- Functions
-  soFrame.ShowSlider = nil
-  soFrame.HideSlider = nil
-  soFrame.UpdateSliderState = nil
-  soFrame.AddOption = nil
-  soFrame.Resize = nil
-  soFrame.Refresh = nil
-
-  self:ReleaseFrame(soFrame)
 end

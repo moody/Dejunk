@@ -69,25 +69,26 @@ function FrameFactory:CreateSlider(parent)
 
   slider:Refresh()
 
+  -- Pre-hook Release function
+  local release = slider.Release
+
+  function slider:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    --self:SetThumbTexture(nil)
+    self.Thumb:Release()
+    self.Thumb = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return slider
-end
-
--- Releases a slider created by FrameFactory.
--- @param slider - the slider to release
-function FrameFactory:ReleaseSlider(slider)
-  -- Objects
-  FramePooler:ReleaseTexture(slider.Texture)
-  slider.Texture = nil
-
-  FramePooler:ReleaseTexture(slider.Thumb)
-  slider.Thumb = nil
-  slider:SetThumbTexture(nil)
-
-  -- Variables
-  slider.FF_ObjectType = nil
-
-  -- Functions
-  slider.Refresh = nil
-
-  FramePooler:ReleaseSlider(slider)
 end

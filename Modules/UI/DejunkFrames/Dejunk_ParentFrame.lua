@@ -44,31 +44,35 @@ local currentChild = nil -- currently displayed child frame
 
 -- @Override
 function ParentFrame:OnInitialize()
-  local ui = self.UI
+  local frame = self.Frame
 
-  ui.Frame:SetColors(Colors.ParentFrame)
-  ui.Frame:SetWidth(Consts.MIN_WIDTH)
-	ui.Frame:SetHeight(Consts.MIN_HEIGHT)
-	ui.Frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-	ui.Frame:SetFrameStrata("HIGH")
+  frame:SetColors(Colors.ParentFrame)
+  frame:SetWidth(Consts.MIN_WIDTH)
+	frame:SetHeight(Consts.MIN_HEIGHT)
+	frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	frame:SetFrameStrata("HIGH")
 
-  ui.Frame:EnableMouse(true)
-	ui.Frame:SetMovable(true)
-	ui.Frame:RegisterForDrag("LeftButton")
-	ui.Frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-	ui.Frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-	table.insert(UISpecialFrames, ui.Frame:GetName()) -- Makes the frame hide when Esc is pressed
-	ui.Frame:Hide()
+  frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
+	frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+	table.insert(UISpecialFrames, frame:GetName()) -- Makes the frame hide when Esc is pressed
+	frame:Hide()
 
   TitleFrame:Initialize()
-  TitleFrame:SetPoint({"TOPLEFT", ui.Frame})
-  TitleFrame:SetParent(ui.Frame)
+  TitleFrame:SetPoint({"TOPLEFT", frame})
+  TitleFrame:SetParent(frame)
 end
 
 -- @Override
 function ParentFrame:OnDeinitialize()
   TitleFrame:Deinitialize()
-  if currentChild then currentChild:Deinitialize() end
+
+  if currentChild then
+    currentChild:Deinitialize()
+    currentChild = nil
+  end
 end
 
 --[[
@@ -93,7 +97,7 @@ function ParentFrame:Enable()
   if currentChild then
     currentChild:Enable() end
 
-  self.UI.Frame:SetAlpha(1)
+  self.Frame:SetAlpha(1)
 end
 
 -- @Override
@@ -103,7 +107,7 @@ function ParentFrame:Disable()
   if currentChild then
     currentChild:Disable() end
 
-  self.UI.Frame:SetAlpha(0.75)
+  self.Frame:SetAlpha(0.75)
 end
 
 do -- Hook Refresh
@@ -178,20 +182,20 @@ end
 function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
   assert(newChild ~= nil, "newChild cannot be nil")
 
-  local point = {"TOPLEFT", TitleFrame.UI.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}
+  local point = {"TOPLEFT", TitleFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}
 
   if currentChild then currentChild:Disable() end
 
   local switchChild = function()
     currentChild = newChild
     currentChild:Initialize()
-    currentChild:SetParent(self.UI.Frame)
+    currentChild:SetParent(self.Frame)
     currentChild:SetPoint(point)
 
     if callback then callback() end
   end
 
-  if self.UI.Frame:IsVisible() then
+  if self.Frame:IsVisible() then
     fadeTime = (fadeTime or 0.5)
 
     local fadeIn = function(time)
@@ -204,9 +208,9 @@ function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
       self:Resize()
       self:Resize()
 
-      currentChild.UI.Frame:SetAlpha(0)
+      currentChild.Frame:SetAlpha(0)
       currentChild:Disable()
-      FrameFader:FadeIn(currentChild.UI.Frame, time, function()
+      FrameFader:FadeIn(currentChild.Frame, time, function()
         currentChild:Enable() end)
     end
 
@@ -216,7 +220,7 @@ function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
     fadeTime = (fadeTime / 2) -- split time between fade in and fade out
 
     -- otherwise, fade out currentChild first
-    FrameFader:FadeOut(currentChild.UI.Frame, fadeTime, function()
+    FrameFader:FadeOut(currentChild.Frame, fadeTime, function()
       currentChild:Deinitialize()
       fadeIn(fadeTime)
     end)

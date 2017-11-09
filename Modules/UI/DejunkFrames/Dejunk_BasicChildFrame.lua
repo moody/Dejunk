@@ -38,15 +38,13 @@ local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
 
 -- @Override
 function BasicChildFrame:OnInitialize()
-  local ui = self.UI
-
   BasicOptionsFrame:Initialize()
-  BasicOptionsFrame:SetParent(ui.Frame)
-  BasicOptionsFrame:SetPoint({"TOPLEFT", ui.Frame})
+  BasicOptionsFrame:SetParent(self.Frame)
+  BasicOptionsFrame:SetPoint({"TOPLEFT", self.Frame})
 
   BasicListsFrame:Initialize()
-  BasicListsFrame:SetParent(ui.Frame)
-  BasicListsFrame:SetPoint({"TOPLEFT", BasicOptionsFrame.UI.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
+  BasicListsFrame:SetParent(self.Frame)
+  BasicListsFrame:SetPoint({"TOPLEFT", BasicOptionsFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
 end
 
 -- @Override
@@ -117,8 +115,8 @@ function BasicChildFrame:Resize()
   BasicListsFrame:Resize()
 
   local newWidth = max(BasicOptionsFrame:GetWidth(), BasicListsFrame:GetWidth())
-  local _, newHeight = Tools:Measure(self.UI.Frame,
-    BasicOptionsFrame.UI.Frame, BasicListsFrame.UI.Frame, "TOPLEFT", "BOTTOMLEFT")
+  local _, newHeight = Tools:Measure(self.Frame,
+    BasicOptionsFrame.Frame, BasicListsFrame.Frame, "TOPLEFT", "BOTTOMLEFT")
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)

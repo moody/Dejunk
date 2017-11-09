@@ -41,7 +41,7 @@ local FramePooler = DJ.FramePooler
 -- @param parent - the parent frame
 -- @param font - the font style for the edit box to inherit [optional]
 -- @return - a Dejunk edit box frame
-function FrameFactory:CreateEditBoxFrame(parent, font)
+function FrameFactory:CreateEditBoxFrame(parent, font, maxLetters)
   local editBoxFrame = FramePooler:CreateFrame(parent)
   editBoxFrame.FF_ObjectType = "EditBoxFrame"
 
@@ -49,7 +49,7 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
 
   editBoxFrame.Texture = self:CreateTexture(editBoxFrame, nil, Colors.Area)
 
-  local editBox = FramePooler:CreateEditBox(editBoxFrame, font)
+  local editBox = FramePooler:CreateEditBox(editBoxFrame, font, nil, maxLetters)
   editBoxFrame.EditBox = editBox
 
   editBox:SetPoint("TOPLEFT", Tools:Padding(0.5), -Tools:Padding(0.5))
@@ -62,11 +62,14 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
     self:HighlightText(0, 0)
     self:ClearFocus() end)
 
+  editBox:SetScript("OnEnable", function(self) self:SetAlpha(1) end)
+  editBox:SetScript("OnDisable", function(self) self:SetAlpha(0.3) end)
+
   function editBoxFrame:Resize()
     local _, fontHeight = editBox:GetFont()
-    local newHeight= (fontHeight + Tools:Padding())
+    local newHeight = (fontHeight + Tools:Padding())
 
-    self:SetWidth(Consts.TEXT_FIELD_MIN_WIDTH)
+    self:SetWidth(Consts.EDIT_BOX_MIN_WIDTH)
     self:SetHeight(newHeight)
   end
 
@@ -77,25 +80,26 @@ function FrameFactory:CreateEditBoxFrame(parent, font)
 
   editBoxFrame:Refresh()
 
+  -- Pre-hook Release function
+  local release = editBoxFrame.Release
+
+  function editBoxFrame:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    self.EditBox:Release()
+    self.EditBox = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return editBoxFrame
-end
-
--- Releases an edit box frame created by FrameFactory.
--- @param editBoxFrame - the edit box frame to release
-function FrameFactory:ReleaseEditBoxFrame(editBoxFrame)
-  -- Objects
-  self:ReleaseTexture(editBoxFrame.Texture)
-  editBoxFrame.Texture = nil
-
-  FramePooler:ReleaseEditBox(editBoxFrame.EditBox)
-  editBoxFrame.EditBox = nil
-
-  -- Variables
-  editBoxFrame.FF_ObjectType = nil
-
-  -- Functions
-  editBoxFrame.Resize = nil
-  editBoxFrame.Refresh = nil
-
-  FramePooler:ReleaseFrame(editBoxFrame)
 end

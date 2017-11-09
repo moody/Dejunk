@@ -86,30 +86,31 @@ function FrameFactory:CreateTextField(parent, font)
 
   textField:Refresh()
 
+  -- Pre-hook Release functions
+  local release = textField.Release
+
+  function textField:Release()
+    -- Objects
+    self.LabelFontString:Release()
+    self.LabelFontString = nil
+
+    self.HelperFontString:Release()
+    self.HelperFontString = nil
+
+    self.EditBoxFrame:Release()
+    self.EditBoxFrame = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+
+    -- Functions
+    self.SetLabelText = nil
+    self.SetHelperText = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return textField
-end
-
--- Releases a text field created by FrameFactory.
--- @param textField - the text field to release
-function FrameFactory:ReleaseTextField(textField)
-  -- Objects
-  self:ReleaseFontString(textField.LabelFontString)
-  textField.LabelFontString = nil
-
-  self:ReleaseFontString(textField.HelperFontString)
-  textField.HelperFontString = nil
-
-  self:ReleaseEditBoxFrame(textField.EditBoxFrame)
-  textField.EditBoxFrame = nil
-
-  -- Variables
-  textField.FF_ObjectType = nil
-
-  -- Functions
-  textField.SetLabelText = nil
-  textField.SetHelperText = nil
-  textField.Resize = nil
-  textField.Refresh = nil
-
-  FramePooler:ReleaseFrame(textField)
 end

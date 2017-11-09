@@ -16,9 +16,10 @@ along with this addon. If not, see <http://www.gnu.org/licenses/>.
 This file is part of Dejunk.
 --]]
 
--- Dejunk_Core: contains all of dejunk's core functionality.
+-- Dejunk_Core: initializes Dejunk.
 
 local AddonName, DJ = ...
+_G["DEJUNK_ADDON_TABLE"] = DJ
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
@@ -35,9 +36,6 @@ local ParentFrame = DJ.DejunkFrames.ParentFrame
 local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 
--- Variables
-Core.Debugging = false
-
 --[[
 //*******************************************************************
 //                            Core Frame
@@ -47,20 +45,14 @@ Core.Debugging = false
 local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
 
 function coreFrame:OnEvent(event, ...)
-  if (event == "ADDON_LOADED") then
-    if (... == AddonName) then
-      self:UnregisterEvent(event)
-      Core:Initialize()
-    end
-  elseif (event == "PLAYER_ENTERING_WORLD") then
+  if (event == "PLAYER_LOGIN") then
     self:UnregisterEvent(event)
-    DJ.Consts:Initialize()
+    Core:Initialize()
   end
 end
 
 coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-coreFrame:RegisterEvent("ADDON_LOADED")
-coreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+coreFrame:RegisterEvent("PLAYER_LOGIN")
 
 --[[
 //*******************************************************************
@@ -68,21 +60,19 @@ coreFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 //*******************************************************************
 --]]
 
--- Initializes all modules.
+-- Initializes modules.
 function Core:Initialize()
   DejunkDB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
+  DJ.Consts:Initialize()
   DJ.MerchantButton:Initialize()
   DJ.MinimapIcon:Initialize()
-
-  ParentFrame:Initialize()
-  ParentFrame:SetCurrentChild(BasicChildFrame)
 
   -- Setup slash command
 	SLASH_DEJUNK1 = "/dejunk"
 	SlashCmdList["DEJUNK"] = function (msg, editBox)
-		ParentFrame:Toggle() end
+		self:ToggleGUI() end
 end
 
 -- Prints a formatted message ("[Dejunk] msg").
@@ -91,17 +81,6 @@ function Core:Print(msg)
   if DejunkDB.SV.SilentMode then return end
 
   local title = Tools:GetColorString("[Dejunk]",
-    Colors:GetColor(Colors.LabelText))
-
-  print(format("%s %s", title, msg))
-end
-
--- Prints a debug message ("[Dejunk][Debug] msg").
--- @param msg - the debug message to print
-function Core:Debug(msg)
-  if not self.Debugging then return end
-
-  local title = Tools:GetColorString("[DJ-Debug]",
     Colors:GetColor(Colors.LabelText))
 
   print(format("%s %s", title, msg))
@@ -117,16 +96,23 @@ local previousChild = nil
 
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
+  if not ParentFrame.Initialized then
+    ParentFrame:Initialize()
+    ParentFrame:SetCurrentChild(BasicChildFrame)
+  end
+
   ParentFrame:Toggle()
 end
 
 -- Enables Dejunk's GUI.
 function Core:EnableGUI()
+  if not ParentFrame.Initialized then return end
   ParentFrame:Enable()
 end
 
 -- Disables Dejunk's GUI.
 function Core:DisableGUI()
+  if not ParentFrame.Initialized then return end
   ParentFrame:Disable()
 end
 
@@ -186,7 +172,7 @@ do
     if not (bag and slot) then return end
 
     -- Get item info
-    local _, _, _, _, _, _, _, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+    local _, _, _, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
     if not (not noValue and itemID) then return end
 
     -- Get additional item info

@@ -43,12 +43,13 @@ local scaleIndex = 1
 
 -- @Override
 function TitleFrame:OnInitialize()
+  local frame = self.Frame
   local ui = self.UI
 
   -- Character Specific Settings check button
-  ui.CharSpecCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
+  ui.CharSpecCheckButton = FrameFactory:CreateCheckButton(frame,
     "Small", L.CHARACTER_SPECIFIC_TEXT, nil, L.CHARACTER_SPECIFIC_TOOLTIP)
-  ui.CharSpecCheckButton:SetPoint("TOPLEFT", ui.Frame, "TOPLEFT", Tools:Padding(), -Tools:Padding())
+  ui.CharSpecCheckButton:SetPoint("TOPLEFT", frame, "TOPLEFT", Tools:Padding(), -Tools:Padding())
   ui.CharSpecCheckButton:SetChecked(not DejunkPerChar.UseGlobal)
   ui.CharSpecCheckButton:SetScript("OnClick", function(self)
     DJ.Core:ToggleCharacterSpecificSettings() end)
@@ -58,14 +59,14 @@ function TitleFrame:OnInitialize()
   end)
 
   -- Minimap Icon check button
-  ui.MinimapIconCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
+  ui.MinimapIconCheckButton = FrameFactory:CreateCheckButton(frame,
     "Small", L.MINIMAP_CHECKBUTTON_TEXT, nil, L.MINIMAP_CHECKBUTTON_TOOLTIP)
   ui.MinimapIconCheckButton:SetPoint("TOPLEFT", ui.CharSpecCheckButton, "BOTTOMLEFT", 0, 0)
   ui.MinimapIconCheckButton:SetChecked(not DejunkGlobal.Minimap.hide)
   ui.MinimapIconCheckButton:SetScript("OnClick", function(self) DJ.MinimapIcon:Toggle() end)
 
   -- Item tooltip check button
-  ui.ItemTooltipCheckButton = FrameFactory:CreateCheckButton(ui.Frame,
+  ui.ItemTooltipCheckButton = FrameFactory:CreateCheckButton(frame,
     "Small", L.ITEM_TOOLTIP_TEXT, nil, L.ITEM_TOOLTIP_TOOLTIP)
   ui.ItemTooltipCheckButton:SetPoint("LEFT", ui.MinimapIconCheckButton.Text, "RIGHT", Tools:Padding(0.5), 0)
   ui.ItemTooltipCheckButton:SetChecked(DejunkGlobal.ItemTooltip)
@@ -73,24 +74,24 @@ function TitleFrame:OnInitialize()
     DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip end)
 
   -- Title
-  ui.TitleFontString = FrameFactory:CreateFontString(ui.Frame,
+  ui.TitleFontString = FrameFactory:CreateFontString(frame,
     "OVERLAY", "NumberFontNormalHuge", Colors.Title,
     {2, -1.5}, Colors.TitleShadow)
   ui.TitleFontString:SetPoint("TOP", 0, -Tools:Padding())
   ui.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
 
   -- Close Button
-  ui.CloseButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormal", "X")
-  ui.CloseButton:SetPoint("TOPRIGHT", ui.Frame, "TOPRIGHT", -1, -1)
+  ui.CloseButton = FrameFactory:CreateButton(frame, "GameFontNormal", "X")
+  ui.CloseButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -1, -1)
   ui.CloseButton:SetScript("OnClick", function(self) ParentFrame:Hide() end)
 
   -- Scale button
-  ui.ScaleButton = FrameFactory:CreateButton(ui.Frame, "GameFontNormal", L.SCALE_TEXT)
+  ui.ScaleButton = FrameFactory:CreateButton(frame, "GameFontNormal", L.SCALE_TEXT)
   ui.ScaleButton:SetPoint("TOPRIGHT", ui.CloseButton, "TOPLEFT", -Tools:Padding(0.25), 0)
   ui.ScaleButton:SetScript("OnClick", function(self, button, down)
     scaleIndex = ((scaleIndex + 1) % (#Scales + 1))
     if scaleIndex == 0 then scaleIndex = 1 end
-    ParentFrame.UI.Frame:SetScale(Scales[scaleIndex])
+    ParentFrame.Frame:SetScale(Scales[scaleIndex])
     ParentFrame:Resize()
   end)
 end
@@ -135,6 +136,6 @@ function TitleFrame:Resize()
 
   local newHeight = max(titleHeight, max(leftSideHeight, rightSideHeight))
 
-  ui.Frame:SetWidth(newWidth)
-  ui.Frame:SetHeight(newHeight)
+  self.Frame:SetWidth(newWidth)
+  self.Frame:SetHeight(newHeight)
 end

@@ -55,19 +55,20 @@ function FrameFactory:CreateTexture(parent, layer, color)
 
   texture:SetColors(color)
 
+  -- Pre-hook Release functions
+  local release = texture.Release
+
+  function texture:Release()
+    -- Variables
+    self.FF_ObjectType = nil
+    self.Color = nil
+
+    -- Functions
+    self.Refresh = nil
+    self.SetColors = nil
+
+    release(self)
+  end
+
   return texture
-end
-
--- Releases a texture created by FrameFactory.
--- @param texture - the texture to release
-function FrameFactory:ReleaseTexture(texture)
-  -- Variables
-  texture.FF_ObjectType = nil
-  texture.Color = nil
-
-  -- Functions
-  texture.Refresh = nil
-  texture.SetColors = nil
-
-  FramePooler:ReleaseTexture(texture)
 end

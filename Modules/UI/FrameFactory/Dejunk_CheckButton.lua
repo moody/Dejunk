@@ -124,26 +124,27 @@ function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, 
 
   checkButton:SetColors(textColor)
 
+  -- Pre-hook Release function
+  local release = checkButton.Release
+
+  function checkButton:Release()
+    -- Objects
+    self.Text:Release()
+    self.Text = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.SVKey = nil
+    self.TextColor = nil
+
+    -- Functions
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
+    self.Refresh = nil
+    self.SetColors = nil
+
+    release(self)
+  end
+
   return checkButton
-end
-
--- Releases a check button created by FrameFactory.
--- @param checkButton - the check button to release
-function FrameFactory:ReleaseCheckButton(checkButton)
-  -- Objects
-  FramePooler:ReleaseFontString(checkButton.Text)
-  checkButton.Text = nil
-
-  -- Variables
-  checkButton.FF_ObjectType = nil
-  checkButton.SVKey = nil
-  checkButton.TextColor = nil
-
-  -- Functions
-  checkButton.GetMinWidth = nil
-  checkButton.GetMinHeight = nil
-  checkButton.Refresh = nil
-  checkButton.SetColors = nil
-
-  FramePooler:ReleaseCheckButton(checkButton)
 end

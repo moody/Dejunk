@@ -104,32 +104,32 @@ function FrameFactory:CreateButton(parent, font, text, color, colorHi, textColor
   button:SetColors(color, colorHi, textColor, textColorHi)
   button:Resize()
 
+  -- Pre-hook Release function
+  local release = button.Release
+  function button:Release()
+    -- Objects
+    self.Texture:Release()
+    self.Texture = nil
+
+    self.Text:Release()
+    self.Text = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.Color = nil
+    self.ColorHi = nil
+    self.TextColor = nil
+    self.TextColorHi = nil
+
+    -- Functions
+    self.Resize = nil
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
+    self.Refresh = nil
+    self.SetColors = nil
+
+    release(self)
+  end
+
   return button
-end
-
--- Releases a button created by Button.
--- @param button - the button to release
-function FrameFactory:ReleaseButton(button)
-  -- Objects
-  FramePooler:ReleaseTexture(button.Texture)
-  button.Texture = nil
-
-  FramePooler:ReleaseFontString(button.Text)
-  button.Text = nil
-
-  -- Variables
-  button.FF_ObjectType = nil
-  button.Color = nil
-  button.ColorHi = nil
-  button.TextColor = nil
-  button.TextColorHi = nil
-
-  -- Functions
-  button.Resize = nil
-  button.GetMinWidth = nil
-  button.GetMinHeight = nil
-  button.Refresh = nil
-  button.SetColors = nil
-
-  FramePooler:ReleaseButton(button)
 end

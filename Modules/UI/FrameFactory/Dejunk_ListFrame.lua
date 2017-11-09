@@ -31,7 +31,6 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -51,7 +50,7 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titleColor, titleColorHi, tooltip)
   assert(ListManager[listName] ~= nil)
 
-  local listFrame = FramePooler:CreateFrame(parent)
+  local listFrame = self:CreateFrame(parent)
   listFrame.FF_ObjectType = "ListFrame"
   listFrame.ItemList = ListManager.Lists[listName]
 
@@ -245,6 +244,46 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
   listFrame:Refresh()
   listFrame:Update()
 
+  -- Pre-hook Release function
+  local release = listFrame.Release
+
+  function listFrame:Release()
+    -- Objects
+    self.TitleButton:Release()
+    self.TitleButton = nil
+
+    self.ImportButton:Release()
+    self.ImportButton = nil
+
+    self.ExportButton:Release()
+    self.ExportButton = nil
+
+    for i, button in pairs(self.ButtonFrame.Buttons) do button:Release() end
+    self.ButtonFrame.Buttons = nil
+
+    self.ButtonFrame:Release()
+    self.ButtonFrame.DropItem = nil
+    self.ButtonFrame = nil
+
+    self.Slider:Release()
+    self.Slider = nil
+
+    -- Variables
+    self.FF_ObjectType = nil
+    self.ItemList = nil
+
+    -- Functions
+    self.ShowSlider = nil
+    self.HideSlider = nil
+    self.Update = nil
+    self.GetMinWidth = nil
+    self.GetMinHeight = nil
+    self.Resize = nil
+    self.Refresh = nil
+
+    release(self)
+  end
+
   return listFrame
 end
 
@@ -272,44 +311,4 @@ function FrameFactory:DisableListFrame(listFrame)
 
   for i, button in pairs(listFrame.ButtonFrame.Buttons) do
     button:SetEnabled(false) end
-end
-
--- Releases a list frame created by FrameFactory.
--- @param listFrame - the list frame to release
-function FrameFactory:ReleaseListFrame(listFrame)
-  -- Objects
-  self:ReleaseButton(listFrame.TitleButton)
-  listFrame.TitleButton = nil
-
-  self:ReleaseButton(listFrame.ImportButton)
-  listFrame.ImportButton = nil
-
-  self:ReleaseButton(listFrame.ExportButton)
-  listFrame.ExportButton = nil
-
-  for i, button in pairs(listFrame.ButtonFrame.Buttons) do
-    self:ReleaseListButton(button) end
-  listFrame.ButtonFrame.Buttons = nil
-
-  self:ReleaseFrame(listFrame.ButtonFrame)
-  listFrame.ButtonFrame.DropItem = nil
-  listFrame.ButtonFrame = nil
-
-  self:ReleaseSlider(listFrame.Slider)
-  listFrame.Slider = nil
-
-  -- Variables
-  listFrame.FF_ObjectType = nil
-  listFrame.ItemList = nil
-
-  -- Functions
-  listFrame.ShowSlider = nil
-  listFrame.HideSlider = nil
-  listFrame.Update = nil
-  listFrame.GetMinWidth = nil
-  listFrame.GetMinHeight = nil
-  listFrame.Resize = nil
-  listFrame.Refresh = nil
-
-  FramePooler:ReleaseFrame(listFrame)
 end
