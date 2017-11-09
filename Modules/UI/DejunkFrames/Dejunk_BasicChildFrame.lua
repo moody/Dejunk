@@ -47,12 +47,6 @@ function BasicChildFrame:OnInitialize()
   BasicListsFrame:SetPoint({"TOPLEFT", BasicOptionsFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
 end
 
--- -- @Override
--- function BasicChildFrame:OnDeinitialize()
---   BasicOptionsFrame:Deinitialize()
---   BasicListsFrame:Deinitialize()
--- end
-
 --[[
 //*******************************************************************
 //                       General Frame Functions

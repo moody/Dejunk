@@ -45,12 +45,6 @@ function BasicOptionsFrame:OnInitialize()
   self:CreateOptions()
 end
 
--- -- @Override
--- function BasicOptionsFrame:OnDeinitialize()
---   for k in pairs(self.OptionFrames) do
---     self.OptionFrames[k] = nil end
--- end
-
 --[[
 //*******************************************************************
 //                       General Frame Functions

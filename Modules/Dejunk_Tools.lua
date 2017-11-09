@@ -35,7 +35,6 @@ local Tools = DJ.Tools
 
 local Colors = DJ.Colors
 local Consts = DJ.Consts
-local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -126,6 +125,9 @@ end
 //*******************************************************************
 --]]
 
+local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
+sizer:SetColorTexture(0, 0, 0, 0)
+
 -- Measures the width and height between the top-left point of the startRegion
 -- and the bottom-right point of the endRegion.
 -- @param parent - the parent frame used to create a temporary texture
@@ -136,15 +138,12 @@ end
 -- @return width - the width between the two regions
 -- @return height - the height
 function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
-  local sizer = FramePooler:CreateTexture(parent)
   sizer:ClearAllPoints()
+  sizer:SetParent(parent)
   sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
   sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
 
-  local width = sizer:GetWidth()
-  local height = sizer:GetHeight()
-
-  sizer:Release()
+  local width, height = sizer:GetWidth(), sizer:GetHeight()
 
   return width, height
 end

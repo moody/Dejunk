@@ -74,16 +74,6 @@ function ParentFrame:OnInitialize()
   TitleFrame:SetParent(frame)
 end
 
--- -- @Override
--- function ParentFrame:OnDeinitialize()
---   TitleFrame:Deinitialize()
---
---   if currentChild then
---     currentChild:Deinitialize()
---     currentChild = nil
---   end
--- end
-
 --[[
 //*******************************************************************
 //                       General Frame Functions
@@ -231,13 +221,11 @@ function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
 
     -- otherwise, fade out currentChild first
     FrameFader:FadeOut(currentChild.Frame, fadeTime, function()
-      -- currentChild:Deinitialize()
       currentChild:Hide()
       currentChild.Frame:SetAlpha(1)
       fadeIn(fadeTime)
     end)
   else -- frame is not shown, just get the child ready
-    -- if currentChild then currentChild:Deinitialize() end
     switchChild()
     -- NOTE: see the above note. Resize really shouldn't have to be called here, but it does for reasons.
     -- The second resize happens when Show is called, so that's why only one call to Resize is here.

@@ -80,26 +80,5 @@ function FrameFactory:CreateEditBoxFrame(parent, font, maxLetters)
 
   editBoxFrame:Refresh()
 
-  -- -- Pre-hook Release function
-  -- local release = editBoxFrame.Release
-  --
-  -- function editBoxFrame:Release()
-  --   -- Objects
-  --   self.Texture:Release()
-  --   self.Texture = nil
-  --
-  --   self.EditBox:Release()
-  --   self.EditBox = nil
-  --
-  --   -- Variables
-  --   self.FF_ObjectType = nil
-  --
-  --   -- Functions
-  --   self.Resize = nil
-  --   self.Refresh = nil
-  --
-  --   release(self)
-  -- end
-
   return editBoxFrame
 end
