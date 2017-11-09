@@ -131,36 +131,36 @@ function FrameFactory:CreateScrollFrame(parent)
 
   scrollFrame:Refresh()
 
-  -- Pre-hook Release function
-  local release = scrollFrame.Release
-
-  function scrollFrame:Release()
-    -- Objects
-    self.Texture:Release()
-    self.Texture = nil
-
-    self.ScrollChild:Release()
-    self.ScrollChild = nil
-
-    self.Slider:Release()
-    self.Slider = nil
-
-    FrameFactory:ReleaseUI(self.UI)
-    self.UI = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.AddObject = nil
-    self.IsSliderRequired = nil
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
+  -- -- Pre-hook Release function
+  -- local release = scrollFrame.Release
+  --
+  -- function scrollFrame:Release()
+  --   -- Objects
+  --   self.Texture:Release()
+  --   self.Texture = nil
+  --
+  --   self.ScrollChild:Release()
+  --   self.ScrollChild = nil
+  --
+  --   self.Slider:Release()
+  --   self.Slider = nil
+  --
+  --   FrameFactory:ReleaseUI(self.UI)
+  --   self.UI = nil
+  --
+  --   -- Variables
+  --   self.FF_ObjectType = nil
+  --
+  --   -- Functions
+  --   self.AddObject = nil
+  --   self.IsSliderRequired = nil
+  --   self.GetMinWidth = nil
+  --   self.GetMinHeight = nil
+  --   self.Resize = nil
+  --   self.Refresh = nil
+  --
+  --   release(self)
+  -- end
 
   return scrollFrame
 end

@@ -63,21 +63,21 @@ function FrameFactory:CreateFontString(parent, layer, font, color, shadowOffset,
 
   fontString:SetColors(color, shadowColor)
 
-  -- Pre-hook Release function
-  local release = fontString.Release
-
-  function fontString:Release()
-    -- Variables
-    self.FF_ObjectType = nil
-    self.Color = nil
-    self.ShadowColor = nil
-
-    -- Functions
-    self.Refresh = nil
-    self.SetColors = nil
-
-    release(self)
-  end
+  -- -- Pre-hook Release function
+  -- local release = fontString.Release
+  --
+  -- function fontString:Release()
+  --   -- Variables
+  --   self.FF_ObjectType = nil
+  --   self.Color = nil
+  --   self.ShadowColor = nil
+  --
+  --   -- Functions
+  --   self.Refresh = nil
+  --   self.SetColors = nil
+  --
+  --   release(self)
+  -- end
 
   return fontString
 end
