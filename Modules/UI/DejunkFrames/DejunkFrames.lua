@@ -40,6 +40,7 @@ function DejunkFrameMixin:OnInitialize() end
 
 -- Displays the frame.
 function DejunkFrameMixin:Show()
+  self:Refresh()
   self.Frame:Show()
 end
 
@@ -69,6 +70,7 @@ end
 
 -- Refreshes the frame.
 function DejunkFrameMixin:Refresh()
+  self.Frame:Refresh()
   FrameFactory:RefreshUI(self.UI)
 end
 
