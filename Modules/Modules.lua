@@ -18,11 +18,8 @@ DJ.Repairer = {}
 DJ.MerchantButton = {}
 DJ.MinimapIcon = {}
 
--- /UI/FrameUtils/
-DJ.FrameCreator = {}
-DJ.FrameFader = {}
-
 -- /UI/FrameFactory/
+DJ.FrameCreator = {}
 DJ.FrameFactory = {}
 
 -- /UI/DejunkFrames/

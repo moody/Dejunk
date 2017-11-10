@@ -12,18 +12,10 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local Tools = DJ.Tools
 local FrameFactory = DJ.FrameFactory
-local FrameFader = DJ.FrameFader
 local TitleFrame = DJ.DejunkFrames.TitleFrame
 
 -- Variables
 local currentChild = nil -- currently displayed child frame
-
--- Debug
-local isDebug = true
-local function Debug(msg)
-  if not isDebug then return end
-  DJ.Core:Debug("ParentFrame", msg)
-end
 
 --[[
 //*******************************************************************
@@ -33,8 +25,6 @@ end
 
 -- @Override
 function ParentFrame:OnInitialize()
-  Debug("OnInitialize")
-
   local frame = self.Frame
 
   frame:SetColors(Colors.ParentFrame)
@@ -159,58 +149,20 @@ end
 -- Sets the frame to be displayed below the TitleFrame.
 -- @param newChild - a Dejunk frame to be set as the new child
 -- @param callback - a function to be called once the new child has been set
--- @param fadeTime - the time in seconds to fade in and fade out child frames
-function ParentFrame:SetCurrentChild(newChild, callback, fadeTime)
+function ParentFrame:SetCurrentChild(newChild, callback)
   assert(newChild ~= nil, "newChild cannot be nil")
 
   local point = {"TOPLEFT", TitleFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}
 
-  if currentChild then currentChild:Disable() end
+  if currentChild then currentChild:Hide() end
 
-  local switchChild = function()
-    currentChild = newChild
-    currentChild:Initialize()
-    currentChild:SetParent(self.Frame)
-    currentChild:SetPoint(point)
+  currentChild = newChild
+  currentChild:Initialize()
+  currentChild:SetParent(self.Frame)
+  currentChild:SetPoint(point)
+  currentChild:Show()
 
-    if callback then callback() end
-  end
+  if callback then callback() end
 
-  if self.Frame:IsVisible() then
-    fadeTime = (fadeTime or 0.5)
-
-    local fadeIn = function(time)
-      switchChild()
-
-      -- NOTE: two calls to resize is pretty dumb, but it seems to be the only way to make sure
-      -- that everything get resized correctly. Especially if Tools:Measure() is used
-      -- in a Dejunk frame's resize function before its UI objects have had a chance
-      -- to be displayed for the first time. IT'S CONFUSING AND I DON'T KNOW WHY BUT IT WORKS, OKAY??
-      self:Resize()
-      self:Resize()
-
-      currentChild.Frame:SetAlpha(0)
-      currentChild:Show()
-      currentChild:Disable()
-      FrameFader:FadeIn(currentChild.Frame, time, function()
-        currentChild:Enable() end)
-    end
-
-    -- if currentChild is nil, just fade in the new one
-    if not currentChild then fadeIn(fadeTime) return end
-
-    fadeTime = (fadeTime / 2) -- split time between fade in and fade out
-
-    -- otherwise, fade out currentChild first
-    FrameFader:FadeOut(currentChild.Frame, fadeTime, function()
-      currentChild:Hide()
-      currentChild.Frame:SetAlpha(1)
-      fadeIn(fadeTime)
-    end)
-  else -- frame is not shown, just get the child ready
-    switchChild()
-    -- NOTE: see the above note. Resize really shouldn't have to be called here, but it does for reasons.
-    -- The second resize happens when Show is called, so that's why only one call to Resize is here.
-    self:Resize()
-  end
+  self:Resize()
 end

@@ -1,4 +1,4 @@
--- Dejunk_FrameCreator: contains simple create functions for UIObjects (frames, buttons, textures, etc.).
+-- FrameCreator: contains simple create functions for UIObjects (frames, buttons, textures, etc.).
 
 local AddonName, DJ = ...
 

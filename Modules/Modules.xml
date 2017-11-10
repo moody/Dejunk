@@ -15,11 +15,8 @@
   <Script file="Modules\UI\Dejunk_MerchantButton.lua"/>
   <Script file="Modules\UI\Dejunk_MinimapIcon.lua"/>
 
-  <!-- /UI/FrameUtils/ -->
-  <Script file="Modules\UI\FrameUtils\Dejunk_FrameFader.lua"/>
-  <Script file="Modules\UI\FrameUtils\Dejunk_FrameCreator.lua"/>
-
   <!-- /UI/FrameFactory/ -->
+  <Script file="Modules\UI\FrameFactory\FrameCreator.lua"/>
   <Script file="Modules\UI\FrameFactory\FrameFactory.lua"/>
 
   <Script file="Modules\UI\FrameFactory\Dejunk_Button.lua"/>

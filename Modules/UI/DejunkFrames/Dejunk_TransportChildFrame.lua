@@ -121,6 +121,7 @@ function TransportChildFrame:SetData(listName, transportType)
     ui.TextField:SetLabelText(L.IMPORT_LABEL_TEXT)
     ui.TextField:SetHelperText(L.IMPORT_HELPER_TEXT)
 
+    editBox:SetText("")
     editBox:SetFocus()
 
     ui.LeftButton.Text:SetText(L.IMPORT_TEXT)
