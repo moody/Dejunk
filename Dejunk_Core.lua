@@ -165,19 +165,14 @@ do
     local bag, slot = Tools:FindItemInBags(itemLink)
     if not (bag and slot) then return end
 
-    -- Get item info
-    local _, _, _, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-    if not (not noValue and itemID) then return end
-
-    -- Get additional item info
-    local _, _, quality, itemLevel, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
-    if not (quality and itemLevel and reqLevel and class and subClass and equipSlot and price) then return end
+    local item = Tools:GetItemFromBag(bag, slot)
+    if not item then return end
 
     -- Return if item cannot be sold
-    if not Tools:ItemCanBeSold(price, quality) then return end
+    if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return end
 
     -- Display an appropriate tooltip if the item is junk
-    local isJunkItem = Dejunker:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class, subClass, equipSlot)
+    local isJunkItem = Dejunker:IsJunkItem(item)
     local dejunkText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
     local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.DefaultColors.Inclusions)) or
       Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.DefaultColors.Exclusions)
