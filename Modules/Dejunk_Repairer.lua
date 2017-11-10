@@ -17,6 +17,8 @@ local canGuildRepair = false
 local usedGuildRepair = false
 local totalRepairCost = 0
 
+local repairSoundID = SOUNDKIT.ITEM_REPAIR
+
 --[[
 //*******************************************************************
 //                         Repairer Frame
@@ -107,7 +109,7 @@ function Repairer:UpdateRepairs()
 			local _, canRepair = GetRepairAllCost()
 
 			if not canRepair then -- Guild repair should have been successful
-				PlaySound("ITEM_REPAIR")
+				PlaySound(repairSoundID)
 
 				Core:Print(format(L.REPAIRED_ALL_ITEMS_GUILD,
 					GetCoinTextureString(totalRepairCost)))
@@ -124,7 +126,7 @@ function Repairer:UpdateRepairs()
 		return
 	elseif (GetMoney() >= totalRepairCost) then
 		RepairAllItems(false) -- Use player money
-		PlaySound("ITEM_REPAIR")
+		PlaySound(repairSoundID)
 
 		Core:Print(format(L.REPAIRED_ALL_ITEMS,
 			GetCoinTextureString(totalRepairCost)))
