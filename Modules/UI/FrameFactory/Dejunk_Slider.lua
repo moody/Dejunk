@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_Slider: contains FrameFactory functions to create and release a slider tailored to Dejunk.
+-- Dejunk_Slider: contains FrameFactory functions to create a slider tailored to Dejunk.
 
 local AddonName, DJ = ...
 
@@ -28,7 +10,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Consts = DJ.Consts
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -40,13 +22,13 @@ local FramePooler = DJ.FramePooler
 -- @param parent - the parent frame
 -- @return - a Dejunk slider
 function FrameFactory:CreateSlider(parent)
-  local slider = FramePooler:CreateSlider(parent)
+  local slider = FrameCreator:CreateSlider(parent)
   slider:SetWidth(Consts.SLIDER_DEFAULT_WIDTH)
   slider.FF_ObjectType = "Slider"
 
-  slider.Texture = FramePooler:CreateTexture(slider)
+  slider.Texture = FrameCreator:CreateTexture(slider)
 
-  slider.Thumb = FramePooler:CreateTexture(slider)
+  slider.Thumb = FrameCreator:CreateTexture(slider)
   slider.Thumb:SetWidth(Consts.SLIDER_DEFAULT_WIDTH)
   slider.Thumb:SetHeight(Consts.THUMB_DEFAULT_HEIGHT)
   slider:SetThumbTexture(slider.Thumb)
@@ -68,27 +50,6 @@ function FrameFactory:CreateSlider(parent)
     self.Thumb:SetColorTexture(unpack(Colors:GetColor(Colors.SliderThumb))) end)
 
   slider:Refresh()
-
-  -- Pre-hook Release function
-  local release = slider.Release
-
-  function slider:Release()
-    -- Objects
-    self.Texture:Release()
-    self.Texture = nil
-
-    --self:SetThumbTexture(nil)
-    self.Thumb:Release()
-    self.Thumb = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return slider
 end

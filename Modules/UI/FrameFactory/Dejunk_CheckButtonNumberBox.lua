@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_CheckButtonNumberBox: contains FrameFactory functions to create and release a CheckButton & EditBox combo frame.
+-- Dejunk_CheckButtonNumberBox: contains FrameFactory functions to create a CheckButton & EditBox combo frame.
 
 local AddonName, DJ = ...
 
@@ -31,7 +13,7 @@ local FrameFactory = DJ.FrameFactory
 
 local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -42,7 +24,7 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, tooltip, svKey, maxLetters)
   assert(svKey and type(DejunkDB.SV[svKey]) == "table")
 
-  local cbnBox = FramePooler:CreateFrame(parent)
+  local cbnBox = FrameCreator:CreateFrame(parent)
   cbnBox.FF_ObjectType = "CheckButtonNumberBox"
 
   local checkButton = self:CreateCheckButton(cbnBox, size, text, textColor, tooltip)
@@ -99,29 +81,6 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   end
 
   cbnBox:Refresh()
-
-  -- Pre-hook Release function
-  local release = cbnBox.Release
-
-  function cbnBox:Release()
-    -- Objects
-    self.CheckButton:Release()
-    self.CheckButton = nil
-
-    self.EditBoxFrame:Release()
-    self.EditBoxFrame = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return cbnBox
 end

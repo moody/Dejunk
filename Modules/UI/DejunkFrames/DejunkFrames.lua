@@ -1,21 +1,3 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
 -- DejunkFrames: provides Dejunk frames with default functionality.
 
 local AddonName, DJ = ...
@@ -50,22 +32,6 @@ end
 -- Additional initialize logic. Override when necessary.
 function DejunkFrameMixin:OnInitialize() end
 
--- Deinitializes the frame.
-function DejunkFrameMixin:Deinitialize()
-  if not self.Initialized then return end
-  self.Initialized = false
-
-  self:OnDeinitialize()
-
-  FrameFactory:ReleaseUI(self.UI)
-
-  self.Frame:Release()
-  self.Frame = nil
-end
-
--- Additional deinitialize logic. Override when necessary.
-function DejunkFrameMixin:OnDeinitialize() end
-
 --[[
 //*******************************************************************
 //                       General Frame Functions
@@ -74,6 +40,7 @@ function DejunkFrameMixin:OnDeinitialize() end
 
 -- Displays the frame.
 function DejunkFrameMixin:Show()
+  self:Refresh()
   self.Frame:Show()
 end
 
@@ -103,6 +70,7 @@ end
 
 -- Refreshes the frame.
 function DejunkFrameMixin:Refresh()
+  self.Frame:Refresh()
   FrameFactory:RefreshUI(self.UI)
 end
 

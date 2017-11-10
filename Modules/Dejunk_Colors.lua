@@ -1,33 +1,23 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
 -- Dejunk_Colors: provides Dejunk modules easy access to various colors.
 
 local AddonName, DJ = ...
+
+-- Libs
+local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
 local Colors = DJ.Colors
 
 local DejunkDB = DJ.DejunkDB
+local ParentFrame = DJ.DejunkFrames.ParentFrame
 
 -- Variables
 Colors.ColorSchemes = {}
 Colors.CurrentScheme = nil
+Colors.CurrentSchemeName = nil
+
+-- Array of scheme keys
+local SchemeArray = {}
 
 --[[
 //*******************************************************************
@@ -51,6 +41,20 @@ function Colors:Initialize()
   self.Initialized = true
 end
 
+-- Switches to the next scheme in SchemeArray.
+function Colors:NextScheme()
+  for i, v in ipairs(SchemeArray) do
+    if v == Colors.CurrentSchemeName then
+      i = ((i + 1) % (#SchemeArray + 1))
+      if i == 0 then i = 1 end
+
+      self:SetColorScheme(SchemeArray[i])
+      DJ.Core:Print(format(L.COLOR_SCHEME_SET_TEXT, SchemeArray[i]))
+      return
+    end
+  end
+end
+
 -- Sets the current color scheme.
 -- @param colorScheme - a colorScheme defined in Colors.ColorSchemes
 function Colors:SetColorScheme(colorScheme)
@@ -60,6 +64,9 @@ function Colors:SetColorScheme(colorScheme)
 
   DejunkGlobal.ColorScheme = colorScheme
   self.CurrentScheme = self.ColorSchemes[colorScheme]()
+  self.CurrentSchemeName = colorScheme
+
+  if ParentFrame.Initialized then ParentFrame:Refresh() end
 end
 
 -- Returns a color table specified by name.
@@ -110,6 +117,7 @@ end
 function Colors.ColorSchemes:Default()
   return Colors.DefaultColors
 end
+SchemeArray[#SchemeArray+1] = "Default"
 
 -- Returns the "Redscale" color scheme.
 function Colors.ColorSchemes:Redscale()
@@ -145,6 +153,43 @@ function Colors.ColorSchemes:Redscale()
     ListButtonHi = {0.3, 0.15, 0.15, 1},
   }
 end
+SchemeArray[#SchemeArray+1] = "Redscale"
+
+-- Returns the "Greenie" color scheme.
+function Colors.ColorSchemes:Greenie()
+  return
+  {
+    ParentFrame = {0, 0.05, 0, 0.95},
+
+    Title = {0.247, 0.5, 0.247, 1},
+    TitleShadow = {0.05, 0.2, 0.05, 1},
+
+    Button   = {0.05, 0.15, 0.05, 1},
+    ButtonHi = {0.15, 0.3, 0.15, 1},
+    ButtonText = {0.5, 1, 0.5, 1},
+    ButtonTextHi = {1, 1, 1, 1},
+
+    Separator = {0.15, 0.3, 0.15, 1},
+
+    LabelText = {0.35, 0.6, 0.35, 1},
+
+    Inclusions = {0.8, 0.247, 0.247, 1},
+    InclusionsHi = {0.9, 0.4, 0.4, 1},
+
+    Exclusions = {0.247, 0.8, 0.247, 1},
+    ExclusionsHi = {0.4, 0.9, 0.4, 1},
+
+    Area = {0.1, 0.2, 0.1, 0.5},
+
+    ScrollFrame = {0.1, 0.2, 0.1, 0.5},
+    Slider = {0.1, 0.2, 0.1, 0.5},
+    SliderThumb = {0.1, 0.2, 0.1, 1},
+    SliderThumbHi = {0.15, 0.3, 0.15, 1},
+    ListButton = {0.1, 0.2, 0.1, 1},
+    ListButtonHi = {0.15, 0.3, 0.15, 1},
+  }
+end
+SchemeArray[#SchemeArray+1] = "Greenie"
 
 --[[
 //*******************************************************************

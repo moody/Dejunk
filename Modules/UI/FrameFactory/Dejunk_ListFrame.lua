@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_ListFrame: contains FrameFactory functions to create and release a frame for displaying list data.
+-- Dejunk_ListFrame: contains FrameFactory functions to create a frame for displaying list data.
 
 local AddonName, DJ = ...
 
@@ -243,46 +225,6 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
 
   listFrame:Refresh()
   listFrame:Update()
-
-  -- Pre-hook Release function
-  local release = listFrame.Release
-
-  function listFrame:Release()
-    -- Objects
-    self.TitleButton:Release()
-    self.TitleButton = nil
-
-    self.ImportButton:Release()
-    self.ImportButton = nil
-
-    self.ExportButton:Release()
-    self.ExportButton = nil
-
-    for i, button in pairs(self.ButtonFrame.Buttons) do button:Release() end
-    self.ButtonFrame.Buttons = nil
-
-    self.ButtonFrame:Release()
-    self.ButtonFrame.DropItem = nil
-    self.ButtonFrame = nil
-
-    self.Slider:Release()
-    self.Slider = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-    self.ItemList = nil
-
-    -- Functions
-    self.ShowSlider = nil
-    self.HideSlider = nil
-    self.Update = nil
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return listFrame
 end

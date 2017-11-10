@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_ScrollingOptionsFrame: contains FrameFactory functions to create and release a scrollable frame containing Dejunk options.
+-- Dejunk_ScrollingOptionsFrame: contains FrameFactory functions to create a scrollable frame containing Dejunk options.
 
 local AddonName, DJ = ...
 
@@ -28,7 +10,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -37,7 +19,7 @@ local FramePooler = DJ.FramePooler
 --]]
 
 function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
-  local soFrame = FramePooler:CreateFrame(parent)
+  local soFrame = FrameCreator:CreateFrame(parent)
   soFrame.FF_ObjectType = "ScrollingOptionsFrame"
   soFrame.UI = {}
 
@@ -120,31 +102,6 @@ function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
   end)
 
   soFrame:Refresh()
-
-  -- Pre-hook Release function
-  local release = soFrame.Release
-
-  function soFrame:Release()
-    -- Objects
-    self.TitleButton:Release()
-    self.TitleButton = nil
-
-    self.ScrollFrame:Release()
-    self.ScrollFrame = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.ShowSlider = nil
-    self.HideSlider = nil
-    self.UpdateSliderState = nil
-    self.AddOption = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return soFrame
 end

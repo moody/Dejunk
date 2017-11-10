@@ -1,21 +1,3 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
 -- Dejunk_Tools: contains helpful functions such as coloring a string, displaying a tooltip, etc.
 
 local AddonName, DJ = ...
@@ -35,7 +17,6 @@ local Tools = DJ.Tools
 
 local Colors = DJ.Colors
 local Consts = DJ.Consts
-local FramePooler = DJ.FramePooler
 
 --[[
 //*******************************************************************
@@ -126,6 +107,9 @@ end
 //*******************************************************************
 --]]
 
+local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
+sizer:SetColorTexture(0, 0, 0, 0)
+
 -- Measures the width and height between the top-left point of the startRegion
 -- and the bottom-right point of the endRegion.
 -- @param parent - the parent frame used to create a temporary texture
@@ -136,15 +120,12 @@ end
 -- @return width - the width between the two regions
 -- @return height - the height
 function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
-  local sizer = FramePooler:CreateTexture(parent)
   sizer:ClearAllPoints()
+  sizer:SetParent(parent)
   sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
   sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
 
-  local width = sizer:GetWidth()
-  local height = sizer:GetHeight()
-
-  sizer:Release()
+  local width, height = sizer:GetWidth(), sizer:GetHeight()
 
   return width, height
 end

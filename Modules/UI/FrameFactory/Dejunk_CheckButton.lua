@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_CheckButton: contains FrameFactory functions to create and release a check button tailored to Dejunk.
+-- Dejunk_CheckButton: contains FrameFactory functions to create a check button tailored to Dejunk.
 
 local AddonName, DJ = ...
 
@@ -29,7 +11,7 @@ local FrameFactory = DJ.FrameFactory
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 -- Variables
 local CheckButtonSizes =
@@ -71,13 +53,13 @@ local CheckButtonSizes =
 function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, svKey)
   size = (CheckButtonSizes[size] or error("Unrecognized check button size"))
 
-  local checkButton = FramePooler:CreateCheckButton(parent)
+  local checkButton = FrameCreator:CreateCheckButton(parent)
   checkButton:SetHeight(size.Size)
   checkButton:SetWidth(size.Size)
 
   checkButton.FF_ObjectType = "CheckButton"
 
-  checkButton.Text = FramePooler:CreateFontString(checkButton, "OVERLAY", size.Font)
+  checkButton.Text = FrameCreator:CreateFontString(checkButton, "OVERLAY", size.Font)
   checkButton.Text:SetPoint("LEFT", checkButton, "RIGHT", 0, 0)
   checkButton.Text:SetText(text)
 
@@ -123,28 +105,6 @@ function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, 
   end
 
   checkButton:SetColors(textColor)
-
-  -- Pre-hook Release function
-  local release = checkButton.Release
-
-  function checkButton:Release()
-    -- Objects
-    self.Text:Release()
-    self.Text = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-    self.SVKey = nil
-    self.TextColor = nil
-
-    -- Functions
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Refresh = nil
-    self.SetColors = nil
-
-    release(self)
-  end
 
   return checkButton
 end

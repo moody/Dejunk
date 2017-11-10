@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_Button: contains FrameFactory functions to create and release a button tailored to Dejunk.
+-- Dejunk_Button: contains FrameFactory functions to create a button tailored to Dejunk.
 
 local AddonName, DJ = ...
 
@@ -28,7 +10,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -46,12 +28,12 @@ local FramePooler = DJ.FramePooler
 -- @param textColorHi - the color of the text when highlighted [optional]
 -- @return - a Dejunk button
 function FrameFactory:CreateButton(parent, font, text, color, colorHi, textColor, textColorHi)
-  local button = FramePooler:CreateButton(parent)
+  local button = FrameCreator:CreateButton(parent)
   button.FF_ObjectType = "Button"
 
-  button.Texture = FramePooler:CreateTexture(button)
+  button.Texture = FrameCreator:CreateTexture(button)
 
-  button.Text = FramePooler:CreateFontString(button, "OVERLAY", font)
+  button.Text = FrameCreator:CreateFontString(button, "OVERLAY", font)
   button.Text:SetPoint("CENTER", 1, 0)
   button.Text:SetText(text)
 
@@ -103,33 +85,6 @@ function FrameFactory:CreateButton(parent, font, text, color, colorHi, textColor
 
   button:SetColors(color, colorHi, textColor, textColorHi)
   button:Resize()
-
-  -- Pre-hook Release function
-  local release = button.Release
-  function button:Release()
-    -- Objects
-    self.Texture:Release()
-    self.Texture = nil
-
-    self.Text:Release()
-    self.Text = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-    self.Color = nil
-    self.ColorHi = nil
-    self.TextColor = nil
-    self.TextColorHi = nil
-
-    -- Functions
-    self.Resize = nil
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Refresh = nil
-    self.SetColors = nil
-
-    release(self)
-  end
 
   return button
 end

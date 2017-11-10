@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_TextField: contains FrameFactory functions to create and release a labeled edit box.
+-- Dejunk_TextField: contains FrameFactory functions to create a labeled edit box.
 
 local AddonName, DJ = ...
 
@@ -28,7 +10,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -42,7 +24,7 @@ local FramePooler = DJ.FramePooler
 -- @param font - the font style for the edit box to inherit [optional]
 -- @return - a Dejunk text field
 function FrameFactory:CreateTextField(parent, font)
-  local textField = FramePooler:CreateFrame(parent)
+  local textField = FrameCreator:CreateFrame(parent)
   textField.FF_ObjectType = "TextField"
 
   textField.LabelFontString = self:CreateFontString(textField, nil, "GameFontNormal", Colors.LabelText)
@@ -85,32 +67,6 @@ function FrameFactory:CreateTextField(parent, font)
   end
 
   textField:Refresh()
-
-  -- Pre-hook Release functions
-  local release = textField.Release
-
-  function textField:Release()
-    -- Objects
-    self.LabelFontString:Release()
-    self.LabelFontString = nil
-
-    self.HelperFontString:Release()
-    self.HelperFontString = nil
-
-    self.EditBoxFrame:Release()
-    self.EditBoxFrame = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.SetLabelText = nil
-    self.SetHelperText = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return textField
 end

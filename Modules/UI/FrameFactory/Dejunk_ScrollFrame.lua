@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_ScrollFrame: contains FrameFactory functions to create and release a scroll frame tailored to Dejunk.
+-- Dejunk_ScrollFrame: contains FrameFactory functions to create a scroll frame tailored to Dejunk.
 
 local AddonName, DJ = ...
 
@@ -28,7 +10,7 @@ local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -40,16 +22,16 @@ local FramePooler = DJ.FramePooler
 -- @param parent - the parent frame
 -- @return - a Dejunk scroll frame
 function FrameFactory:CreateScrollFrame(parent)
-  local scrollFrame = FramePooler:CreateScrollFrame(parent)
+  local scrollFrame = FrameCreator:CreateScrollFrame(parent)
   scrollFrame.FF_ObjectType = "ScrollFrame"
   scrollFrame.UI = {}
 
   scrollFrame.MinWidth = 0
   scrollFrame.MinHeight = DJ.Consts.SCROLL_FRAME_MIN_HEIGHT
 
-  scrollFrame.Texture = FramePooler:CreateTexture(scrollFrame)
+  scrollFrame.Texture = FrameCreator:CreateTexture(scrollFrame)
 
-  local scrollChild = FramePooler:CreateFrame(scrollFrame)
+  local scrollChild = FrameCreator:CreateFrame(scrollFrame)
   scrollChild:SetWidth(1)
   scrollChild:SetHeight(1)
   scrollFrame.ScrollChild = scrollChild
@@ -130,37 +112,6 @@ function FrameFactory:CreateScrollFrame(parent)
   end
 
   scrollFrame:Refresh()
-
-  -- Pre-hook Release function
-  local release = scrollFrame.Release
-
-  function scrollFrame:Release()
-    -- Objects
-    self.Texture:Release()
-    self.Texture = nil
-
-    self.ScrollChild:Release()
-    self.ScrollChild = nil
-
-    self.Slider:Release()
-    self.Slider = nil
-
-    FrameFactory:ReleaseUI(self.UI)
-    self.UI = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-
-    -- Functions
-    self.AddObject = nil
-    self.IsSliderRequired = nil
-    self.GetMinWidth = nil
-    self.GetMinHeight = nil
-    self.Resize = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return scrollFrame
 end

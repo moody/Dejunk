@@ -1,22 +1,4 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
--- Dejunk_ListButton: contains FrameFactory functions to create and release a button for a list frame.
+-- Dejunk_ListButton: contains FrameFactory functions to create a button for a list frame.
 
 local AddonName, DJ = ...
 
@@ -30,7 +12,7 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
-local FramePooler = DJ.FramePooler
+local FrameCreator = DJ.FrameCreator
 
 --[[
 //*******************************************************************
@@ -45,20 +27,20 @@ local FramePooler = DJ.FramePooler
 function FrameFactory:CreateListButton(parent, listName)
   assert(ListManager[listName] ~= nil)
 
-  local button = FramePooler:CreateButton(parent)
+  local button = FrameCreator:CreateButton(parent)
   button:SetHeight(Consts.LIST_BUTTON_HEIGHT)
   button.FF_ObjectType = "ListButton"
 
-  button.Texture = FramePooler:CreateTexture(button)
+  button.Texture = FrameCreator:CreateTexture(button)
   button.Texture:SetColorTexture(unpack(Colors:GetColor(Colors.ListButton)))
 
-  button.Icon = FramePooler:CreateTexture(button, "ARTWORK")
+  button.Icon = FrameCreator:CreateTexture(button, "ARTWORK")
   button.Icon:ClearAllPoints()
   button.Icon:SetPoint("LEFT", Tools:Padding(0.5), 0)
   button.Icon:SetWidth(Consts.LIST_BUTTON_ICON_SIZE)
   button.Icon:SetHeight(Consts.LIST_BUTTON_ICON_SIZE)
 
-  button.Text = FramePooler:CreateFontString(button, "OVERLAY", "GameFontNormal")
+  button.Text = FrameCreator:CreateFontString(button, "OVERLAY", "GameFontNormal")
   button.Text:SetPoint("LEFT", button.Icon, "RIGHT", Tools:Padding(0.5), 0)
   button.Text:SetPoint("RIGHT", -Tools:Padding(0.5), 0)
   button.Text:SetWordWrap(false)
@@ -113,31 +95,6 @@ function FrameFactory:CreateListButton(parent, listName)
     Tools:HideTooltip() end)
 
   button:Refresh()
-
-  -- Pre-hook Release function
-  local release = button.Release
-
-  function button:Release()
-    -- Objects
-    self.Texture:Release()
-    self.Texture = nil
-
-    self.Icon:Release()
-    self.Icon = nil
-
-    self.Text:Release()
-    self.Text = nil
-
-    -- Variables
-    self.FF_ObjectType = nil
-    self.Item = nil
-
-    -- Functions
-    self.SetItem = nil
-    self.Refresh = nil
-
-    release(self)
-  end
 
   return button
 end

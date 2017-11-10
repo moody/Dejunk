@@ -1,21 +1,3 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
 -- Dejunk_TitleFrame: displays a menu title, character specific settings button, and close button.
 
 local AddonName, DJ = ...
@@ -94,6 +76,13 @@ function TitleFrame:OnInitialize()
     ParentFrame.Frame:SetScale(Scales[scaleIndex])
     ParentFrame:Resize()
   end)
+
+  -- Scheme button
+  ui.SchemeButton = FrameFactory:CreateButton(frame, "GameFontNormal", L.COLOR_SCHEME_TEXT)
+  ui.SchemeButton:SetPoint("TOPRIGHT", ui.ScaleButton, "TOPLEFT", -Tools:Padding(0.25), 0)
+  ui.SchemeButton:SetScript("OnClick", function(self, button, down)
+    Colors:NextScheme()
+  end)
 end
 
 -- @Override
@@ -122,16 +111,20 @@ function TitleFrame:Resize()
   local scaleButtonWidth = (ui.ScaleButton:GetWidth() + Tools:Padding(0.25))
   local scaleButtonHeight = ui.ScaleButton:GetHeight()
 
+  ui.SchemeButton:Resize()
+  local schemeButtonWidth = (ui.SchemeButton:GetWidth() + Tools:Padding(0.25))
+  local schemeButtonHeight = ui.SchemeButton:GetHeight()
+
   -- Width
   local leftSideWidth = max(charSpecWidth, (minimapWidth + tooltipWidth))
-  local rightSideWith = (closeButtonWidth + scaleButtonWidth)
+  local rightSideWith = (closeButtonWidth + scaleButtonWidth + schemeButtonWidth)
 
   local newWidth = (max(leftSideWidth, rightSideWith) * 2)
   newWidth = ((newWidth + titleWidth) + Tools:Padding(4))
 
   -- Height
   local leftSideHeight = (charSpecHeight + max(minimapHeightHeight, tooltipHeight))
-  local rightSideHeight = max(closeButtonHeight, scaleButtonHeight)
+  local rightSideHeight = max(max(closeButtonHeight, scaleButtonHeight), schemeButtonHeight)
   local titleHeight = (titleHeight + Tools:Padding())
 
   local newHeight = max(titleHeight, max(leftSideHeight, rightSideHeight))

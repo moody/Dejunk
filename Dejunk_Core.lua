@@ -1,31 +1,14 @@
---[[
-Copyright 2017 Justin Moody
-
-Dejunk is distributed under the terms of the GNU General Public License.
-You can redistribute it and/or modify it under the terms of the license as
-published by the Free Software Foundation.
-
-This addon is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this addon. If not, see <http://www.gnu.org/licenses/>.
-
-This file is part of Dejunk.
---]]
-
 -- Dejunk_Core: initializes Dejunk.
 
 local AddonName, DJ = ...
-_G["DEJUNK_ADDON_TABLE"] = DJ
+_G["DEJUNK_ADDON_TABLE"] = DJ -- Debug only
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
 local Core = DJ.Core
+Core.isDebug = true
 
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
@@ -82,6 +65,17 @@ function Core:Print(msg)
 
   local title = Tools:GetColorString("[Dejunk]",
     Colors:GetColor(Colors.LabelText))
+
+  print(format("%s %s", title, msg))
+end
+
+-- Prints a formatted debug message ("[name] msg").
+-- @param msg - the message to print
+function Core:Debug(name, msg)
+  if not self.isDebug then return end
+
+  local title = Tools:GetColorString(format("[%s]", name),
+    Colors:GetColor(Colors.Inclusions))
 
   print(format("%s %s", title, msg))
 end
