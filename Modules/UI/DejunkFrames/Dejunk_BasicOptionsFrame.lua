@@ -188,7 +188,6 @@ function BasicOptionsFrame:PopulateSellOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable))
 
-  ---[[ BUG: Adding this option causes stability issues. Random crashses when reloading or switching ParentFrame children.
   -- Equipment below ilvl
   add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
     L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP,
