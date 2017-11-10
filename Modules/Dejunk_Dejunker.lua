@@ -285,9 +285,7 @@ function Dejunker:GetDejunkableItemFromBag(bag, slot)
 end
 
 -- Checks if an item is a junk item based on Dejunk's settings.
--- @param itemID - the id of the item
--- @param price - the price of the item
--- @param quality - the quality of the item
+-- @param item - an item retrieved using Tools:GetItemFromBag
 -- @return - true if the item is considered junk, and false otherwise
 function Dejunker:IsJunkItem(item)
   --[[ Priority
