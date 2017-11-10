@@ -49,19 +49,14 @@ do -- Hook Refresh
   local refresh = TransportChildFrame.Refresh
 
   function TransportChildFrame:Refresh()
-    -- This is to recolor the title text
-    local listName = nil
-    if (currentList == ListManager.Inclusions) then
-      listName = Tools:GetInclusionsString()
-    else -- Exclusions
-      listName = Tools:GetExclusionsString()
-    end
+    -- Recolor the title text when the color scheme changes
+    local titleText = (currentType == self.Import) and
+      L.IMPORT_TITLE_TEXT or L.EXPORT_TITLE_TEXT
 
-    if (currentType == self.Import) then
-      self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
-    else -- Export
-      self.UI.TitleFontString:SetText(format(L.IMPORT_TITLE_TEXT, listName))
-    end
+    local listName = (currentList == ListManager.Inclusions) and
+      Tools:GetInclusionsString() or Tools:GetExclusionsString()
+
+    self.UI.TitleFontString:SetText(format(titleText, listName))
 
     refresh(self)
   end

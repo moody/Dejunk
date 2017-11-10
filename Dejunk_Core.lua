@@ -179,8 +179,8 @@ do
     -- Display an appropriate tooltip if the item is junk
     local isJunkItem = Dejunker:IsJunkItem(itemID, price, quality, itemLevel, reqLevel, class, subClass, equipSlot)
     local dejunkText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
-    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions)) or
-      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
+    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.DefaultColors.Inclusions)) or
+      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.DefaultColors.Exclusions)
 
     self:AddDoubleLine(dejunkText, tipText)
     tooltipAdded = true

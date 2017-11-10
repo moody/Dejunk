@@ -3,7 +3,6 @@
 	<Script file="Modules\Modules.lua"/>
 
   <Script file="Modules\Dejunk_Consts.lua"/>
-	<Script file="Modules\Dejunk_Colors.lua"/>
   <Script file="Modules\Dejunk_DejunkDB.lua"/>
   <Script file="Modules\Dejunk_ListManager.lua"/>
   <Script file="Modules\Dejunk_Tools.lua"/>
@@ -14,6 +13,13 @@
   <!-- /UI/ -->
   <Script file="Modules\UI\Dejunk_MerchantButton.lua"/>
   <Script file="Modules\UI\Dejunk_MinimapIcon.lua"/>
+
+  <!-- /UI/Colors/ -->
+  <Script file="Modules\UI\Colors\Dejunk_Colors.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Default.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Redscale.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Greenscale.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Grayscale.lua"/>
 
   <!-- /UI/FrameFactory/ -->
   <Script file="Modules\UI\FrameFactory\FrameCreator.lua"/>

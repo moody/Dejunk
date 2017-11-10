@@ -12,12 +12,10 @@ local DejunkDB = DJ.DejunkDB
 local ParentFrame = DJ.DejunkFrames.ParentFrame
 
 -- Variables
-Colors.ColorSchemes = {}
+Colors.Schemes = {}
+Colors.SchemeNames = {}
 Colors.CurrentScheme = nil
 Colors.CurrentSchemeName = nil
-
--- Array of scheme keys
-local SchemeArray = {}
 
 --[[
 //*******************************************************************
@@ -32,7 +30,7 @@ function Colors:Initialize()
   assert(DejunkDB.Initialized == true, "DejunkDB has not been initialized")
 
   local colorScheme = DejunkGlobal.ColorScheme
-  if (colorScheme == nil) or (self.ColorSchemes[colorScheme] == nil) then
+  if (colorScheme == nil) or (self.Schemes[colorScheme] == nil) then
     colorScheme = "Default"
   end
 
@@ -41,29 +39,29 @@ function Colors:Initialize()
   self.Initialized = true
 end
 
--- Switches to the next scheme in SchemeArray.
+-- Switches to the next scheme in SchemeNames.
 function Colors:NextScheme()
-  for i, v in ipairs(SchemeArray) do
+  for i, v in ipairs(self.SchemeNames) do
     if v == Colors.CurrentSchemeName then
-      i = ((i + 1) % (#SchemeArray + 1))
+      i = ((i + 1) % (#self.SchemeNames + 1))
       if i == 0 then i = 1 end
 
-      self:SetColorScheme(SchemeArray[i])
-      DJ.Core:Print(format(L.COLOR_SCHEME_SET_TEXT, SchemeArray[i]))
+      self:SetColorScheme(self.SchemeNames[i])
+      DJ.Core:Print(format(L.COLOR_SCHEME_SET_TEXT, self.SchemeNames[i]))
       return
     end
   end
 end
 
 -- Sets the current color scheme.
--- @param colorScheme - a colorScheme defined in Colors.ColorSchemes
+-- @param colorScheme - a colorScheme defined in Colors.Schemes
 function Colors:SetColorScheme(colorScheme)
   assert(type(colorScheme) == "string", "colorScheme must exist and be a string")
-  assert(self.ColorSchemes[colorScheme] ~= nil,
+  assert(self.Schemes[colorScheme] ~= nil,
     format("a color scheme with the name \"%s\" does not exist", colorScheme))
 
   DejunkGlobal.ColorScheme = colorScheme
-  self.CurrentScheme = self.ColorSchemes[colorScheme]()
+  self.CurrentScheme = self.Schemes[colorScheme]()
   self.CurrentSchemeName = colorScheme
 
   if ParentFrame.Initialized then ParentFrame:Refresh() end
@@ -86,6 +84,10 @@ function Colors:GetColor(color, alpha)
   return color
 end
 
+function Colors:HexToTable(hexColor)
+
+end
+
 -- Returns a color table specified by item quality.
 -- @param quality - a value between LE_ITEM_QUALITY_POOR and LE_ITEM_QUALITY_LEGENDARY
 function Colors:GetColorByQuality(quality)
@@ -106,90 +108,6 @@ function Colors:GetColorByQuality(quality)
     return self:GetColor(self.Legendary)
   end
 end
-
---[[
-//*******************************************************************
-//                           Color Schemes
-//*******************************************************************
---]]
-
--- Returns the default color scheme.
-function Colors.ColorSchemes:Default()
-  return Colors.DefaultColors
-end
-SchemeArray[#SchemeArray+1] = "Default"
-
--- Returns the "Redscale" color scheme.
-function Colors.ColorSchemes:Redscale()
-  return
-  {
-    ParentFrame = {0.05, 0, 0, 0.95},
-
-    Title = {0.5, 0.247, 0.247, 1},
-    TitleShadow = {0.2, 0.05, 0.05, 1},
-
-    Button   = {0.15, 0.05, 0.05, 1},
-    ButtonHi = {0.3, 0.15, 0.15, 1},
-    ButtonText = {1, 0.5, 0.5, 1},
-    ButtonTextHi = {1, 1, 1, 1},
-
-    Separator = {0.3, 0.15, 0.15, 1},
-
-    LabelText = {0.6, 0.35, 0.35, 1},
-
-    Inclusions = {0.8, 0.247, 0.247, 1},
-    InclusionsHi = {0.9, 0.4, 0.4, 1},
-
-    Exclusions = {0.247, 0.8, 0.247, 1},
-    ExclusionsHi = {0.4, 0.9, 0.4, 1},
-
-    Area = {0.2, 0.1, 0.1, 0.5},
-
-    ScrollFrame = {0.2, 0.1, 0.1, 0.5},
-    Slider = {0.2, 0.1, 0.1, 0.5},
-    SliderThumb = {0.2, 0.1, 0.1, 1},
-    SliderThumbHi = {0.3, 0.15, 0.15, 1},
-    ListButton = {0.2, 0.1, 0.1, 1},
-    ListButtonHi = {0.3, 0.15, 0.15, 1},
-  }
-end
-SchemeArray[#SchemeArray+1] = "Redscale"
-
--- Returns the "Greenie" color scheme.
-function Colors.ColorSchemes:Greenie()
-  return
-  {
-    ParentFrame = {0, 0.05, 0, 0.95},
-
-    Title = {0.247, 0.5, 0.247, 1},
-    TitleShadow = {0.05, 0.2, 0.05, 1},
-
-    Button   = {0.05, 0.15, 0.05, 1},
-    ButtonHi = {0.15, 0.3, 0.15, 1},
-    ButtonText = {0.5, 1, 0.5, 1},
-    ButtonTextHi = {1, 1, 1, 1},
-
-    Separator = {0.15, 0.3, 0.15, 1},
-
-    LabelText = {0.35, 0.6, 0.35, 1},
-
-    Inclusions = {0.8, 0.247, 0.247, 1},
-    InclusionsHi = {0.9, 0.4, 0.4, 1},
-
-    Exclusions = {0.247, 0.8, 0.247, 1},
-    ExclusionsHi = {0.4, 0.9, 0.4, 1},
-
-    Area = {0.1, 0.2, 0.1, 0.5},
-
-    ScrollFrame = {0.1, 0.2, 0.1, 0.5},
-    Slider = {0.1, 0.2, 0.1, 0.5},
-    SliderThumb = {0.1, 0.2, 0.1, 1},
-    SliderThumbHi = {0.15, 0.3, 0.15, 1},
-    ListButton = {0.1, 0.2, 0.1, 1},
-    ListButtonHi = {0.15, 0.3, 0.15, 1},
-  }
-end
-SchemeArray[#SchemeArray+1] = "Greenie"
 
 --[[
 //*******************************************************************
@@ -220,12 +138,8 @@ Colors.DefaultColors =
 
   Button   = {0.05, 0.05, 0.15, 1},
   ButtonHi = {0.15, 0.15, 0.3, 1},
-  ButtonDisabled = {0.04, 0.04, 0.10, 1},
   ButtonText = {0.5, 0.5, 1, 1},
   ButtonTextHi = {1, 1, 1, 1},
-  ButtonTextDisabled = {0.7, 0.7, 0.8, 1},
-
-  Separator = {0.15, 0.15, 0.3, 1},
 
   LabelText = {0.35, 0.35, 0.6, 1},
 
