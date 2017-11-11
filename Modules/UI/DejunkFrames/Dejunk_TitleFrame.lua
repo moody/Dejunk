@@ -83,6 +83,13 @@ function TitleFrame:OnInitialize()
   ui.SchemeButton:SetScript("OnClick", function(self, button, down)
     Colors:NextScheme()
   end)
+
+  -- DejunkDestroy button
+  ui.DejunkDestroyButton = FrameFactory:CreateButton(frame, "GameFontNormal", "Destroy (L)")
+  ui.DejunkDestroyButton:SetPoint("TOPRIGHT", ui.SchemeButton, "TOPLEFT", -Tools:Padding(0.25), 0)
+  ui.DejunkDestroyButton:SetScript("OnClick", function(self, button, down)
+    print("DejunkDestroyButton")
+  end)
 end
 
 -- @Override
@@ -103,7 +110,7 @@ function TitleFrame:Resize()
   local tooltipHeight = ui.ItemTooltipCheckButton:GetMinHeight()
 
   -- Right side
-  local buttons = {ui.CloseButton, ui.ScaleButton, ui.SchemeButton}
+  local buttons = {ui.CloseButton, ui.ScaleButton, ui.SchemeButton, ui.DejunkDestroyButton}
   local buttonsWidth = 0
   local buttonsHeight = 0
 
