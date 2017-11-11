@@ -14,6 +14,7 @@ local Dejunker = DJ.Dejunker
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
+local TitleFrame = DJ.DejunkFrames.TitleFrame
 local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
@@ -112,13 +113,15 @@ end
 
 -- Sets the ParentFrame's child to BasicChildFrame.
 function Core:ShowBasicChild()
-  previousChild = nil
+  previousChild = ParentFrame:GetCurrentChild()
+  TitleFrame:SetTitleToDejunk()
   ParentFrame:SetCurrentChild(BasicChildFrame)
 end
 
--- Sets the ParentFrame's child to DestroyFrame.
+-- Sets the ParentFrame's child to DestroyChildFrame.
 function Core:ShowDestroyChild()
-  print("Core:ShowDestroyChild()")
+  previousChild = ParentFrame:GetCurrentChild()
+  TitleFrame:SetTitleToDestroy()
   ParentFrame:SetCurrentChild(DestroyChildFrame)
 end
 
@@ -137,16 +140,11 @@ end
 function Core:SwapDejunkDestroyChildFrames()
   assert(ParentFrame.Initialized)
 
-  print("Core:SwapDejunkDestroyChildFrames()")
-
   local currentChild = ParentFrame:GetCurrentChild()
-  local titleFrame = DJ.DejunkFrames.TitleFrame
 
-  if currentChild == BasicChildFrame or currentChild == TransportChildFrame then
-    titleFrame:SetTitleToDestroy()
+  if (currentChild == BasicChildFrame) or (currentChild == TransportChildFrame) then
     self:ShowDestroyChild()
   elseif currentChild == DestroyChildFrame then
-    titleFrame:SetTitleToDejunk()
     self:ShowBasicChild()
   end
 end
@@ -185,7 +183,7 @@ do
 
     -- Display an appropriate tooltip if the item is junk
     local isJunkItem = Dejunker:IsJunkItem(item)
-    local dejunkText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
+    local dejunkText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
     local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.DefaultColors.Inclusions)) or
       Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.DefaultColors.Exclusions)
 
