@@ -168,6 +168,36 @@ function Tools:FindItemInBags(itemLink)
   return nil
 end
 
+-- Gets the information of an item within a specified bag and slot.
+-- @return a table of item information, or nil if the info could not be retrieved
+function Tools:GetItemFromBag(bag, slot)
+  -- Get item info
+  local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+  if not (quantity and not locked and itemLink and not noValue and itemID) then return nil end
+
+  -- Get additional item info
+  local _, _, quality, _, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
+  local itemLevel = GetDetailedItemLevelInfo(itemLink)
+  if not (quality and reqLevel and class and subClass and equipSlot and price and itemLevel) then return nil end
+
+  return {
+    Bag = bag,
+    Slot = slot,
+    Quantity = quantity,
+    Locked = locked,
+    ItemLink = itemLink,
+    NoValue = noValue,
+    ItemID = itemID,
+    Quality = quality,
+    ReqLevel = reqLevel,
+    Class = class,
+    SubClass = subClass,
+    EquipSlot = equipSlot,
+    Price = price,
+    ItemLevel = itemLevel
+  }
+end
+
 -- Checks whether or not an item can be sold based on price and quality.
 -- @param price - the price of an item
 -- @param quality - the quality of an item
