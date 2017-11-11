@@ -103,31 +103,33 @@ function TitleFrame:Resize()
   local tooltipHeight = ui.ItemTooltipCheckButton:GetMinHeight()
 
   -- Right side
-  ui.CloseButton:Resize()
-  local closeButtonWidth = (ui.CloseButton:GetWidth() + 1) -- 1px padding
-  local closeButtonHeight = ui.CloseButton:GetHeight()
+  local buttons = {ui.CloseButton, ui.ScaleButton, ui.SchemeButton}
+  local buttonsWidth = 0
+  local buttonsHeight = 0
 
-  ui.ScaleButton:Resize()
-  local scaleButtonWidth = (ui.ScaleButton:GetWidth() + Tools:Padding(0.25))
-  local scaleButtonHeight = ui.ScaleButton:GetHeight()
-
-  ui.SchemeButton:Resize()
-  local schemeButtonWidth = (ui.SchemeButton:GetWidth() + Tools:Padding(0.25))
-  local schemeButtonHeight = ui.SchemeButton:GetHeight()
+  -- Resize buttons and calculate their collective width and height
+  for i, b in pairs(buttons) do
+    -- 1px padding for the CloseButton, 25% normal padding for the rest
+    -- These values are the X offsets used for SetPoint calls when initializing the buttons
+    local padding = (b == ui.CloseButton) and 1 or Tools:Padding(0.25)
+    b:Resize()
+    buttonsWidth = buttonsWidth + (b:GetWidth() + padding)
+    buttonsHeight = max(buttonsHeight, b:GetHeight())
+  end
 
   -- Width
   local leftSideWidth = max(charSpecWidth, (minimapWidth + tooltipWidth))
-  local rightSideWith = (closeButtonWidth + scaleButtonWidth + schemeButtonWidth)
+  local rightSideWith = buttonsWidth
 
   local newWidth = (max(leftSideWidth, rightSideWith) * 2)
   newWidth = ((newWidth + titleWidth) + Tools:Padding(4))
 
   -- Height
   local leftSideHeight = (charSpecHeight + max(minimapHeightHeight, tooltipHeight))
-  local rightSideHeight = max(max(closeButtonHeight, scaleButtonHeight), schemeButtonHeight)
+  local rightSideHeight = buttonsHeight
   local titleHeight = (titleHeight + Tools:Padding())
 
-  local newHeight = max(titleHeight, max(leftSideHeight, rightSideHeight))
+  local newHeight = max(titleHeight, leftSideHeight, rightSideHeight)
 
   self.Frame:SetWidth(newWidth)
   self.Frame:SetHeight(newHeight)
