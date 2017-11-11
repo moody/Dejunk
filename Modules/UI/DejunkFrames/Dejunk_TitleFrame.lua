@@ -88,7 +88,7 @@ function TitleFrame:OnInitialize()
   ui.DejunkDestroyButton = FrameFactory:CreateButton(frame, "GameFontNormal", "Destroy (L)")
   ui.DejunkDestroyButton:SetPoint("TOPRIGHT", ui.SchemeButton, "TOPLEFT", -Tools:Padding(0.25), 0)
   ui.DejunkDestroyButton:SetScript("OnClick", function(self, button, down)
-    print("DejunkDestroyButton")
+    DJ.Core:SwapDejunkDestroyChildFrames()
   end)
 end
 
@@ -140,4 +140,16 @@ function TitleFrame:Resize()
 
   self.Frame:SetWidth(newWidth)
   self.Frame:SetHeight(newHeight)
+end
+
+-- Updates the title text and dejunk/destroy button.
+function TitleFrame:SetTitleToDejunk()
+  self.UI.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
+  self.UI.DejunkDestroyButton.Text:SetText("Destroy (L)")
+end
+
+-- Updates the title text and dejunk/destroy button.
+function TitleFrame:SetTitleToDestroy()
+  self.UI.TitleFontString:SetText("DESTROY (L)")
+  self.UI.DejunkDestroyButton.Text:SetText("Dejunk (L)")
 end

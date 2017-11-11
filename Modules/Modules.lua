@@ -30,4 +30,5 @@ DJ.DejunkFrames = {
   BasicListsFrame = {},
   BasicChildFrame = {},
   TransportChildFrame = {},
+  DestroyChildFrame = {}
 }

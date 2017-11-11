@@ -16,6 +16,7 @@ local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
 local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
+local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
 
 --[[
 //*******************************************************************
@@ -115,6 +116,12 @@ function Core:ShowBasicChild()
   ParentFrame:SetCurrentChild(BasicChildFrame)
 end
 
+-- Sets the ParentFrame's child to DestroyFrame.
+function Core:ShowDestroyChild()
+  print("Core:ShowDestroyChild()")
+  ParentFrame:SetCurrentChild(DestroyChildFrame)
+end
+
 -- Sets the ParentFrame's child to TransportChildFrame.
 -- @param listName - the name of the list used for transport operations
 -- @param transportType - the type of transport operations to perform
@@ -124,6 +131,24 @@ function Core:ShowTransportChild(listName, transportType)
   ParentFrame:SetCurrentChild(TransportChildFrame, function()
     TransportChildFrame:SetData(listName, transportType)
   end)
+end
+
+-- Swaps between the Dejunk and Destroy child frames.
+function Core:SwapDejunkDestroyChildFrames()
+  assert(ParentFrame.Initialized)
+
+  print("Core:SwapDejunkDestroyChildFrames()")
+
+  local currentChild = ParentFrame:GetCurrentChild()
+  local titleFrame = DJ.DejunkFrames.TitleFrame
+
+  if currentChild == BasicChildFrame or currentChild == TransportChildFrame then
+    titleFrame:SetTitleToDestroy()
+    self:ShowDestroyChild()
+  elseif currentChild == DestroyChildFrame then
+    titleFrame:SetTitleToDejunk()
+    self:ShowBasicChild()
+  end
 end
 
 -- Sets the ParentFrame's child to the previously displayed child.
