@@ -44,11 +44,15 @@
 
   <Script file="Modules\UI\DejunkFrames\Dejunk_ParentFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_TitleFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_DestroyChildFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_TransportChildFrame.lua"/>
 
   <!-- /UI/DejunkFrames/DejunkChildFrame/ -->
   <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildOptionsFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildListsFrame.lua"/>
+
+  <!-- /UI/DejunkFrames/DestroyChildFrame/ -->
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildOptionsFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildListFrame.lua"/>
 </Ui>

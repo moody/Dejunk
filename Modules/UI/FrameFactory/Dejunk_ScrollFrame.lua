@@ -95,7 +95,7 @@ function FrameFactory:CreateScrollFrame(parent)
 
     -- Height of UI objects + vertical padding
     local uiHeight = ((#self.UI > 0) and select(2, Tools:Measure(self,
-      self.UI[1], self.UI[#self.UI], "TOP", "BOTTOM"))) + Tools:Padding()
+      self.UI[1], self.UI[#self.UI], "TOP", "BOTTOM")) or 0) + Tools:Padding()
 
     slider:SetMinMaxValues(0, max(uiHeight - self.MinHeight, 0))
     slider:SetHeight(self.MinHeight)

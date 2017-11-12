@@ -1,4 +1,4 @@
--- Dejunk_DestroyChildFrame: displays options for automatically destroying items.
+-- Dejunk_DestroyChildListFrame: displays options for automatically destroying items.
 
 local AddonName, DJ = ...
 
@@ -6,7 +6,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
+local DestroyChildListFrame = DJ.DejunkFrames.DestroyChildListFrame
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
@@ -20,12 +20,12 @@ local ListManager = DJ.ListManager
 --]]
 
 -- @Override
-function DestroyChildFrame:OnInitialize()
+function DestroyChildListFrame:OnInitialize()
   self:CreateListFrame()
 end
 
 -- @Override
-function DestroyChildFrame:Resize()
+function DestroyChildListFrame:Resize()
   local ui = self.UI
 
   ui.DestroyablesFrame:Resize()
@@ -44,7 +44,7 @@ end
 --]]
 
 -- Creates the Destroyables list frame.
-function DestroyChildFrame:CreateListFrame()
+function DestroyChildListFrame:CreateListFrame()
   local ui = self.UI
   local buttonCount = 5
 
