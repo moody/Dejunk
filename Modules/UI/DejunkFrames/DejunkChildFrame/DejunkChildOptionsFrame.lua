@@ -1,4 +1,4 @@
--- Dejunk_BasicOptionsFrame: displays a simple options menu.
+-- DejunkChildOptionsFrame: displays a simple options menu.
 
 local AddonName, DJ = ...
 
@@ -6,7 +6,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local BasicOptionsFrame = DJ.DejunkFrames.BasicOptionsFrame
+local DejunkChildOptionsFrame = DJ.DejunkFrames.DejunkChildOptionsFrame
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
@@ -14,7 +14,7 @@ local DejunkDB = DJ.DejunkDB
 local FrameFactory = DJ.FrameFactory
 
 -- Variables
-BasicOptionsFrame.OptionFrames = {}
+DejunkChildOptionsFrame.OptionFrames = {}
 
 --[[
 //*******************************************************************
@@ -23,7 +23,7 @@ BasicOptionsFrame.OptionFrames = {}
 --]]
 
 -- @Override
-function BasicOptionsFrame:OnInitialize()
+function DejunkChildOptionsFrame:OnInitialize()
   self:CreateOptions()
 end
 
@@ -34,7 +34,7 @@ end
 --]]
 
 -- @Override
-function BasicOptionsFrame:Resize()
+function DejunkChildOptionsFrame:Resize()
   local ui = self.UI
   local frames = self.OptionFrames
 
@@ -73,9 +73,9 @@ end
 --]]
 
 do -- Hook SetWidth
-  local setWidth = BasicOptionsFrame.SetWidth
+  local setWidth = DejunkChildOptionsFrame.SetWidth
 
-  function BasicOptionsFrame:SetWidth(width)
+  function DejunkChildOptionsFrame:SetWidth(width)
     local oldWidth = self:GetWidth()
     setWidth(self, width)
 
@@ -105,7 +105,7 @@ end
 //*******************************************************************
 --]]
 
-function BasicOptionsFrame:CreateOptions()
+function DejunkChildOptionsFrame:CreateOptions()
   local ui = self.UI
 
   ui.OptionsPositioner = FrameFactory:CreateTexture(self.Frame)
@@ -129,7 +129,7 @@ function BasicOptionsFrame:CreateOptions()
   self:PopulateIgnoreOptions()
 end
 
-function BasicOptionsFrame:PopulateGeneralOptions()
+function DejunkChildOptionsFrame:PopulateGeneralOptions()
   local add = function(option)
     self.UI.GeneralOptionsFrame:AddOption(option)
   end
@@ -151,7 +151,7 @@ function BasicOptionsFrame:PopulateGeneralOptions()
     L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
 end
 
-function BasicOptionsFrame:PopulateSellOptions()
+function DejunkChildOptionsFrame:PopulateSellOptions()
   local add = function(option)
     self.UI.SellOptionsFrame:AddOption(option)
   end
@@ -195,7 +195,7 @@ function BasicOptionsFrame:PopulateSellOptions()
   --]]
 end
 
-function BasicOptionsFrame:PopulateIgnoreOptions()
+function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   local add = function(option)
     self.UI.IgnoreOptionsFrame:AddOption(option)
   end

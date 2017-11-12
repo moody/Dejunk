@@ -1,4 +1,4 @@
--- Dejunk_DejunkChildFrame: combines and displays the BasicOptionsFrame and BasicListsFrame.
+-- DejunkChildFrame: combines and displays the DejunkChildOptionsFrame and DejunkChildListsFrame.
 
 local AddonName, DJ = ...
 
@@ -9,8 +9,8 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
 
 local Tools = DJ.Tools
-local BasicOptionsFrame = DJ.DejunkFrames.BasicOptionsFrame
-local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
+local DejunkChildOptionsFrame = DJ.DejunkFrames.DejunkChildOptionsFrame
+local DejunkChildListsFrame = DJ.DejunkFrames.DejunkChildListsFrame
 
 --[[
 //*******************************************************************
@@ -20,13 +20,13 @@ local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
 
 -- @Override
 function DejunkChildFrame:OnInitialize()
-  BasicOptionsFrame:Initialize()
-  BasicOptionsFrame:SetParent(self.Frame)
-  BasicOptionsFrame:SetPoint({"TOPLEFT", self.Frame})
+  DejunkChildOptionsFrame:Initialize()
+  DejunkChildOptionsFrame:SetParent(self.Frame)
+  DejunkChildOptionsFrame:SetPoint({"TOPLEFT", self.Frame})
 
-  BasicListsFrame:Initialize()
-  BasicListsFrame:SetParent(self.Frame)
-  BasicListsFrame:SetPoint({"TOPLEFT", BasicOptionsFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
+  DejunkChildListsFrame:Initialize()
+  DejunkChildListsFrame:SetParent(self.Frame)
+  DejunkChildListsFrame:SetPoint({"TOPLEFT", DejunkChildOptionsFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
 end
 
 --[[
@@ -39,8 +39,8 @@ do -- Hook Show
   local show = DejunkChildFrame.Show
 
   function DejunkChildFrame:Show()
-    BasicOptionsFrame:Show()
-    BasicListsFrame:Show()
+    DejunkChildOptionsFrame:Show()
+    DejunkChildListsFrame:Show()
     show(self)
   end
 end
@@ -49,8 +49,8 @@ do -- Hook Hide
   local hide = DejunkChildFrame.Hide
 
   function DejunkChildFrame:Hide()
-    BasicOptionsFrame:Hide()
-    BasicListsFrame:Hide()
+    DejunkChildOptionsFrame:Hide()
+    DejunkChildListsFrame:Hide()
     hide(self)
   end
 end
@@ -59,8 +59,8 @@ do -- Hook Enable
   local enable = DejunkChildFrame.Enable
 
   function DejunkChildFrame:Enable()
-    BasicOptionsFrame:Enable()
-    BasicListsFrame:Enable()
+    DejunkChildOptionsFrame:Enable()
+    DejunkChildListsFrame:Enable()
     enable(self)
   end
 end
@@ -69,8 +69,8 @@ do -- Hook Disable
   local disable = DejunkChildFrame.Disable
 
   function DejunkChildFrame:Disable()
-    BasicOptionsFrame:Disable()
-    BasicListsFrame:Disable()
+    DejunkChildOptionsFrame:Disable()
+    DejunkChildListsFrame:Disable()
     disable(self)
   end
 end
@@ -79,20 +79,20 @@ do -- Hook Refresh
   local refresh = DejunkChildFrame.Refresh
 
   function DejunkChildFrame:Refresh()
-    BasicOptionsFrame:Refresh()
-    BasicListsFrame:Refresh()
+    DejunkChildOptionsFrame:Refresh()
+    DejunkChildListsFrame:Refresh()
     refresh(self)
   end
 end
 
 -- @Override
 function DejunkChildFrame:Resize()
-  BasicOptionsFrame:Resize()
-  BasicListsFrame:Resize()
+  DejunkChildOptionsFrame:Resize()
+  DejunkChildListsFrame:Resize()
 
-  local newWidth = max(BasicOptionsFrame:GetWidth(), BasicListsFrame:GetWidth())
+  local newWidth = max(DejunkChildOptionsFrame:GetWidth(), DejunkChildListsFrame:GetWidth())
   local _, newHeight = Tools:Measure(self.Frame,
-    BasicOptionsFrame.Frame, BasicListsFrame.Frame, "TOPLEFT", "BOTTOMLEFT")
+    DejunkChildOptionsFrame.Frame, DejunkChildListsFrame.Frame, "TOPLEFT", "BOTTOMLEFT")
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)
@@ -108,8 +108,8 @@ do -- Hook SetWidth
   local setWidth = DejunkChildFrame.SetWidth
 
   function DejunkChildFrame:SetWidth(width)
-    BasicOptionsFrame:SetWidth(width)
-    BasicListsFrame:SetWidth(width)
+    DejunkChildOptionsFrame:SetWidth(width)
+    DejunkChildListsFrame:SetWidth(width)
     setWidth(self, width)
   end
 end
