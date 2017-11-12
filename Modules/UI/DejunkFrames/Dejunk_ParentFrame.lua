@@ -1,4 +1,4 @@
--- Dejunk_ParentFrame: displays the TitleFrame and a child frame such as BasicChildFrame.
+-- Dejunk_ParentFrame: displays the TitleFrame and a child frame.
 
 local AddonName, DJ = ...
 

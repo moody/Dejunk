@@ -1,4 +1,4 @@
--- Dejunk_BasicChildFrame: displays the BasicOptionsFrame and BasicListsFrame.
+-- Dejunk_DejunkChildFrame: combines and displays the BasicOptionsFrame and BasicListsFrame.
 
 local AddonName, DJ = ...
 
@@ -6,7 +6,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
+local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
 
 local Tools = DJ.Tools
 local BasicOptionsFrame = DJ.DejunkFrames.BasicOptionsFrame
@@ -19,7 +19,7 @@ local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
 --]]
 
 -- @Override
-function BasicChildFrame:OnInitialize()
+function DejunkChildFrame:OnInitialize()
   BasicOptionsFrame:Initialize()
   BasicOptionsFrame:SetParent(self.Frame)
   BasicOptionsFrame:SetPoint({"TOPLEFT", self.Frame})
@@ -36,9 +36,9 @@ end
 --]]
 
 do -- Hook Show
-  local show = BasicChildFrame.Show
+  local show = DejunkChildFrame.Show
 
-  function BasicChildFrame:Show()
+  function DejunkChildFrame:Show()
     BasicOptionsFrame:Show()
     BasicListsFrame:Show()
     show(self)
@@ -46,9 +46,9 @@ do -- Hook Show
 end
 
 do -- Hook Hide
-  local hide = BasicChildFrame.Hide
+  local hide = DejunkChildFrame.Hide
 
-  function BasicChildFrame:Hide()
+  function DejunkChildFrame:Hide()
     BasicOptionsFrame:Hide()
     BasicListsFrame:Hide()
     hide(self)
@@ -56,9 +56,9 @@ do -- Hook Hide
 end
 
 do -- Hook Enable
-  local enable = BasicChildFrame.Enable
+  local enable = DejunkChildFrame.Enable
 
-  function BasicChildFrame:Enable()
+  function DejunkChildFrame:Enable()
     BasicOptionsFrame:Enable()
     BasicListsFrame:Enable()
     enable(self)
@@ -66,9 +66,9 @@ do -- Hook Enable
 end
 
 do -- Hook Disable
-  local disable = BasicChildFrame.Disable
+  local disable = DejunkChildFrame.Disable
 
-  function BasicChildFrame:Disable()
+  function DejunkChildFrame:Disable()
     BasicOptionsFrame:Disable()
     BasicListsFrame:Disable()
     disable(self)
@@ -76,9 +76,9 @@ do -- Hook Disable
 end
 
 do -- Hook Refresh
-  local refresh = BasicChildFrame.Refresh
+  local refresh = DejunkChildFrame.Refresh
 
-  function BasicChildFrame:Refresh()
+  function DejunkChildFrame:Refresh()
     BasicOptionsFrame:Refresh()
     BasicListsFrame:Refresh()
     refresh(self)
@@ -86,7 +86,7 @@ do -- Hook Refresh
 end
 
 -- @Override
-function BasicChildFrame:Resize()
+function DejunkChildFrame:Resize()
   BasicOptionsFrame:Resize()
   BasicListsFrame:Resize()
 
@@ -105,9 +105,9 @@ end
 --]]
 
 do -- Hook SetWidth
-  local setWidth = BasicChildFrame.SetWidth
+  local setWidth = DejunkChildFrame.SetWidth
 
-  function BasicChildFrame:SetWidth(width)
+  function DejunkChildFrame:SetWidth(width)
     BasicOptionsFrame:SetWidth(width)
     BasicListsFrame:SetWidth(width)
     setWidth(self, width)

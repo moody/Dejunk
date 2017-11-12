@@ -46,7 +46,7 @@
   <Script file="Modules\UI\DejunkFrames\Dejunk_TitleFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_BasicOptionsFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_BasicListsFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_BasicChildFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_TransportChildFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\Dejunk_DejunkChildFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_DestroyChildFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\Dejunk_TransportChildFrame.lua"/>
 </Ui>

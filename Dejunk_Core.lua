@@ -15,7 +15,7 @@ local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
 local TitleFrame = DJ.DejunkFrames.TitleFrame
-local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
+local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
 
@@ -81,7 +81,7 @@ local previousChild = nil
 function Core:ToggleGUI()
   if not ParentFrame.Initialized then
     ParentFrame:Initialize()
-    ParentFrame:SetCurrentChild(BasicChildFrame)
+    ParentFrame:SetCurrentChild(DejunkChildFrame)
   end
 
   ParentFrame:Toggle()
@@ -112,12 +112,12 @@ function Core:ToggleCharacterSpecificSettings()
   ParentFrame:Refresh()
 end
 
--- Sets the ParentFrame's child to BasicChildFrame.
-function Core:ShowBasicChild()
+-- Sets the ParentFrame's child to DejunkChildFrame.
+function Core:ShowDejunkChild()
   assert(ParentFrame.Initialized)
   previousChild = ParentFrame:GetCurrentChild()
   TitleFrame:SetTitleToDejunk()
-  ParentFrame:SetCurrentChild(BasicChildFrame)
+  ParentFrame:SetCurrentChild(DejunkChildFrame)
 end
 
 -- Sets the ParentFrame's child to DestroyChildFrame.
@@ -145,15 +145,15 @@ function Core:SwapDejunkDestroyChildFrames()
 
   local currentChild = ParentFrame:GetCurrentChild()
 
-  local showDestroy = (currentChild == BasicChildFrame) or
-    ((currentChild == TransportChildFrame) and (previousChild == BasicChildFrame))
+  local showDestroy = (currentChild == DejunkChildFrame) or
+    ((currentChild == TransportChildFrame) and (previousChild == DejunkChildFrame))
   local showDejunk = (currentChild == DestroyChildFrame) or
     ((currentChild == TransportChildFrame) and (previousChild == DestroyChildFrame))
 
   if showDestroy then
     self:ShowDestroyChild()
   elseif showDejunk then
-    self:ShowBasicChild()
+    self:ShowDejunkChild()
   else
     error("Something went wrong :(")
   end
