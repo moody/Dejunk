@@ -105,8 +105,9 @@ function Core:ToggleCharacterSpecificSettings()
   DejunkDB:Update()
   ListManager:Update()
 
-  if (ParentFrame:GetCurrentChild() ~= BasicChildFrame) then
-    ParentFrame:SetCurrentChild(BasicChildFrame) end
+  -- If transport child frame is showing, show previous child
+  if (ParentFrame:GetCurrentChild() == TransportChildFrame) then
+    ParentFrame:SetCurrentChild(previousChild) end
 
   ParentFrame:Refresh()
 end
