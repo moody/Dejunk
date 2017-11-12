@@ -40,7 +40,7 @@ function BasicListsFrame:Resize()
   local newWidth = max(ui.InclusionsFrame:GetMinWidth(), ui.ExclusionsFrame:GetMinWidth())
   newWidth = ((newWidth * 2) + Tools:Padding())
 
-  local newHeight = max(ui.InclusionsFrame:GetHeight(), ui.InclusionsFrame:GetHeight())
+  local newHeight = max(ui.InclusionsFrame:GetHeight(), ui.ExclusionsFrame:GetHeight())
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)

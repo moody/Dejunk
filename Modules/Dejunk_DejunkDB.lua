@@ -152,6 +152,7 @@ function DejunkDB:Defaults()
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},
     Exclusions = {},
+    Destroyables = {}
   }
 end
 

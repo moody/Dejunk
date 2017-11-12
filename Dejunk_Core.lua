@@ -142,10 +142,17 @@ function Core:SwapDejunkDestroyChildFrames()
 
   local currentChild = ParentFrame:GetCurrentChild()
 
-  if (currentChild == BasicChildFrame) or (currentChild == TransportChildFrame) then
+  local showDestroy = (currentChild == BasicChildFrame) or
+    ((currentChild == TransportChildFrame) and (previousChild == BasicChildFrame))
+  local showDejunk = (currentChild == DestroyChildFrame) or
+    ((currentChild == TransportChildFrame) and (previousChild == DestroyChildFrame))
+
+  if showDestroy then
     self:ShowDestroyChild()
-  elseif currentChild == DestroyChildFrame then
+  elseif showDejunk then
     self:ShowBasicChild()
+  else
+    error("Something went wrong :(")
   end
 end
 

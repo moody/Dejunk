@@ -156,6 +156,9 @@ Colors.DefaultColors =
   Exclusions = {0.247, 0.8, 0.247, 1},
   ExclusionsHi = {0.4, 0.9, 0.4, 1},
 
+  Destroyables = {0.8, 0.365, 0.247, 1},
+  DestroyablesHi = {0.9, 0.51, 0.4, 1},
+
   Area = {0.1, 0.1, 0.2, 0.5},
 
   ScrollFrame = {0.1, 0.1, 0.2, 0.5},

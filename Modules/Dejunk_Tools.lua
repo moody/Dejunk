@@ -63,6 +63,25 @@ function Tools:GetExclusionsString()
   return self:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
 end
 
+-- Returns the localized Destroyables string in color.
+function Tools:GetDestroyablesString()
+  return self:GetColorString(L.DESTROYABLES_TEXT, Colors.Destroyables)
+end
+
+function Tools:GetColoredListName(listName)
+  assert(DJ.ListManager[listName])
+
+  if (listName == DJ.ListManager.Inclusions) then
+    return self:GetInclusionsString()
+  elseif (listName == DJ.ListManager.Exclusions) then
+    return self:GetExclusionsString()
+  elseif (listName == DJ.ListManager.Destroyables) then
+    return self:GetDestroyablesString()
+  else
+    error(format("Unsupported list name: \"%s\"", listName))
+  end
+end
+
 --[[
 //*******************************************************************
 //  					    			  Tooltip Functions
