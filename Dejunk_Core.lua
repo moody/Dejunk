@@ -113,6 +113,7 @@ end
 
 -- Sets the ParentFrame's child to BasicChildFrame.
 function Core:ShowBasicChild()
+  assert(ParentFrame.Initialized)
   previousChild = ParentFrame:GetCurrentChild()
   TitleFrame:SetTitleToDejunk()
   ParentFrame:SetCurrentChild(BasicChildFrame)
@@ -120,6 +121,7 @@ end
 
 -- Sets the ParentFrame's child to DestroyChildFrame.
 function Core:ShowDestroyChild()
+  assert(ParentFrame.Initialized)
   previousChild = ParentFrame:GetCurrentChild()
   TitleFrame:SetTitleToDestroy()
   ParentFrame:SetCurrentChild(DestroyChildFrame)

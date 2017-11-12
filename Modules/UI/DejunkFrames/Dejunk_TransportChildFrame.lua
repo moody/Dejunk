@@ -54,9 +54,6 @@ do -- Hook Refresh
     -- Recolor the title text when the color scheme changes
     local titleText = (currentType == self.Import) and
       L.IMPORT_TITLE_TEXT or L.EXPORT_TITLE_TEXT
-
-    -- local listName = (currentList == ListManager.Inclusions) and
-    --   Tools:GetInclusionsString() or Tools:GetExclusionsString()
     local listName = Tools:GetColoredListName(currentList)
 
     self.UI.TitleFontString:SetText(format(titleText, listName))
@@ -107,13 +104,6 @@ function TransportChildFrame:SetData(listName, transportType)
 
   currentList = listName
   currentType = transportType
-
-  -- if (listName == ListManager.Inclusions) then
-  --   listName = Tools:GetInclusionsString()
-  -- else -- Exclusions
-  --   listName = Tools:GetExclusionsString()
-  -- end
-
   listName = Tools:GetColoredListName(listName)
 
   if (transportType == self.Import) then

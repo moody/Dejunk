@@ -68,6 +68,8 @@ function Tools:GetDestroyablesString()
   return self:GetColorString(L.DESTROYABLES_TEXT, Colors.Destroyables)
 end
 
+-- Returns the list name as a localized string in color.
+-- @param listName - a list name key defined in ListManager
 function Tools:GetColoredListName(listName)
   assert(DJ.ListManager[listName])
 

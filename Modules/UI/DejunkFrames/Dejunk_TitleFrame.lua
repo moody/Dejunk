@@ -144,12 +144,14 @@ end
 
 -- Updates the title text and dejunk/destroy button.
 function TitleFrame:SetTitleToDejunk()
+  assert(self.Initialized)
   self.UI.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
   self.UI.DejunkDestroyButton.Text:SetText(L.DESTROY_TEXT)
 end
 
 -- Updates the title text and dejunk/destroy button.
 function TitleFrame:SetTitleToDestroy()
+  assert(self.Initialized)
   self.UI.TitleFontString:SetText(L.DESTROY_OPTIONS_TEXT)
   self.UI.DejunkDestroyButton.Text:SetText(L.DEJUNK_TEXT)
 end

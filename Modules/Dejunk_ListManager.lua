@@ -50,12 +50,6 @@ local destroyablesSV = nil
 
 -- Parsing Frame
 local parseFrame = CreateFrame("Frame", AddonName.."ListManagerParseFrame")
--- parseFrame.InclusionsToAdd = {}
--- parseFrame.InclusionsToRemove = {}
--- parseFrame.ExclusionsToAdd = {}
--- parseFrame.ExclusionsToRemove = {}
--- parseFrame.DestroyablesToAdd = {}
--- parseFrame.DestroyablesToRemove = {}
 parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = numOfAttemptsToParse
 
 --[[
@@ -85,23 +79,6 @@ function ListManager:Update()
   exclusionsSV = DejunkDB.SV.Exclusions
   destroyablesSV = DejunkDB.SV.Destroyables
 
-  -- -- Load inclusions items
-  -- for itemID in pairs(inclusionsSV) do
-  --   -- parseFrame.InclusionsToAdd[itemID] = true
-  --   self.ToAdd.Inclusions[itemID] = true
-  -- end
-  --
-  -- -- Load exclusions items
-  -- for itemID in pairs(exclusionsSV) do
-  --   -- parseFrame.ExclusionsToAdd[itemID] = true
-  --   self.ToAdd.Inclusions[itemID] = true
-  -- end
-  --
-  -- -- Load destroyables items
-  -- for itemID in pairs(destroyablesSV) do
-  --   parseFrame.DestroyablesToAdd[itemID] = true
-  -- end
-
   -- Load lists' items
   for k, v in pairs(self.ToAdd) do
     for itemID in pairs(self:GetListSV(k)) do
@@ -114,10 +91,6 @@ end
 -- @param listName - the name of the list to check for being parsed [optional]
 -- @return - boolean
 function ListManager:IsParsing(listName)
-  -- local parsingInclusions = (next(parseFrame.InclusionsToRemove) or next(parseFrame.InclusionsToAdd))
-  -- local parsingExclusions = (next(parseFrame.ExclusionsToRemove) or next(parseFrame.ExclusionsToAdd))
-  -- local parsingDestroyables = (next(parseFrame.DestroyablesToRemove) or next(parseFrame.DestroyablesToAdd))
-
   local parsingInclusions = (next(self.ToAdd.Inclusions) or next(self.ToRemove.Inclusions))
   local parsingExclusions = (next(self.ToAdd.Exclusions) or next(self.ToRemove.Exclusions))
   local parsingDestroyables = (next(self.ToAdd.Destroyables) or next(self.ToRemove.Destroyables))
@@ -187,19 +160,16 @@ function ListManager:AddToList(listName, itemID)
   local toAdd, coloredListName, otherListName, sv
 
   if (listName == self.Inclusions) then
-    -- toAdd = parseFrame.InclusionsToAdd
     toAdd = self.ToAdd.Inclusions
     coloredListName = Tools:GetInclusionsString()
     otherListName = self.Exclusions
     sv = inclusionsSV
   elseif (listName == self.Exclusions) then
-    -- toAdd = parseFrame.ExclusionsToAdd
     toAdd = self.ToAdd.Exclusions
     coloredListName = Tools:GetExclusionsString()
     otherListName = self.Inclusions
     sv = exclusionsSV
   else -- Destroyables
-    -- toAdd = parseFrame.DestroyablesToAdd
     toAdd = self.ToAdd.Destroyables
     coloredListName = Tools:GetDestroyablesString()
     sv = destroyablesSV
@@ -231,9 +201,6 @@ function ListManager:RemoveFromList(listName, itemID)
 
   if not self:IsOnList(listName, itemID) then return end
 
-  -- local toRemove = (listName == self.Inclusions) and
-  --   parseFrame.InclusionsToRemove or parseFrame.ExclusionsToRemove
-
   local toRemove
 
   if (listName == self.Inclusions) then
@@ -255,8 +222,6 @@ function ListManager:IsOnList(listName, itemID)
   assert(self[listName] ~= nil)
   itemID = tostring(itemID)
 
-  -- return (listName == self.Inclusions) and
-  --   inclusionsSV[itemID] or exclusionsSV[itemID]
   return self:GetListSV(listName)[itemID]
 end
 
@@ -271,8 +236,6 @@ function ListManager:GetItemFromList(listName, itemID)
   if not self:IsOnList(listName, itemID) then return nil end
 
   -- Initialize data
-  -- local list = (listName == self.Inclusions) and
-  --   self.InclusionsList or self.ExclusionsList
   local list = self.Lists[listName]
 
   for i=1, #list do
@@ -351,7 +314,6 @@ function ListManager:ExportFromList(listName)
   assert(self[listName] ~= nil)
 
   -- Initialize data
-  -- local sv = (listName == self.Inclusions) and inclusionsSV or exclusionsSV
   local sv
 
   if (listName == self.Inclusions) then
@@ -384,27 +346,13 @@ function parseFrame:OnUpdate(elapsed)
   if DJ.Dejunker:IsDejunking() then return end
 
   -- Removals
-  -- if next(self.InclusionsToRemove) then
-  --   ListManager:CleanList(ListManager.Inclusions) end
-  -- if next(self.ExclusionsToRemove) then
-  --   ListManager:CleanList(ListManager.Exclusions) end
-  -- if next(self.DestroyablesToRemove) then
-  --   ListManager:CleanList(ListManager.Destroyables) end
-
-  for k, v in pairs(ListManager.ToRemove) do
-    if next(v) then ListManager:CleanList(k) end
+  for listName, list in pairs(ListManager.ToRemove) do
+    if next(list) then ListManager:CleanList(listName) end
   end
 
   -- Additions
-  -- if next(self.InclusionsToAdd) then
-  --   ListManager:ParseList(ListManager.Inclusions) end
-  -- if next(self.ExclusionsToAdd) then
-  --   ListManager:ParseList(ListManager.Exclusions) end
-  -- if next(self.DestroyablesToAdd) then
-  --   ListManager:ParseList(ListManager.Destroyables) end
-
-  for k, v in pairs(ListManager.ToAdd) do
-    if next(v) then ListManager:ParseList(k) end
+  for listName, list in pairs(ListManager.ToAdd) do
+    if next(list) then ListManager:ParseList(listName) end
   end
 end
 
@@ -419,19 +367,16 @@ function ListManager:CleanList(listName)
   local toRemove, coloredListName, sv, list
 
   if (listName == self.Inclusions) then
-    -- toRemove = parseFrame.InclusionsToRemove
     toRemove = self.ToRemove.Inclusions
     coloredListName = Tools:GetInclusionsString()
     sv = inclusionsSV
     list = self.InclusionsList
   elseif (listName == self.Exclusions) then
-    -- toRemove = parseFrame.ExclusionsToRemove
     toRemove = self.ToRemove.Exclusions
     coloredListName = Tools:GetExclusionsString()
     sv = exclusionsSV
     list = self.ExclusionsList
   else -- Destroyables
-    -- toRemove = parseFrame.DestroyablesToRemove
     toRemove = self.ToRemove.Destroyables
     coloredListName = Tools:GetDestroyablesString()
     sv = destroyablesSV
@@ -468,19 +413,16 @@ function ListManager:ParseList(listName)
   local toAdd, coloredListName, sv, list
 
   if (listName == self.Inclusions) then
-    -- toAdd = parseFrame.InclusionsToAdd
     toAdd = self.ToAdd.Inclusions
     coloredListName = Tools:GetInclusionsString()
     sv = inclusionsSV
     list = self.InclusionsList
   elseif (listName == self.Exclusions) then
-    -- toAdd = parseFrame.ExclusionsToAdd
     toAdd = self.ToAdd.Exclusions
     coloredListName = Tools:GetExclusionsString()
     sv = exclusionsSV
     list = self.ExclusionsList
   else -- Destroyables
-    -- toAdd = parseFrame.ExclusionsToAdd
     toAdd = self.ToAdd.Destroyables
     coloredListName = Tools:GetDestroyablesString()
     sv = destroyablesSV
