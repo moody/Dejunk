@@ -1,4 +1,4 @@
--- Dejunk_Destroyer: handles the process of selling junk items to merchants.
+-- Dejunk_Destroyer: handles the process of destroying items in the player's bags.
 
 local AddonName, DJ = ...
 
@@ -60,8 +60,6 @@ DestroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 -- Starts the Destroying process.
 function Destroyer:StartDestroying()
-  error("Not yet implemented.")
-
   local canDestroy, msg = Core:CanDestroy()
   if not canDestroy then
     Core:Print(msg)
@@ -75,15 +73,15 @@ function Destroyer:StartDestroying()
 
   if not allItemsCached then
     if (#ItemsToDestroy > 0) then
-      Core:Print(L.ONLY_SELLING_CACHED)
+      Core:Print("Only destroying cached items. (L)")
     else
-      Core:Print(L.NO_CACHED_JUNK_ITEMS)
+      Core:Print("No cached destroyable items. (L)")
       self:StopDestroying()
       return
     end
   end
 
-  self:StartDestroying()
+  self:StartDestroyingItems()
 end
 
 -- Cancels the Destroying process.
@@ -106,15 +104,15 @@ end
 
 --[[
 //*******************************************************************
-//                        Destroying Functions
+//                        Destroy Item Functions
 //*******************************************************************
 --]]
 
-local SELL_DELAY = 0.25
-local sellInterval = 0
+local DESTROY_DELAY = 0.25
+local destroyInterval = 0
 
--- Starts the selling process.
-function Destroyer:StartDestroying()
+-- Starts the destroying items process.
+function Destroyer:StartDestroyingItems()
   assert(currentState == DestroyerState.Destroying)
 
   if (#ItemsToDestroy <= 0) then
@@ -123,116 +121,43 @@ function Destroyer:StartDestroying()
 		return
 	end
 
-  sellInterval = 0
+  destroyInterval = 0
 
   DestroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
-    self:DestroyableItems(frame, elapsed) end)
+    self:DestroyItems(frame, elapsed) end)
 end
 
--- Cancels the selling process and starts the profiting process.
-function Destroyer:StopDestroying()
+-- Cancels the destroying items process.
+function Destroyer:StopDestroyingItems()
   DestroyerFrame:SetScript("OnUpdate", nil)
 
-  self:StartProfiting()
+  self:StopDestroying()
 end
 
--- -- Checks whether or not the Destroyer is actively selling items.
--- -- @return - boolean
--- function Destroyer:IsDestroying()
---   return (currentState == DestroyerState.Destroying)
--- end
+-- Set as the OnUpdate function during the destroying items process.
+function Destroyer:DestroyItems(frame, elapsed)
+	destroyInterval = (destroyInterval + elapsed)
 
--- Set as the OnUpdate function during the selling process.
-function Destroyer:DestroyableItems(frame, elapsed)
-	sellInterval = (sellInterval + elapsed)
-
-	if (sellInterval >= SELL_DELAY) then
-		sellInterval = 0
+	if (destroyInterval >= DESTROY_DELAY) then
+		destroyInterval = 0
 
 		self:DestroyNextItem()
 
 		if (#ItemsToDestroy <= 0) then
-      self:StopDestroying() end
+      self:StopDestroyingItems() end
 	end
 end
 
 -- Destroys the next item in the ItemsToDestroy table.
 function Destroyer:DestroyNextItem()
-	local item = remove(ItemsToDestroy)
+  local item = remove(ItemsToDestroy)
 	if not item then return end
+
+  print("Would have destroyed: "..item.ItemLink)
+  if true then return end
 
 	UseContainerItem(item.Bag, item.Slot)
   DestroyedItems[#DestroyedItems+1] = item
-end
-
---[[
-//*******************************************************************
-//                       Profiting Functions
-//*******************************************************************
---]]
-
-local totalProfit = 0
-
--- Starts the profiting process.
-function Destroyer:StartProfiting()
-  assert(currentState == DestroyerState.Selling)
-
-  if (#DestroyedItems <= 0) then
-    self:StopDestroying()
-    return
-  end
-
-  currentState = DestroyerState.Profiting
-  totalProfit = 0
-  DestroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
-    self:CalculateProfits()
-  end)
-end
-
--- Cancels the profiting process.
-function Destroyer:StopProfiting()
-  assert(currentState == DestroyerState.Profiting)
-
-  DestroyerFrame:SetScript("OnUpdate", nil)
-
-  if (totalProfit > 0) then
-    Core:Print(format(L.SOLD_YOUR_JUNK, GetCoinTextureString(totalProfit)))
-  end
-
-  self:StopDestroying()
-end
-
--- Set as the OnUpdate function during the profiting process.
-function Destroyer:CalculateProfits()
-  local profit = Destroyer:CheckForNextDestroyedItem()
-
-  if profit then
-    totalProfit = (totalProfit + profit) end
-
-  if (#DestroyedItems <= 0) then
-    self:StopProfiting() end
-end
-
--- Checks if the next entry in DestroyedItems has sold and returns the profit.
--- @return - profit if the item was sold, or nil if not
-function Destroyer:CheckForNextDestroyedItem()
-  local item = remove(DestroyedItems, 1)
-  if not item then return nil end
-
-  local _, quantity, locked, _, _, _, itemLink = GetContainerItemInfo(item.Bag, item.Slot)
-
-  if ((itemLink and quantity) and (itemLink == item.Link) and (quantity == item.Quantity)) then
-    if locked then -- Item probably being sold, add it back to list and try again later
-      DestroyedItems[#DestroyedItems+1] = item
-    else -- Item is still in bags, so it may not have sold
-      Core:Print(format(L.MAY_NOT_HAVE_SOLD_ITEM, item.Link))
-    end
-
-    return nil
-  end
-
-  -- Bag and slot is empty, so the item should have sold
-  return (item.Price * item.Quantity)
 end
 
 --[[
@@ -255,9 +180,6 @@ function Destroyer:SearchForDestroyableItems()
 
         if item then -- item is cached
           ItemsToDestroy[#ItemsToDestroy+1] = item
-
-          if ((#ItemsToDestroy == Consts.SAFE_MODE_MAX) and DejunkDB.SV.SafeMode) then
-            Core:Print(L.SAFE_MODE_MESSAGE) return end
         end
       end
     end
@@ -270,7 +192,7 @@ function Destroyer:GetDestroyableItemFromBag(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item then return nil end
 
-  if item.NoValue or not Tools:ItemCanBeDestroyed(item.Price, item.Quality) then return nil end
+  --if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end -- Implement later
   if not self:IsDestroyableItem(item) then return nil end
 
   return item

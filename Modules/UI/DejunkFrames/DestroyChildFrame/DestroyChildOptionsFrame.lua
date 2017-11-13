@@ -81,8 +81,10 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- Start Destroying button
   ui.StartDestroyingButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall", "Start Destroying (L)")
   ui.StartDestroyingButton:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Tools:Padding(), 0)
+  ui.StartDestroyingButton:SetScript("OnUpdate", function(self, button, down)
+    self:SetEnabled(DJ.Core:CanDestroy()) end)
   ui.StartDestroyingButton:SetScript("OnClick", function(self, button, down)
-    print("StartDestroyingButton clicked")
+    DJ.Destroyer:StartDestroying()
   end)
 
   ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(frame, "Settings (L)", "GameFontNormalHuge")

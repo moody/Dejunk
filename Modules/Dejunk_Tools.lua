@@ -194,7 +194,7 @@ end
 function Tools:GetItemFromBag(bag, slot)
   -- Get item info
   local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-  if not (quantity and not locked and itemLink and not noValue and itemID) then return nil end
+  if not (quantity and not locked and itemLink and itemID) then return nil end
 
   -- Get additional item info
   local _, _, quality, _, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
