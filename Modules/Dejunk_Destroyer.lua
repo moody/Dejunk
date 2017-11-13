@@ -28,6 +28,7 @@ local currentState = DestroyerState.None
 
 local ItemsToDestroy = {}
 local DestroyedItems = {}
+local numDestroyedItems = 0
 
 --[[
 //*******************************************************************
@@ -35,9 +36,9 @@ local DestroyedItems = {}
 //*******************************************************************
 --]]
 
-local DestroyerFrame = CreateFrame("Frame", AddonName.."DestroyerFrame")
+local destroyerFrame = CreateFrame("Frame", AddonName.."DestroyerFrame")
 
-function DestroyerFrame:OnEvent(event, ...)
+function destroyerFrame:OnEvent(event, ...)
   if (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
@@ -49,8 +50,8 @@ function DestroyerFrame:OnEvent(event, ...)
   end
 end
 
-DestroyerFrame:SetScript("OnEvent", DestroyerFrame.OnEvent)
-DestroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
+destroyerFrame:SetScript("OnEvent", destroyerFrame.OnEvent)
+destroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 --[[
 //*******************************************************************
@@ -88,12 +89,13 @@ end
 function Destroyer:StopDestroying()
   assert(currentState ~= DestroyerState.None)
 
-  DestroyerFrame:SetScript("OnUpdate", nil)
+  destroyerFrame:SetScript("OnUpdate", nil)
 
   currentState = DestroyerState.None
 
   for k in pairs(ItemsToDestroy) do ItemsToDestroy[k] = nil end
   for k in pairs(DestroyedItems) do DestroyedItems[k] = nil end
+  numDestroyedItems = 0
 end
 
 -- Checks whether or not the Destroyer is active.
@@ -123,15 +125,15 @@ function Destroyer:StartDestroyingItems()
 
   destroyInterval = 0
 
-  DestroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
+  destroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
     self:DestroyItems(frame, elapsed) end)
 end
 
 -- Cancels the destroying items process.
 function Destroyer:StopDestroyingItems()
-  DestroyerFrame:SetScript("OnUpdate", nil)
+  destroyerFrame:SetScript("OnUpdate", nil)
 
-  self:StopDestroying()
+  self:StartLosing()
 end
 
 -- Set as the OnUpdate function during the destroying items process.
@@ -163,6 +165,81 @@ function Destroyer:DestroyNextItem()
   ClearCursor()
 
   DestroyedItems[#DestroyedItems+1] = item
+end
+
+--[[
+//*******************************************************************
+//                         Loss Functions
+//*******************************************************************
+--]]
+
+local totalLoss = 0
+
+-- Starts the loss calculation process.
+function Destroyer:StartLosing()
+  assert(currentState == DestroyerState.Destroying)
+
+  if (#DestroyedItems <= 0) then
+    self:StopDestroying()
+    return
+  end
+
+  totalLoss = 0
+  destroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
+    self:CalculateLoss()
+  end)
+end
+
+-- Cancels the losing process.
+function Destroyer:StopLosing()
+  assert(currentState == DestroyerState.Destroying)
+
+  destroyerFrame:SetScript("OnUpdate", nil)
+
+  if (numDestroyedItems == 1) then
+    Core:Print(format("Destroyed 1 item worth %s. (L)",
+      GetCoinTextureString(totalLoss)))
+  else
+    Core:Print(format("Destroyed %s items worth %s in total. (L)",
+      numDestroyedItems, GetCoinTextureString(totalLoss)))
+  end
+
+  self:StopDestroying()
+end
+
+-- Set as the OnUpdate function during the losing process.
+function Destroyer:CalculateLoss()
+  local loss = Destroyer:CheckForNextDestroyedItem()
+
+  if loss then
+    totalLoss = (totalLoss + loss)
+    numDestroyedItems = (numDestroyedItems + 1)
+  end
+
+  if (#DestroyedItems <= 0) then
+    self:StopLosing() end
+end
+
+-- Checks if the next entry in DestroyedItems has been destroyed and returns the loss.
+-- @return - loss if the item was destroyed, or nil if not
+function Destroyer:CheckForNextDestroyedItem()
+  local item = remove(DestroyedItems, 1)
+  if not item then return nil end
+
+  local _, quantity, locked, _, _, _, itemLink = GetContainerItemInfo(item.Bag, item.Slot)
+
+  if ((itemLink and quantity) and (itemLink == item.Link) and (quantity == item.Quantity)) then
+    if locked then -- Item probably being destroyed, add it back to list and try again later
+      DestroyedItems[#DestroyedItems+1] = item
+    else -- Item is still in bags, so it may not have been destroyed
+      Core:Print(format("May not have destroyed %s. (L)", item.Link))
+    end
+
+    return nil
+  end
+
+  -- Bag and slot is empty, so the item should have been destroyed
+  return (item.Price * item.Quantity)
 end
 
 --[[
