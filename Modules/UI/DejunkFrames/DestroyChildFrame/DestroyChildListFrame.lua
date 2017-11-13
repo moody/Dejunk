@@ -30,7 +30,7 @@ function DestroyChildListFrame:Resize()
 
   ui.DestroyablesFrame:Resize()
 
-  local newWidth = ui.DestroyablesFrame:GetMinWidth() + Tools:Padding()
+  local newWidth = ui.DestroyablesFrame:GetMinWidth() + Tools:Padding(2)
   local newHeight = ui.DestroyablesFrame:GetHeight()
 
   self:SetWidth(newWidth)

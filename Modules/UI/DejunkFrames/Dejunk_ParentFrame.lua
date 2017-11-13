@@ -157,7 +157,12 @@ function ParentFrame:SetCurrentChild(newChild, callback)
   if currentChild then currentChild:Hide() end
 
   currentChild = newChild
-  currentChild:Initialize()
+
+  if not currentChild.Initialized then
+    currentChild:Initialize()
+    currentChild:Resize() -- NOTE: This is a band-aid to prevent certain UI glitches.
+  end
+
   currentChild:SetParent(self.Frame)
   currentChild:SetPoint(point)
   currentChild:Show()

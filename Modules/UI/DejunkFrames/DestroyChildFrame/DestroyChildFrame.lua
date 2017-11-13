@@ -27,26 +27,16 @@ function DestroyChildFrame:OnInitialize()
   local ui = self.UI
   local frame = self.Frame
 
-  -- Start Destroying button
-  ui.StartDestroyingButton = FrameFactory:CreateButton(frame, "GameFontNormal", "Start Destroying (L)")
-  ui.StartDestroyingButton:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Tools:Padding(), 0)
-  ui.StartDestroyingButton:SetScript("OnClick", function(self, button, down)
-    print("StartDestroyingButton clicked")
-  end)
-
   -- DestroyChildFrame
   DestroyChildOptionsFrame:Initialize()
   DestroyChildOptionsFrame:SetParent(frame)
   DestroyChildOptionsFrame:SetPoint({"TOPLEFT", frame})
-  --DestroyChildOptionsFrame:SetPoint({"BOTTOMLEFT", frame})
-  --DestroyChildOptionsFrame:SetPoint({"BOTTOMLEFT", ui.StartDestroyingButton, "TOPLEFT", 0, -Tools:Padding(0.5)})
 
   -- DestroyChildListFrame
   DestroyChildListFrame:Initialize()
   DestroyChildListFrame:SetParent(frame)
   DestroyChildListFrame:SetPoint({"BOTTOMRIGHT", frame})
-  --DestroyChildListFrame:SetPoint({"BOTTOMLEFT", DestroyChildOptionsFrame.Frame, "BOTTOMRIGHT", Tools:Padding(0.5), 0})
-  DestroyChildListFrame:SetPoint({"BOTTOMLEFT", ui.StartDestroyingButton, "BOTTOMRIGHT", 0, 0})
+  DestroyChildListFrame:SetPoint({"BOTTOMLEFT", DestroyChildOptionsFrame.Frame, "BOTTOMRIGHT", -Tools:Padding(), 0})
 end
 
 --[[
@@ -107,38 +97,15 @@ end
 
 -- @Override
 function DestroyChildFrame:Resize()
-  local ui = self.UI
-
-  ui.StartDestroyingButton:Resize()
   DestroyChildOptionsFrame:Resize()
   DestroyChildListFrame:Resize()
 
-  -- Keep options and destroy button at equal width
-  local leftWidth = max(ui.StartDestroyingButton:GetWidth(), DestroyChildOptionsFrame:GetWidth())
-  ui.StartDestroyingButton:SetWidth(leftWidth)
-  DestroyChildOptionsFrame:SetWidth(leftWidth)
+  local newWidth = DestroyChildOptionsFrame:GetWidth() + DestroyChildListFrame:GetWidth() - Tools:Padding()
+  local newHeight = max(DestroyChildOptionsFrame:GetHeight(), DestroyChildListFrame:GetHeight())
 
-  local newWidth = leftWidth + Tools:Padding(0.5) + DestroyChildListFrame:GetWidth()
-
-  local leftHeight = DestroyChildOptionsFrame:GetHeight() + Tools:Padding(0.5) + ui.StartDestroyingButton:GetHeight()
-  local newHeight = max(leftHeight, DestroyChildListFrame:GetHeight())
+  DestroyChildOptionsFrame:SetHeight(newHeight)
+  DestroyChildListFrame:SetHeight(newHeight)
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)
 end
-
--- --[[
--- //*******************************************************************
--- //                         Get & Set Functions
--- //*******************************************************************
--- --]]
---
--- do -- Hook SetWidth
---   local setWidth = DestroyChildFrame.SetWidth
---
---   function DestroyChildFrame:SetWidth(width)
---     -- DestroyChildOptionsFrame:SetWidth(width)
---     -- DestroyChildListFrame:SetWidth(width)
---     setWidth(self, width)
---   end
--- end

@@ -116,7 +116,7 @@ end
 -- Sets the point of the frame.
 -- @param point - the new point
 function DejunkFrameMixin:SetPoint(...)
-  self.Frame:ClearAllPoints()
+  -- self.Frame:ClearAllPoints()
   self.Frame:SetPoint(unpack(...))
 end
 

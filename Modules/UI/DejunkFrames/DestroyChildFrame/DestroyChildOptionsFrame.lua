@@ -34,12 +34,17 @@ end
 function DestroyChildOptionsFrame:Resize()
   local ui = self.UI
 
+  ui.StartDestroyingButton:Resize()
   ui.SettingsFrame:Resize()
 
-  local newWidth = ui.SettingsFrame:GetWidth() + Tools:Padding(2)
-  local newHeight = ui.SettingsFrame:GetHeight()
+  local newWidth = max(ui.StartDestroyingButton:GetWidth(), ui.SettingsFrame:GetWidth())
+  ui.StartDestroyingButton:SetWidth(newWidth)
+  ui.SettingsFrame:SetWidth(newWidth)
 
-  self:SetWidth(newWidth)
+  local newHeight = ui.SettingsFrame:GetMinHeight() +
+    Tools:Padding(0.5) + ui.StartDestroyingButton:GetHeight()
+
+  self:SetWidth(newWidth + Tools:Padding(2))
   self:SetHeight(newHeight)
 end
 
@@ -49,17 +54,6 @@ end
 //*******************************************************************
 --]]
 
-do -- Hook SetWidth
-  local setWidth = DestroyChildOptionsFrame.SetWidth
-
-  function DestroyChildOptionsFrame:SetWidth(width)
-    local oldWidth = self:GetWidth()
-    setWidth(self, width)
-
-    self.UI.SettingsFrame:SetWidth(width)
-  end
-end
-
 do -- Hook SetHeight
   local setHeight = DestroyChildOptionsFrame.SetHeight
 
@@ -67,7 +61,10 @@ do -- Hook SetHeight
     local oldHeight = self:GetHeight()
     setHeight(self, height)
 
-    self.UI.SettingsFrame:SetHeight(height)
+    height = height - self.UI.StartDestroyingButton:GetHeight() -
+      Tools:Padding(0.5) - self.UI.SettingsFrame.TitleButton:GetHeight()
+
+    self.UI.SettingsFrame.ScrollFrame:SetMinHeight(height)
   end
 end
 
@@ -79,9 +76,17 @@ end
 
 function DestroyChildOptionsFrame:CreateOptions()
   local ui = self.UI
+  local frame = self.Frame
 
-  ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, "Settings (L)", "GameFontNormalHuge")
-  ui.SettingsFrame:SetPoint("TOPLEFT", self.Frame, Tools:Padding(), 0)
+  -- Start Destroying button
+  ui.StartDestroyingButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall", "Start Destroying (L)")
+  ui.StartDestroyingButton:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Tools:Padding(), 0)
+  ui.StartDestroyingButton:SetScript("OnClick", function(self, button, down)
+    print("StartDestroyingButton clicked")
+  end)
+
+  ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(frame, "Settings (L)", "GameFontNormalHuge")
+  ui.SettingsFrame:SetPoint("TOPLEFT", frame, Tools:Padding(), 0)
 
   local add = function(option)
     self.UI.SettingsFrame:AddOption(option)
@@ -89,7 +94,9 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Destroy Poor Items
   local destroyPoorText = format("Destroy %s Items (L)", Tools:GetColorString(L.POOR_TEXT, Colors.Poor))
-  add(FrameFactory:CreateCheckButton(nil, "Small", destroyPoorText, nil, L.AUTO_SELL_TOOLTIP, nil))
+  for i = 1, 20 do -- DEBUG ONLY
+    add(FrameFactory:CreateCheckButton(nil, "Small", destroyPoorText, nil, L.AUTO_SELL_TOOLTIP, nil))
+  end
 
   -- Auto destroy
   local text = "Auto Destroy (L)"
