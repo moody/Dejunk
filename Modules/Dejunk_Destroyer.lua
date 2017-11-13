@@ -60,8 +60,7 @@ DestroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 -- Starts the Destroying process.
 function Destroyer:StartDestroying()
-  assert(currentState == DestroyerState.None)
-  --if ListManager:IsParsing() then return end
+  error("Not yet implemented.")
 
   local canDestroy, msg = Core:CanDestroy()
   if not canDestroy then
@@ -70,8 +69,6 @@ function Destroyer:StartDestroying()
   end
 
   currentState = DestroyerState.Destroying
-  --Core:DisableGUI()
-
   allItemsCached = true
 
   self:SearchForDestroyableItems()
@@ -99,8 +96,6 @@ function Destroyer:StopDestroying()
 
   for k in pairs(ItemsToDestroy) do ItemsToDestroy[k] = nil end
   for k in pairs(DestroyedItems) do DestroyedItems[k] = nil end
-
-  --Core:EnableGUI()
 end
 
 -- Checks whether or not the Destroyer is active.
@@ -141,11 +136,11 @@ function Destroyer:StopDestroying()
   self:StartProfiting()
 end
 
--- Checks whether or not the Destroyer is actively selling items.
--- @return - boolean
-function Destroyer:IsDestroying()
-  return (currentState == DestroyerState.Destroying)
-end
+-- -- Checks whether or not the Destroyer is actively selling items.
+-- -- @return - boolean
+-- function Destroyer:IsDestroying()
+--   return (currentState == DestroyerState.Destroying)
+-- end
 
 -- Set as the OnUpdate function during the selling process.
 function Destroyer:DestroyableItems(frame, elapsed)

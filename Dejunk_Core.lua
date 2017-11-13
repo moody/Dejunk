@@ -11,6 +11,7 @@ local Core = DJ.Core
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
 local Dejunker = DJ.Dejunker
+local Destroyer = DJ.Destroyer
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
@@ -34,7 +35,23 @@ function coreFrame:OnEvent(event, ...)
   end
 end
 
+function coreFrame:OnUpdate()
+  -- Enable/Disable GUI
+  if ParentFrame.Initialized then
+    if Dejunker:IsDejunking() or Destroyer:IsDestroying() then
+      if ParentFrame:IsEnabled() then
+        print("Disabling GUI since a process is active.")
+        Core:DisableGUI()
+      end
+    elseif not ParentFrame:IsEnabled() then
+      print("Enabling GUI since processes are inactive.")
+      Core:EnableGUI()
+    end
+  end
+end
+
 coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
+coreFrame:SetScript("OnUpdate", coreFrame.OnUpdate)
 coreFrame:RegisterEvent("PLAYER_LOGIN")
 
 --[[
@@ -69,6 +86,46 @@ function Core:Print(msg)
   print(format("%s %s", title, msg))
 end
 
+-- Returns true if the dejunking process can be safely started,
+-- and false plus a reason message otherwise.
+-- @return bool, string or nil
+function Core:CanDejunk()
+  if Dejunker:IsDejunking() then
+    return false, "Dejunking is already in progress. (L)"
+  end
+
+  if Destroyer:IsDestroying() then
+    return false, "Cannot dejunk while items are being destroyed. (L)"
+  end
+
+  if ListManager:IsParsing() then
+    local msg = format("Cannot dejunk while %s and %s are being updated. (L)",
+      Tools:GetColoredListName(ListManager.Inclusions), Tools:GetColoredListName(ListManager.Exclusions))
+    return false, msg
+  end
+
+  return true
+end
+
+-- Returns true if the destroying process can be safely started,
+-- and false plus a reason message otherwise.
+-- @return bool, string or nil
+function Core:CanDestroy()
+  if Destroyer:IsDestroying() then
+    return false, "Destroying is already in progress. (L)"
+  end
+
+  if Dejunker:IsDejunking() then
+    return false, "Cannot destroy while items are being dejunked. (L)"
+  end
+
+  if ListManager:IsParsing(ListManager.Destroyables) then
+    return false, format("Cannot destroy while %s is being updated. (L)", Tools:GetColoredListName(ListManager.Destroyables))
+  end
+
+  return true
+end
+
 --[[
 //*******************************************************************
 //                          Core Functions
@@ -80,9 +137,9 @@ local previousChild = nil
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
   if not ParentFrame.Initialized then
-    ParentFrame:Initialize()
-    ParentFrame:SetCurrentChild(DejunkChildFrame)
-  end
+    ParentFrame:Initialize() end
+  if not ParentFrame:GetCurrentChild() then
+    ParentFrame:SetCurrentChild(DejunkChildFrame) end
 
   ParentFrame:Toggle()
 end

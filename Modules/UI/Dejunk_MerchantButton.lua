@@ -32,8 +32,7 @@ function MerchantButton:Initialize()
   self.Button:SetText(L.DEJUNK_TEXT)
 
   self.Button:SetScript("OnUpdate", function(self, elapsed)
-    local enabled = (not Dejunker:IsDejunking() and not ListManager:IsParsing())
-    self:SetEnabled(enabled)
+    self:SetEnabled(DJ.Core:CanDejunk())
   end)
 
   self.Button:SetScript("OnShow", function(self)

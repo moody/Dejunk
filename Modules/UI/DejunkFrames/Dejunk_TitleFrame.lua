@@ -36,7 +36,7 @@ function TitleFrame:OnInitialize()
   ui.CharSpecCheckButton:SetScript("OnClick", function(self)
     DJ.Core:ToggleCharacterSpecificSettings() end)
   ui.CharSpecCheckButton:SetScript("OnUpdate", function(self)
-    local enabled = (not DJ.Dejunker:IsDejunking() and not DJ.ListManager:IsParsing())
+    local enabled = (DJ.Core:CanDejunk() and DJ.Core:CanDestroy())
     self:SetEnabled(enabled)
   end)
 

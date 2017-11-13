@@ -19,6 +19,7 @@ local DejunkFrameMixin = {
 function DejunkFrameMixin:Initialize()
   if self.Initialized then return end
   self.Initialized = true
+  self.Enabled = true
 
   if not self.UI then
     self.UI = {}
@@ -61,11 +62,19 @@ end
 -- Enables the frame.
 function DejunkFrameMixin:Enable()
   FrameFactory:EnableUI(self.UI)
+  self.Enabled = true
 end
 
 -- Disables the frame.
 function DejunkFrameMixin:Disable()
   FrameFactory:DisableUI(self.UI)
+  self.Enabled = false
+end
+
+-- Returns true if the frame is enabled.
+function DejunkFrameMixin:IsEnabled()
+  assert(self.Initialized)
+  return self.Enabled
 end
 
 -- Refreshes the frame.

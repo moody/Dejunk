@@ -66,12 +66,13 @@ dejunkerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 
 -- Starts the Dejunking process.
 function Dejunker:StartDejunking()
-  assert(currentState == DejunkerState.None)
-  if ListManager:IsParsing() then return end
+  local canDejunk, msg = Core:CanDejunk()
+  if not canDejunk then
+    Core:Print(msg)
+    return
+  end
 
   currentState = DejunkerState.Dejunking
-  Core:DisableGUI()
-
   allItemsCached = true
 
   self:SearchForJunkItems()
@@ -99,8 +100,6 @@ function Dejunker:StopDejunking()
 
   for k in pairs(ItemsToSell) do ItemsToSell[k] = nil end
   for k in pairs(SoldItems) do SoldItems[k] = nil end
-
-  Core:EnableGUI()
 end
 
 -- Checks whether or not the Dejunker is active.
