@@ -12,6 +12,7 @@ DJ.ListManager = {}
 DJ.Tools = {}
 
 DJ.Dejunker = {}
+DJ.Destroyer = {}
 DJ.Repairer = {}
 
 -- /UI/

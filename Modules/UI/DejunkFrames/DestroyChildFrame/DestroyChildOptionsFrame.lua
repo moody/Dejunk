@@ -61,9 +61,9 @@ do -- Hook SetHeight
     local oldHeight = self:GetHeight()
     setHeight(self, height)
 
+    -- Update SettingsFrame's minimum scroll frame height
     height = height - self.UI.StartDestroyingButton:GetHeight() -
       Tools:Padding(0.5) - self.UI.SettingsFrame.TitleButton:GetHeight()
-
     self.UI.SettingsFrame.ScrollFrame:SetMinHeight(height)
   end
 end
