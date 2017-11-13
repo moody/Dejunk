@@ -227,6 +227,13 @@ function Tools:ItemCanBeSold(price, quality)
   return (price > 0 and (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC))
 end
 
+-- Checks whether or not an item can be destroyed based on quality.
+-- @param quality - the quality of an item
+-- @return - boolean
+function Tools:ItemCanBeDestroyed(quality)
+  return (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC)
+end
+
 -- Creates and returns an item by item id.
 -- @param itemID - the item id of the item to create
 -- @return - a table with item data

@@ -153,10 +153,15 @@ function Destroyer:DestroyNextItem()
   local item = remove(ItemsToDestroy)
 	if not item then return end
 
-  print("Would have destroyed: "..item.ItemLink)
-  if true then return end
+  --print("Would have destroyed: "..item.ItemLink)
+  --if true then return end
 
-	UseContainerItem(item.Bag, item.Slot)
+  print("Destroying: "..item.ItemLink)
+
+	PickupContainerItem(item.Bag, item.Slot)
+  DeleteCursorItem()
+  ClearCursor()
+
   DestroyedItems[#DestroyedItems+1] = item
 end
 
@@ -192,7 +197,7 @@ function Destroyer:GetDestroyableItemFromBag(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item then return nil end
 
-  --if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end -- Implement later
+  if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end
   if not self:IsDestroyableItem(item) then return nil end
 
   return item

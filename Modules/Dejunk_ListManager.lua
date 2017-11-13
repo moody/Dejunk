@@ -351,7 +351,11 @@ function ListManager:ParseList(listName)
   local sv = listData.SV
   local list = listData.List
 
+  -- Returns true if the item can be sold, and the target list is Inclusions or Exclusions.
   local canBeSold = function(item)
+    if not (listName == self.Inclusions or listName == self.Exclusions) then
+      return false end
+
     if Tools:ItemCanBeSold(item.Price, item.Quality) then
       return true end
 
@@ -361,14 +365,26 @@ function ListManager:ParseList(listName)
     return false
   end
 
+  -- Returns true if the item can be destroyed, and the target list is Destroyables.
+  local canBeDestroyed = function(item)
+    if not (listName == self.Destroyables) then
+      return false end
+
+    if Tools:ItemCanBeDestroyed(item.Quality) then
+      return true end
+
+    sv[item.ItemID] = nil
+    toAdd[item.ItemID] = nil
+    Core:Print(format("%s cannot be destroyed. (L)", item.Link))
+    return false
+  end
+
   -- Parse items
   for itemID in pairs(toAdd) do
     local item = Tools:GetItemByID(itemID)
 
-    -- If item is not nil, test if list is Destroyables before calling canBeSold
-    -- local destroy = (listName == self.Destroyables) and canBeDestroyed(item)
-    -- if item and (destroy or canBeSold(item)) then
-    if item and ((listName == self.Destroyables) or canBeSold(item)) then
+    -- If item is not nil, test if the item can be destroyed or sold
+    if item and (canBeSold(item) or canBeDestroyed(item)) then
       -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
       if not sv[itemID] then
         sv[itemID] = true
