@@ -11,11 +11,14 @@ local Core = DJ.Core
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
 local Dejunker = DJ.Dejunker
+local Destroyer = DJ.Destroyer
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 local ParentFrame = DJ.DejunkFrames.ParentFrame
-local BasicChildFrame = DJ.DejunkFrames.BasicChildFrame
+local TitleFrame = DJ.DejunkFrames.TitleFrame
+local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
+local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
 
 --[[
 //*******************************************************************
@@ -32,7 +35,21 @@ function coreFrame:OnEvent(event, ...)
   end
 end
 
+function coreFrame:OnUpdate()
+  -- Enable/Disable GUI
+  if ParentFrame.Initialized then
+    if Dejunker:IsDejunking() or Destroyer:IsDestroying() then
+      if ParentFrame:IsEnabled() then
+        Core:DisableGUI()
+      end
+    elseif not ParentFrame:IsEnabled() then
+      Core:EnableGUI()
+    end
+  end
+end
+
 coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
+coreFrame:SetScript("OnUpdate", coreFrame.OnUpdate)
 coreFrame:RegisterEvent("PLAYER_LOGIN")
 
 --[[
@@ -67,6 +84,46 @@ function Core:Print(msg)
   print(format("%s %s", title, msg))
 end
 
+-- Returns true if the dejunking process can be safely started,
+-- and false plus a reason message otherwise.
+-- @return bool, string or nil
+function Core:CanDejunk()
+  if Dejunker:IsDejunking() then
+    return false, L.DEJUNKING_IN_PROGRESS
+  end
+
+  if Destroyer:IsDestroying() then
+    return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
+  end
+
+  if ListManager:IsParsing() then
+    local msg = format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
+      Tools:GetColoredListName(ListManager.Inclusions), Tools:GetColoredListName(ListManager.Exclusions))
+    return false, msg
+  end
+
+  return true
+end
+
+-- Returns true if the destroying process can be safely started,
+-- and false plus a reason message otherwise.
+-- @return bool, string or nil
+function Core:CanDestroy()
+  if Destroyer:IsDestroying() then
+    return false, L.DESTROYING_IN_PROGRESS
+  end
+
+  if Dejunker:IsDejunking() then
+    return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
+  end
+
+  if ListManager:IsParsing(ListManager.Destroyables) then
+    return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING, Tools:GetColoredListName(ListManager.Destroyables))
+  end
+
+  return true
+end
+
 --[[
 //*******************************************************************
 //                          Core Functions
@@ -78,9 +135,9 @@ local previousChild = nil
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
   if not ParentFrame.Initialized then
-    ParentFrame:Initialize()
-    ParentFrame:SetCurrentChild(BasicChildFrame)
-  end
+    ParentFrame:Initialize() end
+  if not ParentFrame:GetCurrentChild() then
+    ParentFrame:SetCurrentChild(DejunkChildFrame) end
 
   ParentFrame:Toggle()
 end
@@ -103,16 +160,27 @@ function Core:ToggleCharacterSpecificSettings()
   DejunkDB:Update()
   ListManager:Update()
 
-  if (ParentFrame:GetCurrentChild() ~= BasicChildFrame) then
-    ParentFrame:SetCurrentChild(BasicChildFrame) end
+  -- If transport child frame is showing, show previous child
+  if (ParentFrame:GetCurrentChild() == TransportChildFrame) then
+    ParentFrame:SetCurrentChild(previousChild) end
 
   ParentFrame:Refresh()
 end
 
--- Sets the ParentFrame's child to BasicChildFrame.
-function Core:ShowBasicChild()
-  previousChild = nil
-  ParentFrame:SetCurrentChild(BasicChildFrame)
+-- Sets the ParentFrame's child to DejunkChildFrame.
+function Core:ShowDejunkChild()
+  assert(ParentFrame.Initialized)
+  previousChild = ParentFrame:GetCurrentChild()
+  TitleFrame:SetTitleToDejunk()
+  ParentFrame:SetCurrentChild(DejunkChildFrame)
+end
+
+-- Sets the ParentFrame's child to DestroyChildFrame.
+function Core:ShowDestroyChild()
+  assert(ParentFrame.Initialized)
+  previousChild = ParentFrame:GetCurrentChild()
+  TitleFrame:SetTitleToDestroy()
+  ParentFrame:SetCurrentChild(DestroyChildFrame)
 end
 
 -- Sets the ParentFrame's child to TransportChildFrame.
@@ -124,6 +192,26 @@ function Core:ShowTransportChild(listName, transportType)
   ParentFrame:SetCurrentChild(TransportChildFrame, function()
     TransportChildFrame:SetData(listName, transportType)
   end)
+end
+
+-- Swaps between the Dejunk and Destroy child frames.
+function Core:SwapDejunkDestroyChildFrames()
+  assert(ParentFrame.Initialized)
+
+  local currentChild = ParentFrame:GetCurrentChild()
+
+  local showDestroy = (currentChild == DejunkChildFrame) or
+    ((currentChild == TransportChildFrame) and (previousChild == DejunkChildFrame))
+  local showDejunk = (currentChild == DestroyChildFrame) or
+    ((currentChild == TransportChildFrame) and (previousChild == DestroyChildFrame))
+
+  if showDestroy then
+    self:ShowDestroyChild()
+  elseif showDejunk then
+    self:ShowDejunkChild()
+  else
+    error("Something went wrong :(")
+  end
 end
 
 -- Sets the ParentFrame's child to the previously displayed child.
@@ -139,14 +227,22 @@ end
 --]]
 
 do
-  local tooltipAdded = false
+  local lastItemLink = nil
+  local lastDejunkText = nil
+  local lastTipText = nil
 
   local function OnTooltipSetItem(self, ...)
-  	if not DejunkGlobal.ItemTooltip or tooltipAdded then return end
+    if not DejunkGlobal.ItemTooltip then return end
 
     -- Validate item link
   	local itemLink = select(2, self:GetItem())
     if not itemLink then return end
+
+    -- If the current item is the same as last, just re-show last tooltip
+    if (lastItemLink == itemLink) then
+      self:AddDoubleLine(lastDejunkText, lastTipText)
+      return
+    end
 
     -- Find item in bags
     local bag, slot = Tools:FindItemInBags(itemLink)
@@ -160,18 +256,15 @@ do
 
     -- Display an appropriate tooltip if the item is junk
     local isJunkItem = Dejunker:IsJunkItem(item)
-    local dejunkText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
-    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.DefaultColors.Inclusions)) or
-      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.DefaultColors.Exclusions)
+    local dejunkText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
+    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions)) or
+      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
 
     self:AddDoubleLine(dejunkText, tipText)
-    tooltipAdded = true
-  end
-
-  local function OnTooltipCleared(self, ...)
-     tooltipAdded = false
+    lastItemLink = itemLink
+    lastDejunkText = dejunkText
+    lastTipText = tipText
   end
 
   GameTooltip:HookScript("OnTooltipSetItem", OnTooltipSetItem)
-  GameTooltip:HookScript("OnTooltipCleared", OnTooltipCleared)
 end

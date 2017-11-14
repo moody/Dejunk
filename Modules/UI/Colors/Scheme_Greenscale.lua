@@ -19,12 +19,6 @@ Colors.Schemes[schemeName] = function()
 
     LabelText = {0.35, 0.6, 0.35, 1},
 
-    Inclusions = {0.35, 0.6, 0.35, 1},
-    InclusionsHi = {0.45, 0.7, 0.45, 1},
-
-    Exclusions = {0.35, 0.6, 0.35, 1},
-    ExclusionsHi = {0.45, 0.7, 0.45, 1},
-
     Area = {0.1, 0.2, 0.1, 0.5},
 
     ScrollFrame = {0.1, 0.2, 0.1, 0.5},

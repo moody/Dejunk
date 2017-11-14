@@ -1,4 +1,4 @@
--- Dejunk_ParentFrame: displays the TitleFrame and a child frame such as BasicChildFrame.
+-- Dejunk_ParentFrame: displays the TitleFrame and a child frame.
 
 local AddonName, DJ = ...
 
@@ -61,24 +61,36 @@ do -- Hook Show
   end
 end
 
--- @Override
-function ParentFrame:Enable()
-  TitleFrame:Enable()
+-- Hook Enable
+do
+  local enable = ParentFrame.Enable
 
-  if currentChild then
-    currentChild:Enable() end
+  function ParentFrame:Enable()
+    enable(self)
 
-  self.Frame:SetAlpha(1)
+    TitleFrame:Enable()
+
+    if currentChild then
+      currentChild:Enable() end
+
+    self.Frame:SetAlpha(1)
+  end
 end
 
--- @Override
-function ParentFrame:Disable()
-  TitleFrame:Disable()
+-- Hook Disable
+do
+  local disable = ParentFrame.Disable
 
-  if currentChild then
-    currentChild:Disable() end
+  function ParentFrame:Disable()
+    disable(self)
 
-  self.Frame:SetAlpha(0.75)
+    TitleFrame:Disable()
+
+    if currentChild then
+      currentChild:Disable() end
+
+    self.Frame:SetAlpha(0.75)
+  end
 end
 
 do -- Hook Refresh
@@ -150,6 +162,7 @@ end
 -- @param newChild - a Dejunk frame to be set as the new child
 -- @param callback - a function to be called once the new child has been set
 function ParentFrame:SetCurrentChild(newChild, callback)
+  assert(self.Initialized)
   assert(newChild ~= nil, "newChild cannot be nil")
 
   local point = {"TOPLEFT", TitleFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}
@@ -157,7 +170,18 @@ function ParentFrame:SetCurrentChild(newChild, callback)
   if currentChild then currentChild:Hide() end
 
   currentChild = newChild
-  currentChild:Initialize()
+
+  if not currentChild.Initialized then
+    currentChild:Initialize()
+    currentChild:Resize() -- NOTE: This is a band-aid to prevent certain UI glitches.
+
+    if self.Enabled then
+      currentChild:Enable()
+    else
+      currentChild:Disable()
+    end
+  end
+
   currentChild:SetParent(self.Frame)
   currentChild:SetPoint(point)
   currentChild:Show()

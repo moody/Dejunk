@@ -36,7 +36,7 @@ function TitleFrame:OnInitialize()
   ui.CharSpecCheckButton:SetScript("OnClick", function(self)
     DJ.Core:ToggleCharacterSpecificSettings() end)
   ui.CharSpecCheckButton:SetScript("OnUpdate", function(self)
-    local enabled = (not DJ.Dejunker:IsDejunking() and not DJ.ListManager:IsParsing())
+    local enabled = (DJ.Core:CanDejunk() and DJ.Core:CanDestroy())
     self:SetEnabled(enabled)
   end)
 
@@ -83,6 +83,13 @@ function TitleFrame:OnInitialize()
   ui.SchemeButton:SetScript("OnClick", function(self, button, down)
     Colors:NextScheme()
   end)
+
+  -- DejunkDestroy button
+  ui.DejunkDestroyButton = FrameFactory:CreateButton(frame, "GameFontNormal", L.DESTROY_TEXT)
+  ui.DejunkDestroyButton:SetPoint("TOPRIGHT", ui.SchemeButton, "TOPLEFT", -Tools:Padding(0.25), 0)
+  ui.DejunkDestroyButton:SetScript("OnClick", function(self, button, down)
+    DJ.Core:SwapDejunkDestroyChildFrames()
+  end)
 end
 
 -- @Override
@@ -103,32 +110,48 @@ function TitleFrame:Resize()
   local tooltipHeight = ui.ItemTooltipCheckButton:GetMinHeight()
 
   -- Right side
-  ui.CloseButton:Resize()
-  local closeButtonWidth = (ui.CloseButton:GetWidth() + 1) -- 1px padding
-  local closeButtonHeight = ui.CloseButton:GetHeight()
+  local buttons = {ui.CloseButton, ui.ScaleButton, ui.SchemeButton, ui.DejunkDestroyButton}
+  local buttonsWidth = 0
+  local buttonsHeight = 0
 
-  ui.ScaleButton:Resize()
-  local scaleButtonWidth = (ui.ScaleButton:GetWidth() + Tools:Padding(0.25))
-  local scaleButtonHeight = ui.ScaleButton:GetHeight()
-
-  ui.SchemeButton:Resize()
-  local schemeButtonWidth = (ui.SchemeButton:GetWidth() + Tools:Padding(0.25))
-  local schemeButtonHeight = ui.SchemeButton:GetHeight()
+  -- Resize buttons and calculate their collective width and height
+  for i, b in pairs(buttons) do
+    -- 1px padding for the CloseButton, 25% normal padding for the rest
+    -- These values are the X offsets used for SetPoint calls when initializing the buttons
+    local padding = (b == ui.CloseButton) and 1 or Tools:Padding(0.25)
+    b:Resize()
+    buttonsWidth = buttonsWidth + (b:GetWidth() + padding)
+    buttonsHeight = max(buttonsHeight, b:GetHeight())
+  end
 
   -- Width
   local leftSideWidth = max(charSpecWidth, (minimapWidth + tooltipWidth))
-  local rightSideWith = (closeButtonWidth + scaleButtonWidth + schemeButtonWidth)
+  local rightSideWith = buttonsWidth
 
   local newWidth = (max(leftSideWidth, rightSideWith) * 2)
   newWidth = ((newWidth + titleWidth) + Tools:Padding(4))
 
   -- Height
   local leftSideHeight = (charSpecHeight + max(minimapHeightHeight, tooltipHeight))
-  local rightSideHeight = max(max(closeButtonHeight, scaleButtonHeight), schemeButtonHeight)
+  local rightSideHeight = buttonsHeight
   local titleHeight = (titleHeight + Tools:Padding())
 
-  local newHeight = max(titleHeight, max(leftSideHeight, rightSideHeight))
+  local newHeight = max(titleHeight, leftSideHeight, rightSideHeight)
 
   self.Frame:SetWidth(newWidth)
   self.Frame:SetHeight(newHeight)
+end
+
+-- Updates the title text and dejunk/destroy button.
+function TitleFrame:SetTitleToDejunk()
+  assert(self.Initialized)
+  self.UI.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
+  self.UI.DejunkDestroyButton.Text:SetText(L.DESTROY_TEXT)
+end
+
+-- Updates the title text and dejunk/destroy button.
+function TitleFrame:SetTitleToDestroy()
+  assert(self.Initialized)
+  self.UI.TitleFontString:SetText(L.DESTROY_OPTIONS_TEXT)
+  self.UI.DejunkDestroyButton.Text:SetText(L.DEJUNK_TEXT)
 end

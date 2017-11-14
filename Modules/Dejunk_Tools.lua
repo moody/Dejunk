@@ -63,6 +63,27 @@ function Tools:GetExclusionsString()
   return self:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
 end
 
+-- Returns the localized Destroyables string in color.
+function Tools:GetDestroyablesString()
+  return self:GetColorString(L.DESTROYABLES_TEXT, Colors.Destroyables)
+end
+
+-- Returns the list name as a localized string in color.
+-- @param listName - a list name key defined in ListManager
+function Tools:GetColoredListName(listName)
+  assert(DJ.ListManager[listName])
+
+  if (listName == DJ.ListManager.Inclusions) then
+    return self:GetInclusionsString()
+  elseif (listName == DJ.ListManager.Exclusions) then
+    return self:GetExclusionsString()
+  elseif (listName == DJ.ListManager.Destroyables) then
+    return self:GetDestroyablesString()
+  else
+    error(format("Unsupported list name: \"%s\"", listName))
+  end
+end
+
 --[[
 //*******************************************************************
 //  					    			  Tooltip Functions
@@ -173,7 +194,7 @@ end
 function Tools:GetItemFromBag(bag, slot)
   -- Get item info
   local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-  if not (quantity and not locked and itemLink and not noValue and itemID) then return nil end
+  if not (quantity and not locked and itemLink and itemID) then return nil end
 
   -- Get additional item info
   local _, _, quality, _, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
@@ -204,6 +225,13 @@ end
 -- @return - boolean
 function Tools:ItemCanBeSold(price, quality)
   return (price > 0 and (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC))
+end
+
+-- Checks whether or not an item can be destroyed based on quality.
+-- @param quality - the quality of an item
+-- @return - boolean
+function Tools:ItemCanBeDestroyed(quality)
+  return (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC)
 end
 
 -- Creates and returns an item by item id.

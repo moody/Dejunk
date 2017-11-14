@@ -9,6 +9,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local FrameFactory = DJ.FrameFactory
 
 local Colors = DJ.Colors
+local Consts = DJ.Consts
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
@@ -27,7 +28,7 @@ function FrameFactory:CreateScrollFrame(parent)
   scrollFrame.UI = {}
 
   scrollFrame.MinWidth = 0
-  scrollFrame.MinHeight = DJ.Consts.SCROLL_FRAME_MIN_HEIGHT
+  scrollFrame.MinHeight = Consts.SCROLL_FRAME_MIN_HEIGHT
 
   scrollFrame.Texture = FrameCreator:CreateTexture(scrollFrame)
 
@@ -80,6 +81,12 @@ function FrameFactory:CreateScrollFrame(parent)
     return self.MinHeight
   end
 
+  -- Sets the minimum height of the scroll frame.
+  function scrollFrame:SetMinHeight(height)
+    self.MinHeight = (height >= Consts.SCROLL_FRAME_MIN_HEIGHT) and
+      height or Consts.SCROLL_FRAME_MIN_HEIGHT
+  end
+
   -- Resizes the scroll frame.
   function scrollFrame:Resize()
     local newWidth = 0 -- Widest object in UI + horizontal padding
@@ -95,7 +102,7 @@ function FrameFactory:CreateScrollFrame(parent)
 
     -- Height of UI objects + vertical padding
     local uiHeight = ((#self.UI > 0) and select(2, Tools:Measure(self,
-      self.UI[1], self.UI[#self.UI], "TOP", "BOTTOM"))) + Tools:Padding()
+      self.UI[1], self.UI[#self.UI], "TOP", "BOTTOM")) or 0) + Tools:Padding()
 
     slider:SetMinMaxValues(0, max(uiHeight - self.MinHeight, 0))
     slider:SetHeight(self.MinHeight)

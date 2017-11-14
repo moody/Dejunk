@@ -84,14 +84,10 @@ function Colors:GetColor(color, alpha)
   return color
 end
 
-function Colors:HexToTable(hexColor)
-
-end
-
 -- Returns a color table specified by item quality.
--- @param quality - a value between LE_ITEM_QUALITY_POOR and LE_ITEM_QUALITY_LEGENDARY
+-- @param quality - a value between LE_ITEM_QUALITY_POOR and LE_ITEM_QUALITY_WOW_TOKEN
 function Colors:GetColorByQuality(quality)
-  local check = (quality >= LE_ITEM_QUALITY_POOR) and (quality <= LE_ITEM_QUALITY_LEGENDARY)
+  local check = (quality >= LE_ITEM_QUALITY_POOR) and (quality <= LE_ITEM_QUALITY_WOW_TOKEN)
   assert(check, "invalid item quality")
 
   if (quality == LE_ITEM_QUALITY_POOR) then
@@ -106,6 +102,12 @@ function Colors:GetColorByQuality(quality)
     return self:GetColor(self.Epic)
   elseif (quality == LE_ITEM_QUALITY_LEGENDARY) then
     return self:GetColor(self.Legendary)
+  elseif (quality == LE_ITEM_QUALITY_ARTIFACT) then
+    return self:GetColor(self.Artifact)
+  elseif (quality == LE_ITEM_QUALITY_HEIRLOOM) then
+    return self:GetColor(self.Heirloom)
+  elseif (quality == LE_ITEM_QUALITY_WOW_TOKEN) then
+    return self:GetColor(self.WowToken)
   end
 end
 
@@ -126,6 +128,16 @@ Colors.ConstantColors =
   Black = {0, 0, 0, 1},
   Grey = {0.5, 0.5, 0.5, 1},
   Magenta = {1, 0, 1, 1},
+
+  Poor = {0.62, 0.62, 0.62, 1},
+  Common = {1, 1, 1, 1},
+  Uncommon = {0.12, 1, 0, 1},
+  Rare = {0, 0.44, 0.87, 1},
+  Epic = {0.64, 0.21, 0.93, 1},
+  Legendary = {1, 0.5, 0, 1},
+  Artifact = {0.9, 0.8, 0.5, 1},
+  Heirloom = {0, 0.8, 1, 1},
+  WowToken = {0, 0.8, 1, 1}
 }
 
 -- Default Dejunk colors
@@ -143,18 +155,14 @@ Colors.DefaultColors =
 
   LabelText = {0.35, 0.35, 0.6, 1},
 
-  Poor = {0.62, 0.62, 0.62, 1},
-  Common = {1, 1, 1, 1},
-  Uncommon = {0.12, 1, 0, 1},
-  Rare = {0, 0.44, 0.87, 1},
-  Epic = {0.64, 0.21, 0.93, 1},
-  Legendary = {1, 0.5, 0, 1},
-
   Inclusions = {0.8, 0.247, 0.247, 1},
   InclusionsHi = {0.9, 0.4, 0.4, 1},
 
   Exclusions = {0.247, 0.8, 0.247, 1},
   ExclusionsHi = {0.4, 0.9, 0.4, 1},
+
+  Destroyables = {0.8, 0.8, 0.247, 1},
+  DestroyablesHi = {0.9, 0.9, 0.4, 1},
 
   Area = {0.1, 0.1, 0.2, 0.5},
 

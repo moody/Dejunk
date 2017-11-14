@@ -1,4 +1,4 @@
--- Dejunk_ListManager: manages the Inclusions and Exclusions lists in the saved variables.
+-- Dejunk_ListManager: manages the Inclusions, Exclusions, and Destroyables lists in the saved variables.
 
 local AddonName, DJ = ...
 
@@ -21,28 +21,30 @@ local DejunkDB = DJ.DejunkDB
 
 -- Variables
 ListManager.Initialized = false
+
 ListManager.InclusionsList = {}
 ListManager.ExclusionsList = {}
+ListManager.DestroyablesList = {}
 
 ListManager.Lists =
 {
   ["Inclusions"] = ListManager.InclusionsList,
   ["Exclusions"] = ListManager.ExclusionsList,
+  ["Destroyables"] = ListManager.DestroyablesList
 }
 
--- Add list keys
-for k in pairs(ListManager.Lists) do ListManager[k] = k end
+ListManager.ToAdd = {}
+ListManager.ToRemove = {}
 
--- Saved Variables
-local inclusionsSV = nil
-local exclusionsSV = nil
+-- Add list keys to ListManager, ToAdd, and ToRemove
+for k in pairs(ListManager.Lists) do
+  ListManager[k] = k
+  ListManager.ToAdd[k] = {}
+  ListManager.ToRemove[k] = {}
+end
 
 -- Parsing Frame
 local parseFrame = CreateFrame("Frame", AddonName.."ListManagerParseFrame")
-parseFrame.InclusionsToAdd = {}
-parseFrame.InclusionsToRemove = {}
-parseFrame.ExclusionsToAdd = {}
-parseFrame.ExclusionsToRemove = {}
 parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = numOfAttemptsToParse
 
 --[[
@@ -62,21 +64,16 @@ end
 
 -- Updates the ListManager's references to lists in the saved variables.
 function ListManager:Update()
-  -- Clear inclusions and exclusions item data lists
+  -- Clear inclusions, exclusions, and destroyables item data lists
   for k in pairs(self.InclusionsList) do self.InclusionsList[k] = nil end
   for k in pairs(self.ExclusionsList) do self.ExclusionsList[k] = nil end
+  for k in pairs(self.DestroyablesList) do self.DestroyablesList[k] = nil end
 
-  -- Reset SV references
-  inclusionsSV = DejunkDB.SV.Inclusions
-  exclusionsSV = DejunkDB.SV.Exclusions
-
-  -- Load inclusions and exclusions items
-  for itemID in pairs(inclusionsSV) do
-    parseFrame.InclusionsToAdd[itemID] = true
-  end
-
-  for itemID in pairs(exclusionsSV) do
-    parseFrame.ExclusionsToAdd[itemID] = true
+  -- Load lists' items
+  for k, v in pairs(self.ToAdd) do
+    for itemID in pairs(self:GetListSV(k)) do
+      v[itemID] = true
+    end
   end
 end
 
@@ -84,16 +81,56 @@ end
 -- @param listName - the name of the list to check for being parsed [optional]
 -- @return - boolean
 function ListManager:IsParsing(listName)
-  local parsingInclusions = (next(parseFrame.InclusionsToRemove) or next(parseFrame.InclusionsToAdd))
-  local parsingExclusions = (next(parseFrame.ExclusionsToRemove) or next(parseFrame.ExclusionsToAdd))
+  local parsingInclusions = (next(self.ToAdd.Inclusions) or next(self.ToRemove.Inclusions))
+  local parsingExclusions = (next(self.ToAdd.Exclusions) or next(self.ToRemove.Exclusions))
+  local parsingDestroyables = (next(self.ToAdd.Destroyables) or next(self.ToRemove.Destroyables))
 
   if (listName == self.Inclusions) then
     return parsingInclusions
   elseif (listName == self.Exclusions) then
     return parsingExclusions
+  elseif (listName == self.Destroyables) then
+    return parsingDestroyables
   else -- parsing in general?
+    -- This function is mainly used to test if the Inc or Exc list is being parsed,
+    -- so that's why we don't check for parsingDestroyables here
     return (parsingInclusions or parsingExclusions)
   end
+end
+
+-- Gets a list from saved variables.
+-- @param listName - the name of the list to get SVs
+function ListManager:GetListSV(listName)
+  assert(self[listName])
+  return DejunkDB.SV[listName]
+end
+
+-- Gets a table of list data for use in ListManager functions.
+function ListManager:GetListData(listName)
+  assert(self[listName])
+
+  local list = self.Lists[listName]
+  local toAdd = self.ToAdd[listName]
+  local toRemove = self.ToRemove[listName]
+  local sv = self:GetListSV(listName)
+  local coloredName = Tools:GetColoredListName(listName)
+
+  local otherListName = nil
+  if (listName == self.Inclusions) then
+    otherListName = self.Exclusions
+  elseif (listName == self.Exclusions) then
+    otherListName = self.Inclusions
+  end
+
+  return
+  {
+    List = list,
+    ToAdd = toAdd,
+    ToRemove = toRemove,
+    SV = sv,
+    OtherListName = otherListName,
+    ColoredName = coloredName,
+  }
 end
 
 --[[
@@ -110,21 +147,11 @@ function ListManager:AddToList(listName, itemID)
   itemID = tostring(itemID)
 
   -- Initialize data
-  local toAdd, coloredListName, otherListName, sv, otherSV
-
-  if (listName == self.Inclusions) then
-    toAdd = parseFrame.InclusionsToAdd
-    coloredListName = Tools:GetInclusionsString()
-    otherListName = self.Exclusions
-    sv = inclusionsSV
-    otherSV = exclusionsSV
-  else -- Exclusions
-    toAdd = parseFrame.ExclusionsToAdd
-    coloredListName = Tools:GetExclusionsString()
-    otherListName = self.Inclusions
-    sv = exclusionsSV
-    otherSV = inclusionsSV
-  end
+  local listData = self:GetListData(listName)
+  local toAdd = listData.ToAdd
+  local coloredName = listData.ColoredName
+  local otherListName = listData.OtherListName
+  local sv = listData.SV
 
   -- Don't add if the item is already being parsed
   if toAdd[itemID] then return end
@@ -132,12 +159,12 @@ function ListManager:AddToList(listName, itemID)
   -- Don't add if the item is already on the list
   local existingItem = self:GetItemFromList(listName, itemID)
   if existingItem then
-    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.Link, coloredListName))
+    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.Link, coloredName))
     return
   end
 
   -- If the item is on the other list, remove it first
-  self:RemoveFromList(otherListName, itemID)
+  if otherListName then self:RemoveFromList(otherListName, itemID) end
 
   -- Finally, add the item for parsing
   toAdd[itemID] = true
@@ -150,12 +177,9 @@ function ListManager:RemoveFromList(listName, itemID)
   assert(self[listName] ~= nil)
   itemID = tostring(itemID)
 
-  if not self:IsOnList(listName, itemID) then return end
-
-  local toRemove = (listName == self.Inclusions) and
-    parseFrame.InclusionsToRemove or parseFrame.ExclusionsToRemove
-
-  toRemove[itemID] = true
+  if self:IsOnList(listName, itemID) then
+    self.ToRemove[listName][itemID] = true
+  end
 end
 
 -- Checks whether or not an item exists in the specified list.
@@ -166,8 +190,7 @@ function ListManager:IsOnList(listName, itemID)
   assert(self[listName] ~= nil)
   itemID = tostring(itemID)
 
-  return (listName == self.Inclusions) and
-    inclusionsSV[itemID] or exclusionsSV[itemID]
+  return self:GetListSV(listName)[itemID]
 end
 
 -- Searches for and returns an item in the specified list.
@@ -181,8 +204,7 @@ function ListManager:GetItemFromList(listName, itemID)
   if not self:IsOnList(listName, itemID) then return nil end
 
   -- Initialize data
-  local list = (listName == self.Inclusions) and
-    self.InclusionsList or self.ExclusionsList
+  local list = self.Lists[listName]
 
   for i=1, #list do
     if (list[i].ItemID == itemID) then
@@ -210,23 +232,16 @@ function ListManager:DestroyList(listName)
   assert(self[listName] ~= nil)
 
   -- Initialize data
-  local list, sv, coloredListName
-
-  if (listName == self.Inclusions) then
-    list = self.InclusionsList
-    sv = inclusionsSV
-    coloredListName = Tools:GetInclusionsString()
-  else -- Exclusions
-    list = self.ExclusionsList
-    sv = exclusionsSV
-    coloredListName = Tools:GetExclusionsString()
-  end
+  local listData = self:GetListData(listName)
+  local list = listData.List
+  local sv = listData.SV
+  local coloredName = listData.ColoredName
 
   if not (#list > 0) then return end
   for k in pairs(list) do list[k] = nil end
   for k in pairs(sv) do sv[k] = nil end
 
-  Core:Print(format(L.REMOVED_ALL_FROM_LIST, coloredListName))
+  Core:Print(format(L.REMOVED_ALL_FROM_LIST, coloredName))
 end
 
 --[[
@@ -256,8 +271,7 @@ function ListManager:ExportFromList(listName)
   assert(self[listName] ~= nil)
 
   -- Initialize data
-  local sv = (listName == self.Inclusions) and inclusionsSV or exclusionsSV
-
+  local sv = self:GetListSV(listName)
   local itemIDs = {}
 
   for k in pairs(sv) do
@@ -280,16 +294,14 @@ function parseFrame:OnUpdate(elapsed)
   if DJ.Dejunker:IsDejunking() then return end
 
   -- Removals
-  if next(self.InclusionsToRemove) then
-    ListManager:CleanList(ListManager.Inclusions) end
-  if next(self.ExclusionsToRemove) then
-    ListManager:CleanList(ListManager.Exclusions) end
+  for listName, list in pairs(ListManager.ToRemove) do
+    if next(list) then ListManager:CleanList(listName) end
+  end
 
   -- Additions
-  if next(self.InclusionsToAdd) then
-    ListManager:ParseList(ListManager.Inclusions) end
-  if next(self.ExclusionsToAdd) then
-    ListManager:ParseList(ListManager.Exclusions) end
+  for listName, list in pairs(ListManager.ToAdd) do
+    if next(list) then ListManager:ParseList(listName) end
+  end
 end
 
 parseFrame:SetScript("OnUpdate", parseFrame.OnUpdate)
@@ -300,19 +312,11 @@ function ListManager:CleanList(listName)
   assert(self[listName])
 
   -- Initialize data
-  local toRemove, coloredListName, sv, list
-
-  if (listName == self.Inclusions) then
-    toRemove = parseFrame.InclusionsToRemove
-    coloredListName = Tools:GetInclusionsString()
-    sv = inclusionsSV
-    list = self.InclusionsList
-  else -- Exclusions
-    toRemove = parseFrame.ExclusionsToRemove
-    coloredListName = Tools:GetExclusionsString()
-    sv = exclusionsSV
-    list = self.ExclusionsList
-  end
+  local listData = self:GetListData(listName)
+  local toRemove = listData.ToRemove
+  local coloredName = listData.ColoredName
+  local sv = listData.SV
+  local list = listData.List
 
   -- This function will cause the game to stall for a bit when removing thousands of items.
   -- So, my simple way of preventing that is to only run it a certain number of times each update.
@@ -321,7 +325,7 @@ function ListManager:CleanList(listName)
       if (v.ItemID == itemID) then
         remove(list, k)
         sv[itemID] = nil
-        Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.Link, coloredListName))
+        Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.Link, coloredName))
         return
       end
     end
@@ -341,21 +345,17 @@ function ListManager:ParseList(listName)
   assert(self[listName])
 
   -- Initialize data
-  local toAdd, coloredListName, sv, list
+  local listData = self:GetListData(listName)
+  local toAdd = listData.ToAdd
+  local coloredName = listData.ColoredName
+  local sv = listData.SV
+  local list = listData.List
 
-  if (listName == self.Inclusions) then
-    toAdd = parseFrame.InclusionsToAdd
-    coloredListName = Tools:GetInclusionsString()
-    sv = inclusionsSV
-    list = self.InclusionsList
-  else -- Exclusions
-    toAdd = parseFrame.ExclusionsToAdd
-    coloredListName = Tools:GetExclusionsString()
-    sv = exclusionsSV
-    list = self.ExclusionsList
-  end
-
+  -- Returns true if the item can be sold, and the target list is Inclusions or Exclusions.
   local canBeSold = function(item)
+    if not (listName == self.Inclusions or listName == self.Exclusions) then
+      return false end
+
     if Tools:ItemCanBeSold(item.Price, item.Quality) then
       return true end
 
@@ -365,15 +365,30 @@ function ListManager:ParseList(listName)
     return false
   end
 
+  -- Returns true if the item can be destroyed, and the target list is Destroyables.
+  local canBeDestroyed = function(item)
+    if not (listName == self.Destroyables) then
+      return false end
+
+    if Tools:ItemCanBeDestroyed(item.Quality) then
+      return true end
+
+    sv[item.ItemID] = nil
+    toAdd[item.ItemID] = nil
+    Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.Link))
+    return false
+  end
+
   -- Parse items
   for itemID in pairs(toAdd) do
     local item = Tools:GetItemByID(itemID)
 
-    if item and canBeSold(item) then
+    -- If item is not nil, test if the item can be destroyed or sold
+    if item and (canBeSold(item) or canBeDestroyed(item)) then
       -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
       if not sv[itemID] then
         sv[itemID] = true
-        Core:Print(format(L.ADDED_ITEM_TO_LIST, item.Link, coloredListName))
+        Core:Print(format(L.ADDED_ITEM_TO_LIST, item.Link, coloredName))
       end
 
       --list[#list+1] = item

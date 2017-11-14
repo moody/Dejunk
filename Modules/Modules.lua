@@ -12,6 +12,7 @@ DJ.ListManager = {}
 DJ.Tools = {}
 
 DJ.Dejunker = {}
+DJ.Destroyer = {}
 DJ.Repairer = {}
 
 -- /UI/
@@ -26,8 +27,11 @@ DJ.FrameFactory = {}
 DJ.DejunkFrames = {
   ParentFrame = {},
   TitleFrame = {},
-  BasicOptionsFrame = {},
-  BasicListsFrame = {},
-  BasicChildFrame = {},
-  TransportChildFrame = {},
+  DejunkChildFrame = {},
+  DejunkChildOptionsFrame = {},
+  DejunkChildListsFrame = {},
+  DestroyChildFrame = {},
+  DestroyChildOptionsFrame = {},
+  DestroyChildListFrame = {},
+  TransportChildFrame = {}
 }

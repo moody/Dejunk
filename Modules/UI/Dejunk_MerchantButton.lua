@@ -29,11 +29,10 @@ function MerchantButton:Initialize()
 
   self.Button = CreateFrame("Button", (AddonName.."MerchantButton"), MerchantFrame, "OptionsButtonTemplate")
   self.Button:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
-  self.Button:SetText(AddonName)
+  self.Button:SetText(L.DEJUNK_TEXT)
 
   self.Button:SetScript("OnUpdate", function(self, elapsed)
-    local enabled = (not Dejunker:IsDejunking() and not ListManager:IsParsing())
-    self:SetEnabled(enabled)
+    self:SetEnabled(DJ.Core:CanDejunk())
   end)
 
   self.Button:SetScript("OnShow", function(self)

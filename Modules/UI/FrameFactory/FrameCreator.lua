@@ -16,7 +16,7 @@ local FrameCreator = DJ.FrameCreator
 
 FrameCreator.FrameCount = 0
 
--- Returns a frame from the pool if available or creates a new one if not.
+-- Returns a frame.
 -- @param parent - the parent frame
 -- @return - a basic frame
 function FrameCreator:CreateFrame(parent)
@@ -37,7 +37,7 @@ end
 
 FrameCreator.ButtonCount = 0
 
--- Returns a button from the pool if available or creates a new one if not.
+-- Returns a button.
 -- @param parent - the parent of the button
 -- @return - a basic button
 function FrameCreator:CreateButton(parent)
@@ -59,7 +59,7 @@ end
 
 FrameCreator.CheckButtonCount = 0
 
--- Returns a check button from the pool if available or creates a new one if not.
+-- Returns a check button.
 -- @param parent - the parent of the check button
 -- @return - a basic check button
 function FrameCreator:CreateCheckButton(parent)
@@ -80,7 +80,7 @@ end
 
 FrameCreator.TextureCount = 0
 
--- Returns a texture from the pool if available or creates a new one if not.
+-- Returns a texture.
 -- @param parent - the parent frame
 -- @param layer - the draw layer ("ARTWORK", "BACKGROUND", etc.)
 -- @param color - the optional color table of the texture: {r, g, b[, a]}
@@ -111,7 +111,7 @@ end
 
 FrameCreator.FontStringCount = 0
 
--- Returns a font string from the pool if available or creates a new one if not.
+-- Returns a font string.
 -- @param parent - the parent frame
 -- @param layer - the draw layer ("ARTWORK", "BACKGROUND", etc.) [optional]
 -- @param font - the font style to inherit [optional]
@@ -142,7 +142,7 @@ end
 
 FrameCreator.ScrollFrameCount = 0
 
--- Returns a scroll frame from the pool if available or creates a new one if not.
+-- Returns a scroll frame.
 -- @param parent - the parent frame
 -- @return - a basic scroll frame
 function FrameCreator:CreateScrollFrame(parent)
@@ -164,7 +164,7 @@ end
 
 FrameCreator.SliderCount = 0
 
--- Returns a slider from the pool if available or creates a new one if not.
+-- Returns a slider.
 -- @param parent - the parent frame
 -- @return - a basic slider
 function FrameCreator:CreateSlider(parent)
@@ -185,16 +185,21 @@ end
 
 FrameCreator.EditBoxCount = 0
 
--- Returns an edit box from the pool if available or creates a new one if not.
+-- Returns an edit box.
 -- @param parent - the parent frame
+-- @param font - the font style for the edit box to inherit [optional]
+-- @param color - the text color [optional]
+-- @param maxLetters - the maximum amount of characters [optional]
+-- @param numeric - whether or not the edit box only accepts numeric input [optional]
 -- @return - a basic edit box
-function FrameCreator:CreateEditBox(parent, font, color, maxLetters)
+function FrameCreator:CreateEditBox(parent, font, color, maxLetters, numeric)
   self.EditBoxCount = (self.EditBoxCount + 1)
 
   local name = (AddonName.."EditBox"..self.EditBoxCount)
   local editBox = CreateFrame("EditBox", name, parent)
   editBox:SetFontObject(font or "GameFontNormal")
   editBox:SetMaxLetters(maxLetters or 0)
+  editBox:SetNumeric(numeric)
   editBox:SetAutoFocus(false)
   editBox:ClearFocus()
 

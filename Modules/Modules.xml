@@ -8,6 +8,7 @@
   <Script file="Modules\Dejunk_Tools.lua"/>
 
   <Script file="Modules\Dejunk_Dejunker.lua"/>
+  <Script file="Modules\Dejunk_Destroyer.lua"/>
   <Script file="Modules\Dejunk_Repairer.lua"/>
 
   <!-- /UI/ -->
@@ -28,6 +29,7 @@
   <Script file="Modules\UI\FrameFactory\Dejunk_Button.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_CheckButton.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_CheckButtonNumberBox.lua"/>
+  <Script file="Modules\UI\FrameFactory\Dejunk_CurrencyInputFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_EditBoxFrame.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_FontString.lua"/>
   <Script file="Modules\UI\FrameFactory\Dejunk_Frame.lua"/>
@@ -44,8 +46,15 @@
 
   <Script file="Modules\UI\DejunkFrames\Dejunk_ParentFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_TitleFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_BasicOptionsFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_BasicListsFrame.lua"/>
-  <Script file="Modules\UI\DejunkFrames\Dejunk_BasicChildFrame.lua"/>
   <Script file="Modules\UI\DejunkFrames\Dejunk_TransportChildFrame.lua"/>
+
+  <!-- /UI/DejunkFrames/DejunkChildFrame/ -->
+  <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildOptionsFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DejunkChildFrame\DejunkChildListsFrame.lua"/>
+
+  <!-- /UI/DejunkFrames/DestroyChildFrame/ -->
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildOptionsFrame.lua"/>
+  <Script file="Modules\UI\DejunkFrames\DestroyChildFrame\DestroyChildListFrame.lua"/>
 </Ui>

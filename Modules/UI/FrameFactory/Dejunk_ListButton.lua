@@ -48,6 +48,7 @@ function FrameFactory:CreateListButton(parent, listName)
 
   -- Sets the item data to be displayed.
   function button:SetItem(item)
+    self.NewTooltip = (self.Item ~= item) and true or false
     self.Item = item
     self:Refresh()
   end
@@ -57,7 +58,7 @@ function FrameFactory:CreateListButton(parent, listName)
     if not self.Item then self:Hide() return end
 
     -- Texture
-    if (self == GetMouseFocus()) then
+    if ((self == GetMouseFocus()) and self.NewTooltip) then
       self:GetScript("OnEnter")(self)
     else
       -- OnLeave hides the current tooltip, so we don't call it

@@ -1,4 +1,4 @@
--- Dejunk_BasicListsFrame: displays the Inclusions and Exclusions lists.
+-- DejunkChildListsFrame: displays the Inclusions and Exclusions lists.
 
 local AddonName, DJ = ...
 
@@ -6,7 +6,7 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Dejunk
-local BasicListsFrame = DJ.DejunkFrames.BasicListsFrame
+local DejunkChildListsFrame = DJ.DejunkFrames.DejunkChildListsFrame
 
 local Colors = DJ.Colors
 local Tools = DJ.Tools
@@ -20,7 +20,7 @@ local FrameFactory = DJ.FrameFactory
 --]]
 
 -- @Override
-function BasicListsFrame:OnInitialize()
+function DejunkChildListsFrame:OnInitialize()
   self:CreateListFrames()
 end
 
@@ -31,7 +31,7 @@ end
 --]]
 
 -- @Override
-function BasicListsFrame:Resize()
+function DejunkChildListsFrame:Resize()
   local ui = self.UI
 
   ui.InclusionsFrame:Resize()
@@ -40,7 +40,7 @@ function BasicListsFrame:Resize()
   local newWidth = max(ui.InclusionsFrame:GetMinWidth(), ui.ExclusionsFrame:GetMinWidth())
   newWidth = ((newWidth * 2) + Tools:Padding())
 
-  local newHeight = max(ui.InclusionsFrame:GetHeight(), ui.InclusionsFrame:GetHeight())
+  local newHeight = max(ui.InclusionsFrame:GetHeight(), ui.ExclusionsFrame:GetHeight())
 
   self:SetWidth(newWidth)
   self:SetHeight(newHeight)
@@ -53,7 +53,7 @@ end
 --]]
 
 -- Creates the Inclusions and Exclusions list frames.
-function BasicListsFrame:CreateListFrames()
+function DejunkChildListsFrame:CreateListFrames()
   local ui = self.UI
   local buttonCount = 5
   local listName = nil
