@@ -79,7 +79,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   local frame = self.Frame
 
   -- Start Destroying button
-  ui.StartDestroyingButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall", "Start Destroying (L)")
+  ui.StartDestroyingButton = FrameFactory:CreateButton(frame, "GameFontNormalSmall", L.START_DESTROYING_BUTTON_TEXT)
   ui.StartDestroyingButton:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", Tools:Padding(), 0)
   ui.StartDestroyingButton:SetScript("OnUpdate", function(self, button, down)
     self:SetEnabled(DJ.Core:CanDestroy()) end)
@@ -88,7 +88,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   end)
 
   -- Scrolling options frame
-  ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(frame, "Options (L)", "GameFontNormalHuge")
+  ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(frame, L.OPTIONS_TEXT, "GameFontNormalHuge")
   ui.SettingsFrame:SetPoint("TOPLEFT", frame, Tools:Padding(), 0)
 
   local add = function(option)
@@ -102,13 +102,12 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(generalHeading)
 
   -- Auto destroy
-  local text = "Auto Destroy (L)"
-  local tip = "Automatically begin destroying items when less than 5 empty bag slots remain. (L)"
-  add(FrameFactory:CreateCheckButton(nil, "Small", text, nil, tip, DejunkDB.AutoDestroy))
+  add(FrameFactory:CreateCheckButton(nil, "Small", L.AUTO_DESTROY_TEXT, nil,
+    L.AUTO_DESTROY_TOOLTIP, DejunkDB.AutoDestroy))
 
   -- Price threshold check button and currency input
-  add(FrameFactory:CreateCheckButton(nil, "Small", "Price Threshold (L)", nil,
-    "Only destroy items or stacks of items worth less than a set price. (L)", DejunkDB.DestroyUsePriceThreshold))
+  add(FrameFactory:CreateCheckButton(nil, "Small", L.PRICE_THRESHOLD_TEXT, nil,
+    L.PRICE_THRESHOLD_TOOLTIP, DejunkDB.DestroyUsePriceThreshold))
   add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
 
   -- Destroy heading
@@ -118,14 +117,13 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(destroyHeading)
 
   -- Destroy poor
-  local dAllTtip = "Destroy all items of this quality. (L)"
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, dAllTtip, DejunkDB.DestroyPoor))
+    L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, DejunkDB.DestroyPoor))
 
   -- Destroy Inclusions Items
   local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
-    "Destroy items on the Inclusions list. (L)", DejunkDB.DestroyInclusions))
+    format(L.DESTROY_LIST_TOOLTIP, inclusionsText), DejunkDB.DestroyInclusions))
 
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
@@ -134,7 +132,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(ignoreHeading)
 
   -- Ignore Exclusions Items
-  local ignoreExclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
-  add(FrameFactory:CreateCheckButton(nil, "Small", ignoreExclusionsText, nil,
-    "Ignore items on the Exclusions list. (L)", DejunkDB.DestroyIgnoreExclusions))
+  local exclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
+  add(FrameFactory:CreateCheckButton(nil, "Small", exclusionsText, nil,
+    format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), DejunkDB.DestroyIgnoreExclusions))
 end

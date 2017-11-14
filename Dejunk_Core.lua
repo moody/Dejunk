@@ -89,15 +89,15 @@ end
 -- @return bool, string or nil
 function Core:CanDejunk()
   if Dejunker:IsDejunking() then
-    return false, "Dejunking is already in progress. (L)"
+    return false, L.DEJUNKING_IN_PROGRESS
   end
 
   if Destroyer:IsDestroying() then
-    return false, "Cannot dejunk while items are being destroyed. (L)"
+    return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
   if ListManager:IsParsing() then
-    local msg = format("Cannot dejunk while %s and %s are being updated. (L)",
+    local msg = format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
       Tools:GetColoredListName(ListManager.Inclusions), Tools:GetColoredListName(ListManager.Exclusions))
     return false, msg
   end
@@ -110,15 +110,15 @@ end
 -- @return bool, string or nil
 function Core:CanDestroy()
   if Destroyer:IsDestroying() then
-    return false, "Destroying is already in progress. (L)"
+    return false, L.DESTROYING_IN_PROGRESS
   end
 
   if Dejunker:IsDejunking() then
-    return false, "Cannot destroy while items are being dejunked. (L)"
+    return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
   if ListManager:IsParsing(ListManager.Destroyables) then
-    return false, format("Cannot destroy while %s is being updated. (L)", Tools:GetColoredListName(ListManager.Destroyables))
+    return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING, Tools:GetColoredListName(ListManager.Destroyables))
   end
 
   return true

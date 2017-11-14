@@ -79,7 +79,7 @@ function autoDestroyFrame:OnUpdate(elapsed)
     end
 
     if emptySlots < MIN_EMPTY_SLOTS then
-      Core:Print("Automatically destroying items... (L)")
+      Core:Print(L.STARTING_AUTO_DESTROY)
       Destroyer:StartDestroying()
     end
   end
@@ -108,9 +108,9 @@ function Destroyer:StartDestroying()
 
   if not allItemsCached then
     if (#ItemsToDestroy > 0) then
-      Core:Print("Only destroying cached items. (L)")
+      Core:Print(L.ONLY_DESTROYING_CACHED)
     else
-      Core:Print("No cached destroyable items. (L)")
+      Core:Print(L.NO_CACHED_DESTROYABLE_ITEMS)
       self:StopDestroying()
       return
     end
@@ -152,7 +152,7 @@ function Destroyer:StartDestroyingItems()
   assert(currentState == DestroyerState.Destroying)
 
   if (#ItemsToDestroy <= 0) then
-		Core:Print("No items to destroy. (L)")
+		Core:Print(L.NO_DESTROYABLE_ITEMS)
 		self:StopDestroying()
 		return
 	end
@@ -229,10 +229,10 @@ function Destroyer:StopLosing()
   destroyerFrame:SetScript("OnUpdate", nil)
 
   if (numDestroyedItems == 1) then
-    Core:Print(format("Destroyed 1 item worth %s. (L)",
+    Core:Print(format(L.DESTROYED_ONE_ITEM,
       GetCoinTextureString(totalLoss)))
   else
-    Core:Print(format("Destroyed %s items worth %s in total. (L)",
+    Core:Print(format(L.DESTROYED_MULTIPLE_ITEMS,
       numDestroyedItems, GetCoinTextureString(totalLoss)))
   end
 
@@ -263,7 +263,7 @@ function Destroyer:CheckForNextDestroyedItem()
     if locked then -- Item probably being destroyed, add it back to list and try again later
       DestroyedItems[#DestroyedItems+1] = item
     else -- Item is still in bags, so it may not have been destroyed
-      Core:Print(format("May not have destroyed %s. (L)", item.Link))
+      Core:Print(format(L.MAY_NOT_HAVE_DESTROYED_ITEM, item.Link))
     end
 
     return nil

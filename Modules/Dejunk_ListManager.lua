@@ -375,7 +375,7 @@ function ListManager:ParseList(listName)
 
     sv[item.ItemID] = nil
     toAdd[item.ItemID] = nil
-    Core:Print(format("%s cannot be destroyed. (L)", item.Link))
+    Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.Link))
     return false
   end
 
