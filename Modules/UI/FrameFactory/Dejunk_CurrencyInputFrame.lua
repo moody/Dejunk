@@ -30,57 +30,69 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   frame.FF_ObjectType = "CurrencyInputFrame"
 
   -- Gold
-  local goldEditBoxFrame = self:CreateEditBoxFrame(frame, font, 4)
+  local goldEditBoxFrame = self:CreateEditBoxFrame(frame, font, 5, true)
+  goldEditBoxFrame.EditBox:SetJustifyH("CENTER")
   frame.GoldEditBoxFrame = goldEditBoxFrame
 
   local goldTexture = self:CreateTexture(frame)
+  goldTexture:ClearAllPoints()
   goldTexture:SetTexture(moneyIconsTexture)
   goldTexture:SetTexCoord(0, 0.25, 0, 1)
   frame.GoldTexture = goldTexture
 
   -- Silver
-  local silverEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2)
+  local silverEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2, true)
+  silverEditBoxFrame.EditBox:SetJustifyH("CENTER")
   frame.SilverEditBoxFrame = silverEditBoxFrame
 
   local silverTexture = self:CreateTexture(frame)
+  silverTexture:ClearAllPoints()
   silverTexture:SetTexture(moneyIconsTexture)
   silverTexture:SetTexCoord(0.25, 0.5, 0, 1)
   frame.SilverTexture = silverTexture
 
   -- Copper
-  local copperEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2)
+  local copperEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2, true)
+  copperEditBoxFrame.EditBox:SetJustifyH("CENTER")
   frame.CopperEditBoxFrame = copperEditBoxFrame
 
   local copperTexture = self:CreateTexture(frame)
+  copperTexture:ClearAllPoints()
   copperTexture:SetTexture(moneyIconsTexture)
   copperTexture:SetTexCoord(0.5, 0.75, 0, 1)
   frame.CopperTexture = copperTexture
 
   -- Initialize points
   goldEditBoxFrame:SetPoint("TOPLEFT", frame)
-  goldTexture:SetPoint("TOPLEFT", goldEditBoxFrame, "TOPRIGHT", 0, 0)
+  goldTexture:SetPoint("LEFT", goldEditBoxFrame, "RIGHT", 0, 0)
 
-  silverEditBoxFrame:SetPoint("TOPLEFT", goldTexture, "TOPRIGHT", 0, 0)
-  silverTexture:SetPoint("TOPLEFT", silverEditBoxFrame, "TOPRIGHT", 0, 0)
+  silverEditBoxFrame:SetPoint("LEFT", goldTexture, "RIGHT", 0, 0)
+  silverTexture:SetPoint("LEFT", silverEditBoxFrame, "RIGHT", 0, 0)
 
-  copperEditBoxFrame:SetPoint("TOPLEFT", silverTexture, "TOPRIGHT", 0, 0)
-  copperTexture:SetPoint("TOPLEFT", copperEditBoxFrame, "TOPRIGHT", 0, 0)
+  copperEditBoxFrame:SetPoint("LEFT", silverTexture, "RIGHT", 0, 0)
+  copperTexture:SetPoint("LEFT", copperEditBoxFrame, "RIGHT", 0, 0)
 
-  -- Gold accept
+  -- Gold scripts
+  goldEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
+    self:HighlightText() end)
   goldEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
     local value = tonumber(self:GetText())
     if value then DejunkDB.SV[svKey].Gold = floor(abs(value)) end
     self:SetText(DejunkDB.SV[svKey].Gold)
   end)
 
-  -- Silver accept
+  -- Silver scripts
+  silverEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
+    self:HighlightText() end)
   silverEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
     local value = tonumber(self:GetText())
     if value then DejunkDB.SV[svKey].Silver = floor(abs(value)) end
     self:SetText(DejunkDB.SV[svKey].Silver)
   end)
 
-  -- Copper accept
+  -- Copper scripts
+  copperEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
+    self:HighlightText() end)
   copperEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
     local value = tonumber(self:GetText())
     if value then DejunkDB.SV[svKey].Copper = floor(abs(value)) end
@@ -89,7 +101,11 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
 
   -- Gets the minimum width of the frame.
   function frame:GetMinWidth()
-    return 150
+    local boxWidth = goldEditBoxFrame:GetWidth() +
+      silverEditBoxFrame:GetWidth() + copperEditBoxFrame:GetWidth()
+    local texWidth = (goldTexture:GetWidth() * 3)
+
+    return boxWidth + texWidth
   end
 
   -- Gets the minimum height of the frame.
@@ -103,9 +119,11 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
     silverEditBoxFrame:Resize()
     copperEditBoxFrame:Resize()
 
+    local texSize = goldEditBoxFrame:GetHeight() * 0.7
+
     for _, tex in pairs({goldTexture, silverTexture, copperTexture}) do
-      tex:SetWidth(self:GetMinHeight())
-      tex:SetHeight(self:GetMinHeight())
+      tex:SetWidth(texSize)
+      tex:SetHeight(texSize)
     end
 
     self:SetWidth(self:GetMinWidth())

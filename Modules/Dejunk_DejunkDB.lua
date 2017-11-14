@@ -149,6 +149,13 @@ function DejunkDB:Defaults()
     IgnoreRecipes = false,
     IgnoreTradeGoods = false,
 
+    -- Destroy options
+    DestroyPriceThreshold = {
+      Gold = 0,
+      Silver = 0,
+      Copper = 0
+    },
+
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},
     Exclusions = {},

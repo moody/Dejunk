@@ -107,8 +107,9 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small", text, nil, tip, nil))
 
   -- Price Threshold
-  add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small", "Price Threshold", nil,
-    "Only destroy items worth less than a set price. (L)", DejunkDB.SellEquipmentBelowILVL))
+  add(FrameFactory:CreateCheckButton(nil, "Small", "Price Threshold (L)", nil,
+    "Only destroy items worth less than a set price. (L)", nil))
+  add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
 
   -- Destroy heading
   local destroyHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
