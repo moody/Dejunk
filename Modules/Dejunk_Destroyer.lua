@@ -213,7 +213,6 @@ function Destroyer:CalculateLoss()
 
   if loss then
     totalLoss = (totalLoss + loss)
-    numDestroyedItems = (numDestroyedItems + 1)
   end
 
   if (#DestroyedItems <= 0) then
@@ -239,6 +238,7 @@ function Destroyer:CheckForNextDestroyedItem()
   end
 
   -- Bag and slot is empty, so the item should have been destroyed
+  numDestroyedItems = (numDestroyedItems + item.Quantity)
   return (item.Price * item.Quantity)
 end
 
@@ -284,6 +284,55 @@ end
 -- @param item - an item retrieved using Tools:GetItemFromBag
 -- @return - true if the item is considered junk, and false otherwise
 function Destroyer:IsDestroyableItem(item)
-  -- Add more to this later as we begin to implement destroy options
-  return ListManager:IsOnList(ListManager.Destroyables, item.ItemID)
+  --[[ Priority
+  1. Are we ignoring Exclusions?
+  2. Are we destroying Poor items?
+    2.1 Treshold?
+  3. Are we destroying Inclusions?
+    3.1 Treshold?
+  4. Is it on the Destroyables list?
+    4.1 Treshold?
+  ]]
+
+  -- 1
+  if DejunkDB.SV.DestroyIgnoreExclusions and
+    ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+    print(format("Ignoring %s since it is on Exclusions.", item.ItemLink))
+    return false
+  end
+
+  -- 2
+  if DejunkDB.SV.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
+    print(format("Destroying %s since it is a Poor item.", item.ItemLink))
+    return self:ItemPriceBelowThreshold(item)
+  end
+
+  -- 3
+  if DejunkDB.SV.DestroyInclusions and
+    ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+    print(format("Destroying %s since it is on Inclusions.", item.ItemLink))
+    return self:ItemPriceBelowThreshold(item)
+  end
+
+  -- 4
+  return ListManager:IsOnList(ListManager.Destroyables, item.ItemID) and
+    self:ItemPriceBelowThreshold(item)
+end
+
+-- Returns true if the item's price is less than the set price treshold.
+function Destroyer:ItemPriceBelowThreshold(item)
+  if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item.Price, item.Quality) then
+    local threshold = DejunkDB.SV.DestroyPriceThreshold
+    local thresholdCopperPrice = (threshold.Gold * 10000) +
+      (threshold.Silver * 100) + threshold.Copper
+
+    if (item.Price >= thresholdCopperPrice) then
+      print(format("Ignoring %s since it is worth equal to or more than the threshold.", item.ItemLink))
+      print("Item price: "..GetCoinTextureString(item.Price))
+      print("Calculated threshold price: "..GetCoinTextureString(thresholdCopperPrice))
+      return false
+    end
+  end
+
+  return true
 end

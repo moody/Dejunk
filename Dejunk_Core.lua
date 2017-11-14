@@ -40,11 +40,9 @@ function coreFrame:OnUpdate()
   if ParentFrame.Initialized then
     if Dejunker:IsDejunking() or Destroyer:IsDestroying() then
       if ParentFrame:IsEnabled() then
-        print("Disabling GUI since a process is active.")
         Core:DisableGUI()
       end
     elseif not ParentFrame:IsEnabled() then
-      print("Enabling GUI since processes are inactive.")
       Core:EnableGUI()
     end
   end
