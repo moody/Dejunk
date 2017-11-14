@@ -123,7 +123,7 @@ function DestroyChildOptionsFrame:CreateOptions()
     L.POOR_TEXT, Colors.Poor, dAllTtip, DejunkDB.DestroyPoor))
 
   -- Destroy Inclusions Items
-  local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.DefaultColors.Inclusions)
+  local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
     "Destroy items on the Inclusions list. (L)", DejunkDB.DestroyInclusions))
 
@@ -134,7 +134,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(ignoreHeading)
 
   -- Ignore Exclusions Items
-  local ignoreExclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.DefaultColors.Exclusions)
+  local ignoreExclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", ignoreExclusionsText, nil,
     "Ignore items on the Exclusions list. (L)", DejunkDB.DestroyIgnoreExclusions))
 end
