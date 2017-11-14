@@ -108,7 +108,7 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Price threshold check button and currency input
   add(FrameFactory:CreateCheckButton(nil, "Small", "Price Threshold (L)", nil,
-    "Only destroy items worth less than a set price.|n|nDoes not apply to items of no value.(L)", DejunkDB.DestroyUsePriceThreshold))
+    "Only destroy items or stacks of items worth less than a set price. (L)", DejunkDB.DestroyUsePriceThreshold))
   add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
 
   -- Destroy heading

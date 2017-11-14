@@ -72,32 +72,31 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   copperEditBoxFrame:SetPoint("LEFT", silverTexture, "RIGHT", 0, 0)
   copperTexture:SetPoint("LEFT", copperEditBoxFrame, "RIGHT", 0, 0)
 
+  -- Reduce duplicate code
+  local onEditFocusLost = function(self, name)
+    local value = tonumber(self:GetText()) or 0
+    if value then DejunkDB.SV[svKey][name] = floor(abs(value)) end
+    self:SetText(DejunkDB.SV[svKey][name])
+  end
+
   -- Gold scripts
   goldEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
     self:HighlightText() end)
   goldEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    local value = tonumber(self:GetText())
-    if value then DejunkDB.SV[svKey].Gold = floor(abs(value)) end
-    self:SetText(DejunkDB.SV[svKey].Gold)
+    onEditFocusLost(self, "Gold")
   end)
 
   -- Silver scripts
   silverEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
     self:HighlightText() end)
   silverEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    local value = tonumber(self:GetText())
-    if value then DejunkDB.SV[svKey].Silver = floor(abs(value)) end
-    self:SetText(DejunkDB.SV[svKey].Silver)
-  end)
+    onEditFocusLost(self, "Silver") end)
 
   -- Copper scripts
   copperEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
     self:HighlightText() end)
   copperEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    local value = tonumber(self:GetText())
-    if value then DejunkDB.SV[svKey].Copper = floor(abs(value)) end
-    self:SetText(DejunkDB.SV[svKey].Copper)
-  end)
+    onEditFocusLost(self, "Copper") end)
 
   -- Gets the minimum width of the frame.
   function frame:GetMinWidth()

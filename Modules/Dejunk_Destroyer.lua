@@ -326,9 +326,9 @@ function Destroyer:ItemPriceBelowThreshold(item)
     local thresholdCopperPrice = (threshold.Gold * 10000) +
       (threshold.Silver * 100) + threshold.Copper
 
-    if (item.Price >= thresholdCopperPrice) then
+    if ((item.Price * item.Quantity) >= thresholdCopperPrice) then
       print(format("Ignoring %s since it is worth equal to or more than the threshold.", item.ItemLink))
-      print("Item price: "..GetCoinTextureString(item.Price))
+      print("Item price: "..GetCoinTextureString((item.Price * item.Quantity)))
       print("Calculated threshold price: "..GetCoinTextureString(thresholdCopperPrice))
       return false
     end
