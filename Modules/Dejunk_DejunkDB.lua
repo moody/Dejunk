@@ -150,11 +150,16 @@ function DejunkDB:Defaults()
     IgnoreTradeGoods = false,
 
     -- Destroy options
+    AutoDestroy = false,
+    DestroyUsePriceThreshold = false,
     DestroyPriceThreshold = {
       Gold = 0,
       Silver = 0,
       Copper = 0
     },
+    DestroyPoor = false,
+    DestroyInclusions = false,
+    DestroyIgnoreExclusions = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},

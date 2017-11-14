@@ -97,42 +97,44 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- General heading
   local generalHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
-    nil, "GameFontNormalSmall", Colors.ButtonText)
+    nil, "GameFontNormalSmall", Colors.LabelText)
   generalHeading:SetText(L.GENERAL_TEXT..":")
   add(generalHeading)
 
   -- Auto destroy
   local text = "Auto Destroy (L)"
   local tip = "Automatically begin destroying items when less than 5 empty bag slots remain. (L)"
-  add(FrameFactory:CreateCheckButton(nil, "Small", text, nil, tip, nil))
+  add(FrameFactory:CreateCheckButton(nil, "Small", text, nil, tip, DejunkDB.AutoDestroy))
 
-  -- Price Threshold
+  -- Price threshold check button and currency input
   add(FrameFactory:CreateCheckButton(nil, "Small", "Price Threshold (L)", nil,
-    "Only destroy items worth less than a set price. (L)", nil))
+    "Only destroy items worth less than a set price.|n|nDoes not apply to items of no value.(L)", DejunkDB.DestroyUsePriceThreshold))
   add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
 
   -- Destroy heading
   local destroyHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
-    nil, "GameFontNormalSmall", Colors.ButtonText)
+    nil, "GameFontNormalSmall", Colors.LabelText)
   destroyHeading:SetText(L.DESTROY_TEXT..":")
   add(destroyHeading)
 
   -- Destroy poor
   local dAllTtip = "Destroy all items of this quality. (L)"
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, dAllTtip, nil))--DejunkDB.Destroy.Poor))
+    L.POOR_TEXT, Colors.Poor, dAllTtip, DejunkDB.DestroyPoor))
 
   -- Destroy Inclusions Items
-  local destroyInclusionsText = format("%s (L)", Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.DefaultColors.Inclusions))
-  add(FrameFactory:CreateCheckButton(nil, "Small", destroyInclusionsText, nil, "Destroy items on the Inclusions list. (L)", nil))
+  local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.DefaultColors.Inclusions)
+  add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
+    "Destroy items on the Inclusions list. (L)", DejunkDB.DestroyInclusions))
 
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
-    nil, "GameFontNormalSmall", Colors.ButtonText)
+    nil, "GameFontNormalSmall", Colors.LabelText)
   ignoreHeading:SetText(L.IGNORE_TEXT..":")
   add(ignoreHeading)
 
   -- Ignore Exclusions Items
   local ignoreExclusionsText = format("%s (L)", Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.DefaultColors.Exclusions))
-  add(FrameFactory:CreateCheckButton(nil, "Small", ignoreExclusionsText, nil, "Ignore items on the Exclusions list. (L)", nil))
+  add(FrameFactory:CreateCheckButton(nil, "Small", ignoreExclusionsText, nil,
+    "Ignore items on the Exclusions list. (L)", DejunkDB.DestroyIgnoreExclusions))
 end
