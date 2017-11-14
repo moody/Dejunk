@@ -78,9 +78,13 @@ function autoDestroyFrame:OnUpdate(elapsed)
       emptySlots = emptySlots + GetContainerNumFreeSlots(bag)
     end
 
-    if emptySlots < MIN_EMPTY_SLOTS then
-      Core:Print(L.STARTING_AUTO_DESTROY)
-      Destroyer:StartDestroying()
+    if (emptySlots < MIN_EMPTY_SLOTS) then
+      -- Check for at least one destroyable item before auto destroying
+      local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
+      if (#items > 0) then
+        Core:Print(L.STARTING_AUTO_DESTROY)
+        Destroyer:StartDestroying()
+      end
     end
   end
 end
@@ -102,9 +106,9 @@ function Destroyer:StartDestroying()
   end
 
   currentState = DestroyerState.Destroying
-  allItemsCached = true
 
-  self:SearchForDestroyableItems()
+  local items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
+  ItemsToDestroy = items
 
   if not allItemsCached then
     if (#ItemsToDestroy > 0) then
@@ -276,38 +280,18 @@ end
 
 --[[
 //*******************************************************************
-//                        Helper Functions
+//                        Filter Functions
 //*******************************************************************
 --]]
 
--- Searches the player's bags for destroyable items.
-function Destroyer:SearchForDestroyableItems()
-  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-    for slot = 1, GetContainerNumSlots(bag) do
-      local itemID = GetContainerItemID(bag, slot)
-
-      if itemID then -- bag slot is not empty (seems to be guaranteed)
-        if not GetItemInfo(itemID) then
-          allItemsCached = false end
-
-        local item = self:GetDestroyableItemFromBag(bag, slot, itemID)
-
-        if item then -- item is cached
-          ItemsToDestroy[#ItemsToDestroy+1] = item
-        end
-      end
-    end
-  end
-end
-
 -- Returns the item in the specified bag slot if it is destroyable.
 -- @return - a destroyable item, or nil
-function Destroyer:GetDestroyableItemFromBag(bag, slot)
+Destroyer.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item then return nil end
 
   if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end
-  if not self:IsDestroyableItem(item) then return nil end
+  if not Destroyer:IsDestroyableItem(item) then return nil end
 
   return item
 end

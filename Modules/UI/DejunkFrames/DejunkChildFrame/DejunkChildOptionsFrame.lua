@@ -144,7 +144,8 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
 
   -- Safe mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.SAFE_MODE_TEXT, Colors.LabelText, L.SAFE_MODE_TOOLTIP, DejunkDB.SafeMode))
+    L.SAFE_MODE_TEXT, Colors.LabelText,
+    format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), DejunkDB.SafeMode))
 
   -- Silent mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
