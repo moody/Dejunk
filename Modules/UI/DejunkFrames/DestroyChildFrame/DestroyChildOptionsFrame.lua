@@ -134,7 +134,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(ignoreHeading)
 
   -- Ignore Exclusions Items
-  local ignoreExclusionsText = format("%s (L)", Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.DefaultColors.Exclusions))
+  local ignoreExclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.DefaultColors.Exclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", ignoreExclusionsText, nil,
     "Ignore items on the Exclusions list. (L)", DejunkDB.DestroyIgnoreExclusions))
 end

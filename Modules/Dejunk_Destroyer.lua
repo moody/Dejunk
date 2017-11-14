@@ -36,7 +36,7 @@ local numDestroyedItems = 0
 //*******************************************************************
 --]]
 
-local destroyerFrame = CreateFrame("Frame", AddonName.."DestroyerFrame")
+local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 
 function destroyerFrame:OnEvent(event, ...)
   if (event == "UI_ERROR_MESSAGE") then
@@ -52,6 +52,40 @@ end
 
 destroyerFrame:SetScript("OnEvent", destroyerFrame.OnEvent)
 destroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
+
+--[[
+//*******************************************************************
+//                         Auto Destroy Frame
+//*******************************************************************
+--]]
+
+local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
+
+local AUTO_DESTROY_DELAY = 1 -- 1 second
+local autoDestroyInterval = 0
+local MIN_EMPTY_SLOTS = 5
+
+function autoDestroyFrame:OnUpdate(elapsed)
+  if not DejunkDB.SV.AutoDestroy then return end
+  if not Core:CanDestroy() then return end
+
+  autoDestroyInterval = autoDestroyInterval + elapsed
+  if (autoDestroyInterval >= AUTO_DESTROY_DELAY) then
+    autoDestroyInterval = 0
+
+    local emptySlots = 0
+    for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+      emptySlots = emptySlots + GetContainerNumFreeSlots(bag)
+    end
+
+    if emptySlots < MIN_EMPTY_SLOTS then
+      Core:Print("Automatically destroying items... (L)")
+      Destroyer:StartDestroying()
+    end
+  end
+end
+
+autoDestroyFrame:SetScript("OnUpdate", autoDestroyFrame.OnUpdate)
 
 --[[
 //*******************************************************************
@@ -155,14 +189,12 @@ function Destroyer:DestroyNextItem()
   local item = remove(ItemsToDestroy)
 	if not item then return end
 
-  --print("Would have destroyed: "..item.ItemLink)
-  --if true then return end
-
-  print("Destroying: "..item.ItemLink)
-
+  -- Clear cursor if it has an item to prevent simply swapping
+  -- bag locations when PickupContainerItem is called
+  if CursorHasItem() then ClearCursor() end
 	PickupContainerItem(item.Bag, item.Slot)
   DeleteCursorItem()
-  ClearCursor()
+  ClearCursor() -- Clear cursor again in case any issues occurred
 
   DestroyedItems[#DestroyedItems+1] = item
 end
@@ -297,20 +329,17 @@ function Destroyer:IsDestroyableItem(item)
   -- 1
   if DejunkDB.SV.DestroyIgnoreExclusions and
     ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
-    print(format("Ignoring %s since it is on Exclusions.", item.ItemLink))
     return false
   end
 
   -- 2
   if DejunkDB.SV.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
-    print(format("Destroying %s since it is a Poor item.", item.ItemLink))
     return self:ItemPriceBelowThreshold(item)
   end
 
   -- 3
   if DejunkDB.SV.DestroyInclusions and
     ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
-    print(format("Destroying %s since it is on Inclusions.", item.ItemLink))
     return self:ItemPriceBelowThreshold(item)
   end
 
@@ -327,11 +356,7 @@ function Destroyer:ItemPriceBelowThreshold(item)
       (threshold.Silver * 100) + threshold.Copper
 
     if ((item.Price * item.Quantity) >= thresholdCopperPrice) then
-      print(format("Ignoring %s since it is worth equal to or more than the threshold.", item.ItemLink))
-      print("Item price: "..GetCoinTextureString((item.Price * item.Quantity)))
-      print("Calculated threshold price: "..GetCoinTextureString(thresholdCopperPrice))
-      return false
-    end
+      return false end
   end
 
   return true
