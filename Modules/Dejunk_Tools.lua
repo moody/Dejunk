@@ -8,6 +8,11 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 -- Upvalues
 local Clamp = Clamp
 local GameTooltip = GameTooltip
+local BACKPACK_CONTAINER, NUM_BAG_SLOTS = BACKPACK_CONTAINER, NUM_BAG_SLOTS
+local GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo =
+      GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo
+local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink =
+      GetContainerNumSlots, GetContainerItemID, GetContainerItemLink
 
 local sort = table.sort
 local pairs, ipairs = pairs, ipairs
