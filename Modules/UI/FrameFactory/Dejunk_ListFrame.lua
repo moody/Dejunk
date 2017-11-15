@@ -110,7 +110,7 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
 
   -- Drops the item on the cursor into the scroll frame.
   function buttonFrame:DropItem()
-    if CursorHasItem() then
+    if titleButton:IsEnabled() and CursorHasItem() then
       local infoType, itemID = GetCursorInfo()
 
       if infoType == "item" then
