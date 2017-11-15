@@ -411,8 +411,8 @@ function ListManager:ParseList(listName)
   if not next(toAdd) then
     ListManager:SortList(list)
 
-    -- Notify Destroyer that settings have been updated
+    -- Queue up auto destroy if Destroyables list has been updated
     if (listName == ListManager.Destroyables) then
-      DJ.Destroyer:SettingsUpdated() end
+      DJ.Destroyer:QueueAutoDestroy() end
   end
 end

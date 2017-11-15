@@ -95,8 +95,8 @@ function DestroyChildOptionsFrame:CreateOptions()
     self.UI.SettingsFrame:AddOption(option)
   end
 
-  -- Callback function for check buttons, notifies Destroyer that settings have updated
-  local cbCallback = DJ.Destroyer.SettingsUpdated
+  -- Callback function for check buttons, queues up auto destroy
+  local cbCallback = DJ.Destroyer.QueueAutoDestroy
 
   -- General heading
   local generalHeading = FrameFactory:CreateFontString(ui.SettingsFrame,

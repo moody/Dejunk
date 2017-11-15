@@ -30,8 +30,9 @@ local ItemsToDestroy = {}
 local DestroyedItems = {}
 local numDestroyedItems = 0
 
-local bagsUpdated = false
-local settingsUpdated = false
+local AUTO_DESTROY_DELAY = 5 -- 5 seconds
+local autoDestroyInterval = 0
+local autoDestroyQueued = false
 
 --[[
 //*******************************************************************
@@ -45,40 +46,37 @@ local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 -- autoDestroyFrame is used for auto destroy functionality
 local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
 
-local AUTO_DESTROY_DELAY = 5 -- 5 seconds
-local autoDestroyInterval = 0
-
 -- Check for bag updates and update bagsUpdated
 function autoDestroyFrame:OnEvent(event, ...)
   if (event == "BAG_UPDATE") and Core.Initialized and Core:CanDestroy() then
     local bagID = ...
     if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
-      if not bagsUpdated then print("bagsUpdated: "..bagID) end
-      bagsUpdated = true
+      Destroyer:QueueAutoDestroy()
     end
   end
 end
 
 function autoDestroyFrame:OnUpdate(elapsed)
-  if not DejunkDB.SV.AutoDestroy then return end
-  if not Core:CanDestroy() then return end
+  if (not DejunkDB.SV.AutoDestroy) or (not Core:CanDestroy()) then
+    -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
+    -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
+    -- with no interruptions such as the BAG_UPDATE event has passed.
+    autoDestroyInterval = 0
+    return
+  end
+  if not autoDestroyQueued then return end
 
   autoDestroyInterval = autoDestroyInterval + elapsed
+
   if (autoDestroyInterval >= AUTO_DESTROY_DELAY) then
     autoDestroyInterval = 0
+    autoDestroyQueued = false
 
-    if bagsUpdated or settingsUpdated then
-      print("OnUpdate: (bagsUpdated or settingsUpdated)")
-
-      bagsUpdated = false
-      settingsUpdated = false
-
-      -- Check for at least one destroyable item before auto destroying
-      local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
-      if (#items > 0) then
-        Core:Print(L.STARTING_AUTO_DESTROY)
-        Destroyer:StartDestroying()
-      end
+    -- Check for at least one destroyable item before auto destroying
+    local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
+    if (#items > 0) then
+      Core:Print(L.STARTING_AUTO_DESTROY)
+      Destroyer:StartDestroying()
     end
   end
 end
@@ -93,10 +91,10 @@ autoDestroyFrame:RegisterEvent("BAG_UPDATE")
 //*******************************************************************
 --]]
 
--- Informs the destroyer that the settings for destroying have updated.
-function Destroyer:SettingsUpdated()
-  print("Destroyer:SettingsUpdated()")
-  settingsUpdated = true
+-- Queues up the auto destroy process.
+function Destroyer:QueueAutoDestroy()
+  autoDestroyQueued = true
+  autoDestroyInterval = 0
 end
 
 -- Starts the Destroying process.
