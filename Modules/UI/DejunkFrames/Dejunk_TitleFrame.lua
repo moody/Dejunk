@@ -23,7 +23,6 @@ local scaleIndex = 1
 //*******************************************************************
 --]]
 
--- @Override
 function TitleFrame:OnInitialize()
   local frame = self.Frame
   local ui = self.UI
@@ -92,8 +91,7 @@ function TitleFrame:OnInitialize()
   end)
 end
 
--- @Override
-function TitleFrame:Resize()
+function TitleFrame:OnResize()
   local ui = self.UI
 
   local titleWidth = ui.TitleFontString:GetStringWidth()

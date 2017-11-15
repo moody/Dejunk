@@ -6,14 +6,24 @@ local DejunkFrames = DJ.DejunkFrames -- See Modules.lua
 local FrameFactory = DJ.FrameFactory
 
 local DejunkFrameMixin = {
-  Initialized = false
+  Initialized = false,
+  Enabled = false
 }
 
---[[
-//*******************************************************************
-//                       Init/Deinit Functions
-//*******************************************************************
---]]
+-- Lifecycle hooks
+function DejunkFrameMixin:OnInitialize() end
+function DejunkFrameMixin:OnShow() end
+function DejunkFrameMixin:OnHide() end
+function DejunkFrameMixin:OnEnable() end
+function DejunkFrameMixin:OnDisable() end
+function DejunkFrameMixin:OnRefresh() end
+function DejunkFrameMixin:OnResize() end
+function DejunkFrameMixin:OnSetWidth(newWidth, oldWidth) end
+function DejunkFrameMixin:OnSetHeight(newHeight, oldHeight) end
+
+-- ============================================================================
+--                         General Frame Functions
+-- ============================================================================
 
 -- Initializes the frame.
 function DejunkFrameMixin:Initialize()
@@ -30,24 +40,19 @@ function DejunkFrameMixin:Initialize()
   self:OnInitialize()
 end
 
--- Additional initialize logic. Override when necessary.
-function DejunkFrameMixin:OnInitialize() end
-
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
-
 -- Displays the frame.
 function DejunkFrameMixin:Show()
   self:Refresh()
   self.Frame:Show()
+
+  self:OnShow()
 end
 
 -- Hides the frame.
 function DejunkFrameMixin:Hide()
   self.Frame:Hide()
+
+  self:OnHide()
 end
 
 -- Returns true if the frame is visible.
@@ -68,12 +73,16 @@ end
 function DejunkFrameMixin:Enable()
   FrameFactory:EnableUI(self.UI)
   self.Enabled = true
+
+  self:OnEnable()
 end
 
 -- Disables the frame.
 function DejunkFrameMixin:Disable()
   FrameFactory:DisableUI(self.UI)
   self.Enabled = false
+
+  self:OnDisable()
 end
 
 -- Returns true if the frame is enabled.
@@ -86,16 +95,19 @@ end
 function DejunkFrameMixin:Refresh()
   self.Frame:Refresh()
   FrameFactory:RefreshUI(self.UI)
+
+  self:OnRefresh()
 end
 
--- Resizes the frame. Override when necessary.
-function DejunkFrameMixin:Resize() end
+-- Resizes the frame.
+function DejunkFrameMixin:Resize()
+  -- No base functionality required for now
+  self:OnResize()
+end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                           Getters and Setters
+-- ============================================================================
 
 -- Gets the width of the frame.
 -- @return - the width of the frame
@@ -105,8 +117,10 @@ end
 
 -- Sets the width of the frame.
 -- @param width - the new width
-function DejunkFrameMixin:SetWidth(width)
-  self.Frame:SetWidth(width)
+function DejunkFrameMixin:SetWidth(newWidth)
+  local oldWidth = self.Frame:GetWidth()
+  self.Frame:SetWidth(newWidth)
+  self:OnSetWidth(newWidth, oldWidth)
 end
 
 -- Gets the height of the frame.
@@ -117,8 +131,10 @@ end
 
 -- Sets the height of the frame.
 -- @param height - the new height
-function DejunkFrameMixin:SetHeight(height)
-  self.Frame:SetHeight(height)
+function DejunkFrameMixin:SetHeight(newHeight)
+  local oldHeight = self.Frame:GetHeight()
+  self.Frame:SetHeight(newHeight)
+  self:OnSetHeight(newHeight, oldHeight)
 end
 
 -- Sets the parent of the frame.

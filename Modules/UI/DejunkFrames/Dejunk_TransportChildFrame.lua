@@ -30,40 +30,26 @@ local currentType = nil
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
-//*******************************************************************
---]]
-
--- @Override
-function TransportChildFrame:OnInitialize()
-  self:CreateTransportFrame()
-end
-
---[[
-//*******************************************************************
 //                       General Frame Functions
 //*******************************************************************
 --]]
 
-do -- Hook Refresh
-  local refresh = TransportChildFrame.Refresh
-
-  function TransportChildFrame:Refresh()
-    if not currentList then refresh(self) return end
-
-    -- Recolor the title text when the color scheme changes
-    local titleText = (currentType == self.Import) and
-      L.IMPORT_TITLE_TEXT or L.EXPORT_TITLE_TEXT
-    local listName = Tools:GetColoredListName(currentList)
-
-    self.UI.TitleFontString:SetText(format(titleText, listName))
-
-    refresh(self)
-  end
+function TransportChildFrame:OnInitialize()
+  self:CreateTransportFrame()
 end
 
--- @Override
-function TransportChildFrame:Resize()
+function TransportChildFrame:OnRefresh()
+  if not currentList then return end
+
+  -- Recolor the title text when the color scheme changes
+  local titleText = (currentType == self.Import) and
+    L.IMPORT_TITLE_TEXT or L.EXPORT_TITLE_TEXT
+  local listName = Tools:GetColoredListName(currentList)
+
+  self.UI.TitleFontString:SetText(format(titleText, listName))
+end
+
+function TransportChildFrame:OnResize()
   local ui = self.UI
 
   ui.TextField:Resize()

@@ -18,23 +18,15 @@ DejunkChildOptionsFrame.OptionFrames = {}
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
-//*******************************************************************
---]]
-
--- @Override
-function DejunkChildOptionsFrame:OnInitialize()
-  self:CreateOptions()
-end
-
---[[
-//*******************************************************************
 //                       General Frame Functions
 //*******************************************************************
 --]]
 
--- @Override
-function DejunkChildOptionsFrame:Resize()
+function DejunkChildOptionsFrame:OnInitialize()
+  self:CreateOptions()
+end
+
+function DejunkChildOptionsFrame:OnResize()
   local ui = self.UI
   local frames = self.OptionFrames
 
@@ -72,30 +64,23 @@ end
 //*******************************************************************
 --]]
 
-do -- Hook SetWidth
-  local setWidth = DejunkChildOptionsFrame.SetWidth
+function DejunkChildOptionsFrame:OnSetWidth(newWidth, oldWidth)
+  if (newWidth > oldWidth) then -- resize options frames
+    local ui = self.UI
+    local frames = self.OptionFrames
 
-  function DejunkChildOptionsFrame:SetWidth(width)
-    local oldWidth = self:GetWidth()
-    setWidth(self, width)
+    local pad = Tools:Padding(2) + ((#frames - 1) * Tools:Padding())
+    newWidth = ((newWidth - pad) / #frames)
 
-    if (width > oldWidth) then -- resize options frames
-      local ui = self.UI
-      local frames = self.OptionFrames
-
-      local pad = Tools:Padding(2) + ((#frames - 1) * Tools:Padding());
-      local newWidth = ((width - pad) / #frames)
-
-      -- Even the widths of the frames
-      for k, v in pairs(frames) do
-        v:SetWidth(newWidth)
-      end
-
-      -- Resize positioner to keep frames centered
-      newWidth = (#frames > 0) and Tools:Measure(self.Frame, frames[1],
-        frames[#frames], "LEFT", "RIGHT") or 1
-      ui.OptionsPositioner:SetWidth(newWidth)
+    -- Even the widths of the frames
+    for k, v in pairs(frames) do
+      v:SetWidth(newWidth)
     end
+
+    -- Resize positioner to keep frames centered
+    newWidth = (#frames > 0) and Tools:Measure(self.Frame, frames[1],
+      frames[#frames], "LEFT", "RIGHT") or 1
+    ui.OptionsPositioner:SetWidth(newWidth)
   end
 end
 
