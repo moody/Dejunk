@@ -30,7 +30,7 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   local checkButton = self:CreateCheckButton(cbnBox, size, text, textColor, tooltip)
   cbnBox.CheckButton = checkButton
 
-  local editBoxFrame = self:CreateEditBoxFrame(cbnBox, checkButton.Text:GetFontObject(), maxLetters)
+  local editBoxFrame = self:CreateEditBoxFrame(cbnBox, checkButton.Text:GetFontObject(), maxLetters, true)
   cbnBox.EditBoxFrame = editBoxFrame
 
   -- Initialize points
@@ -45,10 +45,15 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   end)
 
   -- EditBox
+  editBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
+    self:HighlightText() end)
   editBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    local value = tonumber(self:GetText())
-    if value then DejunkDB.SV[svKey].Value = floor(abs(value)) end
+    self:HighlightText(0, 0)
     self:SetText(DejunkDB.SV[svKey].Value)
+  end)
+  editBoxFrame.EditBox:SetScript("OnTextChanged", function(self)
+    local value = self:GetNumber()
+    DejunkDB.SV[svKey].Value = floor(abs(value))
   end)
 
   -- Gets the minimum width of the frame.
