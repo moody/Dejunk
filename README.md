@@ -2,10 +2,11 @@
 
 Dejunk is a customizable junk selling and destroying addon.
 
-![Dejunk](/Screenshot.png?raw=true)
+![Dejunk](/Dejunk.png?raw=true)
+![Destroy](/Destroy.png?raw=true)
 
 ## New Feature: Destroy
-* Automatically destroy junk items when less than 5 empty bag slots remain
+* Automatically destroy junk items
 * Only destroy items worth less than a set price
 * Customize a list of items to destroy (Destroyables)
 * Destroy all Poor quality items
