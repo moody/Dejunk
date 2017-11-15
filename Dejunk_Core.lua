@@ -229,27 +229,10 @@ end
 --]]
 
 do
-  local lastItemLink = nil
-  local lastDejunkText = nil
-  local lastTipText = nil
-
-  local function OnTooltipSetItem(self, ...)
+  local function setBagItem(self, bag, slot)
     if not DejunkGlobal.ItemTooltip then return end
 
-    -- Validate item link
-  	local itemLink = select(2, self:GetItem())
-    if not itemLink then return end
-
-    -- If the current item is the same as last, just re-show last tooltip
-    if (lastItemLink == itemLink) then
-      self:AddDoubleLine(lastDejunkText, lastTipText)
-      return
-    end
-
-    -- Find item in bags
-    local bag, slot = Tools:FindItemInBags(itemLink)
-    if not (bag and slot) then return end
-
+    -- Get item
     local item = Tools:GetItemFromBag(bag, slot)
     if not item then return end
 
@@ -257,16 +240,14 @@ do
     if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return end
 
     -- Display an appropriate tooltip if the item is junk
-    local isJunkItem = Dejunker:IsJunkItem(item)
     local dejunkText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
-    local tipText = (isJunkItem and Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions)) or
+    local tipText = Dejunker:IsJunkItem(item) and
+      Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions) or
       Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
 
     self:AddDoubleLine(dejunkText, tipText)
-    lastItemLink = itemLink
-    lastDejunkText = dejunkText
-    lastTipText = tipText
+    self:Show()
   end
 
-  GameTooltip:HookScript("OnTooltipSetItem", OnTooltipSetItem)
+  hooksecurefunc(GameTooltip, "SetBagItem", setBagItem)
 end
