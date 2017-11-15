@@ -91,6 +91,11 @@ function TitleFrame:OnInitialize()
   end)
 end
 
+function TitleFrame:OnDisable()
+  -- Re-enable the close button so users can still use it while Dejunk is busy
+  self.UI.CloseButton:SetEnabled(true)
+end
+
 function TitleFrame:OnResize()
   local ui = self.UI
 
