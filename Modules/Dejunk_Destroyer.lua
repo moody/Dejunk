@@ -30,40 +30,34 @@ local ItemsToDestroy = {}
 local DestroyedItems = {}
 local numDestroyedItems = 0
 
+local bagsUpdated = false
+local settingsUpdated = false
+
 --[[
 //*******************************************************************
-//                         Destroyer Frame
+//                         Destroyer Frames
 //*******************************************************************
 --]]
 
+-- destroyerFrame is used for destroying items
 local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 
-function destroyerFrame:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
-    local _, msg = ...
-
-    if Destroyer:IsDestroying() then
-			if (msg == ERR_INTERNAL_BAG_ERROR) then
-				--UIErrorsFrame:Clear()
-			end
-		end
-  end
-end
-
-destroyerFrame:SetScript("OnEvent", destroyerFrame.OnEvent)
-destroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
-
---[[
-//*******************************************************************
-//                         Auto Destroy Frame
-//*******************************************************************
---]]
-
+-- autoDestroyFrame is used for auto destroy functionality
 local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
 
-local AUTO_DESTROY_DELAY = 1 -- 1 second
+local AUTO_DESTROY_DELAY = 5 -- 5 seconds
 local autoDestroyInterval = 0
-local MIN_EMPTY_SLOTS = 5
+
+-- Check for bag updates and update bagsUpdated
+function autoDestroyFrame:OnEvent(event, ...)
+  if (event == "BAG_UPDATE") and Core.Initialized and Core:CanDestroy() then
+    local bagID = ...
+    if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
+      if not bagsUpdated then print("bagsUpdated: "..bagID) end
+      bagsUpdated = true
+    end
+  end
+end
 
 function autoDestroyFrame:OnUpdate(elapsed)
   if not DejunkDB.SV.AutoDestroy then return end
@@ -73,12 +67,12 @@ function autoDestroyFrame:OnUpdate(elapsed)
   if (autoDestroyInterval >= AUTO_DESTROY_DELAY) then
     autoDestroyInterval = 0
 
-    local emptySlots = 0
-    for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-      emptySlots = emptySlots + GetContainerNumFreeSlots(bag)
-    end
+    if bagsUpdated or settingsUpdated then
+      print("OnUpdate: (bagsUpdated or settingsUpdated)")
 
-    if (emptySlots < MIN_EMPTY_SLOTS) then
+      bagsUpdated = false
+      settingsUpdated = false
+
       -- Check for at least one destroyable item before auto destroying
       local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
       if (#items > 0) then
@@ -90,12 +84,20 @@ function autoDestroyFrame:OnUpdate(elapsed)
 end
 
 autoDestroyFrame:SetScript("OnUpdate", autoDestroyFrame.OnUpdate)
+autoDestroyFrame:SetScript("OnEvent", autoDestroyFrame.OnEvent)
+autoDestroyFrame:RegisterEvent("BAG_UPDATE")
 
 --[[
 //*******************************************************************
 //                        Destroying Functions
 //*******************************************************************
 --]]
+
+-- Informs the destroyer that the settings for destroying have updated.
+function Destroyer:SettingsUpdated()
+  print("Destroyer:SettingsUpdated()")
+  settingsUpdated = true
+end
 
 -- Starts the Destroying process.
 function Destroyer:StartDestroying()
@@ -303,11 +305,11 @@ function Destroyer:IsDestroyableItem(item)
   --[[ Priority
   1. Are we ignoring Exclusions?
   2. Are we destroying Poor items?
-    2.1 Treshold?
+    2.1 Threshold?
   3. Are we destroying Inclusions?
-    3.1 Treshold?
+    3.1 Threshold?
   4. Is it on the Destroyables list?
-    4.1 Treshold?
+    4.1 Threshold?
   ]]
 
   -- 1
@@ -332,7 +334,7 @@ function Destroyer:IsDestroyableItem(item)
     self:ItemPriceBelowThreshold(item)
 end
 
--- Returns true if the item's price is less than the set price treshold.
+-- Returns true if the item's price is less than the set price threshold.
 function Destroyer:ItemPriceBelowThreshold(item)
   if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item.Price, item.Quality) then
     local threshold = DejunkDB.SV.DestroyPriceThreshold

@@ -408,5 +408,11 @@ function ListManager:ParseList(listName)
   end
 
   -- Sort the list once all items have been parsed
-  if not next(toAdd) then ListManager:SortList(list) end
+  if not next(toAdd) then
+    ListManager:SortList(list)
+
+    -- Notify Destroyer that settings have been updated
+    if (listName == ListManager.Destroyables) then
+      DJ.Destroyer:SettingsUpdated() end
+  end
 end

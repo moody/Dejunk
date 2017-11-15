@@ -50,7 +50,7 @@ local CheckButtonSizes =
 -- @param tooltip - the body text of the tooltip shown when highlighted [optional]
 -- @param svKey - the key of the saved variable associated with the check button [optional]
 -- @return - a Dejunk check button
-function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, svKey)
+function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, svKey, onClickCallBack)
   size = (CheckButtonSizes[size] or error("Unrecognized check button size"))
 
   local checkButton = FrameCreator:CreateCheckButton(parent)
@@ -101,6 +101,7 @@ function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, 
 
     checkButton:SetScript("OnClick", function(self)
       DejunkDB.SV[self.SVKey] = self:GetChecked()
+      if onClickCallBack then onClickCallBack() end
     end)
   end
 
