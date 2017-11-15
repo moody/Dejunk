@@ -32,6 +32,7 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   -- Gold
   local goldEditBoxFrame = self:CreateEditBoxFrame(frame, font, 5, true)
   goldEditBoxFrame.EditBox:SetJustifyH("CENTER")
+  goldEditBoxFrame.EditBox.Name = "Gold"
   frame.GoldEditBoxFrame = goldEditBoxFrame
 
   local goldTexture = self:CreateTexture(frame)
@@ -43,6 +44,7 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   -- Silver
   local silverEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2, true)
   silverEditBoxFrame.EditBox:SetJustifyH("CENTER")
+  silverEditBoxFrame.EditBox.Name = "Silver"
   frame.SilverEditBoxFrame = silverEditBoxFrame
 
   local silverTexture = self:CreateTexture(frame)
@@ -54,6 +56,7 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   -- Copper
   local copperEditBoxFrame = self:CreateEditBoxFrame(frame, font, 2, true)
   copperEditBoxFrame.EditBox:SetJustifyH("CENTER")
+  copperEditBoxFrame.EditBox.Name = "Copper"
   frame.CopperEditBoxFrame = copperEditBoxFrame
 
   local copperTexture = self:CreateTexture(frame)
@@ -73,30 +76,26 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   copperTexture:SetPoint("LEFT", copperEditBoxFrame, "RIGHT", 0, 0)
 
   -- Reduce duplicate code
-  local onEditFocusLost = function(self, name)
-    local value = tonumber(self:GetText()) or 0
-    if value then DejunkDB.SV[svKey][name] = floor(abs(value)) end
-    self:SetText(DejunkDB.SV[svKey][name])
+  for _, ebFrame in pairs({goldEditBoxFrame.EditBox, silverEditBoxFrame.EditBox, copperEditBoxFrame.EditBox}) do
+    ebFrame:SetScript("OnEditFocusGained", function(self)
+      self:HighlightText() end)
+    ebFrame:SetScript("OnEditFocusLost", function(self)
+      self:HighlightText(0, 0)
+      self:SetText(DejunkDB.SV[svKey][ebFrame.Name])
+    end)
+    ebFrame:SetScript("OnTextChanged", function(self)
+      local value = self:GetNumber()
+      DejunkDB.SV[svKey][self.Name] = floor(abs(value))
+    end)
   end
 
-  -- Gold scripts
-  goldEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
-    self:HighlightText() end)
-  goldEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    onEditFocusLost(self, "Gold")
-  end)
-
-  -- Silver scripts
-  silverEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
-    self:HighlightText() end)
-  silverEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    onEditFocusLost(self, "Silver") end)
-
-  -- Copper scripts
-  copperEditBoxFrame.EditBox:SetScript("OnEditFocusGained", function(self)
-    self:HighlightText() end)
-  copperEditBoxFrame.EditBox:SetScript("OnEditFocusLost", function(self)
-    onEditFocusLost(self, "Copper") end)
+  -- Tab scripts
+  goldEditBoxFrame.EditBox:SetScript("OnTabPressed", function(self)
+    silverEditBoxFrame.EditBox:SetFocus() end)
+  silverEditBoxFrame.EditBox:SetScript("OnTabPressed", function(self)
+    copperEditBoxFrame.EditBox:SetFocus() end)
+  copperEditBoxFrame.EditBox:SetScript("OnTabPressed", function(self)
+    goldEditBoxFrame.EditBox:SetFocus() end)
 
   -- Gets the minimum width of the frame.
   function frame:GetMinWidth()

@@ -73,9 +73,18 @@ function Dejunker:StartDejunking()
   end
 
   currentState = DejunkerState.Dejunking
-  allItemsCached = true
 
-  self:SearchForJunkItems()
+  local items, allItemsCached
+
+  if DejunkDB.SV.SafeMode then
+    items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter, Consts.SAFE_MODE_MAX)
+    if (#items == Consts.SAFE_MODE_MAX) then
+      Core:Print(format(L.SAFE_MODE_MESSAGE, Consts.SAFE_MODE_MAX)) end
+  else
+    items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
+  end
+
+  ItemsToSell = items
 
   if not allItemsCached then
     if (#ItemsToSell > 0) then
@@ -244,41 +253,19 @@ end
 
 --[[
 //*******************************************************************
-//                        Helper Functions
+//                        Filter Functions
 //*******************************************************************
 --]]
 
--- Searches the player's bags for dejunkable items.
-function Dejunker:SearchForJunkItems()
-  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-    for slot = 1, GetContainerNumSlots(bag) do
-      local itemID = GetContainerItemID(bag, slot)
-
-      if itemID then -- bag slot is not empty (seems to be guaranteed)
-        if not GetItemInfo(itemID) then
-          allItemsCached = false end
-
-        local item = self:GetDejunkableItemFromBag(bag, slot, itemID)
-
-        if item then -- item is cached
-          ItemsToSell[#ItemsToSell+1] = item
-
-          if ((#ItemsToSell == Consts.SAFE_MODE_MAX) and DejunkDB.SV.SafeMode) then
-            Core:Print(L.SAFE_MODE_MESSAGE) return end
-        end
-      end
-    end
-  end
-end
-
+-- Filter function
 -- Returns the item in the specified bag slot if it is dejunkable.
 -- @return - a dejunkable item, or nil
-function Dejunker:GetDejunkableItemFromBag(bag, slot)
+Dejunker.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item then return nil end
 
   if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return nil end
-  if not self:IsJunkItem(item) then return nil end
+  if not Dejunker:IsJunkItem(item) then return nil end
 
   return item
 end
@@ -320,12 +307,6 @@ function Dejunker:IsJunkItem(item)
 	-- 4
   return self:IsSellByQualityItem(item.Quality)
 end
-
---[[
-//*******************************************************************
-//                        Filter Functions
-//*******************************************************************
---]]
 
 -- [[ SELL OPTIONS ]] --
 

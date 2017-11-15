@@ -30,55 +30,51 @@ local ItemsToDestroy = {}
 local DestroyedItems = {}
 local numDestroyedItems = 0
 
+local AUTO_DESTROY_DELAY = 5 -- 5 seconds
+local autoDestroyInterval = 0
+local autoDestroyQueued = false
+
 --[[
 //*******************************************************************
-//                         Destroyer Frame
+//                         Destroyer Frames
 //*******************************************************************
 --]]
 
+-- destroyerFrame is used for destroying items
 local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 
-function destroyerFrame:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
-    local _, msg = ...
+-- autoDestroyFrame is used for auto destroy functionality
+local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
 
-    if Destroyer:IsDestroying() then
-			if (msg == ERR_INTERNAL_BAG_ERROR) then
-				--UIErrorsFrame:Clear()
-			end
-		end
+-- Check for bag updates and update bagsUpdated
+function autoDestroyFrame:OnEvent(event, ...)
+  if (event == "BAG_UPDATE") and Core.Initialized and Core:CanDestroy() then
+    local bagID = ...
+    if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
+      Destroyer:QueueAutoDestroy()
+    end
   end
 end
 
-destroyerFrame:SetScript("OnEvent", destroyerFrame.OnEvent)
-destroyerFrame:RegisterEvent("UI_ERROR_MESSAGE")
-
---[[
-//*******************************************************************
-//                         Auto Destroy Frame
-//*******************************************************************
---]]
-
-local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
-
-local AUTO_DESTROY_DELAY = 1 -- 1 second
-local autoDestroyInterval = 0
-local MIN_EMPTY_SLOTS = 5
-
 function autoDestroyFrame:OnUpdate(elapsed)
-  if not DejunkDB.SV.AutoDestroy then return end
-  if not Core:CanDestroy() then return end
+  if (not DejunkDB.SV.AutoDestroy) or (not Core:CanDestroy()) then
+    -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
+    -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
+    -- with no interruptions such as the BAG_UPDATE event has passed.
+    autoDestroyInterval = 0
+    return
+  end
+  if not autoDestroyQueued then return end
 
   autoDestroyInterval = autoDestroyInterval + elapsed
+
   if (autoDestroyInterval >= AUTO_DESTROY_DELAY) then
     autoDestroyInterval = 0
+    autoDestroyQueued = false
 
-    local emptySlots = 0
-    for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-      emptySlots = emptySlots + GetContainerNumFreeSlots(bag)
-    end
-
-    if emptySlots < MIN_EMPTY_SLOTS then
+    -- Check for at least one destroyable item before auto destroying
+    local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
+    if (#items > 0) then
       Core:Print(L.STARTING_AUTO_DESTROY)
       Destroyer:StartDestroying()
     end
@@ -86,12 +82,20 @@ function autoDestroyFrame:OnUpdate(elapsed)
 end
 
 autoDestroyFrame:SetScript("OnUpdate", autoDestroyFrame.OnUpdate)
+autoDestroyFrame:SetScript("OnEvent", autoDestroyFrame.OnEvent)
+autoDestroyFrame:RegisterEvent("BAG_UPDATE")
 
 --[[
 //*******************************************************************
 //                        Destroying Functions
 //*******************************************************************
 --]]
+
+-- Queues up the auto destroy process.
+function Destroyer:QueueAutoDestroy()
+  autoDestroyQueued = true
+  autoDestroyInterval = 0
+end
 
 -- Starts the Destroying process.
 function Destroyer:StartDestroying()
@@ -102,9 +106,9 @@ function Destroyer:StartDestroying()
   end
 
   currentState = DestroyerState.Destroying
-  allItemsCached = true
 
-  self:SearchForDestroyableItems()
+  local items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
+  ItemsToDestroy = items
 
   if not allItemsCached then
     if (#ItemsToDestroy > 0) then
@@ -276,38 +280,18 @@ end
 
 --[[
 //*******************************************************************
-//                        Helper Functions
+//                        Filter Functions
 //*******************************************************************
 --]]
 
--- Searches the player's bags for destroyable items.
-function Destroyer:SearchForDestroyableItems()
-  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
-    for slot = 1, GetContainerNumSlots(bag) do
-      local itemID = GetContainerItemID(bag, slot)
-
-      if itemID then -- bag slot is not empty (seems to be guaranteed)
-        if not GetItemInfo(itemID) then
-          allItemsCached = false end
-
-        local item = self:GetDestroyableItemFromBag(bag, slot, itemID)
-
-        if item then -- item is cached
-          ItemsToDestroy[#ItemsToDestroy+1] = item
-        end
-      end
-    end
-  end
-end
-
 -- Returns the item in the specified bag slot if it is destroyable.
 -- @return - a destroyable item, or nil
-function Destroyer:GetDestroyableItemFromBag(bag, slot)
+Destroyer.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item then return nil end
 
   if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end
-  if not self:IsDestroyableItem(item) then return nil end
+  if not Destroyer:IsDestroyableItem(item) then return nil end
 
   return item
 end
@@ -319,11 +303,11 @@ function Destroyer:IsDestroyableItem(item)
   --[[ Priority
   1. Are we ignoring Exclusions?
   2. Are we destroying Poor items?
-    2.1 Treshold?
+    2.1 Threshold?
   3. Are we destroying Inclusions?
-    3.1 Treshold?
+    3.1 Threshold?
   4. Is it on the Destroyables list?
-    4.1 Treshold?
+    4.1 Threshold?
   ]]
 
   -- 1
@@ -348,7 +332,7 @@ function Destroyer:IsDestroyableItem(item)
     self:ItemPriceBelowThreshold(item)
 end
 
--- Returns true if the item's price is less than the set price treshold.
+-- Returns true if the item's price is less than the set price threshold.
 function Destroyer:ItemPriceBelowThreshold(item)
   if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item.Price, item.Quality) then
     local threshold = DejunkDB.SV.DestroyPriceThreshold

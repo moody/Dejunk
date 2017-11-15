@@ -8,6 +8,11 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 -- Upvalues
 local Clamp = Clamp
 local GameTooltip = GameTooltip
+local BACKPACK_CONTAINER, NUM_BAG_SLOTS = BACKPACK_CONTAINER, NUM_BAG_SLOTS
+local GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo =
+      GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo
+local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink =
+      GetContainerNumSlots, GetContainerItemID, GetContainerItemLink
 
 local sort = table.sort
 local pairs, ipairs = pairs, ipairs
@@ -217,6 +222,42 @@ function Tools:GetItemFromBag(bag, slot)
     Price = price,
     ItemLevel = itemLevel
   }
+end
+
+-- Scans the players bags for items matching a specified filter.
+-- @param filterFunc - an item filter function with params: (bag, slot)
+-- and a return value of an item retrieved by Tools:GetItemFromBag(bag, slot)
+-- @param maxItems - the maximum amount of items to return [optional]
+-- @return items - a list of items
+-- @return allItemsCached - true if all items were able to be checked
+function Tools:GetBagItemsByFilter(filterFunc, maxItems)
+  if maxItems and (maxItems <= 0) then maxItems = nil end
+
+  local items = {}
+  local allItemsCached = true
+
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+    for slot = 1, GetContainerNumSlots(bag) do
+      local itemID = GetContainerItemID(bag, slot)
+
+      if itemID then -- bag slot is not empty (seems to be guaranteed)
+        if not GetItemInfo(itemID) then
+          allItemsCached = false
+        else
+          local item = filterFunc(bag, slot)
+          if item then
+            items[#items+1] = item
+
+            -- return if max items reached
+            if maxItems and (#items == maxItems) then
+              return items, allItemsCached end
+          end
+        end
+      end
+    end
+  end
+
+  return items, allItemsCached
 end
 
 -- Checks whether or not an item can be sold based on price and quality.
