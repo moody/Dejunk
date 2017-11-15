@@ -174,14 +174,14 @@ end
 
 -- Sells the next item in the ItemsToSell table.
 function Dejunker:SellNextItem()
-	local item = remove(ItemsToSell)
-	if not item then return end
+  local item = remove(ItemsToSell)
+  if not item then return end
 
   -- Verify that the item in the bag slot has not been changed before selling
   local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
   if not bagItem or not (bagItem.ItemID == item.ItemID) then return end
 
-	UseContainerItem(item.Bag, item.Slot)
+  UseContainerItem(item.Bag, item.Slot)
   SoldItems[#SoldItems+1] = item
 end
 

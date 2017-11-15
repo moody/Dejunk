@@ -5,7 +5,7 @@ local L = LibStub('AceLocale-3.0'):NewLocale(AddonName, 'enUS', true)
 
 L["ADDED_ITEM_TO_LIST"] = "Added %s to %s."
 L["AUTO_DESTROY_TEXT"] = "Auto Destroy"
-L["AUTO_DESTROY_TOOLTIP"] = "Destroy junk items periodically."
+L["AUTO_DESTROY_TOOLTIP"] = "Destroy junk items periodically while this window is closed."
 L["AUTO_REPAIR_TEXT"] = "Auto Repair"
 L["AUTO_REPAIR_TOOLTIP"] = "Automatically repair items upon opening a merchant window.|n|nPrioritizes guild repairs when available."
 L["AUTO_SELL_TEXT"] = "Auto Sell"

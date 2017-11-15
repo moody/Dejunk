@@ -67,8 +67,6 @@ function Core:Initialize()
   DJ.MerchantButton:Initialize()
   DJ.MinimapIcon:Initialize()
 
-  self.Initialized = true
-
   -- Setup slash command
 	SLASH_DEJUNK1 = "/dejunk"
 	SlashCmdList["DEJUNK"] = function (msg, editBox)

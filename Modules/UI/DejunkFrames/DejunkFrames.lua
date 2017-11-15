@@ -50,6 +50,11 @@ function DejunkFrameMixin:Hide()
   self.Frame:Hide()
 end
 
+-- Returns true if the frame is visible.
+function DejunkFrameMixin:IsVisible()
+  return self.Initialized and self.Frame:IsVisible() or false
+end
+
 -- Toggles the frame.
 function DejunkFrameMixin:Toggle()
   if not self.Frame:IsVisible() then

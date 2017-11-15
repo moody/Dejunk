@@ -11,6 +11,8 @@ local remove = table.remove
 -- Dejunk
 local Destroyer = DJ.Destroyer
 
+local ParentFrame = DJ.DejunkFrames.ParentFrame
+
 local Core = DJ.Core
 local Consts = DJ.Consts
 local DejunkDB = DJ.DejunkDB
@@ -48,7 +50,7 @@ local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame
 
 -- Check for bag updates and update bagsUpdated
 function autoDestroyFrame:OnEvent(event, ...)
-  if (event == "BAG_UPDATE") and Core.Initialized and Core:CanDestroy() then
+  if (event == "BAG_UPDATE") and Core:CanDestroy() then
     local bagID = ...
     if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
       Destroyer:QueueAutoDestroy()
@@ -57,7 +59,7 @@ function autoDestroyFrame:OnEvent(event, ...)
 end
 
 function autoDestroyFrame:OnUpdate(elapsed)
-  if (not DejunkDB.SV.AutoDestroy) or (not Core:CanDestroy()) then
+  if (not DejunkDB.SV.AutoDestroy) or (not Core:CanDestroy()) or ParentFrame:IsVisible() then
     -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
     -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
     -- with no interruptions such as the BAG_UPDATE event has passed.
