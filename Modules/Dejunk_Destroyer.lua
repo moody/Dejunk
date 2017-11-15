@@ -193,6 +193,10 @@ function Destroyer:DestroyNextItem()
   local item = remove(ItemsToDestroy)
 	if not item then return end
 
+  -- Verify that the item in the bag slot has not been changed before destroying
+  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
+  if not bagItem or not (bagItem.ItemID == item.ItemID) then return end
+
   -- Clear cursor if it has an item to prevent simply swapping
   -- bag locations when PickupContainerItem is called
   if CursorHasItem() then ClearCursor() end
