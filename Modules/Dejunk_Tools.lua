@@ -163,6 +163,33 @@ function Tools:Padding(multiplier)
   return abs(Consts.PADDING * (multiplier or 1))
 end
 
+-- ============================================================================
+--                              Tooltip Functions
+-- ============================================================================
+
+local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", UIParent, "GameTooltipTemplate")
+toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
+
+-- Returns true if the tooltip of the item in a specified bag and slot
+-- contains the specified text.
+-- @param bag - the bag the item resides in
+-- @param slot - the bag slot item resides in
+-- @param text - the text to scan the tooltip for
+function Tools:BagItemTooltipHasText(bag, slot, text)
+  local textLeft = toolsTip:GetName().."TextLeft"
+  local hasText = false
+
+  toolsTip:SetBagItem(bag, slot)
+  for i = 1, toolsTip:NumLines() do
+    if (_G[textLeft..i]:GetText():find(text)) then
+      hasText = true
+      break
+    end
+  end
+
+  return hasText
+end
+
 --[[
 //*******************************************************************
 //  					    			      Item Functions

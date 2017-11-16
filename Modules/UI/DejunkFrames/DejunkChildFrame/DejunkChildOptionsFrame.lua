@@ -186,11 +186,11 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
     self.UI.IgnoreOptionsFrame:AddOption(option)
   end
 
-  -- By Type text
-  local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
+  -- By Category text
+  local byCategory = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  byType:SetText(L.BY_TYPE_TEXT)
-  add(byType)
+  byCategory:SetText(L.BY_CATEGORY_TEXT)
+  add(byCategory)
 
   -- Battle Pets
   add(FrameFactory:CreateCheckButton(nil, "Small",
@@ -213,4 +213,19 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   -- Trade Goods
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods))
+
+  -- By Type text
+  local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  byType:SetText(L.BY_TYPE_TEXT)
+  add(byType)
+
+  -- Binds When Equipped
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    ITEM_BIND_ON_EQUIP, Colors.LabelText,
+    format(L.IGNORE_ITEMS_MARKED_AS_TOOLTIP, ITEM_BIND_ON_EQUIP), DejunkDB.IgnoreBindsWhenEquipped))
+  -- Soulbound
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    ITEM_SOULBOUND, Colors.LabelText,
+    format(L.IGNORE_ITEMS_MARKED_AS_TOOLTIP, ITEM_SOULBOUND), DejunkDB.IgnoreSoulbound))
 end
