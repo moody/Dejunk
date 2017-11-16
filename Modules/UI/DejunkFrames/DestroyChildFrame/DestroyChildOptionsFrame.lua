@@ -13,11 +13,9 @@ local Tools = DJ.Tools
 local DejunkDB = DJ.DejunkDB
 local FrameFactory = DJ.FrameFactory
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DestroyChildOptionsFrame:OnInitialize()
   self:CreateOptions()
@@ -40,11 +38,9 @@ function DestroyChildOptionsFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                           Getters and Setters
+-- ============================================================================
 
 function DestroyChildOptionsFrame:OnSetHeight(height)
   -- Update SettingsFrame's minimum scroll frame height
@@ -53,11 +49,9 @@ function DestroyChildOptionsFrame:OnSetHeight(height)
   self.UI.SettingsFrame.ScrollFrame:SetMinHeight(height)
 end
 
---[[
-//*******************************************************************
-//                       UI Creation Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 function DestroyChildOptionsFrame:CreateOptions()
   local ui = self.UI

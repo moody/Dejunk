@@ -16,11 +16,9 @@ local Tools = DJ.Tools
 local FrameFactory = DJ.FrameFactory
 local ListManager = DJ.ListManager
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DestroyChildFrame:OnInitialize()
   local ui = self.UI

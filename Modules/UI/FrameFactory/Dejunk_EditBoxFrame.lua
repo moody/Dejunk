@@ -13,12 +13,6 @@ local Consts = DJ.Consts
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			    EditBox Functions
-//*******************************************************************
---]]
-
 -- NOTE: About getStringWidth...
 -- This is pretty hacky? Best I could come up with for doing such a thing though.
 -- I needed this to make a decent looking currency input frame for the Destroy options frame.
@@ -40,6 +34,10 @@ local function getStringWidth(font, numCharacters, numeric)
   sizer:SetText(text)
   return sizer:GetStringWidth()
 end
+
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a frame containing an edit box tailored to Dejunk.
 -- @param parent - the parent frame

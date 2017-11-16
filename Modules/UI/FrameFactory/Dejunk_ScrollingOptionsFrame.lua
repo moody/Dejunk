@@ -12,11 +12,9 @@ local Colors = DJ.Colors
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//                  Scrolling Options Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 function FrameFactory:CreateScrollingOptionsFrame(parent, title, font)
   local soFrame = FrameCreator:CreateFrame(parent)

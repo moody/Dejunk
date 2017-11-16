@@ -13,11 +13,9 @@ local Tools = DJ.Tools
 local ListManager = DJ.ListManager
 local FrameFactory = DJ.FrameFactory
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DejunkChildListsFrame:OnInitialize()
   self:CreateListFrames()
@@ -38,11 +36,9 @@ function DejunkChildListsFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                       UI Creation Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates the Inclusions and Exclusions list frames.
 function DejunkChildListsFrame:CreateListFrames()

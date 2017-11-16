@@ -8,11 +8,9 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 -- Dejunk
 local FrameFactory = DJ.FrameFactory
 
---[[
-//*******************************************************************
-//  					    			  UI Table Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             UI Table Functions
+-- ============================================================================
 
 -- Enables a table of objects created by FrameFactory.
 -- @param ui - the table of objects to be enabled

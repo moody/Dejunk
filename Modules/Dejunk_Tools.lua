@@ -23,11 +23,9 @@ local Tools = DJ.Tools
 local Colors = DJ.Colors
 local Consts = DJ.Consts
 
---[[
-//*******************************************************************
-//  					    			   Color Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                              Color Functions
+-- ============================================================================
 
 -- Removes WoW color escape sequences from a string.
 function Tools:RemoveColorFromString(string)
@@ -94,11 +92,9 @@ function Tools:GetColoredListName(listName)
   end
 end
 
---[[
-//*******************************************************************
-//  					    			  Tooltip Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                              Tooltip Functions
+-- ============================================================================
 
 -- Displays a generic game tooltip.
 -- @param owner - the frame the tooltip belongs to
@@ -132,44 +128,8 @@ function Tools:HideTooltip()
   GameTooltip:Hide()
 end
 
---[[
-//*******************************************************************
-//  					    			      UI Functions
-//*******************************************************************
---]]
-
-local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
-sizer:SetColorTexture(0, 0, 0, 0)
-
--- Measures the width and height between the top-left point of the startRegion
--- and the bottom-right point of the endRegion.
--- @param parent - the parent frame used to create a temporary texture
--- @param startRegion - the left-most region
--- @param endRegion - the right-most region
--- @param startPoint - the point on the startRegion to measure from [optional]
--- @param endPoint - the point on the endRegion to measure to [optional]
--- @return width - the width between the two regions
--- @return height - the height
-function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
-  sizer:ClearAllPoints()
-  sizer:SetParent(parent)
-  sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
-  sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
-
-  local width, height = sizer:GetWidth(), sizer:GetHeight()
-
-  return width, height
-end
-
--- Returns the default padding with an optional multiplier.
--- @param multiplier - a number to multiply padding by [optional]
--- @return - the absolute value of default padding times the multipler or 1.
-function Tools:Padding(multiplier)
-  return abs(Consts.PADDING * (multiplier or 1))
-end
-
 -- ============================================================================
---                              Tooltip Functions
+--                         Tooltip Scanning Functions
 -- ============================================================================
 
 local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", UIParent, "GameTooltipTemplate")
@@ -202,11 +162,43 @@ function Tools:BagItemTooltipHasText(bag, slot, text)
   return hasText
 end
 
---[[
-//*******************************************************************
-//  					    			      Item Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                                 UI Functions
+-- ============================================================================
+
+local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
+sizer:SetColorTexture(0, 0, 0, 0)
+
+-- Measures the width and height between the top-left point of the startRegion
+-- and the bottom-right point of the endRegion.
+-- @param parent - the parent frame used to create a temporary texture
+-- @param startRegion - the left-most region
+-- @param endRegion - the right-most region
+-- @param startPoint - the point on the startRegion to measure from [optional]
+-- @param endPoint - the point on the endRegion to measure to [optional]
+-- @return width - the width between the two regions
+-- @return height - the height
+function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
+  sizer:ClearAllPoints()
+  sizer:SetParent(parent)
+  sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
+  sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
+
+  local width, height = sizer:GetWidth(), sizer:GetHeight()
+
+  return width, height
+end
+
+-- Returns the default padding with an optional multiplier.
+-- @param multiplier - a number to multiply padding by [optional]
+-- @return - the absolute value of default padding times the multipler or 1.
+function Tools:Padding(multiplier)
+  return abs(Consts.PADDING * (multiplier or 1))
+end
+
+-- ============================================================================
+--                                Item Functions
+-- ============================================================================
 
 -- Gets the item id from a specified item link.
 -- @return - the item id, or nil

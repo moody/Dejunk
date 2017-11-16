@@ -12,11 +12,9 @@ local Colors = DJ.Colors
 local Consts = DJ.Consts
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			    Slider Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a slider tailored to Dejunk.
 -- @param parent - the parent frame

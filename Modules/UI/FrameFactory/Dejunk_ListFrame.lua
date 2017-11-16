@@ -14,11 +14,9 @@ local Consts = DJ.Consts
 local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 
---[[
-//*******************************************************************
-//  					    			  List Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a list frame for displaying data from a list of items.
 -- @param parent - the parent frame

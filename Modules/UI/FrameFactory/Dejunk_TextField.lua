@@ -12,11 +12,9 @@ local Colors = DJ.Colors
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			    TextField Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a frame containing an edit box frame with an above label text,
 -- and a below helper text.

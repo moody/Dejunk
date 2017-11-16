@@ -28,11 +28,9 @@ for k in pairs(TransportChildFrame.Types) do
 local currentList = nil
 local currentType = nil
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function TransportChildFrame:OnInitialize()
   self:CreateTransportFrame()
@@ -71,11 +69,9 @@ function TransportChildFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                           Getters and Setters
+-- ============================================================================
 
 -- Sets the list and transport type for the frame.
 -- @param listName - the name of the list used for transport operations
@@ -123,11 +119,9 @@ function TransportChildFrame:SetData(listName, transportType)
   end
 end
 
---[[
-//*******************************************************************
-//                      Frame Creation Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates the components that make up the transport frame.
 function TransportChildFrame:CreateTransportFrame()

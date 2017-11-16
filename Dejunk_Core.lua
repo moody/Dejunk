@@ -20,11 +20,9 @@ local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
 local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
 local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
 
---[[
-//*******************************************************************
-//                            Core Frame
-//*******************************************************************
---]]
+-- ============================================================================
+--                                 Core Frame
+-- ============================================================================
 
 local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
 
@@ -52,11 +50,9 @@ coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
 coreFrame:SetScript("OnUpdate", coreFrame.OnUpdate)
 coreFrame:RegisterEvent("PLAYER_LOGIN")
 
---[[
-//*******************************************************************
-//                      Core General Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                              General Functions
+-- ============================================================================
 
 -- Initializes modules.
 function Core:Initialize()
@@ -124,11 +120,9 @@ function Core:CanDestroy()
   return true
 end
 
---[[
-//*******************************************************************
-//                          Core Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                                 UI Functions
+-- ============================================================================
 
 local previousChild = nil
 
@@ -220,11 +214,9 @@ function Core:ShowPreviousChild()
   ParentFrame:SetCurrentChild(previousChild)
 end
 
---[[
-//*******************************************************************
-//                            Tooltip Hook
-//*******************************************************************
---]]
+-- ============================================================================
+--                                Tooltip Hook
+-- ============================================================================
 
 do
   local function setBagItem(self, bag, slot)

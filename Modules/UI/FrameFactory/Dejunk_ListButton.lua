@@ -14,11 +14,9 @@ local ListManager = DJ.ListManager
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    	     List Button Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a button to be displayed in a list frame.
 -- @param parent - the parent frame

@@ -36,11 +36,9 @@ local AUTO_DESTROY_DELAY = 5 -- 5 seconds
 local autoDestroyInterval = 0
 local autoDestroyQueued = false
 
---[[
-//*******************************************************************
-//                         Destroyer Frames
-//*******************************************************************
---]]
+-- ============================================================================
+--                              Destroyer Frames
+-- ============================================================================
 
 -- destroyerFrame is used for destroying items
 local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
@@ -87,11 +85,9 @@ autoDestroyFrame:SetScript("OnUpdate", autoDestroyFrame.OnUpdate)
 autoDestroyFrame:SetScript("OnEvent", autoDestroyFrame.OnEvent)
 autoDestroyFrame:RegisterEvent("BAG_UPDATE")
 
---[[
-//*******************************************************************
-//                        Destroying Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Destroying Functions
+-- ============================================================================
 
 -- Queues up the auto destroy process.
 function Destroyer:QueueAutoDestroy()
@@ -144,11 +140,9 @@ function Destroyer:IsDestroying()
   return (currentState ~= DestroyerState.None)
 end
 
---[[
-//*******************************************************************
-//                        Destroy Item Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                            Destroy Item Functions
+-- ============================================================================
 
 local DESTROY_DELAY = 0.25
 local destroyInterval = 0
@@ -209,11 +203,9 @@ function Destroyer:DestroyNextItem()
   DestroyedItems[#DestroyedItems+1] = item
 end
 
---[[
-//*******************************************************************
-//                         Loss Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                                Loss Functions
+-- ============================================================================
 
 local totalLoss = 0
 
@@ -283,11 +275,9 @@ function Destroyer:CheckForNextDestroyedItem()
   return (item.Price * item.Quantity)
 end
 
---[[
-//*******************************************************************
-//                        Filter Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                              Filter Functions
+-- ============================================================================
 
 -- Returns the item in the specified bag slot if it is destroyable.
 -- @return - a destroyable item, or nil
