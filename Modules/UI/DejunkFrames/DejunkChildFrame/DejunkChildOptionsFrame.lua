@@ -220,12 +220,13 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   byType:SetText(L.BY_TYPE_TEXT)
   add(byType)
 
-  -- Binds When Equipped
+  -- Binds when equipped
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    ITEM_BIND_ON_EQUIP, Colors.LabelText,
-    format(L.IGNORE_ITEMS_MARKED_AS_TOOLTIP, ITEM_BIND_ON_EQUIP), DejunkDB.IgnoreBindsWhenEquipped))
+    L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, DejunkDB.IgnoreBindsWhenEquipped))
   -- Soulbound
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    ITEM_SOULBOUND, Colors.LabelText,
-    format(L.IGNORE_ITEMS_MARKED_AS_TOOLTIP, ITEM_SOULBOUND), DejunkDB.IgnoreSoulbound))
+    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, DejunkDB.IgnoreSoulbound))
+  -- Equipment Sets
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, DejunkDB.IgnoreEquipmentSets))
 end

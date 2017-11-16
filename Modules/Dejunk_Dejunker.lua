@@ -304,6 +304,7 @@ function Dejunker:IsJunkItem(item)
   if self:IsIgnoredTradeGoodsItem(item) then return false end
   if self:IsIgnoredBindsWhenEquippedItem(item) then return false end
   if self:IsIgnoredSoulboundItem(item) then return false end
+  if self:IsIgnoredEquipmentSetsItem(item) then return false end
 
   -- Sell options
   if self:IsUnsuitableItem(item) then return true end
@@ -415,10 +416,17 @@ end
 
 function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
   if not DejunkDB.SV.IgnoreBindsWhenEquipped then return false end
+  -- Make sure the item is actually an armor or weapon item instead of a tradeskill recipe
+  if not (item.Class == Consts.ARMOR_CLASS or item.Class == Consts.WEAPON_CLASS) then return false end
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_BIND_ON_EQUIP)
 end
 
 function Dejunker:IsIgnoredSoulboundItem(item)
   if not DejunkDB.SV.IgnoreSoulbound then return false end
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
+end
+
+function Dejunker:IsIgnoredEquipmentSetsItem(item)
+  if not DejunkDB.SV.IgnoreEquipmentSets then return false end
+  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, EQUIPMENT_SETS:gsub("%%s", ""))
 end

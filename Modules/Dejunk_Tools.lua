@@ -29,6 +29,11 @@ local Consts = DJ.Consts
 //*******************************************************************
 --]]
 
+-- Removes WoW color escape sequences from a string.
+function Tools:RemoveColorFromString(string)
+  return string:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+end
+
 -- Formats and returns a string with the specified color.
 -- @oaram string - the string to color
 -- @param color  - Colors string or table: {r, g, b[, a]}
@@ -48,8 +53,8 @@ function Tools:GetColorString(string, color)
   b = (Clamp(b, 0, 1) * 255)
 
   -- Color format (hex): AARRGGBB
-  -- %2x = two-digit hex value
-  return format("|cFF%2x%2x%2x%s|r", r, g, b, string)
+  -- %02X = two-digit hex value, 00-FF
+  return format("|cFF%02X%02X%02X%s|r", r, g, b, string)
 end
 
 -- Returns a random color.
@@ -168,6 +173,7 @@ end
 -- ============================================================================
 
 local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", UIParent, "GameTooltipTemplate")
+local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
 toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- Returns true if the tooltip of the item in a specified bag and slot
@@ -176,12 +182,18 @@ toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
 -- @param slot - the bag slot item resides in
 -- @param text - the text to scan the tooltip for
 function Tools:BagItemTooltipHasText(bag, slot, text)
-  local textLeft = toolsTip:GetName().."TextLeft"
   local hasText = false
 
   toolsTip:SetBagItem(bag, slot)
   for i = 1, toolsTip:NumLines() do
-    if (_G[textLeft..i]:GetText():find(text)) then
+    local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
+
+    -- Remove color from strings to be able to find words
+    -- find("|cffffffffHello|r", "Hello") would return nil
+    tipText = self:RemoveColorFromString(tipText)
+    text = self:RemoveColorFromString(text)
+
+    if (tipText:find(text)) then
       hasText = true
       break
     end
