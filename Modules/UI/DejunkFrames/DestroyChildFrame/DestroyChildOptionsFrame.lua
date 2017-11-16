@@ -76,12 +76,10 @@ function DestroyChildOptionsFrame:CreateOptions()
   ui.SettingsFrame = FrameFactory:CreateScrollingOptionsFrame(frame, L.OPTIONS_TEXT, "GameFontNormalHuge")
   ui.SettingsFrame:SetPoint("TOPLEFT", frame, Tools:Padding(), 0)
 
+  -- Adds an option to the settings frame
   local add = function(option)
-    self.UI.SettingsFrame:AddOption(option)
+    ui.SettingsFrame:AddOption(option)
   end
-
-  -- Callback function for check buttons, queues up auto destroy
-  local cbCallback = DJ.Destroyer.QueueAutoDestroy
 
   -- General heading
   local generalHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
@@ -91,11 +89,11 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Auto destroy
   add(FrameFactory:CreateCheckButton(nil, "Small", L.AUTO_DESTROY_TEXT, nil,
-    L.AUTO_DESTROY_TOOLTIP, DejunkDB.AutoDestroy, cbCallback))
+    L.AUTO_DESTROY_TOOLTIP, DejunkDB.AutoDestroy))
 
   -- Price threshold check button and currency input
   add(FrameFactory:CreateCheckButton(nil, "Small", L.PRICE_THRESHOLD_TEXT, nil,
-    L.PRICE_THRESHOLD_TOOLTIP, DejunkDB.DestroyUsePriceThreshold, cbCallback))
+    L.PRICE_THRESHOLD_TOOLTIP, DejunkDB.DestroyUsePriceThreshold))
   add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
 
   -- Destroy heading
@@ -106,12 +104,12 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Destroy poor
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, DejunkDB.DestroyPoor, cbCallback))
+    L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, DejunkDB.DestroyPoor))
 
   -- Destroy Inclusions
   local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
-    format(L.DESTROY_LIST_TOOLTIP, inclusionsText), DejunkDB.DestroyInclusions, cbCallback))
+    format(L.DESTROY_LIST_TOOLTIP, inclusionsText), DejunkDB.DestroyInclusions))
 
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
@@ -122,5 +120,5 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- Ignore Exclusions
   local exclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", exclusionsText, nil,
-    format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), DejunkDB.DestroyIgnoreExclusions, cbCallback))
+    format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), DejunkDB.DestroyIgnoreExclusions))
 end

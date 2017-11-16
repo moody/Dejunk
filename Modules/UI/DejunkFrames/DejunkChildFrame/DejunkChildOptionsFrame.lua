@@ -186,11 +186,11 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
     self.UI.IgnoreOptionsFrame:AddOption(option)
   end
 
-  -- By Type text
-  local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
+  -- By Category text
+  local byCategory = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  byType:SetText(L.BY_TYPE_TEXT)
-  add(byType)
+  byCategory:SetText(L.BY_CATEGORY_TEXT)
+  add(byCategory)
 
   -- Battle Pets
   add(FrameFactory:CreateCheckButton(nil, "Small",
@@ -213,4 +213,20 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   -- Trade Goods
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods))
+
+  -- By Type text
+  local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  byType:SetText(L.BY_TYPE_TEXT)
+  add(byType)
+
+  -- Binds when equipped
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, DejunkDB.IgnoreBindsWhenEquipped))
+  -- Soulbound
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, DejunkDB.IgnoreSoulbound))
+  -- Equipment Sets
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, DejunkDB.IgnoreEquipmentSets))
 end
