@@ -50,7 +50,7 @@ local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame
 
 -- Check for bag updates and update bagsUpdated
 function autoDestroyFrame:OnEvent(event, ...)
-  if (event == "BAG_UPDATE") and Core:CanDestroy() then
+  if (event == "BAG_UPDATE") then
     local bagID = ...
     if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
       Destroyer:QueueAutoDestroy()
