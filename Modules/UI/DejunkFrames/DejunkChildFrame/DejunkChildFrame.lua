@@ -14,11 +14,10 @@ local DejunkChildListsFrame = DJ.DejunkFrames.DejunkChildListsFrame
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
+//                       General Frame Functions
 //*******************************************************************
 --]]
 
--- @Override
 function DejunkChildFrame:OnInitialize()
   DejunkChildOptionsFrame:Initialize()
   DejunkChildOptionsFrame:SetParent(self.Frame)
@@ -29,64 +28,32 @@ function DejunkChildFrame:OnInitialize()
   DejunkChildListsFrame:SetPoint({"TOPLEFT", DejunkChildOptionsFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
 end
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
-
-do -- Hook Show
-  local show = DejunkChildFrame.Show
-
-  function DejunkChildFrame:Show()
-    DejunkChildOptionsFrame:Show()
-    DejunkChildListsFrame:Show()
-    show(self)
-  end
+function DejunkChildFrame:OnShow()
+  DejunkChildOptionsFrame:Show()
+  DejunkChildListsFrame:Show()
 end
 
-do -- Hook Hide
-  local hide = DejunkChildFrame.Hide
-
-  function DejunkChildFrame:Hide()
-    DejunkChildOptionsFrame:Hide()
-    DejunkChildListsFrame:Hide()
-    hide(self)
-  end
+function DejunkChildFrame:OnHide()
+  DejunkChildOptionsFrame:Hide()
+  DejunkChildListsFrame:Hide()
 end
 
-do -- Hook Enable
-  local enable = DejunkChildFrame.Enable
-
-  function DejunkChildFrame:Enable()
-    DejunkChildOptionsFrame:Enable()
-    DejunkChildListsFrame:Enable()
-    enable(self)
-  end
+function DejunkChildFrame:OnEnable()
+  DejunkChildOptionsFrame:Enable()
+  DejunkChildListsFrame:Enable()
 end
 
-do -- Hook Disable
-  local disable = DejunkChildFrame.Disable
-
-  function DejunkChildFrame:Disable()
-    DejunkChildOptionsFrame:Disable()
-    DejunkChildListsFrame:Disable()
-    disable(self)
-  end
+function DejunkChildFrame:OnDisable()
+  DejunkChildOptionsFrame:Disable()
+  DejunkChildListsFrame:Disable()
 end
 
-do -- Hook Refresh
-  local refresh = DejunkChildFrame.Refresh
-
-  function DejunkChildFrame:Refresh()
-    DejunkChildOptionsFrame:Refresh()
-    DejunkChildListsFrame:Refresh()
-    refresh(self)
-  end
+function DejunkChildFrame:OnRefresh()
+  DejunkChildOptionsFrame:Refresh()
+  DejunkChildListsFrame:Refresh()
 end
 
--- @Override
-function DejunkChildFrame:Resize()
+function DejunkChildFrame:OnResize()
   DejunkChildOptionsFrame:Resize()
   DejunkChildListsFrame:Resize()
 
@@ -98,18 +65,7 @@ function DejunkChildFrame:Resize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
-
-do -- Hook SetWidth
-  local setWidth = DejunkChildFrame.SetWidth
-
-  function DejunkChildFrame:SetWidth(width)
-    DejunkChildOptionsFrame:SetWidth(width)
-    DejunkChildListsFrame:SetWidth(width)
-    setWidth(self, width)
-  end
+function DejunkChildFrame:OnSetWidth(width)
+  DejunkChildOptionsFrame:SetWidth(width)
+  DejunkChildListsFrame:SetWidth(width)
 end

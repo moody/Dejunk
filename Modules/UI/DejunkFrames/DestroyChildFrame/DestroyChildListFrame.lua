@@ -19,13 +19,11 @@ local ListManager = DJ.ListManager
 //*******************************************************************
 --]]
 
--- @Override
 function DestroyChildListFrame:OnInitialize()
   self:CreateListFrame()
 end
 
--- @Override
-function DestroyChildListFrame:Resize()
+function DestroyChildListFrame:OnResize()
   local ui = self.UI
 
   ui.DestroyablesFrame:Resize()

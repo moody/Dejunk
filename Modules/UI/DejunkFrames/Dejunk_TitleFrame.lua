@@ -23,7 +23,6 @@ local scaleIndex = 1
 //*******************************************************************
 --]]
 
--- @Override
 function TitleFrame:OnInitialize()
   local frame = self.Frame
   local ui = self.UI
@@ -92,8 +91,12 @@ function TitleFrame:OnInitialize()
   end)
 end
 
--- @Override
-function TitleFrame:Resize()
+function TitleFrame:OnDisable()
+  -- Re-enable the close button so users can still use it while Dejunk is busy
+  self.UI.CloseButton:SetEnabled(true)
+end
+
+function TitleFrame:OnResize()
   local ui = self.UI
 
   local titleWidth = ui.TitleFontString:GetStringWidth()

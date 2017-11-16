@@ -22,7 +22,6 @@ local ListManager = DJ.ListManager
 //*******************************************************************
 --]]
 
--- @Override
 function DestroyChildFrame:OnInitialize()
   local ui = self.UI
   local frame = self.Frame
@@ -39,64 +38,32 @@ function DestroyChildFrame:OnInitialize()
   DestroyChildListFrame:SetPoint({"BOTTOMLEFT", DestroyChildOptionsFrame.Frame, "BOTTOMRIGHT", -Tools:Padding(), 0})
 end
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
-
-do -- Hook Show
-  local show = DestroyChildFrame.Show
-
-  function DestroyChildFrame:Show()
-    DestroyChildOptionsFrame:Show()
-    DestroyChildListFrame:Show()
-    show(self)
-  end
+function DestroyChildFrame:OnShow()
+  DestroyChildOptionsFrame:Show()
+  DestroyChildListFrame:Show()
 end
 
-do -- Hook Hide
-  local hide = DestroyChildFrame.Hide
-
-  function DestroyChildFrame:Hide()
-    DestroyChildOptionsFrame:Hide()
-    DestroyChildListFrame:Hide()
-    hide(self)
-  end
+function DestroyChildFrame:OnHide()
+  DestroyChildOptionsFrame:Hide()
+  DestroyChildListFrame:Hide()
 end
 
-do -- Hook Enable
-  local enable = DestroyChildFrame.Enable
-
-  function DestroyChildFrame:Enable()
-    DestroyChildOptionsFrame:Enable()
-    DestroyChildListFrame:Enable()
-    enable(self)
-  end
+function DestroyChildFrame:OnEnable()
+  DestroyChildOptionsFrame:Enable()
+  DestroyChildListFrame:Enable()
 end
 
-do -- Hook Disable
-  local disable = DestroyChildFrame.Disable
-
-  function DestroyChildFrame:Disable()
-    DestroyChildOptionsFrame:Disable()
-    DestroyChildListFrame:Disable()
-    disable(self)
-  end
+function DestroyChildFrame:OnDisable()
+  DestroyChildOptionsFrame:Disable()
+  DestroyChildListFrame:Disable()
 end
 
-do -- Hook Refresh
-  local refresh = DestroyChildFrame.Refresh
-
-  function DestroyChildFrame:Refresh()
-    DestroyChildOptionsFrame:Refresh()
-    DestroyChildListFrame:Refresh()
-    refresh(self)
-  end
+function DestroyChildFrame:OnRefresh()
+  DestroyChildOptionsFrame:Refresh()
+  DestroyChildListFrame:Refresh()
 end
 
--- @Override
-function DestroyChildFrame:Resize()
+function DestroyChildFrame:OnResize()
   DestroyChildOptionsFrame:Resize()
   DestroyChildListFrame:Resize()
 

@@ -197,7 +197,7 @@ function Destroyer:DestroyNextItem()
 
   -- Verify that the item in the bag slot has not been changed before destroying
   local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if not bagItem or not (bagItem.ItemID == item.ItemID) then return end
+  if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
 
   -- Clear cursor if it has an item to prevent simply swapping
   -- bag locations when PickupContainerItem is called
@@ -251,7 +251,7 @@ end
 
 -- Set as the OnUpdate function during the losing process.
 function Destroyer:CalculateLoss()
-  local loss = Destroyer:CheckForNextDestroyedItem()
+  local loss = self:CheckForNextDestroyedItem()
 
   if loss then
     totalLoss = (totalLoss + loss)
@@ -267,13 +267,12 @@ function Destroyer:CheckForNextDestroyedItem()
   local item = remove(DestroyedItems, 1)
   if not item then return nil end
 
-  local _, quantity, locked, _, _, _, itemLink = GetContainerItemInfo(item.Bag, item.Slot)
-
-  if ((itemLink and quantity) and (itemLink == item.Link) and (quantity == item.Quantity)) then
-    if locked then -- Item probably being destroyed, add it back to list and try again later
+  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
+  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
+    if bagItem.Locked then -- Item probably being destroyed, add it back to list and try again later
       DestroyedItems[#DestroyedItems+1] = item
     else -- Item is still in bags, so it may not have been destroyed
-      Core:Print(format(L.MAY_NOT_HAVE_DESTROYED_ITEM, item.Link))
+      Core:Print(format(L.MAY_NOT_HAVE_DESTROYED_ITEM, item.ItemLink))
     end
 
     return nil
@@ -294,7 +293,7 @@ end
 -- @return - a destroyable item, or nil
 Destroyer.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
-  if not item then return nil end
+  if not item or item.Locked then return nil end
 
   if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end
   if not Destroyer:IsDestroyableItem(item) then return nil end

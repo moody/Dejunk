@@ -15,23 +15,15 @@ local FrameFactory = DJ.FrameFactory
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
-//*******************************************************************
---]]
-
--- @Override
-function DejunkChildListsFrame:OnInitialize()
-  self:CreateListFrames()
-end
-
---[[
-//*******************************************************************
 //                       General Frame Functions
 //*******************************************************************
 --]]
 
--- @Override
-function DejunkChildListsFrame:Resize()
+function DejunkChildListsFrame:OnInitialize()
+  self:CreateListFrames()
+end
+
+function DejunkChildListsFrame:OnResize()
   local ui = self.UI
 
   ui.InclusionsFrame:Resize()

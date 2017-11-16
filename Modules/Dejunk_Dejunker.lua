@@ -179,7 +179,7 @@ function Dejunker:SellNextItem()
 
   -- Verify that the item in the bag slot has not been changed before selling
   local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if not bagItem or not (bagItem.ItemID == item.ItemID) then return end
+  if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
 
   UseContainerItem(item.Bag, item.Slot)
   SoldItems[#SoldItems+1] = item
@@ -224,7 +224,7 @@ end
 
 -- Set as the OnUpdate function during the profiting process.
 function Dejunker:CalculateProfits()
-  local profit = Dejunker:CheckForNextSoldItem()
+  local profit = self:CheckForNextSoldItem()
 
   if profit then
     totalProfit = (totalProfit + profit) end
@@ -239,13 +239,12 @@ function Dejunker:CheckForNextSoldItem()
   local item = remove(SoldItems, 1)
   if not item then return nil end
 
-  local _, quantity, locked, _, _, _, itemLink = GetContainerItemInfo(item.Bag, item.Slot)
-
-  if ((itemLink and quantity) and (itemLink == item.Link) and (quantity == item.Quantity)) then
-    if locked then -- Item probably being sold, add it back to list and try again later
+  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
+  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
+    if bagItem.Locked then -- Item probably being sold, add it back to list and try again later
       SoldItems[#SoldItems+1] = item
     else -- Item is still in bags, so it may not have sold
-      Core:Print(format(L.MAY_NOT_HAVE_SOLD_ITEM, item.Link))
+      Core:Print(format(L.MAY_NOT_HAVE_SOLD_ITEM, item.ItemLink))
     end
 
     return nil
@@ -266,7 +265,7 @@ end
 -- @return - a dejunkable item, or nil
 Dejunker.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
-  if not item then return nil end
+  if not item or item.Locked then return nil end
 
   if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return nil end
   if not Dejunker:IsJunkItem(item) then return nil end

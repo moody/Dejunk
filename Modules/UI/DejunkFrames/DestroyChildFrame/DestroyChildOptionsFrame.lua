@@ -15,23 +15,15 @@ local FrameFactory = DJ.FrameFactory
 
 --[[
 //*******************************************************************
-//                       Init/Deinit Functions
-//*******************************************************************
---]]
-
--- @Override
-function DestroyChildOptionsFrame:OnInitialize()
-  self:CreateOptions()
-end
-
---[[
-//*******************************************************************
 //                       General Frame Functions
 //*******************************************************************
 --]]
 
--- @Override
-function DestroyChildOptionsFrame:Resize()
+function DestroyChildOptionsFrame:OnInitialize()
+  self:CreateOptions()
+end
+
+function DestroyChildOptionsFrame:OnResize()
   local ui = self.UI
 
   ui.StartDestroyingButton:Resize()
@@ -54,18 +46,11 @@ end
 //*******************************************************************
 --]]
 
-do -- Hook SetHeight
-  local setHeight = DestroyChildOptionsFrame.SetHeight
-
-  function DestroyChildOptionsFrame:SetHeight(height)
-    local oldHeight = self:GetHeight()
-    setHeight(self, height)
-
-    -- Update SettingsFrame's minimum scroll frame height
-    height = height - self.UI.StartDestroyingButton:GetHeight() -
-      Tools:Padding(0.5) - self.UI.SettingsFrame.TitleButton:GetHeight()
-    self.UI.SettingsFrame.ScrollFrame:SetMinHeight(height)
-  end
+function DestroyChildOptionsFrame:OnSetHeight(height)
+  -- Update SettingsFrame's minimum scroll frame height
+  height = height - self.UI.StartDestroyingButton:GetHeight() -
+    Tools:Padding(0.5) - self.UI.SettingsFrame.TitleButton:GetHeight()
+  self.UI.SettingsFrame.ScrollFrame:SetMinHeight(height)
 end
 
 --[[
