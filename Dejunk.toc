@@ -1,7 +1,7 @@
 ## Interface: 70300
 ## Title: Dejunk
 ## Author: Dethanyel
-## Version: 7.3.1
+## Version: 7.3.2
 ## Notes: Customizable junk selling and destroying.
 ## SavedVariables: DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
