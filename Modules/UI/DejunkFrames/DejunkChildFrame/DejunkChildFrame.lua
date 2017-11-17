@@ -12,11 +12,9 @@ local Tools = DJ.Tools
 local DejunkChildOptionsFrame = DJ.DejunkFrames.DejunkChildOptionsFrame
 local DejunkChildListsFrame = DJ.DejunkFrames.DejunkChildListsFrame
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DejunkChildFrame:OnInitialize()
   DejunkChildOptionsFrame:Initialize()

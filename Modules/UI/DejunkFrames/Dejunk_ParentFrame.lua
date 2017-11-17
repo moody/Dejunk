@@ -17,11 +17,9 @@ local TitleFrame = DJ.DejunkFrames.TitleFrame
 -- Variables
 local currentChild = nil -- currently displayed child frame
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function ParentFrame:OnInitialize()
   local frame = self.Frame
@@ -103,11 +101,9 @@ function ParentFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                           Getters and Setters
+-- ============================================================================
 
 function ParentFrame:OnSetWidth(width)
   TitleFrame:SetWidth(width)

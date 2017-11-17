@@ -15,13 +15,11 @@ local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//                  CurrencyInputFrame Functions
-//*******************************************************************
---]]
-
 local moneyIconsTexture = "Interface\\MoneyFrame\\UI-MoneyIcons"
+
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
   assert(svKey and type(DejunkDB.SV[svKey]) == "table")

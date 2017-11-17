@@ -22,7 +22,7 @@ function DejunkFrameMixin:OnSetWidth(newWidth, oldWidth) end
 function DejunkFrameMixin:OnSetHeight(newHeight, oldHeight) end
 
 -- ============================================================================
---                         General Frame Functions
+--                          Frame Lifecycle Functions
 -- ============================================================================
 
 -- Initializes the frame.

@@ -16,11 +16,9 @@ local FrameFactory = DJ.FrameFactory
 -- Variables
 DejunkChildOptionsFrame.OptionFrames = {}
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DejunkChildOptionsFrame:OnInitialize()
   self:CreateOptions()
@@ -58,11 +56,9 @@ function DejunkChildOptionsFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                         Get & Set Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                           Getters and Setters
+-- ============================================================================
 
 function DejunkChildOptionsFrame:OnSetWidth(newWidth, oldWidth)
   if (newWidth > oldWidth) then -- resize options frames
@@ -84,11 +80,9 @@ function DejunkChildOptionsFrame:OnSetWidth(newWidth, oldWidth)
   end
 end
 
---[[
-//*******************************************************************
-//                       UI Creation Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Functions
+-- ============================================================================
 
 function DejunkChildOptionsFrame:CreateOptions()
   local ui = self.UI

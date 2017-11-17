@@ -13,11 +13,9 @@ local Tools = DJ.Tools
 local FrameFactory = DJ.FrameFactory
 local ListManager = DJ.ListManager
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function DestroyChildListFrame:OnInitialize()
   self:CreateListFrame()
@@ -35,11 +33,9 @@ function DestroyChildListFrame:OnResize()
   self:SetHeight(newHeight)
 end
 
---[[
-//*******************************************************************
-//                       UI Creation Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates the Destroyables list frame.
 function DestroyChildListFrame:CreateListFrame()

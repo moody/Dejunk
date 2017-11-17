@@ -13,11 +13,9 @@ local Consts = DJ.Consts
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			Scroll Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a scroll frame tailored to Dejunk.
 -- @param parent - the parent frame

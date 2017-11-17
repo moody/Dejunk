@@ -47,11 +47,9 @@ end
 local parseFrame = CreateFrame("Frame", AddonName.."ListManagerParseFrame")
 parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = numOfAttemptsToParse
 
---[[
-//*******************************************************************
-//                      List Manager Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                                 LM Functions
+-- ============================================================================
 
 -- Initializes the ListManager.
 function ListManager:Initialize()
@@ -133,11 +131,9 @@ function ListManager:GetListData(listName)
   }
 end
 
---[[
-//*******************************************************************
-//                          List Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                               List Functions
+-- ============================================================================
 
 -- Adds an item to the specified list.
 -- @param listName - the name of the list to add to
@@ -244,11 +240,9 @@ function ListManager:DestroyList(listName)
   Core:Print(format(L.REMOVED_ALL_FROM_LIST, coloredName))
 end
 
---[[
-//*******************************************************************
-//                        Transport Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                            Transport Functions
+-- ============================================================================
 
 -- Parses an import string for item IDs to add to the specified list.
 -- @param listName - the name of the list to import into
@@ -281,11 +275,9 @@ function ListManager:ExportFromList(listName)
   return concat(itemIDs, ";")
 end
 
---[[
-//*******************************************************************
-//                          Parsing Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                              Parsing Functions
+-- ============================================================================
 
 local MAX_PARSE_ATTEMPTS = 100
 

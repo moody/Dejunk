@@ -15,11 +15,9 @@ local DejunkDB = DJ.DejunkDB
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//                  CheckButtonNumberBox Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, tooltip, svKey, maxLetters)
   assert(svKey and type(DejunkDB.SV[svKey]) == "table")

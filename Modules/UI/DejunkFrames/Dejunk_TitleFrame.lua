@@ -17,11 +17,9 @@ local ParentFrame = DJ.DejunkFrames.ParentFrame
 local Scales = {1, 0.75, 0.5}
 local scaleIndex = 1
 
---[[
-//*******************************************************************
-//                       General Frame Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                          Frame Lifecycle Functions
+-- ============================================================================
 
 function TitleFrame:OnInitialize()
   local frame = self.Frame
@@ -144,6 +142,10 @@ function TitleFrame:OnResize()
   self.Frame:SetWidth(newWidth)
   self.Frame:SetHeight(newHeight)
 end
+
+-- ============================================================================
+--                             General Functions
+-- ============================================================================
 
 -- Updates the title text and dejunk/destroy button.
 function TitleFrame:SetTitleToDejunk()

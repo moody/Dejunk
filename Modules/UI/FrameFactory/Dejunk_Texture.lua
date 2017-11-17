@@ -8,11 +8,9 @@ local FrameFactory = DJ.FrameFactory
 local Colors = DJ.Colors
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			    Texture Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a texture tailored to Dejunk.
 -- @param parent - the parent frame

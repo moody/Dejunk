@@ -12,11 +12,9 @@ local Colors = DJ.Colors
 local Tools = DJ.Tools
 local FrameCreator = DJ.FrameCreator
 
---[[
-//*******************************************************************
-//  					    			    Button Functions
-//*******************************************************************
---]]
+-- ============================================================================
+--                             Creation Function
+-- ============================================================================
 
 -- Creates and returns a button tailored to Dejunk.
 -- @param parent - the parent frame

@@ -17,11 +17,9 @@ local ListManager = DJ.ListManager
 -- Variables
 MerchantButton.Initialized = false
 
---[[
-//*******************************************************************
-//                          Merchant Button
-//*******************************************************************
---]]
+-- ============================================================================
+--                               Merchant Button
+-- ============================================================================
 
 -- Initializes the frame.
 function MerchantButton:Initialize()
