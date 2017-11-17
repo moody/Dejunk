@@ -57,7 +57,7 @@ function autoDestroyFrame:OnEvent(event, ...)
 end
 
 function autoDestroyFrame:OnUpdate(elapsed)
-  if (not DejunkDB.SV.AutoDestroy) or (not Core:CanDestroy()) or ParentFrame:IsVisible() then
+  if (not DejunkDB.SV.AutoDestroy) or ParentFrame:IsVisible() or (not Core:CanDestroy()) then
     -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
     -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
     -- with no interruptions such as the BAG_UPDATE event has passed.

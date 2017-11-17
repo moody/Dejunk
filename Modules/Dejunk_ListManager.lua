@@ -7,8 +7,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Upvalues
 local assert, pairs, next = assert, pairs, next
-local insert, remove = table.insert, table.remove
-local sort, concat = table.sort, table.concat
+local remove, sort, concat = table.remove, table.sort, table.concat
 local tonumber, tostring = tonumber, tostring
 
 -- Dejunk
@@ -75,25 +74,19 @@ function ListManager:Update()
   end
 end
 
--- Checks whether the ListManager is currently parsing either a specific list or in general.
--- @param listName - the name of the list to check for being parsed [optional]
+-- Checks whether the ListManager is currently parsing a specific list or in general.
+-- @param listName - name of the list to check [optional]
 -- @return - boolean
 function ListManager:IsParsing(listName)
-  local parsingInclusions = (next(self.ToAdd.Inclusions) or next(self.ToRemove.Inclusions))
-  local parsingExclusions = (next(self.ToAdd.Exclusions) or next(self.ToRemove.Exclusions))
-  local parsingDestroyables = (next(self.ToAdd.Destroyables) or next(self.ToRemove.Destroyables))
-
-  if (listName == self.Inclusions) then
-    return parsingInclusions
-  elseif (listName == self.Exclusions) then
-    return parsingExclusions
-  elseif (listName == self.Destroyables) then
-    return parsingDestroyables
+  if listName then -- parsing specific list?
+    return (next(self.ToAdd[listName]) or next(self.ToRemove[listName]))
   else -- parsing in general?
-    -- This function is mainly used to test if the Inc or Exc list is being parsed,
-    -- so that's why we don't check for parsingDestroyables here
-    return (parsingInclusions or parsingExclusions)
+    for k in pairs(self.Lists) do
+      if (next(self.ToAdd[k]) or next(self.ToRemove[k])) then return true end
+    end
   end
+
+  return false
 end
 
 -- Gets a list from saved variables.
@@ -383,8 +376,7 @@ function ListManager:ParseList(listName)
         Core:Print(format(L.ADDED_ITEM_TO_LIST, item.Link, coloredName))
       end
 
-      --list[#list+1] = item
-      insert(list, 1, item) -- more obvious visual in ListFrame when adding to the top
+      list[#list+1] = item
       toAdd[itemID] = nil
     elseif not sv[itemID] then -- if the item couldn't be parsed, and it is not in the saved variables (avoids erasing sv data by accident)
       local attempts = ((parseFrame.AttemptsToParse[itemID] or 0) + 1)

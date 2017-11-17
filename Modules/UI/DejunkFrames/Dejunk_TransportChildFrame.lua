@@ -36,6 +36,11 @@ function TransportChildFrame:OnInitialize()
   self:CreateTransportFrame()
 end
 
+function TransportChildFrame:OnDisable()
+  -- Keep back button enabled
+  self.UI.BackButton:SetEnabled(true)
+end
+
 function TransportChildFrame:OnRefresh()
   if not currentList then return end
 

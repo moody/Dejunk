@@ -32,10 +32,6 @@ function TitleFrame:OnInitialize()
   ui.CharSpecCheckButton:SetChecked(not DejunkPerChar.UseGlobal)
   ui.CharSpecCheckButton:SetScript("OnClick", function(self)
     DJ.Core:ToggleCharacterSpecificSettings() end)
-  ui.CharSpecCheckButton:SetScript("OnUpdate", function(self)
-    local enabled = (DJ.Core:CanDejunk() and DJ.Core:CanDestroy())
-    self:SetEnabled(enabled)
-  end)
 
   -- Minimap Icon check button
   ui.MinimapIconCheckButton = FrameFactory:CreateCheckButton(frame,
