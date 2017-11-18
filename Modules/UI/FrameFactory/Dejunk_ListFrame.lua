@@ -135,11 +135,7 @@ function FrameFactory:CreateListFrame(parent, listName, buttonCount, title, titl
 
   -- Updates the buttons in the scroll frame.
   function listFrame:Update()
-    if (#self.ItemList > 0) and (not ListManager:IsParsing(listName)) then
-      exportButton:SetEnabled(true)
-    else
-      exportButton:SetEnabled(false)
-    end
+    exportButton:SetEnabled((#self.ItemList > 0))
 
     -- Update buttons
     for i, button in ipairs(buttonFrame.Buttons) do

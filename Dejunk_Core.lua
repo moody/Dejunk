@@ -33,21 +33,7 @@ function coreFrame:OnEvent(event, ...)
   end
 end
 
-function coreFrame:OnUpdate()
-  -- Enable/Disable GUI
-  if ParentFrame.Initialized then
-    if Dejunker:IsDejunking() or Destroyer:IsDestroying() then
-      if ParentFrame:IsEnabled() then
-        Core:DisableGUI()
-      end
-    elseif not ParentFrame:IsEnabled() then
-      Core:EnableGUI()
-    end
-  end
-end
-
 coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-coreFrame:SetScript("OnUpdate", coreFrame.OnUpdate)
 coreFrame:RegisterEvent("PLAYER_LOGIN")
 
 -- ============================================================================
@@ -80,6 +66,12 @@ function Core:Print(msg)
   print(format("%s %s", title, msg))
 end
 
+-- Attempts to print a message if verbose mode is enabled.
+-- @param msg - the message to print
+function Core:PrintVerbose(msg)
+  if DejunkDB.SV.VerboseMode then Core:Print(msg) end
+end
+
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
@@ -92,10 +84,11 @@ function Core:CanDejunk()
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListManager:IsParsing() then
-    local msg = format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
-      Tools:GetColoredListName(ListManager.Inclusions), Tools:GetColoredListName(ListManager.Exclusions))
-    return false, msg
+  if ListManager:IsParsing(ListManager.Inclusions) or
+     ListManager:IsParsing(ListManager.Exclusions) then
+    return false, format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
+      Tools:GetColoredListName(ListManager.Inclusions),
+      Tools:GetColoredListName(ListManager.Exclusions))
   end
 
   return true
@@ -114,10 +107,17 @@ function Core:CanDestroy()
   end
 
   if ListManager:IsParsing(ListManager.Destroyables) then
-    return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING, Tools:GetColoredListName(ListManager.Destroyables))
+    return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING,
+      Tools:GetColoredListName(ListManager.Destroyables))
   end
 
   return true
+end
+
+-- Returns true if Dejunk is busy dejunking, destroying, or parsing list data.
+-- @return - boolean
+function Core:IsBusy()
+  return Dejunker:IsDejunking() or Destroyer:IsDestroying() or ListManager:IsParsing()
 end
 
 -- ============================================================================

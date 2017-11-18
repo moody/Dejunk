@@ -31,11 +31,8 @@ function DejunkFrameMixin:Initialize()
   self.Initialized = true
   self.Enabled = true
 
-  if not self.UI then
-    self.UI = {}
-  end
-
   self.Frame = FrameFactory:CreateFrame()
+  self.UI = {}
 
   self:OnInitialize()
 end
@@ -71,16 +68,20 @@ end
 
 -- Enables the frame.
 function DejunkFrameMixin:Enable()
-  FrameFactory:EnableUI(self.UI)
+  if self.Enabled then return end
   self.Enabled = true
+
+  FrameFactory:EnableUI(self.UI)
 
   self:OnEnable()
 end
 
 -- Disables the frame.
 function DejunkFrameMixin:Disable()
-  FrameFactory:DisableUI(self.UI)
+  if not self.Enabled then return end
   self.Enabled = false
+
+  FrameFactory:DisableUI(self.UI)
 
   self:OnDisable()
 end

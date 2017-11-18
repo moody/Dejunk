@@ -35,6 +35,10 @@ function ParentFrame:OnInitialize()
 	frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
 	frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+  frame:SetScript("OnUpdate", function()
+    if DJ.Core:IsBusy() then ParentFrame:Disable() else ParentFrame:Enable() end
+  end)
+
 	table.insert(UISpecialFrames, frame:GetName()) -- Makes the frame hide when Esc is pressed
 	frame:Hide()
 
@@ -57,8 +61,6 @@ function ParentFrame:OnEnable()
 
   if currentChild then
     currentChild:Enable() end
-
-  self.Frame:SetAlpha(1)
 end
 
 function ParentFrame:OnDisable()
@@ -66,8 +68,6 @@ function ParentFrame:OnDisable()
 
   if currentChild then
     currentChild:Disable() end
-
-  self.Frame:SetAlpha(0.75)
 end
 
 function ParentFrame:OnRefresh()
@@ -125,25 +125,18 @@ function ParentFrame:SetCurrentChild(newChild, callback)
   assert(self.Initialized)
   assert(newChild ~= nil, "newChild cannot be nil")
 
-  local point = {"TOPLEFT", TitleFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()}
-
   if currentChild then currentChild:Hide() end
-
   currentChild = newChild
 
   if not currentChild.Initialized then
     currentChild:Initialize()
     currentChild:Resize() -- NOTE: This is a band-aid to prevent certain UI glitches.
-
-    if self.Enabled then
-      currentChild:Enable()
-    else
-      currentChild:Disable()
-    end
   end
 
+  if self.Enabled then currentChild:Enable() else currentChild:Disable() end
+
   currentChild:SetParent(self.Frame)
-  currentChild:SetPoint(point)
+  currentChild:SetPoint({"TOPLEFT", TitleFrame.Frame, "BOTTOMLEFT", 0, -Tools:Padding()})
   currentChild:Show()
 
   if callback then callback() end
