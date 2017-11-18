@@ -230,9 +230,9 @@ function Destroyer:StopLosing()
   -- Show basic message if not printing verbose
   if not DejunkDB.SV.VerboseMode then
     if (numDestroyedItems == 1) then
-      Core:Print(L.DESTROYED_ONE_ITEM)
+      Core:Print(L.DESTROYED_ITEM)
     else
-      Core:Print(format(L.DESTROYED_MULTIPLE_ITEMS, numDestroyedItems))
+      Core:Print(format(L.DESTROYED_ITEMS, numDestroyedItems))
     end
   end
 
@@ -269,7 +269,12 @@ function Destroyer:CheckForNextDestroyedItem()
   end
 
   -- Bag and slot is empty, so the item should have been destroyed
-  Core:PrintVerbose(L.VERBOSE_PREFIX_DESTROYED, item.ItemLink, item.Quantity, DJ.Colors.Destroyables)
+  if (item.Quantity == 1) then
+    Core:PrintVerbose(format(L.DESTROYED_ITEM_VERBOSE, item.ItemLink))
+  else
+    Core:PrintVerbose(format(L.DESTROYED_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
+  end
+
   numDestroyedItems = (numDestroyedItems + item.Quantity)
   return (item.Price * item.Quantity)
 end
