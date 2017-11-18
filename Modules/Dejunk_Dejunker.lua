@@ -249,6 +249,7 @@ function Dejunker:CheckForNextSoldItem()
   end
 
   -- Bag and slot is empty, so the item should have sold
+  Core:PrintVerbose(L.VERBOSE_PREFIX_SOLD, item.ItemLink, item.Quantity, DJ.Colors.Inclusions)
   return (item.Price * item.Quantity)
 end
 

@@ -66,6 +66,21 @@ function Core:Print(msg)
   print(format("%s %s", title, msg))
 end
 
+-- Prints a verbose style message about selling or destroying an item.
+-- @param prefix - the prefix string ("Sold:")
+-- @param itemLink - the item link
+-- @param quantity - the item count
+-- @param color - the color of the prefix and suffix
+function Core:PrintVerbose(prefix, itemLink, quantity, color)
+  if not DejunkDB.SV.VerboseMode then return end
+  local sold = Tools:GetColorString(prefix, color)
+  local suffix = (quantity == 1) and
+    Tools:GetColorString(".", color) or
+    Tools:GetColorString(format("x%s.", quantity), color)
+
+  Core:Print(format("%s%s%s", sold, itemLink, suffix))
+end
+
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil

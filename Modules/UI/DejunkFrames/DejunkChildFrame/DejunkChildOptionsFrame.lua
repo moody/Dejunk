@@ -129,6 +129,10 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   -- Silent mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
+
+  -- Verbose mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
 end
 
 function DejunkChildOptionsFrame:PopulateSellOptions()

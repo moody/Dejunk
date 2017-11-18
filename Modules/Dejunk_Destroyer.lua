@@ -74,10 +74,7 @@ function autoDestroyFrame:OnUpdate(elapsed)
 
     -- Check for at least one destroyable item before auto destroying
     local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
-    if (#items > 0) then
-      Core:Print(L.STARTING_AUTO_DESTROY)
-      Destroyer:StartDestroying()
-    end
+    if (#items > 0) then Destroyer:StartDestroying() end
   end
 end
 
@@ -230,12 +227,13 @@ function Destroyer:StopLosing()
 
   destroyerFrame:SetScript("OnUpdate", nil)
 
-  if (numDestroyedItems == 1) then
-    Core:Print(format(L.DESTROYED_ONE_ITEM,
-      GetCoinTextureString(totalLoss)))
-  else
-    Core:Print(format(L.DESTROYED_MULTIPLE_ITEMS,
-      numDestroyedItems, GetCoinTextureString(totalLoss)))
+  -- Show basic message if not printing verbose
+  if not DejunkDB.SV.VerboseMode then
+    if (numDestroyedItems == 1) then
+      Core:Print(L.DESTROYED_ONE_ITEM)
+    else
+      Core:Print(format(L.DESTROYED_MULTIPLE_ITEMS, numDestroyedItems))
+    end
   end
 
   self:StopDestroying()
@@ -271,6 +269,7 @@ function Destroyer:CheckForNextDestroyedItem()
   end
 
   -- Bag and slot is empty, so the item should have been destroyed
+  Core:PrintVerbose(L.VERBOSE_PREFIX_DESTROYED, item.ItemLink, item.Quantity, DJ.Colors.Destroyables)
   numDestroyedItems = (numDestroyedItems + item.Quantity)
   return (item.Price * item.Quantity)
 end

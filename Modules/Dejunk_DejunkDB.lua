@@ -120,6 +120,7 @@ function DejunkDB:Defaults()
     AutoRepair = false,
     SafeMode = true,
     SilentMode = false,
+    VerboseMode = false,
 
     -- Sell options
     SellPoor = true,
