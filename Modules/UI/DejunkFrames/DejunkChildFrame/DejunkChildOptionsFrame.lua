@@ -91,7 +91,7 @@ function DejunkChildOptionsFrame:CreateOptions()
   ui.OptionsPositioner:ClearAllPoints()
   ui.OptionsPositioner:SetPoint("TOP")
 
-  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.GENERAL_TEXT, "GameFontNormal")
+  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.OPTIONS_TEXT, "GameFontNormal")
   ui.GeneralOptionsFrame:SetPoint("TOPLEFT", ui.OptionsPositioner)
   self.OptionFrames[1] = ui.GeneralOptionsFrame
 
@@ -113,6 +113,26 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
     self.UI.GeneralOptionsFrame:AddOption(option)
   end
 
+  -- General text
+  local general = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  general:SetText(L.GENERAL_TEXT)
+  add(general)
+
+  -- Silent mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+  L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
+
+  -- Verbose mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+  L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
+
+  -- Selling text
+  local selling = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  selling:SetText(L.SELLING_TEXT)
+  add(selling)
+
   -- Auto sell
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell))
@@ -125,14 +145,6 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SAFE_MODE_TEXT, Colors.LabelText,
     format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), DejunkDB.SafeMode))
-
-  -- Silent mode
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
-
-  -- Verbose mode
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
 end
 
 function DejunkChildOptionsFrame:PopulateSellOptions()
