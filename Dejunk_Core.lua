@@ -231,9 +231,10 @@ do
 
     -- Display an appropriate tooltip if the item is junk
     local dejunkText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
-    local tipText = Dejunker:IsJunkItem(item) and
-      Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions) or
-      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
+    local isJunkItem, reasonText = Dejunker:IsJunkItem(item)
+    local tipText = isJunkItem and
+      Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_SOLD), Colors.Inclusions) or
+      Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Exclusions)
 
     self:AddDoubleLine(dejunkText, tipText)
     self:Show()
