@@ -134,7 +134,6 @@ end
 
 local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", UIParent, "GameTooltipTemplate")
 local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
-toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- Returns true if the tooltip of the item in a specified bag and slot
 -- contains the specified text.
@@ -144,18 +143,22 @@ toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
 function Tools:BagItemTooltipHasText(bag, slot, text)
   local hasText = false
 
+  toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
   toolsTip:SetBagItem(bag, slot)
+
   for i = 1, toolsTip:NumLines() do
     local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
 
-    -- Remove color from strings to be able to find words
-    -- find("|cffffffffHello|r", "Hello") would return nil
-    tipText = self:RemoveColorFromString(tipText)
-    text = self:RemoveColorFromString(text)
+    if tipText and (tipText ~= "") then
+      -- Remove color from strings to be able to find words
+      -- find("|cffffffffHello|r", "Hello") would return nil
+      tipText = self:RemoveColorFromString(tipText)
+      text = self:RemoveColorFromString(text)
 
-    if (tipText:find(text)) then
-      hasText = true
-      break
+      if (tipText:find(text)) then
+        hasText = true
+        break
+      end
     end
   end
 
