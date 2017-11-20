@@ -132,7 +132,7 @@ end
 --                         Tooltip Scanning Functions
 -- ============================================================================
 
-local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", UIParent, "GameTooltipTemplate")
+local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", nil, "GameTooltipTemplate")
 local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
 
 -- Returns true if the tooltip of the item in a specified bag and slot
