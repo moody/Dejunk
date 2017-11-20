@@ -7,7 +7,6 @@ Dejunk is a customizable junk selling and destroying addon.
 
 ## Features
 ### Selling
-* Automatically sell junk items when opening a merchant window
 * Automatically sell and repair items when opening a merchant window
 * Optional safe mode (only sell up to 12 items at a time)
 * Customize a list of items to always sell (Inclusions)
