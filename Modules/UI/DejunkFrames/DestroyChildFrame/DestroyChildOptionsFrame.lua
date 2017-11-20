@@ -78,7 +78,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- General heading
   local generalHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  generalHeading:SetText(L.GENERAL_TEXT..":")
+  generalHeading:SetText(L.GENERAL_TEXT)
   add(generalHeading)
 
   -- Auto destroy
@@ -93,7 +93,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- Destroy heading
   local destroyHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  destroyHeading:SetText(L.DESTROY_TEXT..":")
+  destroyHeading:SetText(L.DESTROY_TEXT)
   add(destroyHeading)
 
   -- Destroy poor
@@ -108,7 +108,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
-  ignoreHeading:SetText(L.IGNORE_TEXT..":")
+  ignoreHeading:SetText(L.IGNORE_TEXT)
   add(ignoreHeading)
 
   -- Ignore Exclusions

@@ -91,7 +91,7 @@ function DejunkChildOptionsFrame:CreateOptions()
   ui.OptionsPositioner:ClearAllPoints()
   ui.OptionsPositioner:SetPoint("TOP")
 
-  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.GENERAL_TEXT, "GameFontNormal")
+  ui.GeneralOptionsFrame = FrameFactory:CreateScrollingOptionsFrame(self.Frame, L.OPTIONS_TEXT, "GameFontNormal")
   ui.GeneralOptionsFrame:SetPoint("TOPLEFT", ui.OptionsPositioner)
   self.OptionFrames[1] = ui.GeneralOptionsFrame
 
@@ -113,6 +113,26 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
     self.UI.GeneralOptionsFrame:AddOption(option)
   end
 
+  -- General heading
+  local general = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  general:SetText(L.GENERAL_TEXT)
+  add(general)
+
+  -- Silent mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+  L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
+
+  -- Verbose mode
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+  L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
+
+  -- Selling heading
+  local selling = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  selling:SetText(L.SELLING_TEXT)
+  add(selling)
+
   -- Auto sell
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell))
@@ -125,14 +145,6 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SAFE_MODE_TEXT, Colors.LabelText,
     format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), DejunkDB.SafeMode))
-
-  -- Silent mode
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
-
-  -- Verbose mode
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
 end
 
 function DejunkChildOptionsFrame:PopulateSellOptions()
@@ -140,7 +152,7 @@ function DejunkChildOptionsFrame:PopulateSellOptions()
     self.UI.SellOptionsFrame:AddOption(option)
   end
 
-  -- By Quality text
+  -- By Quality heading
   local byQuality = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byQuality:SetText(L.BY_QUALITY_TEXT)
@@ -162,7 +174,7 @@ function DejunkChildOptionsFrame:PopulateSellOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic))
 
-  -- By Type text
+  -- By Type heading
   local byType = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)
@@ -184,7 +196,7 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
     self.UI.IgnoreOptionsFrame:AddOption(option)
   end
 
-  -- By Category text
+  -- By Category heading
   local byCategory = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byCategory:SetText(L.BY_CATEGORY_TEXT)
@@ -212,7 +224,7 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods))
 
-  -- By Type text
+  -- By Type heading
   local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   byType:SetText(L.BY_TYPE_TEXT)

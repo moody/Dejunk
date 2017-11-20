@@ -279,7 +279,8 @@ end
 
 -- Checks if an item is a junk item based on Dejunk's settings.
 -- @param item - an item retrieved using Tools:GetItemFromBag
--- @return - true if the item is considered junk, and false otherwise
+-- @return boolean - true if the item is considered junk
+-- @return string - the reason the item is considered junk or not
 function Dejunker:IsJunkItem(item)
   --[[ Priority
   1. Is it excluded?
@@ -290,32 +291,51 @@ function Dejunker:IsJunkItem(item)
 
   -- 1
   if ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
-    return false end
+    return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT) end
 
   -- 2
   if ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
-		return true end
+		return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT) end
 
   -- 3. Custom checks
 
-  -- Ignore options
-  if self:IsIgnoredBattlePetItem(item) then return false end
-  if self:IsIgnoredConsumableItem(item) then return false end
-  if self:IsIgnoredGemItem(item) then return false end
-  if self:IsIgnoredGlyphItem(item) then return false end
-  if self:IsIgnoredItemEnhancementItem(item) then return false end
-  if self:IsIgnoredRecipeItem(item) then return false end
-  if self:IsIgnoredTradeGoodsItem(item) then return false end
-  if self:IsIgnoredBindsWhenEquippedItem(item) then return false end
-  if self:IsIgnoredSoulboundItem(item) then return false end
-  if self:IsIgnoredEquipmentSetsItem(item) then return false end
+  -- Ignore by category
+  if self:IsIgnoredBattlePetItem(item) then
+    return false, L.REASON_IGNORE_BATTLEPETS_TEXT end
+  if self:IsIgnoredConsumableItem(item) then
+    return false, L.REASON_IGNORE_CONSUMABLES_TEXT end
+  if self:IsIgnoredGemItem(item) then
+    return false, L.REASON_IGNORE_GEMS_TEXT end
+  if self:IsIgnoredGlyphItem(item) then
+    return false, L.REASON_IGNORE_GLYPHS_TEXT end
+  if self:IsIgnoredItemEnhancementItem(item) then
+    return false, L.REASON_IGNORE_ITEM_ENHANCEMENTS_TEXT end
+  if self:IsIgnoredRecipeItem(item) then
+    return false, L.REASON_IGNORE_RECIPES_TEXT end
+  if self:IsIgnoredTradeGoodsItem(item) then
+    return false, L.REASON_IGNORE_TRADE_GOODS_TEXT end
 
-  -- Sell options
-  if self:IsUnsuitableItem(item) then return true end
-  if self:IsEquipmentBelowILVLItem(item) then return true end
+  -- Ignore by type
+  if self:IsIgnoredBindsWhenEquippedItem(item) then
+    return false, L.REASON_IGNORE_BOE_TEXT end
+  if self:IsIgnoredSoulboundItem(item) then
+    return false, L.REASON_IGNORE_SOULBOUND_TEXT end
+  if self:IsIgnoredEquipmentSetsItem(item) then
+    return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
 
-	-- 4
-  return self:IsSellByQualityItem(item.Quality)
+  -- Sell by type
+  if self:IsUnsuitableItem(item) then
+    return true, L.REASON_SELL_UNSUITABLE_TEXT end
+  if self:IsEquipmentBelowILVLItem(item) then
+    return true, format(L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT, DejunkDB.SV.SellEquipmentBelowILVL.Value)
+  end
+
+	-- Sell by quality
+  if self:IsSellByQualityItem(item.Quality) then
+    return true, L.REASON_SELL_BY_QUALITY_TEXT end
+
+  -- Default
+  return false, L.REASON_ITEM_NOT_FILTERED_TEXT
 end
 
 -- [[ SELL OPTIONS ]] --

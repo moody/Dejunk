@@ -312,23 +312,30 @@ function Destroyer:IsDestroyableItem(item)
   -- 1
   if DejunkDB.SV.DestroyIgnoreExclusions and
     ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
-    return false
+    return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end
 
   -- 2
   if DejunkDB.SV.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
-    return self:ItemPriceBelowThreshold(item)
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
   end
 
   -- 3
   if DejunkDB.SV.DestroyInclusions and
     ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
-    return self:ItemPriceBelowThreshold(item)
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
   -- 4
-  return ListManager:IsOnList(ListManager.Destroyables, item.ItemID) and
-    self:ItemPriceBelowThreshold(item)
+  if ListManager:IsOnList(ListManager.Destroyables, item.ItemID) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
+  end
+
+  -- Default
+  return false, L.REASON_ITEM_NOT_FILTERED_TEXT
 end
 
 -- Returns true if the item's price is less than the set price threshold.
@@ -339,7 +346,10 @@ function Destroyer:ItemPriceBelowThreshold(item)
       (threshold.Silver * 100) + threshold.Copper
 
     if ((item.Price * item.Quantity) >= thresholdCopperPrice) then
-      return false end
+      return false, format(L.REASON_DESTROY_TRESHOLD_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+    else
+      return true, format(L.REASON_DESTROY_TRESHOLD_NOT_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+    end
   end
 
   return true

@@ -226,16 +226,28 @@ do
     local item = Tools:GetItemFromBag(bag, slot)
     if not item then return end
 
-    -- Return if item cannot be sold
-    if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return end
+    local leftText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
+    local rightText
 
-    -- Display an appropriate tooltip if the item is junk
-    local dejunkText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
-    local tipText = Dejunker:IsJunkItem(item) and
-      Tools:GetColorString(L.ITEM_WILL_BE_SOLD, Colors.Inclusions) or
-      Tools:GetColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Exclusions)
+    if not IsShiftKeyDown() then -- Dejunk tooltip
+      -- Return if item cannot be sold
+      if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return end
+      local isJunkItem, reasonText = Dejunker:IsJunkItem(item)
 
-    self:AddDoubleLine(dejunkText, tipText)
+      rightText = isJunkItem and
+        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_SOLD), Colors.Red) or
+        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Green)
+    else -- Destroy tooltip
+      -- Return if item cannot be destroyed
+      if not Tools:ItemCanBeDestroyed(item.Quality) then return end
+      local isJunkItem, reasonText = Destroyer:IsDestroyableItem(item)
+
+      rightText = isJunkItem and
+        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_DESTROYED), Colors.Red) or
+        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_DESTROYED), Colors.Green)
+    end
+
+    self:AddDoubleLine(leftText, rightText)
     self:Show()
   end
 
