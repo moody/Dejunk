@@ -346,9 +346,9 @@ function Destroyer:ItemPriceBelowThreshold(item)
       (threshold.Silver * 100) + threshold.Copper
 
     if ((item.Price * item.Quantity) >= thresholdCopperPrice) then
-      return false, format(L.REASON_DESTROY_TRESHOLD_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+      return false, format(L.REASON_DESTROY_THRESHOLD_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
     else
-      return true, format(L.REASON_DESTROY_TRESHOLD_NOT_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+      return true, format(L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
     end
   end
 
