@@ -18,9 +18,10 @@
   <!-- /UI/Colors/ -->
   <Script file="Modules\UI\Colors\Dejunk_Colors.lua"/>
   <Script file="Modules\UI\Colors\Scheme_Default.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Redscale.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Greenscale.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Grayscale.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Red.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Purple.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Green.lua"/>
+  <Script file="Modules\UI\Colors\Scheme_Gray.lua"/>
 
   <!-- /UI/FrameFactory/ -->
   <Script file="Modules\UI\FrameFactory\FrameCreator.lua"/>

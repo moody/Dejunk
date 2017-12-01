@@ -190,7 +190,7 @@ function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
 end
 
 -- Cache of calculated paddings
-local paddingConsts = {}
+local paddingCache = {}
 
 -- Returns the default padding with an optional multiplier.
 -- @param multiplier - a number to multiply padding by [optional]
@@ -198,11 +198,11 @@ local paddingConsts = {}
 function Tools:Padding(multiplier)
   multiplier = multiplier or 1
   local key = tostring(multiplier)
-  if not paddingConsts[key] then
-    paddingConsts[key] = abs(10 * multiplier)
+  if not paddingCache[key] then
+    paddingCache[key] = abs(10 * multiplier)
   end
 
-  return paddingConsts[key]
+  return paddingCache[key]
 end
 
 -- ============================================================================
