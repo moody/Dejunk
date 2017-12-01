@@ -55,8 +55,9 @@ end
 -- @param colorScheme - a colorScheme defined in Colors.Schemes
 function Colors:SetColorScheme(colorScheme)
   assert(type(colorScheme) == "string", "colorScheme must exist and be a string")
-  assert(self.Schemes[colorScheme] ~= nil,
-    format("a color scheme with the name \"%s\" does not exist", colorScheme))
+
+  if not self.Schemes[colorScheme] then
+    colorScheme = self.SchemeNames[1] end
 
   DejunkGlobal.ColorScheme = colorScheme
   self.CurrentScheme = self.Schemes[colorScheme]()

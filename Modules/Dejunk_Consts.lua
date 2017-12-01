@@ -59,13 +59,6 @@ Consts.SAFE_MODE_MAX = 12
 --                                 UI Constants
 -- ============================================================================
 
--- ParentFrame (these aren't used much, might remove in the future)
-Consts.MIN_WIDTH = 685
-Consts.MIN_HEIGHT = 390
-
--- The padding function exists in Tools. Is that dumb? Probably.
-Consts.PADDING = 10
-
 -- List
 Consts.LIST_FRAME_MIN_WIDTH = 300
 Consts.LIST_BUTTON_HEIGHT = 30

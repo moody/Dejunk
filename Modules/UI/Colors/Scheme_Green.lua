@@ -1,7 +1,7 @@
 local AddonName, DJ = ...
 local Colors = DJ.Colors
 
-local schemeName = LibStub('AceLocale-3.0'):GetLocale(AddonName).SCHEME_NAME_GREENSCALE
+local schemeName = LibStub('AceLocale-3.0'):GetLocale(AddonName).SCHEME_NAME_GREEN
 
 Colors.SchemeNames[#Colors.SchemeNames+1] = schemeName
 Colors.Schemes[schemeName] = function()

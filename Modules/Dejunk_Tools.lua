@@ -192,11 +192,20 @@ function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
   return width, height
 end
 
+-- Cache of calculated paddings
+local paddingCache = {}
+
 -- Returns the default padding with an optional multiplier.
 -- @param multiplier - a number to multiply padding by [optional]
--- @return - the absolute value of default padding times the multipler or 1.
+-- @return - the absolute value of default padding times the multiplier or 1.
 function Tools:Padding(multiplier)
-  return abs(Consts.PADDING * (multiplier or 1))
+  multiplier = multiplier or 1
+  local key = tostring(multiplier)
+  if not paddingCache[key] then
+    paddingCache[key] = abs(10 * multiplier)
+  end
+
+  return paddingCache[key]
 end
 
 -- ============================================================================
