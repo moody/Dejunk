@@ -141,28 +141,16 @@ local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
 -- @param slot - the bag slot item resides in
 -- @param text - the text to scan the tooltip for
 function Tools:BagItemTooltipHasText(bag, slot, text)
-  local hasText = false
-
   toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
   toolsTip:SetBagItem(bag, slot)
 
   for i = 1, toolsTip:NumLines() do
     local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
-
-    if tipText and (tipText ~= "") then
-      -- Remove color from strings to be able to find words
-      -- find("|cffffffffHello|r", "Hello") would return nil
-      tipText = self:RemoveColorFromString(tipText)
-      text = self:RemoveColorFromString(text)
-
-      if (tipText:find(text)) then
-        hasText = true
-        break
-      end
-    end
+    if (tipText ~= "") and tipText:find(text, 1, true) then
+      return true end
   end
 
-  return hasText
+  return false
 end
 
 -- ============================================================================

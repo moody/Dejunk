@@ -450,7 +450,14 @@ function Dejunker:IsIgnoredSoulboundItem(item)
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
 end
 
+local TRIMMED_EQUIPMENT_SETS = nil
+
 function Dejunker:IsIgnoredEquipmentSetsItem(item)
   if not DejunkDB.SV.IgnoreEquipmentSets then return false end
-  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, EQUIPMENT_SETS:gsub("%%s", ""))
+  if not TRIMMED_EQUIPMENT_SETS then
+    TRIMMED_EQUIPMENT_SETS =
+      strtrim(Tools:RemoveColorFromString(EQUIPMENT_SETS:gsub("%%s", "")), " ")
+  end
+
+  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
 end
