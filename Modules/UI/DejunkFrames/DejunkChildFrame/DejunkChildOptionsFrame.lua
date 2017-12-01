@@ -114,7 +114,7 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   end
 
   -- General heading
-  local general = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+  local general = FrameFactory:CreateFontString(self.UI.GeneralOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   general:SetText(L.GENERAL_TEXT)
   add(general)
@@ -128,7 +128,7 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
 
   -- Selling heading
-  local selling = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
+  local selling = FrameFactory:CreateFontString(self.UI.GeneralOptionsFrame,
     nil, "GameFontNormalSmall", Colors.LabelText)
   selling:SetText(L.SELLING_TEXT)
   add(selling)
@@ -137,14 +137,24 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell))
 
-  -- Auto repair
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, DejunkDB.AutoRepair))
-
   -- Safe mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SAFE_MODE_TEXT, Colors.LabelText,
     format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), DejunkDB.SafeMode))
+
+  -- Repairing heading
+  local repairing = FrameFactory:CreateFontString(self.UI.GeneralOptionsFrame,
+    nil, "GameFontNormalSmall", Colors.LabelText)
+  repairing:SetText(L.REPAIRING_TEXT)
+  add(repairing)
+
+  -- Auto repair
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, DejunkDB.AutoRepair))
+
+  -- Use guild repair
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.USE_GUILD_REPAIR_TEXT, Colors.LabelText, L.USE_GUILD_REPAIR_TOOLTIP, DejunkDB.UseGuildRepair))
 end
 
 function DejunkChildOptionsFrame:PopulateSellOptions()

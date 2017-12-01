@@ -9,6 +9,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local Repairer = DJ.Repairer
 
 local Core = DJ.Core
+local DejunkDB = DJ.DejunkDB
 
 -- Variables
 local isRepairing = false
@@ -85,7 +86,8 @@ function Repairer:PreUpdateRepairs(frame, elapsed)
 		end
 
 		local guildBankLimit = GetGuildBankWithdrawMoney()
-		canGuildRepair = (CanGuildBankRepair() and ((guildBankLimit == -1) or (guildBankLimit >= repairCost)))
+		canGuildRepair = DejunkDB.SV.UseGuildRepair and
+      (CanGuildBankRepair() and ((guildBankLimit == -1) or (guildBankLimit >= repairCost)))
 
 		totalRepairCost = repairCost
 		repairInterval = REPAIR_DELAY

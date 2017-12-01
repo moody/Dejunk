@@ -25,11 +25,11 @@ function ParentFrame:OnInitialize()
   local frame = self.Frame
 
   frame:SetColors(Colors.ParentFrame)
-  frame:SetWidth(Consts.MIN_WIDTH)
-	frame:SetHeight(Consts.MIN_HEIGHT)
-	frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-	frame:SetFrameStrata("HIGH")
+  frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+  frame:SetFrameStrata("HIGH")
+  frame:SetFrameLevel(5)
 
+  frame:SetClampedToScreen(true)
   frame:EnableMouse(true)
 	frame:SetMovable(true)
 	frame:RegisterForDrag("LeftButton")

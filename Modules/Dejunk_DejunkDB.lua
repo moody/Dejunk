@@ -116,11 +116,12 @@ function DejunkDB:Defaults()
 	return
 	{
     -- General options
-    AutoSell = false,
-    AutoRepair = false,
-    SafeMode = true,
     SilentMode = false,
     VerboseMode = false,
+    AutoSell = false,
+    SafeMode = true,
+    AutoRepair = false,
+    UseGuildRepair = true,
 
     -- Sell options
     SellPoor = true,
