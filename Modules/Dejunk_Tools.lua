@@ -132,68 +132,73 @@ end
 --                         Tooltip Scanning Functions
 -- ============================================================================
 
-local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", nil, "GameTooltipTemplate")
-local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
+do
+  local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", nil, "GameTooltipTemplate")
+  local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
 
--- Returns true if the tooltip of the item in a specified bag and slot
--- contains the specified text.
--- @param bag - the bag the item resides in
--- @param slot - the bag slot item resides in
--- @param text - the text to scan the tooltip for
-function Tools:BagItemTooltipHasText(bag, slot, text)
-  toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
-  toolsTip:SetBagItem(bag, slot)
+  -- Returns true if the tooltip of the item in a specified bag and slot
+  -- contains the specified text.
+  -- @param bag - the bag the item resides in
+  -- @param slot - the bag slot item resides in
+  -- @param text - the text to scan the tooltip for
+  function Tools:BagItemTooltipHasText(bag, slot, text)
+    toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
+    toolsTip:SetBagItem(bag, slot)
 
-  for i = 1, toolsTip:NumLines() do
-    local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
-    if (tipText ~= "") and tipText:find(text, 1, true) then
-      return true end
+    for i = 1, toolsTip:NumLines() do
+      local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
+      if (tipText ~= "") and tipText:find(text, 1, true) then
+        return true end
+    end
+
+    return false
   end
-
-  return false
 end
 
 -- ============================================================================
 --                                 UI Functions
 -- ============================================================================
 
-local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
-sizer:SetColorTexture(0, 0, 0, 0)
+do
+  local sizer = UIParent:CreateTexture("DejunkSizer", "BACKGROUND")
+  sizer:SetColorTexture(0, 0, 0, 0)
 
--- Measures the width and height between the top-left point of the startRegion
--- and the bottom-right point of the endRegion.
--- @param parent - the parent frame used to create a temporary texture
--- @param startRegion - the left-most region
--- @param endRegion - the right-most region
--- @param startPoint - the point on the startRegion to measure from [optional]
--- @param endPoint - the point on the endRegion to measure to [optional]
--- @return width - the width between the two regions
--- @return height - the height
-function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
-  sizer:ClearAllPoints()
-  sizer:SetParent(parent)
-  sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
-  sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
+  -- Measures the width and height between the top-left point of the startRegion
+  -- and the bottom-right point of the endRegion.
+  -- @param parent - the parent frame used to create a temporary texture
+  -- @param startRegion - the left-most region
+  -- @param endRegion - the right-most region
+  -- @param startPoint - the point on the startRegion to measure from [optional]
+  -- @param endPoint - the point on the endRegion to measure to [optional]
+  -- @return width - the width between the two regions
+  -- @return height - the height
+  function Tools:Measure(parent, startRegion, endRegion, startPoint, endPoint)
+    sizer:ClearAllPoints()
+    sizer:SetParent(parent)
+    sizer:SetPoint(startPoint or "TOPLEFT", startRegion)
+    sizer:SetPoint(endPoint or "BOTTOMRIGHT", endRegion)
 
-  local width, height = sizer:GetWidth(), sizer:GetHeight()
+    local width, height = sizer:GetWidth(), sizer:GetHeight()
 
-  return width, height
+    return width, height
+  end
 end
 
--- Cache of calculated paddings
-local paddingCache = {}
+do
+  local paddingCache = {}
 
--- Returns the default padding with an optional multiplier.
--- @param multiplier - a number to multiply padding by [optional]
--- @return - the absolute value of default padding times the multiplier or 1.
-function Tools:Padding(multiplier)
-  multiplier = multiplier or 1
-  local key = tostring(multiplier)
-  if not paddingCache[key] then
-    paddingCache[key] = abs(10 * multiplier)
+  -- Returns the default padding with an optional multiplier.
+  -- @param multiplier - a number to multiply padding by [optional]
+  -- @return - the absolute value of default padding times the multiplier or 1.
+  function Tools:Padding(multiplier)
+    multiplier = multiplier or 1
+    local key = tostring(multiplier)
+    if not paddingCache[key] then
+      paddingCache[key] = abs(10 * multiplier)
+    end
+
+    return paddingCache[key]
   end
-
-  return paddingCache[key]
 end
 
 -- ============================================================================
