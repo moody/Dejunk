@@ -239,6 +239,9 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   byType:SetText(L.BY_TYPE_TEXT)
   add(byType)
 
+  -- Cosmetic
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_COSMETIC_TEXT, Colors.LabelText, L.IGNORE_COSMETIC_TOOLTIP, DejunkDB.IgnoreCosmetic))
   -- Binds when equipped
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, DejunkDB.IgnoreBindsWhenEquipped))

@@ -316,6 +316,8 @@ function Dejunker:IsJunkItem(item)
     return false, L.REASON_IGNORE_TRADE_GOODS_TEXT end
 
   -- Ignore by type
+  if self:IsIgnoredCosmeticItem(item) then
+    return false, L.REASON_IGNORE_COSMETIC_TEXT end
   if self:IsIgnoredBindsWhenEquippedItem(item) then
     return false, L.REASON_IGNORE_BOE_TEXT end
   if self:IsIgnoredSoulboundItem(item) then
@@ -448,6 +450,12 @@ end
 function Dejunker:IsIgnoredTradeGoodsItem(item)
   if not DejunkDB.SV.IgnoreTradeGoods then return false end
   return (item.Class == Consts.TRADEGOODS_CLASS)
+end
+
+function Dejunker:IsIgnoredCosmeticItem(item)
+  if not DejunkDB.SV.IgnoreCosmetic or not (item.Class == Consts.ARMOR_CLASS) then return false end
+  local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
+  return (subClass == LE_ITEM_ARMOR_GENERIC) or (subClass == LE_ITEM_ARMOR_COSMETIC)
 end
 
 function Dejunker:IsIgnoredBindsWhenEquippedItem(item)

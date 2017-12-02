@@ -144,6 +144,7 @@ function DejunkDB:Defaults()
     IgnoreItemEnhancements = false,
     IgnoreRecipes = false,
     IgnoreTradeGoods = false,
+    IgnoreCosmetic = false,
     IgnoreBindsWhenEquipped = false,
     IgnoreSoulbound = false,
     IgnoreEquipmentSets = false,
