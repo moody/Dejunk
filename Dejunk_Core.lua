@@ -247,6 +247,7 @@ do
         Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_DESTROYED), Colors.Green)
     end
 
+    self:AddLine(" ") -- blank line
     self:AddDoubleLine(leftText, rightText)
     self:Show()
   end
