@@ -373,7 +373,7 @@ function Dejunker:IsUnsuitableItem(item)
 end
 
 do
-  -- Special case for rings, necklaces, trinkets, and held in off-hand items (considered generic armor types)
+  -- Special check required for these generic armor types
   local SPECIAL_ARMOR_EQUIPSLOTS = {
     ["INVTYPE_FINGER"] = true,
     ["INVTYPE_NECK"] = true,
@@ -452,10 +452,23 @@ function Dejunker:IsIgnoredTradeGoodsItem(item)
   return (item.Class == Consts.TRADEGOODS_CLASS)
 end
 
-function Dejunker:IsIgnoredCosmeticItem(item)
-  if not DejunkDB.SV.IgnoreCosmetic or not (item.Class == Consts.ARMOR_CLASS) then return false end
-  local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
-  return (subClass == LE_ITEM_ARMOR_GENERIC) or (subClass == LE_ITEM_ARMOR_COSMETIC)
+do
+  -- Ignore these generic types since they provide no cosmetic appearance
+  local IGNORE_ARMOR_EQUIPSLOTS = {
+    ["INVTYPE_FINGER"] = true,
+    ["INVTYPE_NECK"] = true,
+    ["INVTYPE_TRINKET"] = true
+  }
+
+  function Dejunker:IsIgnoredCosmeticItem(item)
+    if not DejunkDB.SV.IgnoreCosmetic or
+    not (item.Class == Consts.ARMOR_CLASS) or
+    IGNORE_ARMOR_EQUIPSLOTS[item.EquipSlot] then
+      return false end
+
+    local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
+    return (subClass == LE_ITEM_ARMOR_COSMETIC) or (subClass == LE_ITEM_ARMOR_GENERIC)
+  end
 end
 
 function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
