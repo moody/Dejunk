@@ -196,9 +196,8 @@ function DejunkChildOptionsFrame:PopulateSellOptions()
 
   -- Equipment below ilvl
   add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
-    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, nil, L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP,
-    DejunkDB.SellEquipmentBelowILVL))
-  --]]
+    L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, Colors.LabelText,
+    L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL))
 end
 
 function DejunkChildOptionsFrame:PopulateIgnoreOptions()

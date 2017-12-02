@@ -326,8 +326,14 @@ function Dejunker:IsJunkItem(item)
   -- Sell by type
   if self:IsUnsuitableItem(item) then
     return true, L.REASON_SELL_UNSUITABLE_TEXT end
-  if self:IsEquipmentBelowILVLItem(item) then
-    return true, format(L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT, DejunkDB.SV.SellEquipmentBelowILVL.Value)
+
+  local isBelowType = self:IsSellEquipmentBelowILVLItem(item)
+  if (isBelowType == "BELOW") then
+    return true, format(L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT,
+    DejunkDB.SV.SellEquipmentBelowILVL.Value)
+  elseif (isBelowType == "ABOVE") then
+    return false, format(L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT,
+    DejunkDB.SV.SellEquipmentBelowILVL.Value)
   end
 
 	-- Sell by quality
@@ -351,45 +357,51 @@ end
 function Dejunker:IsUnsuitableItem(item)
   if not DejunkDB.SV.SellUnsuitable then return false end
 
-  local class, subClass, equipSlot = item.Class, item.SubClass, item.EquipSlot
   local suitable = true
 
-  if (class == Consts.ARMOR_CLASS) then
-    local index = Consts.ARMOR_SUBCLASSES[subClass]
-    suitable = (Consts.SUITABLE_ARMOR[index] or (equipSlot == "INVTYPE_CLOAK"))
-  elseif (class == Consts.WEAPON_CLASS) then
-    local index = Consts.WEAPON_SUBCLASSES[subClass]
+  if (item.Class == Consts.ARMOR_CLASS) then
+    local index = Consts.ARMOR_SUBCLASSES[item.SubClass]
+    suitable = (Consts.SUITABLE_ARMOR[index] or (item.EquipSlot == "INVTYPE_CLOAK"))
+  elseif (item.Class == Consts.WEAPON_CLASS) then
+    local index = Consts.WEAPON_SUBCLASSES[item.SubClass]
     suitable = Consts.SUITABLE_WEAPONS[index]
   end
 
   return not suitable
 end
 
-function Dejunker:IsEquipmentBelowILVLItem(item)
-  local class, subClass, equipSlot, itemLevel = item.Class, item.SubClass, item.EquipSlot, item.ItemLevel
+do
+  -- Special case for rings, necklaces, trinkets, and held in off-hand items (considered generic armor types)
+  local SPECIAL_ARMOR_EQUIPSLOTS = {
+    ["INVTYPE_FINGER"] = true,
+    ["INVTYPE_NECK"] = true,
+    ["INVTYPE_TRINKET"] = true,
+    ["INVTYPE_HOLDABLE"] = true
+  }
 
-  if not DejunkDB.SV.SellEquipmentBelowILVL.Enabled or
-    (itemLevel >= DejunkDB.SV.SellEquipmentBelowILVL.Value) then
-    return false
+  -- Returns true if the item is an equippable item;
+  -- excluding generic armor/weapon types, cosmetic items, and fishing poles.
+  -- @return - boolean
+  local function IsEquipmentItem(item)
+    if (item.Class == Consts.ARMOR_CLASS) then
+      if SPECIAL_ARMOR_EQUIPSLOTS[item.EquipSlot] then return true end
+      local scValue = Consts.ARMOR_SUBCLASSES[item.SubClass]
+      return (scValue ~= LE_ITEM_ARMOR_GENERIC) and (scValue ~= LE_ITEM_ARMOR_COSMETIC)
+    elseif (item.Class == Consts.WEAPON_CLASS) then
+      local scValue = Consts.WEAPON_SUBCLASSES[item.SubClass]
+      return (scValue ~= LE_ITEM_WEAPON_GENERIC) and (scValue ~= LE_ITEM_WEAPON_FISHINGPOLE)
+    else
+      return false
+    end
   end
 
-  if (class == Consts.ARMOR_CLASS) then
-    -- Special case for rings, necklaces, trinkets, and held in off-hand items since they are generic armor types.
-    local invtypes = {
-      ["INVTYPE_FINGER"] = true,
-      ["INVTYPE_NECK"] = true,
-      ["INVTYPE_TRINKET"] = true,
-      ["INVTYPE_HOLDABLE"] = true
-    }
-    if invtypes[equipSlot] then return true end
+  function Dejunker:IsSellEquipmentBelowILVLItem(item)
+    if not DejunkDB.SV.SellEquipmentBelowILVL.Enabled or
+    not IsEquipmentItem(item) then return nil end
 
-    local scValue = Consts.ARMOR_SUBCLASSES[subClass]
-    return (scValue ~= LE_ITEM_ARMOR_GENERIC) and (scValue ~= LE_ITEM_ARMOR_COSMETIC)
-  elseif (class == Consts.WEAPON_CLASS) then
-    local scValue = Consts.WEAPON_SUBCLASSES[subClass]
-    return (scValue ~= LE_ITEM_WEAPON_GENERIC) and (scValue ~= LE_ITEM_WEAPON_FISHINGPOLE)
-  else
-    return false
+    if (item.ItemLevel >= DejunkDB.SV.SellEquipmentBelowILVL.Value) then
+      return (item.Quality >= LE_ITEM_QUALITY_COMMON) and "ABOVE" or nil
+    else return "BELOW" end
   end
 end
 
