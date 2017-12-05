@@ -14,7 +14,7 @@ local GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo =
 local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink =
       GetContainerNumSlots, GetContainerItemID, GetContainerItemLink
 
-local sort = table.sort
+local assert = assert
 local pairs, ipairs = pairs, ipairs
 
 -- Dejunk
@@ -137,21 +137,29 @@ do
   local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
 
   -- Returns true if the tooltip of the item in a specified bag and slot
-  -- contains the specified text.
+  -- contains the specified lines of text.
   -- @param bag - the bag the item resides in
   -- @param slot - the bag slot item resides in
-  -- @param text - the text to scan the tooltip for
-  function Tools:BagItemTooltipHasText(bag, slot, text)
+  -- @param ... - the lines of text to scan the tooltip for
+  function Tools:BagItemTooltipHasText(bag, slot, ...)
     toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
     toolsTip:SetBagItem(bag, slot)
 
+    local lines = {...}
+    assert(#lines > 0)
+
     for i = 1, toolsTip:NumLines() do
       local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
-      if (tipText ~= "") and tipText:find(text, 1, true) then
-        return true end
+
+      for k, v in pairs(lines) do
+        if (tipText ~= "") and tipText:find(v, 1, true) then
+          lines[k] = nil -- remove found line
+          break
+        end
+      end
     end
 
-    return false
+    return (#lines == 0) -- true if all lines were found
   end
 end
 

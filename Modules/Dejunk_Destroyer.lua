@@ -307,6 +307,7 @@ function Destroyer:IsDestroyableItem(item)
     3.1 Threshold?
   4. Is it on the Destroyables list?
     4.1 Threshold?
+  5. Custom
   ]]
 
   -- 1
@@ -334,6 +335,11 @@ function Destroyer:IsDestroyableItem(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end
 
+  -- 5
+  if self:IsDestroyToysAlreadyKnownItem(item) then
+    return true, L.REASON_DESTROY_TOYS_ALREADY_KNOWN_TEXT
+  end
+
   -- Default
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
 end
@@ -353,4 +359,10 @@ function Destroyer:ItemPriceBelowThreshold(item)
   end
 
   return true
+end
+
+function Destroyer:IsDestroyToysAlreadyKnownItem(item)
+  if not DejunkDB.SV.DestroyToysAlreadyKnown then return false end
+  if Tools:ItemCanBeSold(item.Price, item.Quality) then return false end
+  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, TOY, ITEM_SPELL_KNOWN)
 end

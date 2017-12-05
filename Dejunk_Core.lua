@@ -72,6 +72,16 @@ function Core:PrintVerbose(msg)
   if DejunkDB.SV.VerboseMode then Core:Print(msg) end
 end
 
+-- Prints a debug message ("[Dejunk Debug] title: msg").
+-- @param msg - the message to print
+function Core:Debug(title, msg)
+  if not self.IsDebugging then return end
+  local debug = Tools:GetColorString("[Dejunk Debug]", Colors.Red)
+  title = Tools:GetColorString(title, Colors.Green)
+  print(format("%s %s: %s", debug, title, msg))
+end
+-- Core.IsDebugging = true
+
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
