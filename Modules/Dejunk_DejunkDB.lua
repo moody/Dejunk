@@ -159,7 +159,8 @@ function DejunkDB:Defaults()
     },
     DestroyPoor = false,
     DestroyInclusions = false,
-    DestroyToysAlreadyKnown = false,
+    DestroyPetsAlreadyCollected = false,
+    DestroyToysAlreadyCollected = false,
     DestroyIgnoreExclusions = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }

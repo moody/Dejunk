@@ -148,7 +148,7 @@ function ListManager:AddToList(listName, itemID)
   -- Don't add if the item is already on the list
   local existingItem = self:GetItemFromList(listName, itemID)
   if existingItem then
-    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.Link, coloredName))
+    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.ItemLink, coloredName))
     return
   end
 
@@ -310,7 +310,7 @@ function ListManager:CleanList(listName)
       if (v.ItemID == itemID) then
         remove(list, k)
         sv[itemID] = nil
-        Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.Link, coloredName))
+        Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.ItemLink, coloredName))
         return
       end
     end
@@ -346,7 +346,7 @@ function ListManager:ParseList(listName)
 
     sv[item.ItemID] = nil
     toAdd[item.ItemID] = nil
-    Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.Link))
+    Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.ItemLink))
     return false
   end
 
@@ -355,12 +355,12 @@ function ListManager:ParseList(listName)
     if not (listName == self.Destroyables) then
       return false end
 
-    if Tools:ItemCanBeDestroyed(item.Quality) then
+    if Tools:ItemCanBeDestroyed(item) then
       return true end
 
     sv[item.ItemID] = nil
     toAdd[item.ItemID] = nil
-    Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.Link))
+    Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.ItemLink))
     return false
   end
 
@@ -373,7 +373,7 @@ function ListManager:ParseList(listName)
       -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
       if not sv[itemID] then
         sv[itemID] = true
-        Core:Print(format(L.ADDED_ITEM_TO_LIST, item.Link, coloredName))
+        Core:Print(format(L.ADDED_ITEM_TO_LIST, item.ItemLink, coloredName))
       end
 
       list[#list+1] = item

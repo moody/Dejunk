@@ -74,7 +74,7 @@ function FrameFactory:CreateListButton(parent, listName)
   button:SetScript("OnClick", function(self, button, down)
     if (button == "LeftButton") then
       if IsControlKeyDown() then
-        DressUpVisual(self.Item.Link) -- FrameXML/DressUpFrames.lua
+        DressUpVisual(self.Item.ItemLink) -- FrameXML/DressUpFrames.lua
       else
         parent:DropItem()
       end
@@ -88,7 +88,7 @@ function FrameFactory:CreateListButton(parent, listName)
 
   button:SetScript("OnEnter", function(self)
     self.Texture:SetColorTexture(unpack(Colors:GetColor(Colors.ListButtonHi)))
-    Tools:ShowItemTooltip(self, "ANCHOR_TOP", button.Item.Link) end)
+    Tools:ShowItemTooltip(self, "ANCHOR_TOP", button.Item.ItemLink) end)
   button:SetScript("OnLeave", function(self)
     self.Texture:SetColorTexture(unpack(Colors:GetColor(Colors.ListButton)))
     Tools:HideTooltip() end)

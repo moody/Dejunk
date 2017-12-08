@@ -105,10 +105,15 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
     format(L.DESTROY_LIST_TOOLTIP, inclusionsText), DejunkDB.DestroyInclusions))
 
-  -- Destroy toys already known
+  -- Destroy pets already collected
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.DESTROY_TOYS_ALREADY_KNOWN_TEXT, Colors.LabelText,
-    L.DESTROY_TOYS_ALREADY_KNOWN_TOOLTIP, DejunkDB.DestroyToysAlreadyKnown))
+    L.DESTROY_PETS_ALREADY_COLLECTED_TEXT, Colors.LabelText,
+    L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP, DejunkDB.DestroyPetsAlreadyCollected))
+
+  -- Destroy toys already collected
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT, Colors.LabelText,
+    L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP, DejunkDB.DestroyToysAlreadyCollected))
 
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,

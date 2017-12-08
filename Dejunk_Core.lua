@@ -249,7 +249,7 @@ do
         Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Green)
     else -- Destroy tooltip
       -- Return if item cannot be destroyed
-      if not Tools:ItemCanBeDestroyed(item.Quality) then return end
+      if not Tools:ItemCanBeDestroyed(item) then return end
       local isJunkItem, reasonText = Destroyer:IsDestroyableItem(item)
 
       rightText = isJunkItem and

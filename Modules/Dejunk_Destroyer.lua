@@ -289,7 +289,7 @@ Destroyer.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item or item.Locked then return nil end
 
-  if not Tools:ItemCanBeDestroyed(item.Quality) then return nil end
+  if not Tools:ItemCanBeDestroyed(item) then return nil end
   if not Destroyer:IsDestroyableItem(item) then return nil end
 
   return item
@@ -336,9 +336,10 @@ function Destroyer:IsDestroyableItem(item)
   end
 
   -- 5
-  if self:IsDestroyToysAlreadyKnownItem(item) then
-    return true, L.REASON_DESTROY_TOYS_ALREADY_KNOWN_TEXT
-  end
+  if self:IsDestroyPetsAlreadyCollected(item) then
+    return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT end
+  if self:IsDestroyToysAlreadyCollectedItem(item) then
+    return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT end
 
   -- Default
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
@@ -361,7 +362,14 @@ function Destroyer:ItemPriceBelowThreshold(item)
   return true
 end
 
-function Destroyer:IsDestroyToysAlreadyKnownItem(item)
-  if not DejunkDB.SV.DestroyToysAlreadyKnown or not item.NoValue then return false end
-  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, TOY, ITEM_SPELL_KNOWN)
+function Destroyer:IsDestroyPetsAlreadyCollected(item)
+  if not DejunkDB.SV.DestroyPetsAlreadyCollected or not item.NoValue then return false end
+  if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
+  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
+end
+
+function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
+  if not DejunkDB.SV.DestroyToysAlreadyCollected or not item.NoValue then return false end
+  if not PlayerHasToy(item.ItemID) then return false end
+  return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
 end

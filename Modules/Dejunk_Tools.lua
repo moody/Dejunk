@@ -312,29 +312,30 @@ function Tools:ItemCanBeSold(price, quality)
   return (price > 0 and (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC))
 end
 
--- Checks whether or not an item can be destroyed based on quality.
--- @param quality - the quality of an item
+-- Checks whether or not an item can be destroyed.
+-- @param item - the item to test
 -- @return - boolean
-function Tools:ItemCanBeDestroyed(quality)
-  return (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC)
+function Tools:ItemCanBeDestroyed(item)
+  -- Disallow destroying of Pet Cages
+  if (item.Class == Consts.BATTLEPET_CLASS) then return false end
+  return (item.Quality >= LE_ITEM_QUALITY_POOR and item.Quality <= LE_ITEM_QUALITY_EPIC)
 end
 
 -- Creates and returns an item by item id.
 -- @param itemID - the item id of the item to create
 -- @return - a table with item data
 function Tools:GetItemByID(itemID)
-  local item = nil
-  local name, link, quality, _, _, _, _, _, _, texture, vendorPrice = GetItemInfo(itemID)
+  local name, itemLink, quality, _, _, class, subClass, _, _, texture, price = GetItemInfo(itemID)
+  if not (name and itemLink and quality and class and subClass and texture and price) then return nil end
 
-  if name and link and quality and texture and vendorPrice then
-    item = {}
-    item.ItemID = itemID
-    item.Name = name
-    item.Link = link
-    item.Quality = quality
-    item.Texture = texture
-    item.Price = vendorPrice
-  end
-
-  return item
+  return {
+    ItemID = itemID,
+    Name = name,
+    ItemLink = itemLink,
+    Quality = quality,
+    Class = class,
+    SubClass = subClass,
+    Texture = texture,
+    Price = price
+  }
 end
