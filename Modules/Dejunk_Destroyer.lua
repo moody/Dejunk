@@ -362,7 +362,6 @@ function Destroyer:ItemPriceBelowThreshold(item)
 end
 
 function Destroyer:IsDestroyToysAlreadyKnownItem(item)
-  if not DejunkDB.SV.DestroyToysAlreadyKnown then return false end
-  if Tools:ItemCanBeSold(item.Price, item.Quality) then return false end
+  if not DejunkDB.SV.DestroyToysAlreadyKnown or not item.NoValue then return false end
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, TOY, ITEM_SPELL_KNOWN)
 end
