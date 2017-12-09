@@ -161,6 +161,24 @@ do
 
     return (#lines == 0) -- true if all lines were found
   end
+
+  -- Returns the first entire tooltip line where the specified text is found.
+  -- @param bag - the bag the item resides in
+  -- @param slot - the bag slot the item resides in
+  -- @param text - the text to search for
+  function Tools:GetBagItemTooltipText(bag, slot, text)
+    toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
+    toolsTip:SetBagItem(bag, slot)
+
+    for i = 1, toolsTip:NumLines() do
+      local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
+      if (tipText ~= "") and tipText:find(text, 1, true) then
+        return tipText
+      end
+    end
+
+    return nil
+  end
 end
 
 -- ============================================================================
@@ -219,6 +237,13 @@ function Tools:GetItemIDFromLink(itemLink)
   return (itemLink and itemLink:match("item:(%d+)")) or nil
 end
 
+-- Gets the upgrade type from an item link. Can be used to determine if an item
+-- is scaled or not. Only use with item links from items in the player's bags.
+function Tools:GetItemLinkUpgradeType(itemLink)
+  -- ":player level:player spec id:upgrade type:"
+  return itemLink:match(format(":%d:%%d+:(%%d+):", UnitLevel("PLAYER")))
+end
+
 -- Searches the player's bags for the location of an item with a specified link.
 -- @return bag and slot index pair, or nil if the item was not found
 function Tools:FindItemInBags(itemLink)
@@ -238,34 +263,50 @@ function Tools:FindItemInBags(itemLink)
   return nil
 end
 
--- Gets the information of an item within a specified bag and slot.
--- @return a table of item information, or nil if the info could not be retrieved
-function Tools:GetItemFromBag(bag, slot)
-  -- Get item info
-  local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
-  if not (quantity and itemLink and itemID) then return nil end
+do -- GetItemFromBag()
+  local ITEM_LEVEL = ITEM_LEVEL:gsub("%%d", "")
 
-  -- Get additional item info
-  local _, _, quality, _, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
-  local itemLevel = GetDetailedItemLevelInfo(itemLink)
-  if not (quality and reqLevel and class and subClass and equipSlot and price and itemLevel) then return nil end
+  -- Gets the information of an item within a specified bag and slot.
+  -- @return a table of item information, or nil if the info could not be retrieved
+  function Tools:GetItemFromBag(bag, slot)
+    -- Get item info
+    local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
+    if not (quantity and itemLink and itemID) then return nil end
 
-  return {
-    Bag = bag,
-    Slot = slot,
-    Quantity = quantity,
-    Locked = locked,
-    ItemLink = itemLink,
-    NoValue = noValue,
-    ItemID = itemID,
-    Quality = quality,
-    ReqLevel = reqLevel,
-    Class = class,
-    SubClass = subClass,
-    EquipSlot = equipSlot,
-    Price = price,
-    ItemLevel = itemLevel
-  }
+    -- Get additional item info
+    local _, _, quality, _, reqLevel, class, subClass, _, equipSlot, _, price = GetItemInfo(itemLink)
+    if not (quality and reqLevel and class and subClass and equipSlot and price) then return nil end
+
+    -- Item level, we have to scan tooltips for ilvl in scaled gear so that
+    -- Dejunker filters work as expected (see Dejunker:IsSellEquipmentBelowILVLItem)
+    local itemLevel = nil
+    if ((class == Consts.ARMOR_CLASS) or (class == Consts.WEAPON_CLASS)) and
+    self:GetItemLinkUpgradeType(itemLink) then
+      itemLevel = self:GetBagItemTooltipText(bag, slot, ITEM_LEVEL)
+      itemLevel = itemLevel and tonumber(itemLevel:match("%d+")) or
+        GetDetailedItemLevelInfo(itemLink)
+    else
+      itemLevel = GetDetailedItemLevelInfo(itemLink)
+    end
+    if not itemLevel then return nil end
+
+    return {
+      Bag = bag,
+      Slot = slot,
+      Quantity = quantity,
+      Locked = locked,
+      ItemLink = itemLink,
+      NoValue = noValue,
+      ItemID = itemID,
+      Quality = quality,
+      ReqLevel = reqLevel,
+      Class = class,
+      SubClass = subClass,
+      EquipSlot = equipSlot,
+      Price = price,
+      ItemLevel = itemLevel
+    }
+  end
 end
 
 -- Scans the players bags for items matching a specified filter.
