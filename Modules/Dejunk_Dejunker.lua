@@ -271,7 +271,7 @@ Dejunker.Filter = function(bag, slot)
   local item = Tools:GetItemFromBag(bag, slot)
   if not item or item.Locked then return nil end
 
-  if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return nil end
+  if item.NoValue or not Tools:ItemCanBeSold(item) then return nil end
   if not Dejunker:IsJunkItem(item) then return nil end
 
   return item

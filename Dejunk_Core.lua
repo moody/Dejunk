@@ -241,7 +241,7 @@ do
 
     if not IsShiftKeyDown() then -- Dejunk tooltip
       -- Return if item cannot be sold
-      if item.NoValue or not Tools:ItemCanBeSold(item.Price, item.Quality) then return end
+      if item.NoValue or not Tools:ItemCanBeSold(item) then return end
       local isJunkItem, reasonText = Dejunker:IsJunkItem(item)
 
       rightText = isJunkItem and

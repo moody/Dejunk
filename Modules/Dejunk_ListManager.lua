@@ -341,7 +341,7 @@ function ListManager:ParseList(listName)
     if not (listName == self.Inclusions or listName == self.Exclusions) then
       return false end
 
-    if Tools:ItemCanBeSold(item.Price, item.Quality) then
+    if Tools:ItemCanBeSold(item) then
       return true end
 
     sv[item.ItemID] = nil

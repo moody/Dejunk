@@ -347,7 +347,7 @@ end
 
 -- Returns true if the item's price is less than the set price threshold.
 function Destroyer:ItemPriceBelowThreshold(item)
-  if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item.Price, item.Quality) then
+  if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
     local threshold = DejunkDB.SV.DestroyPriceThreshold
     local thresholdCopperPrice = (threshold.Gold * 10000) +
       (threshold.Silver * 100) + threshold.Copper

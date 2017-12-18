@@ -349,8 +349,8 @@ end
 -- @param price - the price of an item
 -- @param quality - the quality of an item
 -- @return - boolean
-function Tools:ItemCanBeSold(price, quality)
-  return (price > 0 and (quality >= LE_ITEM_QUALITY_POOR and quality <= LE_ITEM_QUALITY_EPIC))
+function Tools:ItemCanBeSold(item)
+  return (item.Price > 0 and (item.Quality >= LE_ITEM_QUALITY_POOR and item.Quality <= LE_ITEM_QUALITY_EPIC))
 end
 
 -- Checks whether or not an item can be destroyed.
