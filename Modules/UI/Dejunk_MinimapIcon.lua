@@ -31,13 +31,17 @@ function MinimapIcon:Initialize()
 
     OnClick = function(_, button)
       if (button == "LeftButton") then
-        DJ.Core:ToggleGUI() end
+        DJ.Core:ToggleGUI()
+      elseif (button == "RightButton") then
+        DJ.Destroyer:StartDestroying()
+      end
     end,
 
     OnTooltipShow = function(tooltip)
 			tooltip:AddLine(Tools:GetColorString(L.DEJUNK_TEXT, Colors.LabelText))
 			tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_1, Colors.White))
       tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_2, Colors.White))
+      tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_3, Colors.White))
 		end,
   })
 
