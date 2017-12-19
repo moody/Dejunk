@@ -21,15 +21,13 @@ local DejunkDB = DJ.DejunkDB
 -- Variables
 ListManager.Initialized = false
 
-ListManager.InclusionsList = {}
-ListManager.ExclusionsList = {}
-ListManager.DestroyablesList = {}
-
 ListManager.Lists =
 {
-  ["Inclusions"] = ListManager.InclusionsList,
-  ["Exclusions"] = ListManager.ExclusionsList,
-  ["Destroyables"] = ListManager.DestroyablesList
+  ["Inclusions"] = {},
+  ["Exclusions"] = {},
+  ["Destroyables"] = {}
+
+  -- ["ListName"] = array of items returned via Tools:GetItemByID()
 }
 
 ListManager.ToAdd = {}
@@ -61,10 +59,10 @@ end
 
 -- Updates the ListManager's references to lists in the saved variables.
 function ListManager:Update()
-  -- Clear inclusions, exclusions, and destroyables item data lists
-  for k in pairs(self.InclusionsList) do self.InclusionsList[k] = nil end
-  for k in pairs(self.ExclusionsList) do self.ExclusionsList[k] = nil end
-  for k in pairs(self.DestroyablesList) do self.DestroyablesList[k] = nil end
+  -- Clear item lists
+  for k, v in pairs(self.Lists) do
+    for i in pairs(v) do v[i] = nil end
+  end
 
   -- Load lists' items
   for k, v in pairs(self.ToAdd) do
@@ -146,9 +144,10 @@ function ListManager:AddToList(listName, itemID)
   if toAdd[itemID] then return end
 
   -- Don't add if the item is already on the list
-  local existingItem = self:GetItemFromList(listName, itemID)
-  if existingItem then
-    Core:Print(format(L.ITEM_ALREADY_ON_LIST, existingItem.ItemLink, coloredName))
+  if self:IsOnList(listName, itemID) then
+    local itemLink = select(2, GetItemInfo(itemID))
+    if itemLink then
+      Core:Print(format(L.ITEM_ALREADY_ON_LIST, itemLink, coloredName)) end
     return
   end
 
@@ -162,12 +161,19 @@ end
 -- Removes an item from the specified list.
 -- @param listName - the name of the list to remove from
 -- @param itemID - the item id of the item to remove
-function ListManager:RemoveFromList(listName, itemID)
+-- @param notify - if true, prints a message if the item is not on the list
+function ListManager:RemoveFromList(listName, itemID, notify)
   assert(self[listName] ~= nil)
   itemID = tostring(itemID)
 
   if self:IsOnList(listName, itemID) then
     self.ToRemove[listName][itemID] = true
+  elseif notify then
+    local itemLink = select(2, GetItemInfo(itemID))
+    if itemLink then
+      Core:Print(format(L.ITEM_NOT_ON_LIST, itemLink,
+        Tools:GetColoredListName(listName)))
+    end
   end
 end
 
@@ -180,27 +186,6 @@ function ListManager:IsOnList(listName, itemID)
   itemID = tostring(itemID)
 
   return self:GetListSV(listName)[itemID]
-end
-
--- Searches for and returns an item in the specified list.
--- @param listName - the name of the list to search
--- @param itemID - the item id of the item to search for
--- @return - an item if it exists in the list, or nil
-function ListManager:GetItemFromList(listName, itemID)
-  assert(self[listName] ~= nil)
-  itemID = tostring(itemID)
-
-  if not self:IsOnList(listName, itemID) then return nil end
-
-  -- Initialize data
-  local list = self.Lists[listName]
-
-  for i=1, #list do
-    if (list[i].ItemID == itemID) then
-      return list[i] end
-  end
-
-  return nil
 end
 
 -- Sorts the specified item list.
@@ -308,7 +293,7 @@ function ListManager:CleanList(listName)
   local rem = function(itemID)
     for k, v in pairs(list) do
       if (v.ItemID == itemID) then
-        remove(list, k)
+        remove(list, k) -- remove has to be used here for the table to update as expected
         sv[itemID] = nil
         Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.ItemLink, coloredName))
         return

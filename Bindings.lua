@@ -55,7 +55,7 @@ end
 
 function DejunkBindings_RemoveFromInclusions()
   if not currentItemID then return end
-  ListManager:RemoveFromList(ListManager.Inclusions, currentItemID)
+  ListManager:RemoveFromList(ListManager.Inclusions, currentItemID, true)
 end
 
 -- Exclusions
@@ -66,7 +66,7 @@ end
 
 function DejunkBindings_RemoveFromExclusions()
   if not currentItemID then return end
-  ListManager:RemoveFromList(ListManager.Exclusions, currentItemID)
+  ListManager:RemoveFromList(ListManager.Exclusions, currentItemID, true)
 end
 
 -- Destroyables
@@ -77,7 +77,7 @@ end
 
 function DejunkBindings_RemoveFromDestroyables()
   if not currentItemID then return end
-  ListManager:RemoveFromList(ListManager.Destroyables, currentItemID)
+  ListManager:RemoveFromList(ListManager.Destroyables, currentItemID, true)
 end
 
 -- ============================================================================
