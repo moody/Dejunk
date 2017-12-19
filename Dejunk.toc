@@ -12,3 +12,4 @@ Locales/Locales.xml
 Modules/Modules.xml
 
 Dejunk_Core.lua
+Bindings.lua

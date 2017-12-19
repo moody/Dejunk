@@ -1,0 +1,5 @@
+<Bindings>
+  <Binding name="DEJUNKSTARTDESTROY" header="DEJUNKHEADER" category="ADDONS">
+    DejunkBindings_StartDestroying()
+  </Binding>
+</Bindings>
