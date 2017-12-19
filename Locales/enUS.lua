@@ -11,6 +11,7 @@ L["AUTO_REPAIR_TOOLTIP"] = "Automatically repair items upon opening a merchant w
 L["AUTO_SELL_TEXT"] = "Auto Sell"
 L["AUTO_SELL_TOOLTIP"] = "Automatically sell junk items upon opening a merchant window."
 L["BACK_TEXT"] = "Back"
+L["BINDINGS_TOGGLE_OPTIONS_TEXT"] = "Toggle Options"
 L["BINDINGS_ADD_TO_LIST_TEXT"] = "Add to %s"
 L["BINDINGS_REMOVE_FROM_LIST_TEXT"] = "Remove from %s"
 L["BY_CATEGORY_TEXT"] = "By Category"

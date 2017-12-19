@@ -27,6 +27,12 @@ function Core:InitializeBindingStrings()
   _G["BINDING_HEADER_DEJUNKBLANK2"] = ""
   _G["BINDING_HEADER_DEJUNKBLANK3"] = ""
 
+  -- Toggle options
+  _G["BINDING_NAME_DEJUNK_TOGGLE_OPTIONS"] = L.BINDINGS_TOGGLE_OPTIONS_TEXT
+
+  -- Start destroying
+  _G["BINDING_NAME_DEJUNK_START_DESTROYING"] = L.START_DESTROYING_BUTTON_TEXT
+
   -- Inclusions
   _G["BINDING_NAME_DEJUNK_ADD_INCLUSIONS"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetInclusionsString())
   _G["BINDING_NAME_DEJUNK_REM_INCLUSIONS"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetInclusionsString())
@@ -38,9 +44,18 @@ function Core:InitializeBindingStrings()
   -- Destroyables
   _G["BINDING_NAME_DEJUNK_ADD_DESTROYABLES"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetDestroyablesString())
   _G["BINDING_NAME_DEJUNK_REM_DESTROYABLES"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetDestroyablesString())
+end
 
-  -- Start destroying
-  _G["BINDING_NAME_DEJUNK_START_DESTROY"] = L.START_DESTROYING_BUTTON_TEXT
+-- ============================================================================
+--                              General Bindings
+-- ============================================================================
+
+function DejunkBindings_ToggleOptions()
+  Core:ToggleGUI()
+end
+
+function DejunkBindings_StartDestroying()
+  Destroyer:StartDestroying()
 end
 
 -- ============================================================================
@@ -78,14 +93,6 @@ end
 function DejunkBindings_RemoveFromDestroyables()
   if not currentItemID then return end
   ListManager:RemoveFromList(ListManager.Destroyables, currentItemID, true)
-end
-
--- ============================================================================
---                              Non-List Bindings
--- ============================================================================
-
-function DejunkBindings_StartDestroying()
-  Destroyer:StartDestroying()
 end
 
 -- ============================================================================
