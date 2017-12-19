@@ -48,6 +48,7 @@ function Core:Initialize()
   DJ.Consts:Initialize()
   DJ.MerchantButton:Initialize()
   DJ.MinimapIcon:Initialize()
+  self:InitializeBindingStrings()
 
   -- Setup slash command
 	SLASH_DEJUNK1 = "/dejunk"

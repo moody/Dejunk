@@ -1,5 +1,30 @@
 <Bindings>
-  <Binding name="DEJUNKSTARTDESTROY" header="DEJUNKHEADER" category="ADDONS">
+  <!-- Add/rem inclusions -->
+  <Binding name="DEJUNK_ADD_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_AddToInclusions()
+  </Binding>
+  <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_RemoveFromInclusions()
+  </Binding>
+
+  <!-- Add/rem exclusions -->
+  <Binding name="DEJUNK_ADD_EXCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_AddToExclusions()
+  </Binding>
+  <Binding name="DEJUNK_REM_EXCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_RemoveFromExclusions()
+  </Binding>
+
+  <!-- Add/rem destroyables -->
+  <Binding name="DEJUNK_ADD_DESTROYABLES" header="DEJUNKBLANK2" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_AddToDestroyables()
+  </Binding>
+  <Binding name="DEJUNK_REM_DESTROYABLES" header="DEJUNKBLANK2" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_RemoveFromDestroyables()
+  </Binding>
+
+  <!-- Start destroying -->
+  <Binding name="DEJUNK_START_DESTROY" header="DEJUNKBLANK3" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_StartDestroying()
   </Binding>
 </Bindings>
