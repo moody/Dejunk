@@ -13,6 +13,7 @@ local GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo =
       GetItemInfo, GetContainerItemInfo, GetDetailedItemLevelInfo
 local GetContainerNumSlots, GetContainerItemID, GetContainerItemLink =
       GetContainerNumSlots, GetContainerItemID, GetContainerItemLink
+local GetContainerItemPurchaseInfo = GetContainerItemPurchaseInfo
 
 local assert = assert
 local pairs, ipairs = pairs, ipairs
@@ -299,6 +300,10 @@ do -- GetItemFromBag()
   -- Gets the information of an item within a specified bag and slot.
   -- @return a table of item information, or nil if the info could not be retrieved
   function Tools:GetItemFromBag(bag, slot)
+    -- Ignore refundable items by default
+    local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(bag, slot))
+    if refundTimeRemaining and (refundTimeRemaining > 0) then return nil end
+
     -- Get item info
     local _, quantity, locked, _, _, _, itemLink, _, noValue, itemID = GetContainerItemInfo(bag, slot)
     if not (quantity and itemLink and itemID) then return nil end
