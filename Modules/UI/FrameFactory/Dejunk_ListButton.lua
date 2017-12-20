@@ -74,7 +74,8 @@ function FrameFactory:CreateListButton(parent, listName)
   button:SetScript("OnClick", function(self, button, down)
     if (button == "LeftButton") then
       if IsControlKeyDown() then
-        DressUpVisual(self.Item.ItemLink) -- FrameXML/DressUpFrames.lua
+        if IsDressableItem(self.Item.ItemID) then
+          DressUpVisual(self.Item.ItemLink) end
       else
         parent:DropItem()
       end
