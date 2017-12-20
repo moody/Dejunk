@@ -251,4 +251,7 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   -- Equipment Sets
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, DejunkDB.IgnoreEquipmentSets))
+  -- Tradeable
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_TRADEABLE_TEXT, Colors.LabelText, L.IGNORE_TRADEABLE_TOOLTIP, DejunkDB.IgnoreTradeable))
 end

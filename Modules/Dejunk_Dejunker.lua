@@ -324,6 +324,8 @@ function Dejunker:IsJunkItem(item)
     return false, L.REASON_IGNORE_SOULBOUND_TEXT end
   if self:IsIgnoredEquipmentSetsItem(item) then
     return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
+  if self:IsIgnoredTradeableItem(item) then
+    return false, L.REASON_IGNORE_TRADEABLE_TEXT end
 
   -- Sell by type
   if self:IsUnsuitableItem(item) then
@@ -372,7 +374,7 @@ function Dejunker:IsUnsuitableItem(item)
   return not suitable
 end
 
-do
+do -- IsSellEquipmentBelowILVLItem
   -- Special check required for these generic armor types
   local SPECIAL_ARMOR_EQUIPSLOTS = {
     ["INVTYPE_FINGER"] = true,
@@ -452,7 +454,7 @@ function Dejunker:IsIgnoredTradeGoodsItem(item)
   return (item.Class == Consts.TRADEGOODS_CLASS)
 end
 
-do
+do -- IsIgnoredCosmeticItem
   -- Ignore these generic types since they provide no cosmetic appearance
   local IGNORE_ARMOR_EQUIPSLOTS = {
     ["INVTYPE_FINGER"] = true,
@@ -483,7 +485,7 @@ function Dejunker:IsIgnoredSoulboundItem(item)
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
 end
 
-do
+do -- IsIgnoredEquipmentSetsItem
   local TRIMMED_EQUIPMENT_SETS = nil
 
   function Dejunker:IsIgnoredEquipmentSetsItem(item)
@@ -494,5 +496,14 @@ do
     end
 
     return Tools:BagItemTooltipHasText(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
+  end
+end
+
+do -- IsIgnoredTradeableItem
+  local bttr1, bttr2 = BIND_TRADE_TIME_REMAINING:match("(.+)%%s(.+)")
+
+  function Dejunker:IsIgnoredTradeableItem(item)
+    if not DejunkDB.SV.IgnoreTradeable then return false end
+    return Tools:BagItemTooltipHasLine(item.Bag, item.Slot, bttr1, bttr2)
   end
 end

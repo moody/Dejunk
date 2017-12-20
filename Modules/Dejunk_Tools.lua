@@ -133,8 +133,38 @@ end
 -- ============================================================================
 
 do
+  local _G = _G
   local toolsTip = CreateFrame("GameTooltip", AddonName.."ToolsTipScanner", nil, "GameTooltipTemplate")
   local toolsTipTextLeft = AddonName.."ToolsTipScannerTextLeft"
+
+  -- Returns true if the tooltip of the item in a specified bag and slot
+  -- contains a single line with the specified text.
+  -- @param bag - the bag the item resides in
+  -- @param slot - the bag slot item resides in
+  -- @param ... - the lines of text to find in a single tooltip line
+  function Tools:BagItemTooltipHasLine(bag, slot, ...)
+    toolsTip:SetOwner(UIParent, "ANCHOR_NONE")
+    toolsTip:SetBagItem(bag, slot)
+
+    local lines = {...}
+    local linesFound = 0
+    assert(#lines > 0)
+
+    for i = 1, toolsTip:NumLines() do
+      local tipText = (_G[toolsTipTextLeft..i]):GetText() or ""
+
+      for _, v in pairs(lines) do
+        if (tipText ~= "") and tipText:find(v, 1, true) then
+          linesFound = linesFound + 1
+          if (linesFound == #lines) then return true end
+        else break end
+      end
+
+      linesFound = 0
+    end
+
+    return false
+  end
 
   -- Returns true if the tooltip of the item in a specified bag and slot
   -- contains the specified lines of text.
