@@ -239,18 +239,18 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
   byType:SetText(L.BY_TYPE_TEXT)
   add(byType)
 
-  -- Cosmetic
-  add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_COSMETIC_TEXT, Colors.LabelText, L.IGNORE_COSMETIC_TOOLTIP, DejunkDB.IgnoreCosmetic))
   -- Binds when equipped
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, DejunkDB.IgnoreBindsWhenEquipped))
-  -- Soulbound
+  -- Cosmetic
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, DejunkDB.IgnoreSoulbound))
+    L.IGNORE_COSMETIC_TEXT, Colors.LabelText, L.IGNORE_COSMETIC_TOOLTIP, DejunkDB.IgnoreCosmetic))
   -- Equipment Sets
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, DejunkDB.IgnoreEquipmentSets))
+  -- Soulbound
+  add(FrameFactory:CreateCheckButton(nil, "Small",
+    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, DejunkDB.IgnoreSoulbound))
   -- Tradeable
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.IGNORE_TRADEABLE_TEXT, Colors.LabelText, L.IGNORE_TRADEABLE_TOOLTIP, DejunkDB.IgnoreTradeable))
