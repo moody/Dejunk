@@ -180,6 +180,11 @@ function Dejunker:SellNextItem()
   if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
 
   UseContainerItem(item.Bag, item.Slot)
+
+  -- Accept tradeable item dialog if shown
+  local popup = StaticPopup1:IsVisible() and (StaticPopup1Text.text_arg1 == item.ItemLink)
+  if popup then StaticPopup1Button1:Click() end
+
   SoldItems[#SoldItems+1] = item
 end
 
