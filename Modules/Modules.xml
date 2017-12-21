@@ -7,6 +7,7 @@
   <Script file="Modules\Dejunk_ListManager.lua"/>
   <Script file="Modules\Dejunk_Tools.lua"/>
 
+  <Script file="Modules\Dejunk_Confirmer.lua"/>
   <Script file="Modules\Dejunk_Dejunker.lua"/>
   <Script file="Modules\Dejunk_Destroyer.lua"/>
   <Script file="Modules\Dejunk_Repairer.lua"/>

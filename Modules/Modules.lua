@@ -11,6 +11,7 @@ DJ.DejunkDB = {}
 DJ.ListManager = {}
 DJ.Tools = {}
 
+DJ.Confirmer = {}
 DJ.Dejunker = {}
 DJ.Destroyer = {}
 DJ.Repairer = {}

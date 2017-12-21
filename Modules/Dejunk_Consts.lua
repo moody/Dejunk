@@ -2,9 +2,6 @@
 
 local AddonName, DJ = ...
 
--- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
-
 -- Upvalues
 local GetItemClassInfo, GetItemSubClassInfo = GetItemClassInfo, GetItemSubClassInfo
 
