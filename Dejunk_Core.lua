@@ -10,6 +10,7 @@ local Core = DJ.Core
 
 local Colors = DJ.Colors
 local DejunkDB = DJ.DejunkDB
+local Confirmer = DJ.Confirmer
 local Dejunker = DJ.Dejunker
 local Destroyer = DJ.Destroyer
 local ListManager = DJ.ListManager
@@ -125,10 +126,11 @@ function Core:CanDestroy()
   return true
 end
 
--- Returns true if Dejunk is busy dejunking, destroying, or parsing list data.
+-- Returns true if Dejunk is busy performing a critical action.
 -- @return - boolean
 function Core:IsBusy()
-  return Dejunker:IsDejunking() or Destroyer:IsDestroying() or ListManager:IsParsing()
+  return Dejunker:IsDejunking() or Destroyer:IsDestroying() or
+    ListManager:IsParsing() or Confirmer:IsConfirming()
 end
 
 -- ============================================================================

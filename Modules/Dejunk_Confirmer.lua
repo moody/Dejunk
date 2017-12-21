@@ -30,30 +30,57 @@ local destroyedItems = {}
 local destroyCount = 0
 local destroyLoss = 0
 
+local function debug(msg)
+  Core:Debug("Confirmer", msg)
+end
+
 -- ============================================================================
 --                               Confirmer Frame
 -- ============================================================================
 
 do
   local frame = CreateFrame("Frame", AddonName.."ConfirmerFrame")
+  local DELAY = 0.1 -- 0.1sec
+  local interval = 0
 
   function frame:OnUpdate(elapsed)
-    -- Confirm dejunked items
-    if (#dejunkedItems > 0) then
-      Confirmer:ConfirmNextDejunkedItem()
-    elseif (#dejunkedItems == 0) and finalDejunkerMessageQueued then
-      Confirmer:PrintFinalDejunkerMessage()
-    end
+    interval = interval + elapsed
+    if (interval >= DELAY) then
+      interval = 0
 
-    -- Confirm destroyed items
-    if (#destroyedItems > 0) then
-      Confirmer:ConfirmNextDestroyedItem()
-    elseif (#destroyedItems == 0) and finalDestroyerMessageQueued then
-      Confirmer:PrintFinalDestroyerMessage()
+      -- Confirm dejunked items
+      if (#dejunkedItems > 0) then
+        Confirmer:ConfirmNextDejunkedItem()
+      elseif (#dejunkedItems == 0) and finalDejunkerMessageQueued then
+        Confirmer:PrintFinalDejunkerMessage()
+      end
+
+      -- Confirm destroyed items
+      if (#destroyedItems > 0) then
+        Confirmer:ConfirmNextDestroyedItem()
+      elseif (#destroyedItems == 0) and finalDestroyerMessageQueued then
+        Confirmer:PrintFinalDestroyerMessage()
+      end
     end
   end
 
   frame:SetScript("OnUpdate", frame.OnUpdate)
+end
+
+-- ============================================================================
+--                            Confirmer Functions
+-- ============================================================================
+
+function Confirmer:IsConfirming()
+  return self:IsConfirmingDejunkedItems() or self:IsConfirmingDestroyedItems()
+end
+
+function Confirmer:IsConfirmingDejunkedItems()
+  return (#dejunkedItems > 0) or finalDejunkerMessageQueued
+end
+
+function Confirmer:IsConfirmingDestroyedItems()
+  return (#destroyedItems > 0) or finalDestroyerMessageQueued
 end
 
 -- ============================================================================
@@ -103,7 +130,7 @@ function Confirmer:PrintFinalDejunkerMessage()
   finalDejunkerMessageQueued = false
 
   if (dejunkProfit > 0) then
-    Core:Print(format(L.SOLD_YOUR_JUNK, GetCoinTextureString(totalProfit)))
+    Core:Print(format(L.SOLD_YOUR_JUNK, GetCoinTextureString(dejunkProfit)))
   end
 end
 

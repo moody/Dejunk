@@ -6,10 +6,11 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Upvalues
-local remove = table.remove
+local assert, remove = assert, table.remove
 
 -- Dejunk
 local Dejunker = DJ.Dejunker
+local Confirmer = DJ.Confirmer
 
 local Core = DJ.Core
 local Consts = DJ.Consts
@@ -22,14 +23,12 @@ local DejunkerState =
 {
   None = 0,
   Dejunking = 1,
-  Selling = 2,
-  Profiting = 3
+  Selling = 2
 }
 
 local currentState = DejunkerState.None
 
 local ItemsToSell = {}
-local SoldItems = {}
 
 -- ============================================================================
 --                             Dejunker Frame
@@ -70,6 +69,7 @@ function Dejunker:StartDejunking()
     return
   end
 
+  Confirmer:OnDejunkerStart()
   currentState = DejunkerState.Dejunking
 
   local items, allItemsCached
@@ -103,16 +103,16 @@ function Dejunker:StopDejunking()
 
   dejunkerFrame:SetScript("OnUpdate", nil)
 
+  Confirmer:OnDejunkerEnd()
   currentState = DejunkerState.None
 
   for k in pairs(ItemsToSell) do ItemsToSell[k] = nil end
-  for k in pairs(SoldItems) do SoldItems[k] = nil end
 end
 
 -- Checks whether or not the Dejunker is active.
 -- @return - boolean
 function Dejunker:IsDejunking()
-  return (currentState ~= DejunkerState.None)
+  return (currentState ~= DejunkerState.None) or Confirmer:IsConfirmingDejunkedItems()
 end
 
 --[[
@@ -141,13 +141,11 @@ function Dejunker:StartSelling()
     self:SellItems(frame, elapsed) end)
 end
 
--- Cancels the selling process and starts the profiting process.
+-- Cancels the selling process and stops dejunking.
 function Dejunker:StopSelling()
   assert(currentState == DejunkerState.Selling)
-
   dejunkerFrame:SetScript("OnUpdate", nil)
-
-  self:StartProfiting()
+  self:StopDejunking()
 end
 
 -- Checks whether or not the Dejunker is actively selling items.
@@ -185,82 +183,7 @@ function Dejunker:SellNextItem()
   local popup = StaticPopup1:IsVisible() and (StaticPopup1Text.text_arg1 == item.ItemLink)
   if popup then StaticPopup1Button1:Click() end
 
-  SoldItems[#SoldItems+1] = item
-end
-
---[[
-//*******************************************************************
-//                       Profiting Functions
-//*******************************************************************
---]]
-
-local totalProfit = 0
-
--- Starts the profiting process.
-function Dejunker:StartProfiting()
-  assert(currentState == DejunkerState.Selling)
-
-  if (#SoldItems <= 0) then
-    self:StopDejunking()
-    return
-  end
-
-  currentState = DejunkerState.Profiting
-  totalProfit = 0
-  dejunkerFrame:SetScript("OnUpdate", function(frame, elapsed)
-    self:CalculateProfits()
-  end)
-end
-
--- Cancels the profiting process.
-function Dejunker:StopProfiting()
-  assert(currentState == DejunkerState.Profiting)
-
-  dejunkerFrame:SetScript("OnUpdate", nil)
-
-  if (totalProfit > 0) then
-    Core:Print(format(L.SOLD_YOUR_JUNK, GetCoinTextureString(totalProfit)))
-  end
-
-  self:StopDejunking()
-end
-
--- Set as the OnUpdate function during the profiting process.
-function Dejunker:CalculateProfits()
-  local profit = self:CheckForNextSoldItem()
-
-  if profit then
-    totalProfit = (totalProfit + profit) end
-
-  if (#SoldItems <= 0) then
-    self:StopProfiting() end
-end
-
--- Checks if the next entry in SoldItems has sold and returns the profit.
--- @return - profit if the item was sold, or nil if not
-function Dejunker:CheckForNextSoldItem()
-  local item = remove(SoldItems, 1)
-  if not item then return nil end
-
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
-    if bagItem.Locked then -- Item probably being sold, add it back to list and try again later
-      SoldItems[#SoldItems+1] = item
-    else -- Item is still in bags, so it may not have sold
-      Core:Print(format(L.MAY_NOT_HAVE_SOLD_ITEM, item.ItemLink))
-    end
-
-    return nil
-  end
-
-  -- Bag and slot is empty, so the item should have sold
-  if (item.Quantity == 1) then
-    Core:PrintVerbose(format(L.SOLD_ITEM_VERBOSE, item.ItemLink))
-  else
-    Core:PrintVerbose(format(L.SOLD_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
-  end
-
-  return (item.Price * item.Quantity)
+  Confirmer:OnItemDejunked(item)
 end
 
 --[[

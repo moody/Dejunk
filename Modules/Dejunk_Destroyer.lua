@@ -6,10 +6,11 @@ local AddonName, DJ = ...
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Upvalues
-local remove = table.remove
+local assert, remove = assert, table.remove
 
 -- Dejunk
 local Destroyer = DJ.Destroyer
+local Confirmer = DJ.Confirmer
 
 local ParentFrame = DJ.DejunkFrames.ParentFrame
 
@@ -29,8 +30,6 @@ local DestroyerState =
 local currentState = DestroyerState.None
 
 local ItemsToDestroy = {}
-local DestroyedItems = {}
-local numDestroyedItems = 0
 
 local AUTO_DESTROY_DELAY = 5 -- 5 seconds
 local autoDestroyInterval = 0
@@ -60,7 +59,7 @@ function autoDestroyFrame:OnUpdate(elapsed)
   if (not DejunkDB.SV.AutoDestroy) or ParentFrame:IsVisible() or (not Core:CanDestroy()) then
     -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
     -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
-    -- with no interruptions such as the BAG_UPDATE event has passed.
+    -- without interruptions such as the BAG_UPDATE event.
     autoDestroyInterval = 0
     return
   end
@@ -100,6 +99,7 @@ function Destroyer:StartDestroying()
     return
   end
 
+  Confirmer:OnDestroyerStart()
   currentState = DestroyerState.Destroying
 
   local items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
@@ -124,17 +124,16 @@ function Destroyer:StopDestroying()
 
   destroyerFrame:SetScript("OnUpdate", nil)
 
+  Confirmer:OnDestroyerEnd()
   currentState = DestroyerState.None
 
   for k in pairs(ItemsToDestroy) do ItemsToDestroy[k] = nil end
-  for k in pairs(DestroyedItems) do DestroyedItems[k] = nil end
-  numDestroyedItems = 0
 end
 
 -- Checks whether or not the Destroyer is active.
 -- @return - boolean
 function Destroyer:IsDestroying()
-  return (currentState ~= DestroyerState.None)
+  return (currentState ~= DestroyerState.None) or Confirmer:IsConfirmingDestroyedItems()
 end
 
 -- ============================================================================
@@ -163,8 +162,7 @@ end
 -- Cancels the destroying items process.
 function Destroyer:StopDestroyingItems()
   destroyerFrame:SetScript("OnUpdate", nil)
-
-  self:StartLosing()
+  self:StopDestroying()
 end
 
 -- Set as the OnUpdate function during the destroying items process.
@@ -197,86 +195,7 @@ function Destroyer:DestroyNextItem()
   DeleteCursorItem()
   ClearCursor() -- Clear cursor again in case any issues occurred
 
-  DestroyedItems[#DestroyedItems+1] = item
-end
-
--- ============================================================================
---                                Loss Functions
--- ============================================================================
-
-local totalLoss = 0
-
--- Starts the loss calculation process.
-function Destroyer:StartLosing()
-  assert(currentState == DestroyerState.Destroying)
-
-  if (#DestroyedItems <= 0) then
-    self:StopDestroying()
-    return
-  end
-
-  totalLoss = 0
-  destroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
-    self:CalculateLoss()
-  end)
-end
-
--- Cancels the losing process.
-function Destroyer:StopLosing()
-  assert(currentState == DestroyerState.Destroying)
-
-  destroyerFrame:SetScript("OnUpdate", nil)
-
-  -- Show basic message if not printing verbose
-  if not DejunkDB.SV.VerboseMode then
-    if (numDestroyedItems == 1) then
-      Core:Print(L.DESTROYED_ITEM)
-    else
-      Core:Print(format(L.DESTROYED_ITEMS, numDestroyedItems))
-    end
-  end
-
-  self:StopDestroying()
-end
-
--- Set as the OnUpdate function during the losing process.
-function Destroyer:CalculateLoss()
-  local loss = self:CheckForNextDestroyedItem()
-
-  if loss then
-    totalLoss = (totalLoss + loss)
-  end
-
-  if (#DestroyedItems <= 0) then
-    self:StopLosing() end
-end
-
--- Checks if the next entry in DestroyedItems has been destroyed and returns the loss.
--- @return - loss if the item was destroyed, or nil if not
-function Destroyer:CheckForNextDestroyedItem()
-  local item = remove(DestroyedItems, 1)
-  if not item then return nil end
-
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
-    if bagItem.Locked then -- Item probably being destroyed, add it back to list and try again later
-      DestroyedItems[#DestroyedItems+1] = item
-    else -- Item is still in bags, so it may not have been destroyed
-      Core:Print(format(L.MAY_NOT_HAVE_DESTROYED_ITEM, item.ItemLink))
-    end
-
-    return nil
-  end
-
-  -- Bag and slot is empty, so the item should have been destroyed
-  if (item.Quantity == 1) then
-    Core:PrintVerbose(format(L.DESTROYED_ITEM_VERBOSE, item.ItemLink))
-  else
-    Core:PrintVerbose(format(L.DESTROYED_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
-  end
-
-  numDestroyedItems = (numDestroyedItems + item.Quantity)
-  return (item.Price * item.Quantity)
+  Confirmer:OnItemDestroyed(item)
 end
 
 -- ============================================================================
