@@ -28,11 +28,7 @@ local destroying = false
 local finalDestroyerMessageQueued = false
 local destroyedItems = {}
 local destroyCount = 0
-local destroyLoss = 0
-
-local function debug(msg)
-  Core:Debug("Confirmer", msg)
-end
+local destroyLoss = 0 -- not needed, but maybe in the future
 
 -- ============================================================================
 --                               Confirmer Frame
