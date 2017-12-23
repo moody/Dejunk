@@ -26,31 +26,23 @@ function MerchantButton:Initialize()
   if self.Initialized then return end
 
   self.Button = CreateFrame("Button", (AddonName.."MerchantButton"), MerchantFrame, "OptionsButtonTemplate")
-  self.Button:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
   self.Button:SetText(L.DEJUNK_TEXT)
 
-  self.Button:SetScript("OnUpdate", function(self, elapsed)
+  -- Skin & position button for ElvUI if necessary
+  local E = _G["ElvUI"] and _G["ElvUI"][1] -- ElvUI Engine
+  if E and E.private.skins.blizzard.enable and E.private.skins.blizzard.merchant then
+    E:GetModule("Skins"):HandleButton(self.Button)
+    self.Button:SetPoint("TOPLEFT", 11, -28)
+  else
+    self.Button:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
+  end
+
+  self.Button:HookScript("OnUpdate", function(self, elapsed)
     self:SetEnabled(DJ.Core:CanDejunk())
   end)
 
-  self.Button:SetScript("OnShow", function(self)
-    if DejunkDB.SV.AutoSell then
-      Dejunker:StartDejunking() end
-
-    if DejunkDB.SV.AutoRepair then
-      Repairer:StartRepairing() end
-  end)
-
-  self.Button:SetScript("OnHide", function(self)
-    if Dejunker:IsSelling() then
-      Dejunker:StopSelling() end
-
-    if Repairer:IsRepairing() then
-      Repairer:StopRepairing() end
-  end)
-
   self.Button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-  self.Button:SetScript("OnClick", function(self, button, down)
+  self.Button:HookScript("OnClick", function(self, button, down)
     if (button == "LeftButton") then
       Dejunker:StartDejunking()
     elseif (button == "RightButton") then
@@ -58,13 +50,33 @@ function MerchantButton:Initialize()
     end
   end)
 
-  self.Button:SetScript("OnEnter", function(self)
+  self.Button:HookScript("OnEnter", function(self)
     Tools:ShowTooltip(self, "ANCHOR_RIGHT",
       self:GetText(), L.DEJUNK_BUTTON_TOOLTIP)
   end)
 
-  self.Button:SetScript("OnLeave", function(self)
+  self.Button:HookScript("OnLeave", function(self)
     Tools:HideTooltip() end)
 
   self.Initialized = true
 end
+
+-- ============================================================================
+--                             Merchant Frame Hook
+-- ============================================================================
+
+MerchantFrame:HookScript("OnShow", function()
+  if DejunkDB.SV.AutoSell then
+    Dejunker:StartDejunking() end
+
+  if DejunkDB.SV.AutoRepair then
+    Repairer:StartRepairing() end
+end)
+
+MerchantFrame:HookScript("OnHide", function()
+  if Dejunker:IsSelling() then
+    Dejunker:StopSelling() end
+
+  if Repairer:IsRepairing() then
+    Repairer:StopRepairing() end
+end)
