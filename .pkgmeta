@@ -1,0 +1,12 @@
+enable-nolib-creation: no
+
+ignore:
+  - Dejunk.png
+  - Destroy.png
+  - KeyBindings.png
+  - CHANGELOG.md
+  - README.md
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
