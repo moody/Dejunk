@@ -8,6 +8,9 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 -- Upvalues
 local assert, remove = assert, table.remove
 
+local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
+      GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
+
 -- Dejunk
 local Destroyer = DJ.Destroyer
 local Confirmer = DJ.Confirmer
@@ -181,6 +184,9 @@ end
 
 -- Destroys the next item in the ItemsToDestroy table.
 function Destroyer:DestroyNextItem()
+  -- Don't run if the cursor has an item, spell, etc.
+  if GetCursorInfo() then return end
+
   local item = remove(ItemsToDestroy)
 	if not item then return end
 
@@ -188,12 +194,9 @@ function Destroyer:DestroyNextItem()
   local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
   if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
 
-  -- Clear cursor if it has an item to prevent simply swapping
-  -- bag locations when PickupContainerItem is called
-  if CursorHasItem() then ClearCursor() end
 	PickupContainerItem(item.Bag, item.Slot)
   DeleteCursorItem()
-  ClearCursor() -- Clear cursor again in case any issues occurred
+  ClearCursor() -- Clear cursor in case any issues occurred
 
   Confirmer:OnItemDestroyed(item)
 end
