@@ -38,7 +38,7 @@ function MinimapIcon:Initialize()
     end,
 
     OnTooltipShow = function(tooltip)
-			tooltip:AddLine(Tools:GetColorString(L.DEJUNK_TEXT, Colors.LabelText))
+			tooltip:AddLine(Tools:GetColorString(AddonName, Colors.LabelText))
 			tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_1, Colors.White))
       tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_2, Colors.White))
       tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_3, Colors.White))

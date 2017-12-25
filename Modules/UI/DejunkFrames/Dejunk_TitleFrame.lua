@@ -1,6 +1,7 @@
 -- Dejunk_TitleFrame: displays a menu title, character specific settings button, and close button.
 
 local AddonName, DJ = ...
+local AddonNameUpper = strupper(AddonName)
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
@@ -53,7 +54,7 @@ function TitleFrame:OnInitialize()
     "OVERLAY", "NumberFontNormalHuge", Colors.Title,
     {2, -1.5}, Colors.TitleShadow)
   ui.TitleFontString:SetPoint("TOP", 0, -Tools:Padding())
-  ui.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
+  ui.TitleFontString:SetText(AddonNameUpper)
 
   -- Close Button
   ui.CloseButton = FrameFactory:CreateButton(frame, "GameFontNormal", "X")
@@ -146,7 +147,7 @@ end
 -- Updates the title text and dejunk/destroy button.
 function TitleFrame:SetTitleToDejunk()
   assert(self.Initialized)
-  self.UI.TitleFontString:SetText(L.DEJUNK_OPTIONS_TEXT)
+  self.UI.TitleFontString:SetText(AddonNameUpper)
   self.UI.DejunkDestroyButton.Text:SetText(L.DESTROY_TEXT)
 end
 
@@ -154,5 +155,5 @@ end
 function TitleFrame:SetTitleToDestroy()
   assert(self.Initialized)
   self.UI.TitleFontString:SetText(L.DESTROY_OPTIONS_TEXT)
-  self.UI.DejunkDestroyButton.Text:SetText(L.DEJUNK_TEXT)
+  self.UI.DejunkDestroyButton.Text:SetText(AddonName)
 end

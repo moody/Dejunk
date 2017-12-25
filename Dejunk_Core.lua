@@ -239,7 +239,7 @@ do
     local item = Tools:GetItemFromBag(bag, slot)
     if not item then return end
 
-    local leftText = Tools:GetColorString(format("%s:", L.DEJUNK_TEXT), Colors.LabelText)
+    local leftText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
     local rightText
 
     if not IsShiftKeyDown() then -- Dejunk tooltip

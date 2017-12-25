@@ -26,7 +26,7 @@ function MerchantButton:Initialize()
   if self.Initialized then return end
 
   self.Button = CreateFrame("Button", (AddonName.."MerchantButton"), MerchantFrame, "OptionsButtonTemplate")
-  self.Button:SetText(L.DEJUNK_TEXT)
+  self.Button:SetText(AddonName)
 
   -- Skin & position button for ElvUI if necessary
   local E = _G["ElvUI"] and _G["ElvUI"][1] -- ElvUI Engine
