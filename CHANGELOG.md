@@ -1,5 +1,6 @@
 ### 7.3.13
-* The destroying process should no longer force your cursor to be cleared if it already has an item or spell.
+* Added partial localization support for Brazilian Portuguese.
+* The destroying process should no longer force the cursor to be cleared if it already has an item or spell.
 
 *****
 
