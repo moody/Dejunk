@@ -36,7 +36,6 @@ L["DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP"] = "Destroy toys which you have alrea
 L["DESTROY_IGNORE_LIST_TOOLTIP"] = "Ignore all items on the %s list."
 L["DESTROY_LIST_TOOLTIP"] = "Destroy all items on the %s list."
 L["DESTROY_TEXT"] = "Destroy"
-L["DESTROY_OPTIONS_TEXT"] = "DESTROY"
 L["DESTROYABLES_TEXT"] = "Destroyables"
 L["DESTROYABLES_TOOLTIP"] = "Items on this list will be destroyed unless ignored by options."
 L["DESTROYED_ITEM"] = "Destroyed 1 junk item."
