@@ -1,5 +1,8 @@
-7.3.12 Release - 2017/12/23
+### 7.3.13
+* The destroying process should no longer force your cursor to be cleared if it already has an item or spell.
 
-Verbose Mode messages are now printed as soon as an item has been sold or destroyed instead of waiting until all items have been sold or destroyed.
+*****
 
-The Dejunk merchant button now supports ElvUI.
+### 7.3.12
+* Verbose Mode messages are now printed as soon as an item has been sold or destroyed instead of waiting until all items have been sold or destroyed.
+* The Dejunk merchant button now supports ElvUI.
