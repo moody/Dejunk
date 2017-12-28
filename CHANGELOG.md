@@ -1,3 +1,8 @@
+### 7.3.14
+* Added localization support for Russian.
+
+*****
+
 ### 7.3.13
 * Added partial localization support for Brazilian Portuguese.
 * The destroying process should no longer force the cursor to be cleared if it already has an item or spell.
