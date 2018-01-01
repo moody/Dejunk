@@ -1,3 +1,8 @@
+### 7.3.15
+* Updated Russian localization.
+
+*****
+
 ### 7.3.14
 * Added localization support for Russian.
 
