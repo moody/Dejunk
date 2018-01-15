@@ -1,3 +1,9 @@
+### 7.3.16
+* Added partial localization support for Traditional Chinese.
+* Soulbound Poor quality items are no longer ignored while the Ignore Soulbound option is enabled.
+
+*****
+
 ### 7.3.15
 * Updated Russian localization.
 
