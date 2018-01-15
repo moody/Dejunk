@@ -409,7 +409,7 @@ function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
 end
 
 function Dejunker:IsIgnoredSoulboundItem(item)
-  if not DejunkDB.SV.IgnoreSoulbound then return false end
+  if not DejunkDB.SV.IgnoreSoulbound or (item.Quality == LE_ITEM_QUALITY_POOR) then return false end
   return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
 end
 
