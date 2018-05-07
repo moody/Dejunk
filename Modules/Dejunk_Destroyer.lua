@@ -1,9 +1,10 @@
 -- Dejunk_Destroyer: handles the process of destroying items in the player's bags.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DBL = Addon.Libs.DBL
 
 -- Upvalues
 local assert, remove = assert, table.remove
@@ -12,20 +13,19 @@ local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
 
 -- Dejunk
-local Destroyer = DJ.Destroyer
-local Confirmer = DJ.Confirmer
+local Destroyer = Addon.Destroyer
+local Confirmer = Addon.Confirmer
 
-local ParentFrame = DJ.DejunkFrames.ParentFrame
+local ParentFrame = Addon.DejunkFrames.ParentFrame
 
-local Core = DJ.Core
-local Consts = DJ.Consts
-local DejunkDB = DJ.DejunkDB
-local ListManager = DJ.ListManager
-local Tools = DJ.Tools
+local Core = Addon.Core
+local Consts = Addon.Consts
+local DejunkDB = Addon.DejunkDB
+local ListManager = Addon.ListManager
+local Tools = Addon.Tools
 
 -- Variables
-local DestroyerState =
-{
+local DestroyerState = {
   None = 0,
   Destroying = 1
 }
@@ -34,9 +34,21 @@ local currentState = DestroyerState.None
 
 local ItemsToDestroy = {}
 
-local AUTO_DESTROY_DELAY = 5 -- 5 seconds
-local autoDestroyInterval = 0
-local autoDestroyQueued = false
+do -- Listener function
+  local function listener(...)
+    if (currentState == DestroyerState.None) then
+      local g, k, v, o = ...
+      if k then Addon.Core:Debug("Destroyer", k) else Addon.Core:Debug("Destroyer", "DBL update") end
+      DBL:GetItemsByFilter(Destroyer.Filter, ItemsToDestroy)
+      if DejunkDB.SV.AutoDestroy and (#ItemsToDestroy > 0) and Core:CanDestroy() then
+        Destroyer:StartDestroying()
+      end
+    end
+  end
+
+  DBL:AddListener(listener)
+  DejunkDB:AddListener(listener)
+end
 
 -- ============================================================================
 --                              Destroyer Frames
@@ -45,54 +57,9 @@ local autoDestroyQueued = false
 -- destroyerFrame is used for destroying items
 local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 
--- autoDestroyFrame is used for auto destroy functionality
-local autoDestroyFrame = CreateFrame("Frame", AddonName.."DejunkAutoDestroyFrame")
-
--- Check for bag updates and update bagsUpdated
-function autoDestroyFrame:OnEvent(event, ...)
-  if (event == "BAG_UPDATE") then
-    local bagID = ...
-    if (bagID >= BACKPACK_CONTAINER) and (bagID <= NUM_BAG_SLOTS) then
-      Destroyer:QueueAutoDestroy()
-    end
-  end
-end
-
-function autoDestroyFrame:OnUpdate(elapsed)
-  if (not DejunkDB.SV.AutoDestroy) or ParentFrame:IsVisible() or (not Core:CanDestroy()) then
-    -- autoDestroyInterval is also set to 0 in Destroyer:QueueAutoDestroy().
-    -- This is so auto destroying only starts after AUTO_DESTROY_DELAY seconds
-    -- without interruptions such as the BAG_UPDATE event.
-    autoDestroyInterval = 0
-    return
-  end
-  if not autoDestroyQueued then return end
-
-  autoDestroyInterval = autoDestroyInterval + elapsed
-
-  if (autoDestroyInterval >= AUTO_DESTROY_DELAY) then
-    autoDestroyInterval = 0
-    autoDestroyQueued = false
-
-    -- Check for at least one destroyable item before auto destroying
-    local items = Tools:GetBagItemsByFilter(Destroyer.Filter, 1)
-    if (#items > 0) then Destroyer:StartDestroying() end
-  end
-end
-
-autoDestroyFrame:SetScript("OnUpdate", autoDestroyFrame.OnUpdate)
-autoDestroyFrame:SetScript("OnEvent", autoDestroyFrame.OnEvent)
-autoDestroyFrame:RegisterEvent("BAG_UPDATE")
-
 -- ============================================================================
 --                             Destroying Functions
 -- ============================================================================
-
--- Queues up the auto destroy process.
-function Destroyer:QueueAutoDestroy()
-  autoDestroyQueued = true
-  autoDestroyInterval = 0
-end
 
 -- Starts the Destroying process.
 function Destroyer:StartDestroying()
@@ -105,10 +72,7 @@ function Destroyer:StartDestroying()
   Confirmer:OnDestroyerStart()
   currentState = DestroyerState.Destroying
 
-  local items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
-  ItemsToDestroy = items
-
-  if not allItemsCached then
+  if not DBL:IsUpToDate() then
     if (#ItemsToDestroy > 0) then
       Core:Print(L.ONLY_DESTROYING_CACHED)
     else
@@ -130,7 +94,7 @@ function Destroyer:StopDestroying()
   Confirmer:OnDestroyerEnd()
   currentState = DestroyerState.None
 
-  for k in pairs(ItemsToDestroy) do ItemsToDestroy[k] = nil end
+  DBL:GetItemsByFilter(Destroyer.Filter, ItemsToDestroy)
 end
 
 -- Checks whether or not the Destroyer is active.
@@ -159,7 +123,8 @@ function Destroyer:StartDestroyingItems()
   destroyInterval = 0
 
   destroyerFrame:SetScript("OnUpdate", function(frame, elapsed)
-    self:DestroyItems(frame, elapsed) end)
+    self:DestroyItems(frame, elapsed)
+  end)
 end
 
 -- Cancels the destroying items process.
@@ -177,8 +142,7 @@ function Destroyer:DestroyItems(frame, elapsed)
 
 		self:DestroyNextItem()
 
-		if (#ItemsToDestroy <= 0) then
-      self:StopDestroyingItems() end
+		if (#ItemsToDestroy <= 0) then self:StopDestroyingItems() end
 	end
 end
 
@@ -188,11 +152,8 @@ function Destroyer:DestroyNextItem()
   if GetCursorInfo() then return end
 
   local item = remove(ItemsToDestroy)
-	if not item then return end
-
   -- Verify that the item in the bag slot has not been changed before destroying
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
+  if not item or not DBL:StillInBags(item) or item:IsLocked() then return end
 
 	PickupContainerItem(item.Bag, item.Slot)
   DeleteCursorItem()
@@ -205,16 +166,13 @@ end
 --                              Filter Functions
 -- ============================================================================
 
--- Returns the item in the specified bag slot if it is destroyable.
--- @return - a destroyable item, or nil
-Destroyer.Filter = function(bag, slot)
-  local item = Tools:GetItemFromBag(bag, slot)
-  if not item or item.Locked then return nil end
-
+-- Returns true if the specified item is destroyable.
+-- @param item - the item to run through the filter
+Destroyer.Filter = function(item)
+  if item:IsLocked() then return nil end
   if not Tools:ItemCanBeDestroyed(item) then return nil end
   if not Destroyer:IsDestroyableItem(item) then return nil end
-
-  return item
+  return true
 end
 
 -- Checks if an item is a junk item based on Dejunk's settings.

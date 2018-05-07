@@ -1,25 +1,26 @@
 -- Dejunk_Core: initializes Dejunk.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DBL = Addon.Libs.DBL
 
 -- Dejunk
-local Core = DJ.Core
+local Core = Addon.Core
 
-local Colors = DJ.Colors
-local DejunkDB = DJ.DejunkDB
-local Confirmer = DJ.Confirmer
-local Dejunker = DJ.Dejunker
-local Destroyer = DJ.Destroyer
-local ListManager = DJ.ListManager
-local Tools = DJ.Tools
-local ParentFrame = DJ.DejunkFrames.ParentFrame
-local TitleFrame = DJ.DejunkFrames.TitleFrame
-local DejunkChildFrame = DJ.DejunkFrames.DejunkChildFrame
-local TransportChildFrame = DJ.DejunkFrames.TransportChildFrame
-local DestroyChildFrame = DJ.DejunkFrames.DestroyChildFrame
+local Colors = Addon.Colors
+local DejunkDB = Addon.DejunkDB
+local Confirmer = Addon.Confirmer
+local Dejunker = Addon.Dejunker
+local Destroyer = Addon.Destroyer
+local ListManager = Addon.ListManager
+local Tools = Addon.Tools
+local ParentFrame = Addon.DejunkFrames.ParentFrame
+local TitleFrame = Addon.DejunkFrames.TitleFrame
+local DejunkChildFrame = Addon.DejunkFrames.DejunkChildFrame
+local TransportChildFrame = Addon.DejunkFrames.TransportChildFrame
+local DestroyChildFrame = Addon.DejunkFrames.DestroyChildFrame
 
 -- ============================================================================
 --                                 Core Frame
@@ -46,9 +47,9 @@ function Core:Initialize()
   DejunkDB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
-  DJ.Consts:Initialize()
-  DJ.MerchantButton:Initialize()
-  DJ.MinimapIcon:Initialize()
+  Addon.Consts:Initialize()
+  Addon.MerchantButton:Initialize()
+  Addon.MinimapIcon:Initialize()
   self:InitializeBindingStrings()
 
   -- Setup slash command
@@ -231,7 +232,6 @@ end
 -- ============================================================================
 
 do
-  local DBL = LibStub("DethsBagLib-1.0")
   local item
 
   local function setBagItem(self, bag, slot)

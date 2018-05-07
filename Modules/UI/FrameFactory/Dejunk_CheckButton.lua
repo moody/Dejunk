@@ -98,7 +98,7 @@ function FrameFactory:CreateCheckButton(parent, size, text, textColor, tooltip, 
     checkButton:SetChecked(DejunkDB.SV[svKey])
 
     checkButton:SetScript("OnClick", function(self)
-      DejunkDB.SV[self.SVKey] = self:GetChecked()
+      DejunkDB:Set(svKey, self:GetChecked())
       if onClickCallBack then onClickCallBack() end
     end)
   end

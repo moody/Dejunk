@@ -1,9 +1,9 @@
 -- Dejunk_DejunkDB: provides Dejunk modules easy access to saved variables.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Dejunk
-local DejunkDB = DJ.DejunkDB
+local DejunkDB = Addon.DejunkDB
 
 --[[
   This table (DejunkDB.SV) can be used to quickly get and set values in the
@@ -17,8 +17,16 @@ local DejunkDB = DJ.DejunkDB
   If notifying is necessary, call DejunkDB:Set(k, v) manually.
 --]]
 DejunkDB.SV = setmetatable({}, {
-  __index = function(t, k) return DejunkDB:Get(k) end,
-  __newindex = function(t, k, v) DejunkDB:Set(k, v, true) end
+  __index = function(t, k)
+    return DejunkPerChar.UseGlobal and DejunkGlobal[k] or DejunkPerChar[k]
+  end,
+  __newindex = function(t, k, v)
+    if DejunkPerChar.UseGlobal then
+      DejunkGlobal[k] = v
+    else
+      DejunkPerChar[k] = v
+    end
+  end
 })
 
 -- Listeners
@@ -69,6 +77,12 @@ end
 -- ============================================================================
 
 do
+  local keys = {
+    -- [1] = a nested table
+    -- ...
+    -- [n] = key in nested table
+  }
+
   -- Returns the nested value, table, and key in the global or per char SVs.
   -- @param g - if true, global SVs are used, otherwise per character
   -- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
@@ -76,23 +90,18 @@ do
     local nt = g and DejunkGlobal or DejunkPerChar
     local nk = k
     
-    local keys = {
-      -- [1] = a nested table
-      -- ...
-      -- [n] = key in nested table
-    }
-    -- Split keys by dot operator (e.g. "A.B.C" = {"A", "B", "C"})
-    for key in k:gmatch("([^.]+)") do keys[#keys+1] = key end
-    
-    -- If key is nested, update ref to nested table and key
-    if (#keys > 1) then
-      nt = nt[keys[1]]
-      for i=2, (#keys - 1) do nt = nt[keys[i]] end
-      nk = keys[#keys]
+    if k:find(".") then
+      for k in pairs(keys) do keys[k] = nil end
+      -- Split keys by dot operator (e.g. "A.B.C" = {"A", "B", "C"})
+      for key in k:gmatch("([^.]+)") do keys[#keys+1] = key end
+      
+      -- If key is nested, update ref to nested table and key
+      if (#keys > 1) then
+        nt = nt[keys[1]]
+        for i=2, (#keys - 1) do nt = nt[keys[i]] end
+        nk = keys[#keys]
+      end
     end
-
-    assert(nt[nk], format("%s.%s does not exist",
-      (g and "DejunkGlobal" or "DejunkPerChar"), k))
 
     return nt[nk], nt, nk
   end

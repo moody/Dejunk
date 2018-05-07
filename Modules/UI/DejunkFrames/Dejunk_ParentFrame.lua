@@ -51,10 +51,6 @@ function ParentFrame:OnShow()
   self:Resize()
 end
 
-function ParentFrame:OnHide()
-  DJ.Destroyer:QueueAutoDestroy()
-end
-
 -- Hook Enable
 function ParentFrame:OnEnable()
   TitleFrame:Enable()

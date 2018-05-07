@@ -1,26 +1,26 @@
 -- Dejunk_Dejunker: handles the process of selling junk items to merchants.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DBL = Addon.Libs.DBL
 
 -- Upvalues
 local assert, remove = assert, table.remove
 
 -- Dejunk
-local Dejunker = DJ.Dejunker
-local Confirmer = DJ.Confirmer
+local Dejunker = Addon.Dejunker
+local Confirmer = Addon.Confirmer
 
-local Core = DJ.Core
-local Consts = DJ.Consts
-local DejunkDB = DJ.DejunkDB
-local ListManager = DJ.ListManager
-local Tools = DJ.Tools
+local Core = Addon.Core
+local Consts = Addon.Consts
+local DejunkDB = Addon.DejunkDB
+local ListManager = Addon.ListManager
+local Tools = Addon.Tools
 
 -- Variables
-local DejunkerState =
-{
+local DejunkerState = {
   None = 0,
   Dejunking = 1,
   Selling = 2
@@ -29,6 +29,20 @@ local DejunkerState =
 local currentState = DejunkerState.None
 
 local ItemsToSell = {}
+
+do -- Listener function
+  local function listener(...)
+    if (currentState == DejunkerState.None) then
+      local g, k, v, o = ...
+      if k then Addon.Core:Debug("Dejunker", k) else Addon.Core:Debug("Dejunker", "DBL update") end
+      local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
+      DBL:GetItemsByFilter(Dejunker.Filter, ItemsToSell, maxItems)
+    end
+  end
+
+  DBL:AddListener(listener)
+  DejunkDB:AddListener(listener)
+end
 
 -- ============================================================================
 --                             Dejunker Frame
@@ -72,19 +86,12 @@ function Dejunker:StartDejunking()
   Confirmer:OnDejunkerStart()
   currentState = DejunkerState.Dejunking
 
-  local items, allItemsCached
-
-  if DejunkDB.SV.SafeMode then
-    items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter, Consts.SAFE_MODE_MAX)
-    if (#items == Consts.SAFE_MODE_MAX) then
-      Core:Print(format(L.SAFE_MODE_MESSAGE, Consts.SAFE_MODE_MAX)) end
-  else
-    items, allItemsCached = Tools:GetBagItemsByFilter(self.Filter)
+  -- Print safe mode message if necessary
+  if DejunkDB.SV.SafeMode and (#ItemsToSell == Consts.SAFE_MODE_MAX) then
+    ore:Print(format(L.SAFE_MODE_MESSAGE, Consts.SAFE_MODE_MAX))
   end
 
-  ItemsToSell = items
-
-  if not allItemsCached then
+  if not DBL:IsUpToDate() then
     if (#ItemsToSell > 0) then
       Core:Print(L.ONLY_SELLING_CACHED)
     else
@@ -106,7 +113,8 @@ function Dejunker:StopDejunking()
   Confirmer:OnDejunkerEnd()
   currentState = DejunkerState.None
 
-  for k in pairs(ItemsToSell) do ItemsToSell[k] = nil end
+  local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
+  DBL:GetItemsByFilter(Dejunker.Filter, ItemsToSell, maxItems)
 end
 
 -- Checks whether or not the Dejunker is active.
@@ -171,11 +179,8 @@ end
 -- Sells the next item in the ItemsToSell table.
 function Dejunker:SellNextItem()
   local item = remove(ItemsToSell)
-  if not item then return end
-
   -- Verify that the item in the bag slot has not been changed before selling
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if not bagItem or bagItem.Locked or (not (bagItem.ItemID == item.ItemID)) then return end
+  if not item or not DBL:StillInBags(item) or item:IsLocked() then return end
 
   UseContainerItem(item.Bag, item.Slot)
 
@@ -192,17 +197,13 @@ end
 //*******************************************************************
 --]]
 
--- Filter function
--- Returns the item in the specified bag slot if it is dejunkable.
--- @return - a dejunkable item, or nil
-Dejunker.Filter = function(bag, slot)
-  local item = Tools:GetItemFromBag(bag, slot)
-  if not item or item.Locked then return nil end
-
+-- Returns true if the specified item is dejunkable.
+-- @param item - the item to run through the filter
+Dejunker.Filter = function(item)
+  if item:IsLocked() then return nil end
   if item.NoValue or not Tools:ItemCanBeSold(item) then return nil end
   if not Dejunker:IsJunkItem(item) then return nil end
-
-  return item
+  return true
 end
 
 -- Checks if an item is a junk item based on Dejunk's settings.

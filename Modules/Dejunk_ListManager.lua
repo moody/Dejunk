@@ -377,11 +377,5 @@ function ListManager:ParseList(listName)
   end
 
   -- Sort the list once all items have been parsed
-  if not next(toAdd) then
-    ListManager:SortList(list)
-
-    -- Queue up auto destroy if Destroyables list has been updated
-    if (listName == ListManager.Destroyables) then
-      DJ.Destroyer:QueueAutoDestroy() end
-  end
+  if not next(toAdd) then ListManager:SortList(list) end
 end

@@ -1,20 +1,21 @@
 -- Dejunk_Confirmer: confirms that items have been either dejunked or destroyed and prints messages.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DBL = Addon.Libs.DBL
 
 -- Upvalues
 local assert, remove = assert, table.remove
 local GetCoinTextureString = GetCoinTextureString
 
 -- Dejunk
-local Confirmer = DJ.Confirmer
+local Confirmer = Addon.Confirmer
 
-local Core = DJ.Core
-local DejunkDB = DJ.DejunkDB
-local Tools = DJ.Tools
+local Core = Addon.Core
+local DejunkDB = Addon.DejunkDB
+local Tools = Addon.Tools
 
 -- Dejunker variables
 local dejunking = false
@@ -100,14 +101,13 @@ function Confirmer:ConfirmNextDejunkedItem()
   local item = remove(dejunkedItems, 1)
   if not item then return end
 
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
-    if bagItem.Locked then -- Item probably being sold, add it back to list and try again later
+  if DBL:StillInBags(item) then
+    if item:IsLocked() then -- Item probably being sold, add it back to list and try again later
       dejunkedItems[#dejunkedItems+1] = item
     else -- Item is still in bags, so it may not have sold
       Core:Print(format(L.MAY_NOT_HAVE_SOLD_ITEM, item.ItemLink))
     end
-
+    
     return
   end
 
@@ -157,9 +157,8 @@ function Confirmer:ConfirmNextDestroyedItem()
   local item = remove(destroyedItems, 1)
   if not item then return end
 
-  local bagItem = Tools:GetItemFromBag(item.Bag, item.Slot)
-  if bagItem and (bagItem.ItemID == item.ItemID) and (bagItem.Quantity == item.Quantity) then
-    if bagItem.Locked then -- Item probably being destroyed, add it back to list and try again later
+  if DBL:StillInBags(item) then
+    if item:IsLocked() then -- Item probably being destroyed, add it back to list and try again later
       destroyedItems[#destroyedItems+1] = item
     else -- Item is still in bags, so it may not have been destroyed
       Core:Print(format(L.MAY_NOT_HAVE_DESTROYED_ITEM, item.ItemLink))
