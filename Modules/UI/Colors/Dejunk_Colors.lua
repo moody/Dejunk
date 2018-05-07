@@ -23,18 +23,14 @@ Colors.CurrentSchemeName = nil
 
 -- Initializes the Colors table.
 function Colors:Initialize()
-  if self.Initialized then return end
-
-  assert(DejunkDB.Initialized == true, "DejunkDB has not been initialized")
-
-  local colorScheme = DejunkGlobal.ColorScheme
+  local colorScheme = DejunkDB:GetGlobal("ColorScheme")
   if (colorScheme == nil) or (self.Schemes[colorScheme] == nil) then
     colorScheme = "Default"
   end
 
   self:SetColorScheme(colorScheme)
 
-  self.Initialized = true
+  self.Initialize = nil
 end
 
 -- Switches to the next scheme in SchemeNames.
@@ -59,7 +55,7 @@ function Colors:SetColorScheme(colorScheme)
   if not self.Schemes[colorScheme] then
     colorScheme = self.SchemeNames[1] end
 
-  DejunkGlobal.ColorScheme = colorScheme
+  DejunkDB:SetGlobal("ColorScheme", colorScheme, true)
   self.CurrentScheme = self.Schemes[colorScheme]()
   self.CurrentSchemeName = colorScheme
 

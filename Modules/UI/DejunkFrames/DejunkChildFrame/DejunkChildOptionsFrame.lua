@@ -121,11 +121,11 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
 
   -- Silent mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
-  L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, DejunkDB.SilentMode))
+  L.SILENT_MODE_TEXT, Colors.LabelText, L.SILENT_MODE_TOOLTIP, "SilentMode"))
 
   -- Verbose mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
-  L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, DejunkDB.VerboseMode))
+  L.VERBOSE_MODE_TEXT, Colors.LabelText, L.VERBOSE_MODE_TOOLTIP, "VerboseMode"))
 
   -- Selling heading
   local selling = FrameFactory:CreateFontString(self.UI.GeneralOptionsFrame,
@@ -135,12 +135,12 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
 
   -- Auto sell
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, DejunkDB.AutoSell))
+    L.AUTO_SELL_TEXT, nil, L.AUTO_SELL_TOOLTIP, "AutoSell"))
 
   -- Safe mode
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.SAFE_MODE_TEXT, Colors.LabelText,
-    format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), DejunkDB.SafeMode))
+    format(L.SAFE_MODE_TOOLTIP, DJ.Consts.SAFE_MODE_MAX), "SafeMode"))
 
   -- Repairing heading
   local repairing = FrameFactory:CreateFontString(self.UI.GeneralOptionsFrame,
@@ -150,11 +150,11 @@ function DejunkChildOptionsFrame:PopulateGeneralOptions()
 
   -- Auto repair
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, DejunkDB.AutoRepair))
+    L.AUTO_REPAIR_TEXT, Colors.LabelText, L.AUTO_REPAIR_TOOLTIP, "AutoRepair"))
 
   -- Use guild repair
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.USE_GUILD_REPAIR_TEXT, Colors.LabelText, L.USE_GUILD_REPAIR_TOOLTIP, DejunkDB.UseGuildRepair))
+    L.USE_GUILD_REPAIR_TEXT, Colors.LabelText, L.USE_GUILD_REPAIR_TOOLTIP, "UseGuildRepair"))
 end
 
 function DejunkChildOptionsFrame:PopulateSellOptions()
@@ -170,19 +170,19 @@ function DejunkChildOptionsFrame:PopulateSellOptions()
 
   -- Sell by quality check buttons
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, L.SELL_ALL_TOOLTIP, DejunkDB.SellPoor))
+    L.POOR_TEXT, Colors.Poor, L.SELL_ALL_TOOLTIP, "SellPoor"))
 
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.COMMON_TEXT, Colors.Common, L.SELL_ALL_TOOLTIP, DejunkDB.SellCommon))
+    L.COMMON_TEXT, Colors.Common, L.SELL_ALL_TOOLTIP, "SellCommon"))
 
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.UNCOMMON_TEXT, Colors.Uncommon, L.SELL_ALL_TOOLTIP, DejunkDB.SellUncommon))
+    L.UNCOMMON_TEXT, Colors.Uncommon, L.SELL_ALL_TOOLTIP, "SellUncommon"))
 
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.RARE_TEXT, Colors.Rare, L.SELL_ALL_TOOLTIP, DejunkDB.SellRare))
+    L.RARE_TEXT, Colors.Rare, L.SELL_ALL_TOOLTIP, "SellRare"))
 
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, DejunkDB.SellEpic))
+    L.EPIC_TEXT, Colors.Epic, L.SELL_ALL_TOOLTIP, "SellEpic"))
 
   -- By Type heading
   local byType = FrameFactory:CreateFontString(self.UI.SellOptionsFrame,
@@ -192,12 +192,12 @@ function DejunkChildOptionsFrame:PopulateSellOptions()
 
   -- Unsuitable Equipment
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, DejunkDB.SellUnsuitable))
+    L.SELL_UNSUITABLE_TEXT, nil, L.SELL_UNSUITABLE_TOOLTIP, "SellUnsuitable"))
 
   -- Equipment below ilvl
   add(FrameFactory:CreateCheckButtonNumberBox(nil, "Small",
     L.SELL_EQUIPMENT_BELOW_ILVL_TEXT, Colors.LabelText,
-    L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, DejunkDB.SellEquipmentBelowILVL))
+    L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, "SellEquipmentBelowILVL"))
 end
 
 function DejunkChildOptionsFrame:PopulateIgnoreOptions()
@@ -213,25 +213,25 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
 
   -- Battle Pets
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_BATTLEPETS_TEXT, Colors.LabelText, L.IGNORE_BATTLEPETS_TOOLTIP, DejunkDB.IgnoreBattlePets))
+    L.IGNORE_BATTLEPETS_TEXT, Colors.LabelText, L.IGNORE_BATTLEPETS_TOOLTIP, "IgnoreBattlePets"))
   -- Consumables
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_CONSUMABLES_TEXT, Colors.LabelText, L.IGNORE_CONSUMABLES_TOOLTIP, DejunkDB.IgnoreConsumables))
+    L.IGNORE_CONSUMABLES_TEXT, Colors.LabelText, L.IGNORE_CONSUMABLES_TOOLTIP, "IgnoreConsumables"))
   -- Gems
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_GEMS_TEXT, Colors.LabelText, L.IGNORE_GEMS_TOOLTIP, DejunkDB.IgnoreGems))
+    L.IGNORE_GEMS_TEXT, Colors.LabelText, L.IGNORE_GEMS_TOOLTIP, "IgnoreGems"))
   -- Glyphs
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_GLYPHS_TEXT, Colors.LabelText, L.IGNORE_GLYPHS_TOOLTIP, DejunkDB.IgnoreGlyphs))
+    L.IGNORE_GLYPHS_TEXT, Colors.LabelText, L.IGNORE_GLYPHS_TOOLTIP, "IgnoreGlyphs"))
   -- Item Enhancements
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_ITEM_ENHANCEMENTS_TEXT, Colors.LabelText, L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP, DejunkDB.IgnoreItemEnhancements))
+    L.IGNORE_ITEM_ENHANCEMENTS_TEXT, Colors.LabelText, L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP, "IgnoreItemEnhancements"))
   -- Recipes
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_RECIPES_TEXT, Colors.LabelText, L.IGNORE_RECIPES_TOOLTIP, DejunkDB.IgnoreRecipes))
+    L.IGNORE_RECIPES_TEXT, Colors.LabelText, L.IGNORE_RECIPES_TOOLTIP, "IgnoreRecipes"))
   -- Trade Goods
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, DejunkDB.IgnoreTradeGoods))
+    L.IGNORE_TRADE_GOODS_TEXT, Colors.LabelText, L.IGNORE_TRADE_GOODS_TOOLTIP, "IgnoreTradeGoods"))
 
   -- By Type heading
   local byType = FrameFactory:CreateFontString(self.UI.IgnoreOptionsFrame,
@@ -241,17 +241,17 @@ function DejunkChildOptionsFrame:PopulateIgnoreOptions()
 
   -- Binds when equipped
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, DejunkDB.IgnoreBindsWhenEquipped))
+    L.IGNORE_BOE_TEXT, Colors.LabelText, L.IGNORE_BOE_TOOLTIP, "IgnoreBindsWhenEquipped"))
   -- Cosmetic
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_COSMETIC_TEXT, Colors.LabelText, L.IGNORE_COSMETIC_TOOLTIP, DejunkDB.IgnoreCosmetic))
+    L.IGNORE_COSMETIC_TEXT, Colors.LabelText, L.IGNORE_COSMETIC_TOOLTIP, "IgnoreCosmetic"))
   -- Equipment Sets
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, DejunkDB.IgnoreEquipmentSets))
+    L.IGNORE_EQUIPMENT_SETS_TEXT, Colors.LabelText, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, "IgnoreEquipmentSets"))
   -- Soulbound
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, DejunkDB.IgnoreSoulbound))
+    L.IGNORE_SOULBOUND_TEXT, Colors.LabelText, L.IGNORE_SOULBOUND_TOOLTIP, "IgnoreSoulbound"))
   -- Tradeable
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.IGNORE_TRADEABLE_TEXT, Colors.LabelText, L.IGNORE_TRADEABLE_TOOLTIP, DejunkDB.IgnoreTradeable))
+    L.IGNORE_TRADEABLE_TEXT, Colors.LabelText, L.IGNORE_TRADEABLE_TOOLTIP, "IgnoreTradeable"))
 end

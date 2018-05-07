@@ -13,7 +13,7 @@
   <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToInclusions()
   </Binding>
-  <Binding name="DEJUNK_REM_INCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromInclusions()
   </Binding>
 
@@ -21,7 +21,7 @@
   <Binding name="DEJUNK_ADD_EXCLUSIONS" header="DEJUNKBLANK2" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToExclusions()
   </Binding>
-  <Binding name="DEJUNK_REM_EXCLUSIONS" header="DEJUNKBLANK2" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_REM_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromExclusions()
   </Binding>
 
@@ -29,7 +29,7 @@
   <Binding name="DEJUNK_ADD_DESTROYABLES" header="DEJUNKBLANK3" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToDestroyables()
   </Binding>
-  <Binding name="DEJUNK_REM_DESTROYABLES" header="DEJUNKBLANK3" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_REM_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromDestroyables()
   </Binding>
 </Bindings>

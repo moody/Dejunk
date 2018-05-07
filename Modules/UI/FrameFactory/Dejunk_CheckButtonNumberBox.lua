@@ -38,7 +38,7 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   -- CheckButton
   checkButton:SetScript("OnClick", function(self)
     local checked = self:GetChecked()
-    DejunkDB.SV[svKey].Enabled = checked
+    DejunkDB:Set(svKey..".Enabled", checked)
     editBoxFrame.EditBox:SetEnabled(checked)
   end)
 
@@ -51,7 +51,7 @@ function FrameFactory:CreateCheckButtonNumberBox(parent, size, text, textColor, 
   end)
   editBoxFrame.EditBox:SetScript("OnTextChanged", function(self)
     local value = self:GetNumber()
-    DejunkDB.SV[svKey].Value = floor(abs(value))
+    DejunkDB:Set(svKey..".Value", floor(abs(value)))
   end)
 
   -- Gets the minimum width of the frame.

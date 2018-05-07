@@ -83,7 +83,7 @@ function FrameFactory:CreateCurrencyInputFrame(parent, font, svKey)
     end)
     ebFrame:SetScript("OnTextChanged", function(self)
       local value = self:GetNumber()
-      DejunkDB.SV[svKey][self.Name] = floor(abs(value))
+      DejunkDB:Set(svKey.."."..self.Name, floor(abs(value)))
     end)
   end
 

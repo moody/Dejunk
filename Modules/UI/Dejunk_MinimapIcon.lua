@@ -1,6 +1,6 @@
 -- Dejunk_MinimapIcon: provides a minimap button for Dejunk.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
@@ -8,14 +8,13 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 
 -- Dejunk
-local MinimapIcon = DJ.MinimapIcon
+local MinimapIcon = Addon.MinimapIcon
 
-local Colors = DJ.Colors
-local Tools = DJ.Tools
+local Colors = Addon.Colors
+local DejunkDB = Addon.DejunkDB
+local Tools = Addon.Tools
 
 -- Variables
-MinimapIcon.Initialized = false
-
 local ObjectName = "DejunkMinimapIcon"
 
 -- ============================================================================
@@ -24,16 +23,14 @@ local ObjectName = "DejunkMinimapIcon"
 
 -- Initializes the minimap icon.
 function MinimapIcon:Initialize()
-  if self.Initialized then return end
-
   self.LDB = LDB:NewDataObject(ObjectName, {
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
       if (button == "LeftButton") then
-        DJ.Core:ToggleGUI()
+        Addon.Core:ToggleGUI()
       elseif (button == "RightButton") then
-        DJ.Destroyer:StartDestroying()
+        Addon.Destroyer:StartDestroying()
       end
     end,
 
@@ -45,30 +42,30 @@ function MinimapIcon:Initialize()
 		end,
   })
 
-  if DejunkGlobal.Minimap == nil then
-    DejunkGlobal.Minimap = { hide = false }
-  end
+  -- if (DejunkDB:GetGlobal("Minimap") == nil) then
+  --   DejunkDB:SetGlobal("Minimap", {hide = false}, true)
+  -- end
 
-  LDBIcon:Register(ObjectName, self.LDB, DejunkGlobal.Minimap)
+  LDBIcon:Register(ObjectName, self.LDB, DejunkDB:GetGlobal("Minimap"))
 
-  self.Initialized = true
+  self.Initialize = nil
 end
 
 -- Displays the minimap icon.
 function MinimapIcon:Show()
-  DejunkGlobal.Minimap.hide = false
+  DejunkDB:SetGlobal("Minimap.hide", false, true)
   LDBIcon:Show(ObjectName)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
-  DejunkGlobal.Minimap.hide = true
+  DejunkDB:SetGlobal("Minimap.hide", true, true)
   LDBIcon:Hide(ObjectName)
 end
 
 -- Toggles the minimap icon.
 function MinimapIcon:Toggle()
-  if DejunkGlobal.Minimap.hide then
+  if DejunkDB:GetGlobal("Minimap.hide") then
     self:Show()
   else
     self:Hide()

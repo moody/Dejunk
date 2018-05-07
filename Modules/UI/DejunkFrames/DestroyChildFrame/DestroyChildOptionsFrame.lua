@@ -83,12 +83,12 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Auto destroy
   add(FrameFactory:CreateCheckButton(nil, "Small", L.AUTO_DESTROY_TEXT, nil,
-    L.AUTO_DESTROY_TOOLTIP, DejunkDB.AutoDestroy))
+    L.AUTO_DESTROY_TOOLTIP, "AutoDestroy"))
 
   -- Price threshold check button and currency input
   add(FrameFactory:CreateCheckButton(nil, "Small", L.PRICE_THRESHOLD_TEXT, nil,
-    L.PRICE_THRESHOLD_TOOLTIP, DejunkDB.DestroyUsePriceThreshold))
-  add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", DejunkDB.DestroyPriceThreshold))
+    L.PRICE_THRESHOLD_TOOLTIP, "DestroyUsePriceThreshold"))
+  add(FrameFactory:CreateCurrencyInputFrame(nil, "GameFontNormalSmall", "DestroyPriceThreshold"))
 
   -- Destroy heading
   local destroyHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
@@ -98,22 +98,22 @@ function DestroyChildOptionsFrame:CreateOptions()
 
   -- Destroy poor
   add(FrameFactory:CreateCheckButton(nil, "Small",
-    L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, DejunkDB.DestroyPoor))
+    L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, "DestroyPoor"))
 
   -- Destroy Inclusions
   local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
-    format(L.DESTROY_LIST_TOOLTIP, inclusionsText), DejunkDB.DestroyInclusions))
+    format(L.DESTROY_LIST_TOOLTIP, inclusionsText), "DestroyInclusions"))
 
   -- Destroy pets already collected
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.DESTROY_PETS_ALREADY_COLLECTED_TEXT, Colors.LabelText,
-    L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP, DejunkDB.DestroyPetsAlreadyCollected))
+    L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP, "DestroyPetsAlreadyCollected"))
 
   -- Destroy toys already collected
   add(FrameFactory:CreateCheckButton(nil, "Small",
     L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT, Colors.LabelText,
-    L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP, DejunkDB.DestroyToysAlreadyCollected))
+    L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP, "DestroyToysAlreadyCollected"))
 
   -- Ignore heading
   local ignoreHeading = FrameFactory:CreateFontString(ui.SettingsFrame,
@@ -124,5 +124,5 @@ function DestroyChildOptionsFrame:CreateOptions()
   -- Ignore Exclusions
   local exclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", exclusionsText, nil,
-    format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), DejunkDB.DestroyIgnoreExclusions))
+    format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), "DestroyIgnoreExclusions"))
 end

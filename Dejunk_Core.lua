@@ -52,9 +52,9 @@ function Core:Initialize()
   self:InitializeBindingStrings()
 
   -- Setup slash command
-	SLASH_DEJUNK1 = "/dejunk"
-	SlashCmdList["DEJUNK"] = function (msg, editBox)
-		self:ToggleGUI() end
+  LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, function()
+    self:ToggleGUI()
+  end)
 end
 
 -- Prints a formatted message ("[Dejunk] msg").
@@ -82,7 +82,7 @@ function Core:Debug(title, msg)
   title = Tools:GetColorString(title, Colors.Green)
   print(format("%s %s: %s", debug, title, msg))
 end
--- Core.IsDebugging = true
+Core.IsDebugging = true
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
@@ -163,8 +163,7 @@ end
 
 -- Switches between global and character specific settings.
 function Core:ToggleCharacterSpecificSettings()
-  DejunkPerChar.UseGlobal = not DejunkPerChar.UseGlobal
-  DejunkDB:Update()
+  DejunkDB:Toggle()
   ListManager:Update()
 
   -- If transport child frame is showing, show previous child
@@ -232,11 +231,14 @@ end
 -- ============================================================================
 
 do
+  local DBL = LibStub("DethsBagLib-1.0")
+  local item
+
   local function setBagItem(self, bag, slot)
-    if not DejunkGlobal.ItemTooltip then return end
+    if not DejunkDB:GetGlobal("ItemTooltip") then return end
 
     -- Get item
-    local item = Tools:GetItemFromBag(bag, slot)
+    item = DBL:GetItem(bag, slot, item)
     if not item then return end
 
     local leftText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
