@@ -2,6 +2,8 @@
 
 local AddonName, Addon = ...
 
+local DFL = LibStub("DethsFrameLib-1.0")
+
 -- Libs
 Addon.Libs = {
   L = LibStub('AceLocale-3.0'):GetLocale(AddonName),
@@ -9,7 +11,7 @@ Addon.Libs = {
   LDBIcon = LibStub("LibDBIcon-1.0"),
   DBL = LibStub("DethsBagLib-1.0"),
   DCL = LibStub("DethsColorLib-1.0"),
-  DFL = LibStub("DethsFrameLib-1.0")
+  DFL = DFL
 }
 
 -- Initialize Dejunk tables
@@ -30,19 +32,11 @@ Addon.Repairer = {}
 Addon.MerchantButton = {}
 Addon.MinimapIcon = {}
 
--- /UI/FrameFactory/
-Addon.FrameCreator = {}
-Addon.FrameFactory = {}
-
--- /UI/DejunkFrames/
-Addon.DejunkFrames = {
-  ParentFrame = {},
-  TitleFrame = {},
-  DejunkChildFrame = {},
-  DejunkChildOptionsFrame = {},
-  DejunkChildListsFrame = {},
-  DestroyChildFrame = {},
-  DestroyChildOptionsFrame = {},
-  DestroyChildListFrame = {},
-  TransportChildFrame = {}
+-- /UI/Frames/
+Addon.Frames = {
+  ParentFrame = DFL.Factory.ParentFrame:Create(),
+  TitleFrame = DFL.Factory.ChildFrame:Create(),
+  DejunkChildFrame = DFL.Factory.ChildFrame:Create(),
+  DestroyChildFrame = DFL.Factory.ChildFrame:Create(),
+  TransportChildFrame = DFL.Factory.ChildFrame:Create()
 }

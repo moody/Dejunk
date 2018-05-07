@@ -5,4 +5,9 @@
   <Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
   <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
   <Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
+
+  <Script file="Libs\DethsBagLib-1.0\DethsBagLib-1.0.lua"/>
+  <Script file="Libs\DethsCmdLib-1.0\DethsCmdLib-1.0.lua"/>
+  <Script file="Libs\DethsColorLib-1.0\DethsColorLib-1.0.lua"/>
+  <Script file="Libs\DethsFrameLib-1.0\DethsFrameLib-1.0.lua"/>
 </Ui>

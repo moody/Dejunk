@@ -9,7 +9,7 @@ local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 local Colors = DJ.Colors
 
 local DejunkDB = DJ.DejunkDB
-local ParentFrame = DJ.DejunkFrames.ParentFrame
+local ParentFrame = DJ.Frames.ParentFrame
 
 -- Variables
 Colors.Schemes = {}

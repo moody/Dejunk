@@ -16,27 +16,29 @@ local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
-local ParentFrame = Addon.DejunkFrames.ParentFrame
-local TitleFrame = Addon.DejunkFrames.TitleFrame
-local DejunkChildFrame = Addon.DejunkFrames.DejunkChildFrame
-local TransportChildFrame = Addon.DejunkFrames.TransportChildFrame
-local DestroyChildFrame = Addon.DejunkFrames.DestroyChildFrame
+local ParentFrame = Addon.Frames.ParentFrame
+local TitleFrame = Addon.Frames.TitleFrame
+local DejunkChildFrame = Addon.Frames.DejunkChildFrame
+local DestroyChildFrame = Addon.Frames.DestroyChildFrame
+local TransportChildFrame = Addon.Frames.TransportChildFrame
 
 -- ============================================================================
 --                                 Core Frame
 -- ============================================================================
 
-local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
+do
+  local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
 
-function coreFrame:OnEvent(event, ...)
-  if (event == "PLAYER_LOGIN") then
-    self:UnregisterEvent(event)
-    Core:Initialize()
+  function coreFrame:OnEvent(event, ...)
+    if (event == "PLAYER_LOGIN") then
+      self:UnregisterEvent(event)
+      Core:Initialize()
+    end
   end
-end
 
-coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-coreFrame:RegisterEvent("PLAYER_LOGIN")
+  coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
+  coreFrame:RegisterEvent("PLAYER_LOGIN")
+end
 
 -- ============================================================================
 --                              General Functions
@@ -56,6 +58,8 @@ function Core:Initialize()
   LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, function()
     self:ToggleGUI()
   end)
+
+  self.Initialize = nil
 end
 
 -- Prints a formatted message ("[Dejunk] msg").
@@ -138,93 +142,86 @@ end
 --                                 UI Functions
 -- ============================================================================
 
-local previousChild = nil
+do
+  local previousChild = nil
 
--- Toggles Dejunk's GUI.
-function Core:ToggleGUI()
-  if not ParentFrame.Initialized then
-    ParentFrame:Initialize() end
-  if not ParentFrame:GetCurrentChild() then
-    ParentFrame:SetCurrentChild(DejunkChildFrame) end
-
-  ParentFrame:Toggle()
-end
-
--- Enables Dejunk's GUI.
-function Core:EnableGUI()
-  if not ParentFrame.Initialized then return end
-  ParentFrame:Enable()
-end
-
--- Disables Dejunk's GUI.
-function Core:DisableGUI()
-  if not ParentFrame.Initialized then return end
-  ParentFrame:Disable()
-end
-
--- Switches between global and character specific settings.
-function Core:ToggleCharacterSpecificSettings()
-  DejunkDB:Toggle()
-  ListManager:Update()
-
-  -- If transport child frame is showing, show previous child
-  if (ParentFrame:GetCurrentChild() == TransportChildFrame) then
-    ParentFrame:SetCurrentChild(previousChild) end
-
-  ParentFrame:Refresh()
-end
-
--- Sets the ParentFrame's child to DejunkChildFrame.
-function Core:ShowDejunkChild()
-  assert(ParentFrame.Initialized)
-  previousChild = ParentFrame:GetCurrentChild()
-  TitleFrame:SetTitleToDejunk()
-  ParentFrame:SetCurrentChild(DejunkChildFrame)
-end
-
--- Sets the ParentFrame's child to DestroyChildFrame.
-function Core:ShowDestroyChild()
-  assert(ParentFrame.Initialized)
-  previousChild = ParentFrame:GetCurrentChild()
-  TitleFrame:SetTitleToDestroy()
-  ParentFrame:SetCurrentChild(DestroyChildFrame)
-end
-
--- Sets the ParentFrame's child to TransportChildFrame.
--- @param listName - the name of the list used for transport operations
--- @param transportType - the type of transport operations to perform
-function Core:ShowTransportChild(listName, transportType)
-  previousChild = ParentFrame:GetCurrentChild()
-
-  ParentFrame:SetCurrentChild(TransportChildFrame, function()
-    TransportChildFrame:SetData(listName, transportType)
-  end)
-end
-
--- Swaps between the Dejunk and Destroy child frames.
-function Core:SwapDejunkDestroyChildFrames()
-  assert(ParentFrame.Initialized)
-
-  local currentChild = ParentFrame:GetCurrentChild()
-
-  local showDestroy = (currentChild == DejunkChildFrame) or
-    ((currentChild == TransportChildFrame) and (previousChild == DejunkChildFrame))
-  local showDejunk = (currentChild == DestroyChildFrame) or
-    ((currentChild == TransportChildFrame) and (previousChild == DestroyChildFrame))
-
-  if showDestroy then
-    self:ShowDestroyChild()
-  elseif showDejunk then
-    self:ShowDejunkChild()
-  else
-    error("Something went wrong :(")
+  -- Toggles Dejunk's GUI.
+  function Core:ToggleGUI()
+    if ParentFrame.Initialize then ParentFrame:Initialize() end
+    ParentFrame:Toggle()
   end
-end
 
--- Sets the ParentFrame's child to the previously displayed child.
-function Core:ShowPreviousChild()
-  if not previousChild then return end
-  ParentFrame:SetCurrentChild(previousChild)
+  -- Enables Dejunk's GUI.
+  function Core:EnableGUI()
+    ParentFrame:Enable()
+  end
+
+  -- Disables Dejunk's GUI.
+  function Core:DisableGUI()
+    ParentFrame:Disable()
+  end
+
+  -- Switches between global and character specific settings.
+  function Core:ToggleCharacterSpecificSettings()
+    DejunkDB:Toggle()
+    ListManager:Update()
+
+    -- If transport child frame is showing, show previous child
+    if (ParentFrame:GetContent() == TransportChildFrame) then
+      ParentFrame:SetContent(previousChild)
+    end
+
+    ParentFrame:Refresh()
+  end
+
+  -- Sets the ParentFrame's child to DejunkChildFrame.
+  function Core:ShowDejunkChild()
+    previousChild = ParentFrame:GetContent()
+    TitleFrame:SetTitleToDejunk()
+    ParentFrame:SetContent(DejunkChildFrame)
+  end
+
+  -- Sets the ParentFrame's child to DestroyChildFrame.
+  function Core:ShowDestroyChild()
+    previousChild = ParentFrame:GetContent()
+    TitleFrame:SetTitleToDestroy()
+    ParentFrame:SetContent(DestroyChildFrame)
+  end
+
+  -- Sets the ParentFrame's child to TransportChildFrame.
+  -- @param listName - the name of the list used for transport operations
+  -- @param transportType - the type of transport operations to perform
+  function Core:ShowTransportChild(listName, transportType)
+    previousChild = ParentFrame:GetContent()
+
+    ParentFrame:SetContent(TransportChildFrame, function()
+      TransportChildFrame:SetData(listName, transportType)
+    end)
+  end
+
+  -- Swaps between the Dejunk and Destroy child frames.
+  function Core:SwapDejunkDestroyChildFrames()
+    local content = ParentFrame:GetContent()
+
+    local showDestroy = (content == DejunkChildFrame) or
+      ((content == TransportChildFrame) and (previousChild == DejunkChildFrame))
+    local showDejunk = (content == DestroyChildFrame) or
+      ((content == TransportChildFrame) and (previousChild == DestroyChildFrame))
+
+    if showDestroy then
+      self:ShowDestroyChild()
+    elseif showDejunk then
+      self:ShowDejunkChild()
+    else
+      error("Something went wrong :(")
+    end
+  end
+
+  -- Sets the ParentFrame's child to the previously displayed child.
+  function Core:ShowPreviousChild()
+    if not previousChild then return end
+    ParentFrame:SetContent(previousChild)
+  end
 end
 
 -- ============================================================================

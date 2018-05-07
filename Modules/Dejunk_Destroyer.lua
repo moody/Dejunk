@@ -16,8 +16,6 @@ local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
 local Destroyer = Addon.Destroyer
 local Confirmer = Addon.Confirmer
 
-local ParentFrame = Addon.DejunkFrames.ParentFrame
-
 local Core = Addon.Core
 local Consts = Addon.Consts
 local DejunkDB = Addon.DejunkDB
