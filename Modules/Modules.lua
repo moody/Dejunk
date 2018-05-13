@@ -34,9 +34,15 @@ Addon.MinimapIcon = {}
 
 -- /UI/Frames/
 Addon.Frames = {
-  ParentFrame = DFL.Factory.ParentFrame:Create(),
-  TitleFrame = DFL.Factory.ChildFrame:Create(),
-  DejunkChildFrame = DFL.Factory.ChildFrame:Create(),
-  DestroyChildFrame = DFL.Factory.ChildFrame:Create(),
-  TransportChildFrame = DFL.Factory.ChildFrame:Create()
+  ParentFrame = DFL.ParentFrame:Create(),
+  TitleFrame = DFL.ChildFrame:Create(),
+  DejunkChildFrame = DFL.ChildFrame:Create(),
+  DestroyChildFrame = DFL.ChildFrame:Create(),
+  TransportChildFrame = DFL.ChildFrame:Create()
+}
+
+-- /UI/Objects/
+Addon.Objects = {
+  ListFrame = DFL:NewObjectTable(),
+  OptionsFrame = DFL:NewObjectTable()
 }
