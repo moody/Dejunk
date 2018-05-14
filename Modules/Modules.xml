@@ -32,6 +32,7 @@
   <Script file="Modules\UI\Frames\TransportChildFrame.lua"/>
 
   <!-- /UI/Objects/ -->
+  <Script file="Modules\UI\Objects\ListButton.lua"/>
   <Script file="Modules\UI\Objects\ListFrame.lua"/>
   <Script file="Modules\UI\Objects\OptionsFrame.lua"/>
 </Ui>

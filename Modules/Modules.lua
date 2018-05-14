@@ -43,6 +43,7 @@ Addon.Frames = {
 
 -- /UI/Objects/
 Addon.Objects = {
+  ListButton = DFL:NewObjectTable(),
   ListFrame = DFL:NewObjectTable(),
   OptionsFrame = DFL:NewObjectTable()
 }

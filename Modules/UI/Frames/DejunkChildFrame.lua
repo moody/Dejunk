@@ -163,13 +163,11 @@ end
 -- ============================================================================
 
 function DejunkChildFrame:CreateLists()
-  local frame = self.Frame
-
-  local container = DFL.Frame:Create(frame)
-  container:SetFlexible(true)
-  container:SetSpacing(DFL:Padding(0.5))
-  -- TODO: Create a list frame object which takes the list name as a parameter
-  -- container:Add(Addon.Objects.ListFrame:Create(frame, Addon.ListManager.Inclusions))
-  -- container:Add(Addon.Objects.ListFrame:Create(frame, Addon.ListManager.Exclusions))
-  frame:Add(container)
+  local parent = self.Frame
+  local frame = DFL.Frame:Create(parent)
+  frame:SetFlexible(true)
+  frame:SetSpacing(DFL:Padding(0.5))
+  frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Inclusions))
+  frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Exclusions))
+  parent:Add(frame)
 end
