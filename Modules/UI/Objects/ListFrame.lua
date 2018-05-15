@@ -13,6 +13,7 @@ local IsAltKeyDown, IsShiftKeyDown = IsAltKeyDown, IsShiftKeyDown
 local ListFrame = Addon.Objects.ListFrame
 ListFrame.Scripts = {}
 
+local Colors = Addon.Colors
 local ListManager = Addon.ListManager
 
 -- ============================================================================
@@ -21,12 +22,18 @@ local ListManager = Addon.ListManager
 
 -- Returns the localized text and tooltip for the list.
 local function getListStrings(listName)
+  local baseTooltip = format("%s|n|n%s|n|n%s", L.LIST_FRAME_ADD_TOOLTIP,
+    L.LIST_FRAME_REM_TOOLTIP, L.LIST_FRAME_REM_ALL_TOOLTIP)
+    
   if (listName == ListManager.Inclusions) then
-    return L.INCLUSIONS_TEXT, L.INCLUSIONS_TOOLTIP
+    local tooltip = format("%s|n|n%s", L.INCLUSIONS_TOOLTIP, baseTooltip)
+    return L.INCLUSIONS_TEXT, tooltip
   elseif (listName == ListManager.Exclusions) then
-    return L.EXCLUSIONS_TEXT, L.EXCLUSIONS_TOOLTIP
+    local tooltip = format("%s|n|n%s", L.EXCLUSIONS_TOOLTIP, baseTooltip)
+    return L.EXCLUSIONS_TEXT, tooltip
   elseif (listName == ListManager.Destroyables) then
-    return L.DESTROYABLES_TEXT, L.DESTROYABLES_TOOLTIP
+    local tooltip = format("%s|n|n%s", L.DESTROYABLES_TOOLTIP, baseTooltip)
+    return L.DESTROYABLES_TEXT, tooltip
   else
     error(listName.." is not a valid list name.")
   end
@@ -35,7 +42,7 @@ end
 local function createTitleButton(parent, listName, text, tooltip)
   local titleButton = DFL.Button:Create(parent, text, DFL.Fonts.Huge)
   titleButton:RegisterForClicks("RightButtonUp")
-  titleButton:SetColors(DFL.Colors.None, DFL.Colors.None)--, Colors[listName], Colors[listName.."Hi"])
+  titleButton:SetColors(Colors.None, Colors.None, Colors[listName], Colors[listName.."Hi"])
   titleButton._listName = listName
   titleButton._tooltip = tooltip
 
@@ -68,6 +75,7 @@ local function createTransportButtons(parent, listName)
   frame:SetSpacing(DFL:Padding(0.25))
 
   local importButton = DFL.Button:Create(parent, L.IMPORT_TEXT, DFL.Fonts.Small)
+  importButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
   importButton:SetScript("OnClick", function(self, button, down)
     Addon.Core:ShowTransportChild(listName, Addon.Frames.TransportChildFrame.Import)
   end)
@@ -75,6 +83,7 @@ local function createTransportButtons(parent, listName)
   frame:Add(importButton)
 
   local exportButton = DFL.Button:Create(parent, L.EXPORT_TEXT, DFL.Fonts.Small)
+  exportButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
   exportButton:SetScript("OnClick", function(self, button, down)
     Addon.Core:ShowTransportChild(listName, Addon.Frames.TransportChildFrame.Export)
   end)
@@ -82,6 +91,30 @@ local function createTransportButtons(parent, listName)
   frame:Add(exportButton)
 
   return frame
+end
+
+-- ============================================================================
+-- FauxScrollFrame._objFrame Functions
+-- ============================================================================
+
+-- Adds the item currently on the cursor to list.
+local function addCursorItem(self)
+  if self:IsEnabled() and CursorHasItem() then
+    local infoType, itemID = GetCursorInfo()
+
+    if (infoType == "item") then
+      ListManager:AddToList(self._listName, itemID)
+    end
+    
+    ClearCursor()
+  end
+end
+
+-- Removes the item from the list by id.
+local function removeItem(self, itemID)
+  if self:IsEnabled() then
+    ListManager:RemoveFromList(self._listName, itemID)
+  end
 end
 
 -- ============================================================================
@@ -95,15 +128,27 @@ function ListFrame:Create(parent, listName)
   local title, tooltip = getListStrings(listName)
 
   local frame = DFL.Frame:Create(parent, DFL.Alignments.TOP, DFL.Directions.DOWN)
-  frame:SetSpacing(DFL:Padding(0.5))
+  frame:SetSpacing(DFL:Padding(0.25))
+
   -- Title button
   local titleButton = createTitleButton(frame, listName, title, tooltip)
   frame._titleButton = titleButton
   frame:Add(titleButton)
+
   -- FauxScrollFrame
   local fsFrame = DFL.FauxScrollFrame:Create(frame, ListManager.Lists[listName], createListButton, 6)
+  fsFrame:SetColors(Colors.ScrollFrame, {
+    Colors.Slider,
+    Colors.SliderThumb,
+    Colors.SliderThumbHi
+  })
+  fsFrame._objFrame:SetScript("OnMouseUp", addCursorItem)
+  fsFrame._objFrame.AddCursorItem = addCursorItem
+  fsFrame._objFrame.RemoveItem = removeItem
+  fsFrame._objFrame._listName = listName
   frame._fsFrame = fsFrame
   frame:Add(fsFrame)
+
   -- Transport buttons
   local transportButtons = createTransportButtons(frame, listName)
   frame._transportButtons = transportButtons
@@ -111,9 +156,6 @@ function ListFrame:Create(parent, listName)
 
   -- Mixins
   DFL:AddMixins(frame, self.Functions)
-
-  frame:SetColors()
-  frame:Refresh()
 
   return frame
 end
@@ -125,6 +167,9 @@ end
 do
   local Functions = ListFrame.Functions
 
-  function Functions:SetColors()
+  Functions.SetColors = nop
+
+  function Functions:Refresh()
+    DFL.Frame.Functions.Refresh(self)
   end
 end

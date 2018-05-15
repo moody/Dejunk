@@ -9,6 +9,8 @@ local DFL = Addon.Libs.DFL
 -- Addon
 local OptionsFrame = Addon.Objects.OptionsFrame
 
+local Colors = Addon.Colors
+
 -- ============================================================================
 -- Creation Function
 -- ============================================================================
@@ -21,16 +23,16 @@ function OptionsFrame:Create(parent, title)
 
   -- Title
   local titleFS = DFL.FontString:Create(frame, title)
-  -- titleFS:SetColors(Colors.LabelText)
+  titleFS:SetColors(Colors.LabelText)
   frame:Add(titleFS)
 
   -- Scroll frame
   local sf = DFL.SliderScrollFrame:Create(frame)
-  -- sf:SetColors(Colors.ScrollFrame, {
-  --   Colors.Slider,
-  --   Colors.SliderThumb,
-  --   Colors.SliderThumbHi
-  -- })
+  sf:SetColors(Colors.ScrollFrame, {
+    Colors.Slider,
+    Colors.SliderThumb,
+    Colors.SliderThumbHi
+  })
   sf._scrollFrame._scrollChild:SetSpacing(DFL:Padding())
   sf:SetMinHeight(100)
   frame._scrollFrame = sf
@@ -50,22 +52,16 @@ do
   local Functions = OptionsFrame.Functions
 
   function Functions:CreateHeading(text)
-    local frame = DFL.Frame:Create(parent,
+    local heading = DFL.Frame:Create(parent,
       DFL.Alignments.LEFT, DFL.Directions.DOWN)
-   frame:SetSpacing(DFL:Padding(0.5))
-
-    -- Heading font string
-   frame:Add(DFL.FontString:Create(frame, text))
-    
-    -- Heading options container
-    local heading = DFL.Frame:Create(frame)
-    heading:SetDirection(DFL.Directions.DOWN)
     heading:SetSpacing(DFL:Padding(0.5))
-    
-   frame:Add(heading)
 
-    self._scrollFrame:Add(frame)
+    -- Heading label
+    local label = DFL.FontString:Create(heading, text)
+    label:SetColors(Colors.LabelText)
+    heading:Add(label)
 
+    self._scrollFrame:Add(heading)
     return heading
   end
 

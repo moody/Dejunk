@@ -5,6 +5,7 @@ local AddonName, Addon = ...
 -- Libs
 local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
+local DCL = Addon.Libs.DCL
 
 -- Dejunk
 local Core = Addon.Core
@@ -52,7 +53,6 @@ function Core:Initialize()
   Addon.Consts:Initialize()
   Addon.MerchantButton:Initialize()
   Addon.MinimapIcon:Initialize()
-  self:InitializeBindingStrings()
 
   -- Setup slash command
   LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, function()
@@ -66,10 +66,7 @@ end
 -- @param msg - the message to print
 function Core:Print(msg)
   if DejunkDB.SV.SilentMode then return end
-
-  local title = Tools:GetColorString("[Dejunk]",
-    Colors:GetColor(Colors.LabelText))
-
+  local title = DCL:ColorString("[Dejunk]", Colors.LabelText)
   print(format("%s %s", title, msg))
 end
 
@@ -83,8 +80,8 @@ end
 -- @param msg - the message to print
 function Core:Debug(title, msg)
   if not self.IsDebugging then return end
-  local debug = Tools:GetColorString("[Dejunk Debug]", Colors.Red)
-  title = Tools:GetColorString(title, Colors.Green)
+  local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
+  title = DCL:ColorString(title, Colors.Green)
   print(format("%s %s: %s", debug, title, msg))
 end
 Core.IsDebugging = true
@@ -238,7 +235,7 @@ do
     item = DBL:GetItem(bag, slot, item)
     if not item then return end
 
-    local leftText = Tools:GetColorString(format("%s:", AddonName), Colors.LabelText)
+    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
     local rightText
 
     if not IsShiftKeyDown() then -- Dejunk tooltip
@@ -247,16 +244,16 @@ do
       local isJunkItem, reasonText = Dejunker:IsJunkItem(item)
 
       rightText = isJunkItem and
-        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_SOLD), Colors.Red) or
-        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Green)
+        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_SOLD), Colors.Red) or
+        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Green)
     else -- Destroy tooltip
       -- Return if item cannot be destroyed
       if not Tools:ItemCanBeDestroyed(item) then return end
       local isJunkItem, reasonText = Destroyer:IsDestroyableItem(item)
 
       rightText = isJunkItem and
-        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_DESTROYED), Colors.Red) or
-        Tools:GetColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_DESTROYED), Colors.Green)
+        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_DESTROYED), Colors.Red) or
+        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_DESTROYED), Colors.Green)
     end
 
     self:AddLine(" ") -- blank line

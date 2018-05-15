@@ -1,5 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+<Ui>
 	<Script file="Modules\Modules.lua"/>
 
   <Script file="Modules\Dejunk_Consts.lua"/>
@@ -17,12 +16,8 @@
   <Script file="Modules\UI\Dejunk_MinimapIcon.lua"/>
 
   <!-- /UI/Colors/ -->
-  <Script file="Modules\UI\Colors\Dejunk_Colors.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Default.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Red.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Purple.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Green.lua"/>
-  <Script file="Modules\UI\Colors\Scheme_Gray.lua"/>
+  <Script file="Modules\UI\Colors\Colors.lua"/>
+  <Script file="Modules\UI\Colors\Schemes.lua"/>
   
   <!-- /UI/Frames/ -->
   <Script file="Modules\UI\Frames\ParentFrame.lua"/>

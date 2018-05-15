@@ -3,9 +3,10 @@
 local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
-local LDB = LibStub("LibDataBroker-1.1")
-local LDBIcon = LibStub("LibDBIcon-1.0")
+local L = Addon.Libs.L
+local DCL = Addon.Libs.DCL
+local LDB = Addon.Libs.LDB
+local LDBIcon = Addon.Libs.LDBIcon
 
 -- Dejunk
 local MinimapIcon = Addon.MinimapIcon
@@ -35,10 +36,10 @@ function MinimapIcon:Initialize()
     end,
 
     OnTooltipShow = function(tooltip)
-			tooltip:AddLine(Tools:GetColorString(AddonName, Colors.LabelText))
-			tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_1, Colors.White))
-      tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_2, Colors.White))
-      tooltip:AddLine(Tools:GetColorString(L.MINIMAP_ICON_TOOLTIP_3, Colors.White))
+			tooltip:AddLine(DCL:ColorString(AddonName, Colors.LabelText))
+			tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_1, DCL.Colors.White))
+      tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_2, DCL.Colors.White))
+      tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_3, DCL.Colors.White))
 		end,
   })
 

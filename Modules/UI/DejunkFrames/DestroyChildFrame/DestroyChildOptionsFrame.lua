@@ -101,7 +101,7 @@ function DestroyChildOptionsFrame:CreateOptions()
     L.POOR_TEXT, Colors.Poor, L.DESTROY_ALL_TOOLTIP, "DestroyPoor"))
 
   -- Destroy Inclusions
-  local inclusionsText = Tools:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
+  local inclusionsText = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", inclusionsText, nil,
     format(L.DESTROY_LIST_TOOLTIP, inclusionsText), "DestroyInclusions"))
 
@@ -122,7 +122,7 @@ function DestroyChildOptionsFrame:CreateOptions()
   add(ignoreHeading)
 
   -- Ignore Exclusions
-  local exclusionsText = Tools:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
+  local exclusionsText = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
   add(FrameFactory:CreateCheckButton(nil, "Small", exclusionsText, nil,
     format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), "DestroyIgnoreExclusions"))
 end

@@ -9,7 +9,7 @@ local DFL = Addon.Libs.DFL
 -- Dejunk
 local ParentFrame = Addon.Frames.ParentFrame
 
--- local Colors = Addon.Colors
+local Colors = Addon.Colors
 
 -- ============================================================================
 --                          Frame Lifecycle Functions
@@ -17,7 +17,7 @@ local ParentFrame = Addon.Frames.ParentFrame
 
 function ParentFrame:OnInitialize()
   local frame = self.Frame
-  -- frame:SetColors(Colors.ParentFrame, Colors.ScrollFrame)
+  frame:SetColors(Colors.ParentFrame, Colors.ScrollFrame)
   frame:SetPadding(DFL:Padding())
   frame:SetSpacing(DFL:Padding())
 

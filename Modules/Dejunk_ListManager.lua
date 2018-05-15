@@ -369,7 +369,7 @@ function ListManager:ParseList(listName)
       if (attempts >= MAX_PARSE_ATTEMPTS) then
         attempts = 0
         toAdd[itemID] = nil
-        Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, Tools:GetColorString(itemID, Colors.Grey)))
+        Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.Colors.Grey)))
       end
 
       parseFrame.AttemptsToParse[itemID] = attempts

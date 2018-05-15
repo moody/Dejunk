@@ -36,7 +36,7 @@ do -- Listener function
   local function listener(...)
     if (currentState == DestroyerState.None) then
       local g, k, v, o = ...
-      if k then Addon.Core:Debug("Destroyer", k) else Addon.Core:Debug("Destroyer", "DBL update") end
+      if k then Addon.Core:Debug("Destroyer", tostring(k)) else Addon.Core:Debug("Destroyer", "DBL update") end
       DBL:GetItemsByFilter(Destroyer.Filter, ItemsToDestroy)
       if DejunkDB.SV.AutoDestroy and (#ItemsToDestroy > 0) and Core:CanDestroy() then
         Destroyer:StartDestroying()

@@ -13,7 +13,7 @@ local nop = nop
 -- Dejunk
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
--- local Colors = Addon.Colors
+local Colors = Addon.Colors
 local DejunkDB = Addon.DejunkDB
 
 -- ============================================================================
@@ -40,9 +40,8 @@ do
   local function createCheckButton(text, tooltip, svKey)
     local cb = DFL.CheckButton:Create(UIParent, text, tooltip, DFL.Fonts.Small)
     cb:SetCheckRefreshFunction(function() return DejunkDB.SV[svKey] end)
-    -- cb:SetColors(Colors.LabelText, Colors.ParentFrame)
+    cb:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
     function cb:OnClick(checked) DejunkDB.SV[svKey] = checked end
-    -- DFL:AddBorder(cb._checkButton, unpack(Colors.ScrollFrame))
     return cb
   end
 
@@ -146,15 +145,15 @@ do
   end
 
   function DejunkChildFrame:CreateOptions()
-    local container = DFL.Frame:Create(self.Frame,
+    local frame = DFL.Frame:Create(self.Frame,
       DFL.Alignments.TOP, DFL.Directions.RIGHT)
-    container:SetEqualized(true)
-    container:SetFlexible(true)
-    container:SetSpacing(DFL:Padding(0.5))
-    container:Add(createGeneralOptions())
-    container:Add(createSellOptions())
-    container:Add(createIgnoreOptions())
-    self.Frame:Add(container)
+    frame:SetEqualized(true)
+    frame:SetFlexible(true)
+    frame:SetSpacing(DFL:Padding(0.5))
+    frame:Add(createGeneralOptions())
+    frame:Add(createSellOptions())
+    frame:Add(createIgnoreOptions())
+    self.Frame:Add(frame)
   end
 end
 

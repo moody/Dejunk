@@ -1,9 +1,10 @@
 -- Dejunk_Tools: contains helpful functions such as coloring a string, displaying a tooltip, etc.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DCL = Addon.Libs.DCL
 
 -- Upvalues
 local Clamp = Clamp
@@ -19,74 +20,41 @@ local assert = assert
 local pairs, ipairs = pairs, ipairs
 
 -- Dejunk
-local Tools = DJ.Tools
+local Tools = Addon.Tools
 
-local Colors = DJ.Colors
-local Consts = DJ.Consts
+local Colors = Addon.Colors
+local Consts = Addon.Consts
+local ListManager = Addon.ListManager
 
 -- ============================================================================
 --                              Color Functions
 -- ============================================================================
 
--- Removes WoW color escape sequences from a string.
-function Tools:RemoveColorFromString(string)
-  return string:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
-end
-
--- Formats and returns a string with the specified color.
--- @oaram string - the string to color
--- @param color  - Colors string or table: {r, g, b[, a]}
--- @return - a string formatted with color
-function Tools:GetColorString(string, color)
-  local r, g, b = 0, 0, 0
-
-  if type(color) == "string" then
-    r, g, b = unpack(Colors:GetColor(color))
-  else
-    r, g, b = unpack(color)
-  end
-
-  -- Convert to value between 0-255
-  r = (Clamp(r, 0, 1) * 255)
-  g = (Clamp(g, 0, 1) * 255)
-  b = (Clamp(b, 0, 1) * 255)
-
-  -- Color format (hex): AARRGGBB
-  -- %02X = two-digit hex value, 00-FF
-  return format("|cFF%02X%02X%02X%s|r", r, g, b, string)
-end
-
--- Returns a random color.
--- @return color table: {r, g, b}
-function Tools:GetRandomColor()
-  return {math.random(), math.random(), math.random()}
-end
-
 -- Returns the localized Inclusions string in color.
 function Tools:GetInclusionsString()
-  return self:GetColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
+  return DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
 end
 
 -- Returns the localized Exclusions string in color.
 function Tools:GetExclusionsString()
-  return self:GetColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
+  return DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
 end
 
 -- Returns the localized Destroyables string in color.
 function Tools:GetDestroyablesString()
-  return self:GetColorString(L.DESTROYABLES_TEXT, Colors.Destroyables)
+  return DCL:ColorString(L.DESTROYABLES_TEXT, Colors.Destroyables)
 end
 
 -- Returns the list name as a localized string in color.
 -- @param listName - a list name key defined in ListManager
 function Tools:GetColoredListName(listName)
-  assert(DJ.ListManager[listName])
+  assert(ListManager[listName])
 
-  if (listName == DJ.ListManager.Inclusions) then
+  if (listName == ListManager.Inclusions) then
     return self:GetInclusionsString()
-  elseif (listName == DJ.ListManager.Exclusions) then
+  elseif (listName == ListManager.Exclusions) then
     return self:GetExclusionsString()
-  elseif (listName == DJ.ListManager.Destroyables) then
+  elseif (listName == ListManager.Destroyables) then
     return self:GetDestroyablesString()
   else
     error(format("Unsupported list name: \"%s\"", listName))

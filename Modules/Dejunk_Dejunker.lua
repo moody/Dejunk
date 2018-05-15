@@ -5,6 +5,7 @@ local AddonName, Addon = ...
 -- Libs
 local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
+local DCL = Addon.Libs.DCL
 
 -- Upvalues
 local assert, remove = assert, table.remove
@@ -34,7 +35,7 @@ do -- Listener function
   local function listener(...)
     if (currentState == DejunkerState.None) then
       local g, k, v, o = ...
-      if k then Addon.Core:Debug("Dejunker", k) else Addon.Core:Debug("Dejunker", "DBL update") end
+      if k then Addon.Core:Debug("Dejunker", tostring(k)) else Addon.Core:Debug("Dejunker", "DBL update") end
       local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
       DBL:GetItemsByFilter(Dejunker.Filter, ItemsToSell, maxItems)
     end
@@ -421,7 +422,7 @@ do -- IsIgnoredEquipmentSetsItem
     if not DejunkDB.SV.IgnoreEquipmentSets then return false end
     if not TRIMMED_EQUIPMENT_SETS then
       TRIMMED_EQUIPMENT_SETS =
-        strtrim(Tools:RemoveColorFromString(EQUIPMENT_SETS:gsub("%%s", "")), " ")
+        strtrim(DCL:RemoveColor(EQUIPMENT_SETS:gsub("%%s", "")), " ")
     end
 
     return Tools:BagItemTooltipHasText(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
