@@ -21,9 +21,16 @@ function OptionsFrame:Create(parent, title)
     DFL.Alignments.TOP, DFL.Directions.DOWN)
   frame:SetSpacing(DFL:Padding(0.5))
 
-  -- Title
-  local titleFS = DFL.FontString:Create(frame, title)
-  titleFS:SetColors(Colors.LabelText)
+  local titleFS = DFL.FontString:Create(parent, title)
+  local titleColor = Colors.LabelText
+  if (title == L.SELL_TEXT) then
+    titleColor = Colors.Inclusions
+  elseif (title == L.IGNORE_TEXT) then
+    titleColor = Colors.Exclusions
+  elseif (title == L.DESTROY_TEXT) then
+    titleColor = Colors.Destroyables
+  end
+  titleFS:SetColors(titleColor)
   frame:Add(titleFS)
 
   -- Scroll frame
@@ -34,7 +41,7 @@ function OptionsFrame:Create(parent, title)
     Colors.SliderThumbHi
   })
   sf._scrollFrame._scrollChild:SetSpacing(DFL:Padding())
-  sf:SetMinHeight(100)
+  sf:SetMinHeight(150)
   frame._scrollFrame = sf
   frame:Add(sf)
 

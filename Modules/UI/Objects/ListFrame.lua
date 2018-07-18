@@ -72,9 +72,12 @@ end
 
 local function createTransportButtons(parent, listName)
   local frame = DFL.Frame:Create(parent)
+  Core:Debug("ListFrame", "Make transport buttons fill space.")
+  frame:SetEqualized(true)
+  -- frame:SetFlexible(true)
   frame:SetSpacing(DFL:Padding(0.25))
 
-  local importButton = DFL.Button:Create(parent, L.IMPORT_TEXT, DFL.Fonts.Small)
+  local importButton = DFL.Button:Create(frame, L.IMPORT_TEXT, DFL.Fonts.Small)
   importButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
   importButton:SetScript("OnClick", function(self, button, down)
     Addon.Core:ShowTransportChild(listName, Addon.Frames.TransportChildFrame.Import)
@@ -82,7 +85,7 @@ local function createTransportButtons(parent, listName)
   frame._importButton = importButton
   frame:Add(importButton)
 
-  local exportButton = DFL.Button:Create(parent, L.EXPORT_TEXT, DFL.Fonts.Small)
+  local exportButton = DFL.Button:Create(frame, L.EXPORT_TEXT, DFL.Fonts.Small)
   exportButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
   exportButton:SetScript("OnClick", function(self, button, down)
     Addon.Core:ShowTransportChild(listName, Addon.Frames.TransportChildFrame.Export)
@@ -149,6 +152,22 @@ function ListFrame:Create(parent, listName)
   frame._fsFrame = fsFrame
   frame:Add(fsFrame)
 
+  -- No items font string
+  fsFrame._noItemsFS = DFL.FontString:Create(fsFrame._objFrame, L.NO_ITEMS_TEXT)
+  fsFrame._noItemsFS:SetColors(Colors.LabelText)
+  fsFrame._noItemsFS:SetPoint(DFL.Points.LEFT, DFL:Padding(0.5), 0)
+  fsFrame._noItemsFS:SetPoint(DFL.Points.RIGHT, -DFL:Padding(0.5), 0)
+  fsFrame._noItemsFS:SetJustifyH("CENTER")
+  fsFrame._noItemsFS:SetAlpha(0.5)
+
+  function fsFrame:OnUpdate(elapsed)
+    if not self._objFrame:GetChildren()[1]:IsVisible() then
+      self._noItemsFS:Show()
+    else
+      self._noItemsFS:Hide()
+    end
+  end
+
   -- Transport buttons
   local transportButtons = createTransportButtons(frame, listName)
   frame._transportButtons = transportButtons
@@ -171,5 +190,6 @@ do
 
   function Functions:Refresh()
     DFL.Frame.Functions.Refresh(self)
+    self._fsFrame._noItemsFS:Refresh()
   end
 end

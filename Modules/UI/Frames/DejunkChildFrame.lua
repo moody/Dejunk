@@ -84,11 +84,11 @@ do
     local rare = createCheckButton(L.RARE_TEXT, L.SELL_ALL_TOOLTIP, "SellRare")
     local epic = createCheckButton(L.EPIC_TEXT, L.SELL_ALL_TOOLTIP, "SellEpic")
     
-    poor:SetColors(DCL.WowColors.Poor)
-    common:SetColors(DCL.WowColors.Common)
-    uncommon:SetColors(DCL.WowColors.Uncommon)
-    rare:SetColors(DCL.WowColors.Rare)
-    epic:SetColors(DCL.WowColors.Epic)
+    poor:SetColors(DCL.Wow.Poor)
+    common:SetColors(DCL.Wow.Common)
+    uncommon:SetColors(DCL.Wow.Uncommon)
+    rare:SetColors(DCL.Wow.Rare)
+    epic:SetColors(DCL.Wow.Epic)
     
     byQuality:Add(poor)
     byQuality:Add(common)
@@ -104,6 +104,7 @@ do
     -- -- Equipment below ilvl
     -- byType:Add(createCheckButtonNumberBox(L.SELL_EQUIPMENT_BELOW_ILVL_TEXT,
     --   L.SELL_EQUIPMENT_BELOW_ILVL_TOOLTIP, "SellEquipmentBelowILVL"))
+    Addon.Core:Debug("DejunkChildFrame:107", "Don't forget to add a check button number box!")
 
     return sf
   end
@@ -144,15 +145,54 @@ do
     return sf
   end
 
+  local function createDestroyOptions()
+    local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.DESTROY_TEXT)
+    
+    -- General heading
+    local general = sf:CreateHeading(L.GENERAL_TEXT)
+    -- Auto destroy
+    general:Add(createCheckButton(L.AUTO_DESTROY_TEXT, L.AUTO_DESTROY_TOOLTIP, "AutoDestroy"))
+    -- Price threshold check button and currency input
+    general:Add(createCheckButton(L.PRICE_THRESHOLD_TEXT, L.PRICE_THRESHOLD_TOOLTIP, "DestroyUsePriceThreshold"))
+    -- general:Add(Addon.Objects.CurrencyInputFrame:Create("DestroyPriceThreshold", DFL.Fonts.Small))
+    Addon.Core:Debug("DejunkChildFrame:158", "Don't forget to add a currency input frame!")
+
+    -- Destroy heading
+    local destroy = sf:CreateHeading(L.DESTROY_TEXT)
+    -- Destroy poor
+    local poor = createCheckButton(L.POOR_TEXT, L.DESTROY_ALL_TOOLTIP, "DestroyPoor")
+    poor:SetColors(DCL.Wow.Poor)
+    destroy:Add(poor)
+    -- Destroy Inclusions
+    local inclusionsText = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Inclusions)
+    destroy:Add(createCheckButton(inclusionsText,
+      format(L.DESTROY_LIST_TOOLTIP, inclusionsText), "DestroyInclusions"))
+    -- Destroy pets already collected
+    destroy:Add(createCheckButton( L.DESTROY_PETS_ALREADY_COLLECTED_TEXT,
+      L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP, "DestroyPetsAlreadyCollected"))
+    -- Destroy toys already collected
+    destroy:Add(createCheckButton(L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT,
+      L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP, "DestroyToysAlreadyCollected"))
+    
+    -- Ignore heading
+    local ignore = sf:CreateHeading(L.IGNORE_TEXT)
+    -- Ignore Exclusions
+    local exclusionsText = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Exclusions)
+    ignore:Add(createCheckButton(exclusionsText,
+      format(L.DESTROY_IGNORE_LIST_TOOLTIP, exclusionsText), "DestroyIgnoreExclusions"))
+
+    return sf
+  end
+
   function DejunkChildFrame:CreateOptions()
-    local frame = DFL.Frame:Create(self.Frame,
-      DFL.Alignments.TOP, DFL.Directions.RIGHT)
+    local frame = DFL.Frame:Create(self.Frame)
     frame:SetEqualized(true)
     frame:SetFlexible(true)
     frame:SetSpacing(DFL:Padding(0.5))
     frame:Add(createGeneralOptions())
     frame:Add(createSellOptions())
     frame:Add(createIgnoreOptions())
+    frame:Add(createDestroyOptions())
     self.Frame:Add(frame)
   end
 end
@@ -168,5 +208,6 @@ function DejunkChildFrame:CreateLists()
   frame:SetSpacing(DFL:Padding(0.5))
   frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Inclusions))
   frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Exclusions))
+  frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Destroyables))
   parent:Add(frame)
 end

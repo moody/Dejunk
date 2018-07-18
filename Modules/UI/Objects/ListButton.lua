@@ -49,7 +49,7 @@ function ListButton:Create(parent)
   DFL:AddMixins(button, self.Functions)
   DFL:AddScripts(button, self.Scripts)
 
-  button:SetMinWidth(300)
+  button:SetMinWidth(275)
   button:SetMinHeight(32)
   button:Refresh()
   
