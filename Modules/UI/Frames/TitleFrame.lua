@@ -18,8 +18,7 @@ local ParentFrame = Addon.Frames.ParentFrame
 
 function TitleFrame:OnInitialize()
   local frame = self.Frame
-  frame:SetEqualized(true)
-  frame:SetFlexible(true)
+  frame:SetLayout(DFL.Layouts.FLEX_EQUAL)
   frame:SetSpacing(DFL:Padding())
   
   self:CreateLeft()
@@ -93,13 +92,6 @@ function TitleFrame:CreateRight()
   -- Main frame
   local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPRIGHT)
   frame:SetSpacing(DFL:Padding(0.25))
-
-  -- Dejunk/Destroy button
-  local dejunkDestroy = DFL.Button:Create(parent, L.DESTROY_TEXT)
-  dejunkDestroy:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
-  function dejunkDestroy:OnClick() Addon.Core:SwapDejunkDestroyChildFrames() end
-  self.DejunkDestroyButton = dejunkDestroy
-  frame:Add(dejunkDestroy)
 
   -- Scheme button
   local schemeButton = DFL.Button:Create(parent, L.COLOR_SCHEME_TEXT)

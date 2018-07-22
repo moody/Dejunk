@@ -34,13 +34,13 @@ function OptionsFrame:Create(parent, title)
   frame:Add(titleFS)
 
   -- Scroll frame
-  local sf = DFL.SliderScrollFrame:Create(frame)
+  local sf = DFL.ScrollFrame:Create(frame)
   sf:SetColors(Colors.ScrollFrame, {
     Colors.Slider,
     Colors.SliderThumb,
     Colors.SliderThumbHi
   })
-  sf._scrollFrame._scrollChild:SetSpacing(DFL:Padding())
+  sf._scrollChild:SetSpacing(DFL:Padding())
   sf:SetMinHeight(150)
   frame._scrollFrame = sf
   frame:Add(sf)
@@ -59,7 +59,7 @@ do
   local Functions = OptionsFrame.Functions
 
   function Functions:CreateHeading(text)
-    local heading = DFL.Frame:Create(parent,
+    local heading = DFL.Frame:Create(self,
       DFL.Alignments.LEFT, DFL.Directions.DOWN)
     heading:SetSpacing(DFL:Padding(0.5))
 
@@ -73,7 +73,6 @@ do
   end
 
   function Functions:OnSetWidth(width)
-    self._scrollFrame:SetMinWidth(width)
-    self._scrollFrame:Resize()
+    self._scrollFrame:SetWidth(width)
   end
 end

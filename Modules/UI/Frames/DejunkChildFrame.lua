@@ -186,8 +186,7 @@ do
 
   function DejunkChildFrame:CreateOptions()
     local frame = DFL.Frame:Create(self.Frame)
-    frame:SetEqualized(true)
-    frame:SetFlexible(true)
+    frame:SetLayout(DFL.Layouts.FILL)
     frame:SetSpacing(DFL:Padding(0.5))
     frame:Add(createGeneralOptions())
     frame:Add(createSellOptions())
@@ -198,13 +197,13 @@ do
 end
 
 -- ============================================================================
--- Lists Creation Functions
+-- Lists Creation Function
 -- ============================================================================
 
 function DejunkChildFrame:CreateLists()
   local parent = self.Frame
   local frame = DFL.Frame:Create(parent)
-  frame:SetFlexible(true)
+  frame:SetLayout(DFL.Layouts.FLEX)
   frame:SetSpacing(DFL:Padding(0.5))
   frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Inclusions))
   frame:Add(Addon.Objects.ListFrame:Create(parent, Addon.ListManager.Exclusions))
