@@ -154,8 +154,7 @@ do
     general:Add(createCheckButton(L.AUTO_DESTROY_TEXT, L.AUTO_DESTROY_TOOLTIP, "AutoDestroy"))
     -- Price threshold check button and currency input
     general:Add(createCheckButton(L.PRICE_THRESHOLD_TEXT, L.PRICE_THRESHOLD_TOOLTIP, "DestroyUsePriceThreshold"))
-    -- general:Add(Addon.Objects.CurrencyInputFrame:Create("DestroyPriceThreshold", DFL.Fonts.Small))
-    Addon.Core:Debug("DejunkChildFrame:158", "Don't forget to add a currency input frame!")
+    general:Add(Addon.Objects.CurrencyField:Create(general, "DestroyPriceThreshold", DFL.Fonts.Small))
 
     -- Destroy heading
     local destroy = sf:CreateHeading(L.DESTROY_TEXT)

@@ -37,12 +37,12 @@ Addon.Frames = {
   ParentFrame = DFL.ParentFrame:Create(),
   TitleFrame = DFL.ChildFrame:Create(),
   DejunkChildFrame = DFL.ChildFrame:Create(),
-  DestroyChildFrame = DFL.ChildFrame:Create(),
   TransportChildFrame = DFL.ChildFrame:Create()
 }
 
 -- /UI/Objects/
 Addon.Objects = {
+  CurrencyField = DFL:NewObjectTable(),
   ListButton = DFL:NewObjectTable(),
   ListFrame = DFL:NewObjectTable(),
   OptionsFrame = DFL:NewObjectTable()

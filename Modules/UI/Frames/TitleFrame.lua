@@ -83,6 +83,17 @@ function TitleFrame:CreateMiddle()
   self.TitleFontString = title
   frame:Add(title)
 
+  -- Mouse over and click functionality
+  frame:SetScript("OnEnter", function()
+    title:SetColors(Colors.LabelText, Colors.TitleShadow)
+    title:Refresh()
+  end)
+  frame:SetScript("OnLeave", function()
+    title:SetColors(Colors.Title, Colors.TitleShadow)
+    title:Refresh()
+  end)
+  frame:SetScript("OnMouseDown", function() Colors:NextScheme() end)
+
   parent:Add(frame)
 end
 
@@ -92,12 +103,6 @@ function TitleFrame:CreateRight()
   -- Main frame
   local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPRIGHT)
   frame:SetSpacing(DFL:Padding(0.25))
-
-  -- Scheme button
-  local schemeButton = DFL.Button:Create(parent, L.COLOR_SCHEME_TEXT)
-  schemeButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
-  function schemeButton:OnClick() Colors:NextScheme() end
-  frame:Add(schemeButton)
   
   -- Close Button
   local close = DFL.Button:Create(parent, "X")
@@ -107,20 +112,4 @@ function TitleFrame:CreateRight()
   frame:Add(close)
 
   parent:Add(frame)
-end
-
--- ============================================================================
--- General Functions
--- ============================================================================
-
--- Updates the title text and dejunk/destroy button.
-function TitleFrame:SetTitleToDejunk()
-  self.TitleFontString:SetText(strupper(AddonName))
-  self.DejunkDestroyButton:SetText(L.DESTROY_TEXT)
-end
-
--- Updates the title text and dejunk/destroy button.
-function TitleFrame:SetTitleToDestroy()
-  self.TitleFontString:SetText(strupper(L.DESTROY_TEXT))
-  self.DejunkDestroyButton:SetText(AddonName)
 end

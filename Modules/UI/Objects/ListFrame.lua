@@ -22,6 +22,7 @@ local ListManager = Addon.ListManager
 
 -- Returns the localized text and tooltip for the list.
 local function getListStrings(listName)
+  -- NOTE: Holy fuck. Just change this to a single tooltip using [=[]=] string
   local baseTooltip = format("%s|n|n%s|n|n%s", L.LIST_FRAME_ADD_TOOLTIP,
     L.LIST_FRAME_REM_TOOLTIP, L.LIST_FRAME_REM_ALL_TOOLTIP)
     
@@ -72,9 +73,7 @@ end
 
 local function createTransportButtons(parent, listName)
   local frame = DFL.Frame:Create(parent)
-  Core:Debug("ListFrame", "Make transport buttons fill space.")
-  frame:SetEqualized(true)
-  -- frame:SetFlexible(true)
+  frame:SetLayout(DFL.Layouts.FILL)
   frame:SetSpacing(DFL:Padding(0.25))
 
   local importButton = DFL.Button:Create(frame, L.IMPORT_TEXT, DFL.Fonts.Small)

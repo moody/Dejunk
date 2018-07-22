@@ -20,7 +20,6 @@ local Tools = Addon.Tools
 local ParentFrame = Addon.Frames.ParentFrame
 local TitleFrame = Addon.Frames.TitleFrame
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
-local DestroyChildFrame = Addon.Frames.DestroyChildFrame
 local TransportChildFrame = Addon.Frames.TransportChildFrame
 
 -- ============================================================================
@@ -171,20 +170,6 @@ do
     ParentFrame:Refresh()
   end
 
-  -- Sets the ParentFrame's child to DejunkChildFrame.
-  function Core:ShowDejunkChild()
-    previousChild = ParentFrame:GetContent()
-    TitleFrame:SetTitleToDejunk()
-    ParentFrame:SetContent(DejunkChildFrame)
-  end
-
-  -- Sets the ParentFrame's child to DestroyChildFrame.
-  function Core:ShowDestroyChild()
-    previousChild = ParentFrame:GetContent()
-    TitleFrame:SetTitleToDestroy()
-    ParentFrame:SetContent(DestroyChildFrame)
-  end
-
   -- Sets the ParentFrame's child to TransportChildFrame.
   -- @param listName - the name of the list used for transport operations
   -- @param transportType - the type of transport operations to perform
@@ -194,24 +179,6 @@ do
     ParentFrame:SetContent(TransportChildFrame, function()
       TransportChildFrame:SetData(listName, transportType)
     end)
-  end
-
-  -- Swaps between the Dejunk and Destroy child frames.
-  function Core:SwapDejunkDestroyChildFrames()
-    local content = ParentFrame:GetContent()
-
-    local showDestroy = (content == DejunkChildFrame) or
-      ((content == TransportChildFrame) and (previousChild == DejunkChildFrame))
-    local showDejunk = (content == DestroyChildFrame) or
-      ((content == TransportChildFrame) and (previousChild == DestroyChildFrame))
-
-    if showDestroy then
-      self:ShowDestroyChild()
-    elseif showDejunk then
-      self:ShowDejunkChild()
-    else
-      error("Something went wrong :(")
-    end
   end
 
   -- Sets the ParentFrame's child to the previously displayed child.
