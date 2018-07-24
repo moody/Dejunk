@@ -6,7 +6,7 @@ local AddonName, Addon = ...
 local L = Addon.Libs.L
 local DFL = Addon.Libs.DFL
 
--- Dejunk
+-- Modules
 local TitleFrame = Addon.Frames.TitleFrame
 
 local Colors = Addon.Colors

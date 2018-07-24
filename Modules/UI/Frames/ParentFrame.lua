@@ -6,13 +6,13 @@ local AddonName, Addon = ...
 local L = Addon.Libs.L
 local DFL = Addon.Libs.DFL
 
--- Dejunk
+-- Modules
 local ParentFrame = Addon.Frames.ParentFrame
 
 local Colors = Addon.Colors
 
 -- ============================================================================
---                          Frame Lifecycle Functions
+-- Frame Lifecycle Functions
 -- ============================================================================
 
 function ParentFrame:OnInitialize()

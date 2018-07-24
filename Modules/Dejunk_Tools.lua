@@ -19,7 +19,7 @@ local GetContainerItemPurchaseInfo = GetContainerItemPurchaseInfo
 local assert = assert
 local pairs, ipairs = pairs, ipairs
 
--- Dejunk
+-- Modules
 local Tools = Addon.Tools
 
 local Colors = Addon.Colors

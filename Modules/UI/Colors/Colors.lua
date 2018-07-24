@@ -6,7 +6,7 @@ local AddonName, Addon = ...
 local L = Addon.Libs.L
 local DCL = Addon.Libs.DCL
 
--- Dejunk
+-- Modules
 local Colors = Addon.Colors
 
 local DejunkDB = Addon.DejunkDB

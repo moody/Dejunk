@@ -5,7 +5,7 @@ local AddonName, DJ = ...
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
--- Dejunk
+-- Modules
 local Repairer = DJ.Repairer
 
 local Core = DJ.Core

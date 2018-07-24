@@ -7,7 +7,7 @@ local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
 
--- Dejunk
+-- Modules
 local Core = Addon.Core
 
 local Colors = Addon.Colors

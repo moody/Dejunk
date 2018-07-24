@@ -10,7 +10,7 @@ local assert, pairs, next = assert, pairs, next
 local remove, sort, concat = table.remove, table.sort, table.concat
 local tonumber, tostring = tonumber, tostring
 
--- Dejunk
+-- Modules
 local ListManager = DJ.ListManager
 
 local Core = DJ.Core

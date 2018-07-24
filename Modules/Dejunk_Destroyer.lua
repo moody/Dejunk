@@ -12,7 +12,7 @@ local assert, remove = assert, table.remove
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
 
--- Dejunk
+-- Modules
 local Destroyer = Addon.Destroyer
 local Confirmer = Addon.Confirmer
 

@@ -10,7 +10,7 @@ local DBL = Addon.Libs.DBL
 local assert, remove = assert, table.remove
 local GetCoinTextureString = GetCoinTextureString
 
--- Dejunk
+-- Modules
 local Confirmer = Addon.Confirmer
 
 local Core = Addon.Core

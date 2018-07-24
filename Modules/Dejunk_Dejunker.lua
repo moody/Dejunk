@@ -10,7 +10,7 @@ local DCL = Addon.Libs.DCL
 -- Upvalues
 local assert, remove = assert, table.remove
 
--- Dejunk
+-- Modules
 local Dejunker = Addon.Dejunker
 local Confirmer = Addon.Confirmer
 

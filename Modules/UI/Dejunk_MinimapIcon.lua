@@ -8,7 +8,7 @@ local DCL = Addon.Libs.DCL
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 
--- Dejunk
+-- Modules
 local MinimapIcon = Addon.MinimapIcon
 
 local Colors = Addon.Colors

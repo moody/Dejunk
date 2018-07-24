@@ -5,7 +5,7 @@ local AddonName, DJ = ...
 -- Upvalues
 local GetItemClassInfo, GetItemSubClassInfo = GetItemClassInfo, GetItemSubClassInfo
 
--- Dejunk
+-- Modules
 local Consts = DJ.Consts
 
 -- Called from Dejunk_Core during the PLAYER_ENTERING_WORLD event.

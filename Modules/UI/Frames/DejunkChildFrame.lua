@@ -10,7 +10,7 @@ local DFL = Addon.Libs.DFL
 -- Upvalues
 local nop = nop
 
--- Dejunk
+-- Modules
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
 local Colors = Addon.Colors

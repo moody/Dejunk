@@ -2,7 +2,7 @@
 
 local AddonName, Addon = ...
 
--- Dejunk
+-- Modules
 local DejunkDB = Addon.DejunkDB
 
 -- ============================================================================

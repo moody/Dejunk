@@ -7,7 +7,7 @@ local _G = _G
 local L = Addon.Libs.L
 local DCL = Addon.Libs.DCL
 
--- Dejunk
+-- Modules
 local Core = Addon.Core
 local Colors = Addon.Colors
 local Destroyer = Addon.Destroyer
