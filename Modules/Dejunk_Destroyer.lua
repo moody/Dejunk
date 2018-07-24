@@ -32,21 +32,16 @@ local currentState = DestroyerState.None
 
 local ItemsToDestroy = {}
 
-do -- Listener function
-  local function listener(...)
-    if (currentState == DestroyerState.None) then
-      local g, k, v, o = ...
-      if k then Addon.Core:Debug("Destroyer", tostring(k)) else Addon.Core:Debug("Destroyer", "DBL update") end
-      DBL:GetItemsByFilter(Destroyer.Filter, ItemsToDestroy)
-      if DejunkDB.SV.AutoDestroy and (#ItemsToDestroy > 0) and Core:CanDestroy() then
-        Destroyer:StartDestroying()
-      end
+-- Register DBL listener
+DBL:AddListener(function()
+  if (currentState == DestroyerState.None) then
+    Addon.Core:Debug("Destroyer", "DBL update")
+    DBL:GetItemsByFilter(Destroyer.Filter, ItemsToDestroy)
+    if DejunkDB.SV.AutoDestroy and (#ItemsToDestroy > 0) and Core:CanDestroy() then
+      Destroyer:StartDestroying()
     end
   end
-
-  DBL:AddListener(listener)
-  DejunkDB:AddListener(listener)
-end
+end)
 
 -- ============================================================================
 --                              Destroyer Frames

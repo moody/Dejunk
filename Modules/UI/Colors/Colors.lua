@@ -53,7 +53,7 @@ function Colors:SetColorScheme(colorScheme)
   assert(type(colorScheme) == "string", "colorScheme must exist and be a string")
   if not self.Schemes[colorScheme] then colorScheme = self.SchemeNames[1] end
 
-  DejunkDB:SetGlobal("ColorScheme", colorScheme, true)
+  DejunkDB:SetGlobal("ColorScheme", colorScheme)
   self.ColorTable:SetColors(self.Schemes[colorScheme])
   self.CurrentSchemeName = colorScheme
 

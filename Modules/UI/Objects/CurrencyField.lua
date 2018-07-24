@@ -149,10 +149,7 @@ do
   end
 
   function Scripts:OnTextChanged()
-    local value = self:GetNumber()
-    if (value ~= DejunkDB:Get(self._svKey)) then
-      DejunkDB:Set(self._svKey, floor(abs(value)))
-    end
+    DejunkDB:Set(self._svKey, floor(abs(self:GetNumber())))
   end
 
   function Scripts:OnTabPressed()

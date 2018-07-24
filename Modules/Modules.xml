@@ -1,6 +1,7 @@
 <Ui>
 	<Script file="Modules\Modules.lua"/>
 
+  <Script file="Modules\EventManager.lua"/>
   <Script file="Modules\Dejunk_Consts.lua"/>
   <Script file="Modules\Dejunk_DejunkDB.lua"/>
   <Script file="Modules\Dejunk_ListManager.lua"/>

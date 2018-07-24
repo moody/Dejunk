@@ -43,10 +43,6 @@ function MinimapIcon:Initialize()
 		end,
   })
 
-  -- if (DejunkDB:GetGlobal("Minimap") == nil) then
-  --   DejunkDB:SetGlobal("Minimap", {hide = false}, true)
-  -- end
-
   LDBIcon:Register(ObjectName, self.LDB, DejunkDB:GetGlobal("Minimap"))
 
   self.Initialize = nil
@@ -54,13 +50,13 @@ end
 
 -- Displays the minimap icon.
 function MinimapIcon:Show()
-  DejunkDB:SetGlobal("Minimap.hide", false, true)
+  DejunkDB:SetGlobal("Minimap.hide", false)
   LDBIcon:Show(ObjectName)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
-  DejunkDB:SetGlobal("Minimap.hide", true, true)
+  DejunkDB:SetGlobal("Minimap.hide", true)
   LDBIcon:Hide(ObjectName)
 end
 

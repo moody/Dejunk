@@ -31,19 +31,30 @@ local currentState = DejunkerState.None
 
 local ItemsToSell = {}
 
-do -- Listener function
-  local function listener(...)
-    if (currentState == DejunkerState.None) then
-      local g, k, v, o = ...
-      if k then Addon.Core:Debug("Dejunker", tostring(k)) else Addon.Core:Debug("Dejunker", "DBL update") end
-      local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
-      DBL:GetItemsByFilter(Dejunker.Filter, ItemsToSell, maxItems)
-    end
+-- Register DBL listener
+DBL:AddListener(function()
+  if (currentState == DejunkerState.None) then
+    Addon.Core:Debug("Dejunker", "DBL update")
+    local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
+    DBL:GetItemsByFilter(Dejunker.Filter, ItemsToSell, maxItems)
   end
+end)
 
-  DBL:AddListener(listener)
-  DejunkDB:AddListener(listener)
+local function concat(...)
+  local t = {...}
+  for i=1, (#t-1) do t[i] = t[i]..", " end
+  return table.concat(t)
 end
+
+function Dejunker:OnDejunkEvent(event, ...)
+  local t = {...}
+  if #t > 0 then
+    Addon.Core:Debug("Dejunker", format("OnDejunkEvent(\"%s\", %s)", event, concat(...)))
+  else
+    Addon.Core:Debug("Dejunker", format("OnDejunkEvent(\"%s\")", event))
+  end
+end
+Addon.EventManager:Register(Dejunker, "OnOptionChanged")
 
 -- ============================================================================
 --                             Dejunker Frame

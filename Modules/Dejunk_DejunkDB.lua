@@ -1,24 +1,23 @@
--- Dejunk_DejunkDB: provides Dejunk modules easy access to saved variables.
+-- DejunkDB: provides Dejunk modules easy access to saved variables.
 
 local AddonName, Addon = ...
 
 -- Dejunk
 local DejunkDB = Addon.DejunkDB
 
---[[
-  This table (DejunkDB.SV) can be used to quickly get and set values in the
-  current SVs (global if DejunkPerChar.UseGlobal is true, per char if not).
+-- ============================================================================
+-- SV Table
+-- ============================================================================
 
-  There is a downside to using this table to set values: it will not notify
-  any registed listeners that a change has occurred. This is by design so that
-  there is no confusion as to why no notification happens when setting a nested
-  table value.
-  
-  If notifying is necessary, call DejunkDB:Set(k, v) manually.
---]]
+-- This table can be used to quickly get and set values in the
+-- current SVs (global if DejunkPerChar.UseGlobal is true, per char if not).
 DejunkDB.SV = setmetatable({}, {
   __index = function(t, k)
-    return DejunkPerChar.UseGlobal and DejunkGlobal[k] or DejunkPerChar[k]
+    if DejunkPerChar.UseGlobal then
+      return DejunkGlobal[k]
+    else
+      return DejunkPerChar[k]
+    end
   end,
   __newindex = function(t, k, v)
     if DejunkPerChar.UseGlobal then
@@ -28,18 +27,6 @@ DejunkDB.SV = setmetatable({}, {
     end
   end
 })
-
--- Listeners
-local listeners = {}
-
--- Notifies listener functions that a saved variable change has occurred.
--- @param g - true if the change was global, false if per character
--- @param k - the key that was changed
--- @param v - the new value
--- @param o - the old value
-local function notifyListeners(g, k, v, o)
-  for listener in pairs(listeners) do listener(g, k, v, o) end
-end
 
 -- ============================================================================
 -- Database Functions
@@ -59,17 +46,7 @@ end
 
 -- Toggles between global and per char SVs.
 function DejunkDB:Toggle()
-  local o = DejunkPerChar.UseGlobal
-  local v = not o
-  DejunkPerChar.UseGlobal = v
-  notifyListeners("UseGlobal", v, o, false)
-end
-
--- Adds a listener to be notified upon changes to SVs.
-function DejunkDB:AddListener(func)
-  assert(type(func) == "function", "func must be a function")
-  assert(not listeners[func], "attempt to add existing listener")
-  listeners[func] = true
+  DejunkPerChar.UseGlobal = not DejunkPerChar.UseGlobal
 end
 
 -- ============================================================================
@@ -83,86 +60,84 @@ do
     -- [n] = key in nested table
   }
 
-  -- Returns the nested value, table, and key in the global or per char SVs.
-  -- @param g - if true, global SVs are used, otherwise per character
-  -- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
-  local function get_nested(g, k)
-    local nt = g and DejunkGlobal or DejunkPerChar
-    local nk = k
-    
+  -- Returns the value, table, and key for a specified key in a specified table.
+  -- @param t - the table
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
+  -- @return 1 - the key value
+  -- @return 2 - the table the key resides in
+  -- @return 3 - the key
+  local function get(t, k)
     if k:find(".") then
-      for k in pairs(keys) do keys[k] = nil end
+      for key in pairs(keys) do keys[key] = nil end
       -- Split keys by dot operator (e.g. "A.B.C" = {"A", "B", "C"})
       for key in k:gmatch("([^.]+)") do keys[#keys+1] = key end
       
       -- If key is nested, update ref to nested table and key
       if (#keys > 1) then
-        nt = nt[keys[1]]
-        for i=2, (#keys - 1) do nt = nt[keys[i]] end
-        nk = keys[#keys]
+        for i=1, (#keys - 1) do t = t[keys[i]] end
+        k = keys[#keys]
       end
     end
 
-    return nt[nk], nt, nk
+    return t[k], t, k
   end
 
   -- Sets the specified key in the global or per char SVs to the specified value.
-  -- @param g - if true, global SVs are used, otherwise per character
-  -- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
+  -- @param t - the table
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
   -- @param v - the new value
-  -- @param silent - if true, listeners will not be notified [optional]
-  local function set(g, k, v, silent)
-    local o, nt, nk = get_nested(g, k)
+  local function set(t, k, v)
+    local _, nt, nk = get(t, k)
     nt[nk] = v
-    if not silent then notifyListeners(g, k, v, o) end
   end
 
   -- Returns the value of the specified key in the global SVs.
-  -- @param k - the key
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
   function DejunkDB:GetGlobal(k)
-    local v = get_nested(true, k)
+    local v = get(DejunkGlobal, k)
     return v
   end
 
   -- Returns the value of the specified key in the per character SVs.
-  -- @param k - the key
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
   function DejunkDB:GetPerChar(k)
-    local v = get_nested(false, k)
+    local v = get(DejunkPerChar, k)
     return v
   end
 
   -- Sets the specified key in the global SVs to the specified value.
-  -- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
   -- @param v - the new value
-  -- @param silent - if true, listeners will not be notified [optional]
-  function DejunkDB:SetGlobal(k, v, silent)
-    set(true, k, v, silent)
+  function DejunkDB:SetGlobal(k, v)
+    set(DejunkGlobal, k, v)
   end
 
   -- Sets the specified key in the per character SVs to the specified value.
-  -- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
+  -- @param k - the key, can be a nested value (e.g. "A.B.C")
   -- @param v - the new value
-  -- @param silent - if true, listeners will not be notified [optional]
-  function DejunkDB:SetPerChar(k, v, silent)
-    set(false, k, v, silent)
+  function DejunkDB:SetPerChar(k, v)
+    set(DejunkPerChar, k, v)
   end
 end
 
 -- Returns the value of the specified key in the current SVs.
--- @param k - the key
+-- @param k - the key, can be a nested value (e.g. "A.B.C")
 function DejunkDB:Get(k)
-  return DejunkPerChar.UseGlobal and self:GetGlobal(k) or self:GetPerChar(k)
+  if DejunkPerChar.UseGlobal then
+    return self:GetGlobal(k)
+  else
+    return self:GetPerChar(k)
+  end
 end
 
 -- Sets the specified key in the current SVs to the specified value.
--- @param k - the key, can be a nested value (e.g. "DestroyPriceThreshold.Gold")
+-- @param k - the key, can be a nested value (e.g. "A.B.C")
 -- @param v - the new value
--- @param silent - if true, listeners will not be notified [optional]
-function DejunkDB:Set(k, v, silent)
+function DejunkDB:Set(k, v)
   if DejunkPerChar.UseGlobal then
-    self:SetGlobal(k, v, silent)
+    self:SetGlobal(k, v)
   else -- Use character settings
-    self:SetPerChar(k, v, silent)
+    self:SetPerChar(k, v)
   end
 end
 
@@ -261,9 +236,9 @@ function DejunkDB:Defaults()
     SellEpic = false,
 
     SellUnsuitable = false,
-    SellEquipmentBelowILVL = {
+    SellBelowAverageILVL = {
       Enabled = false,
-      Value = 1,
+      Value = 0
     },
 
     -- Ignore options
