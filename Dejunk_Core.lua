@@ -138,54 +138,28 @@ end
 --                                 UI Functions
 -- ============================================================================
 
-do
-  local previousChild = nil
+-- Toggles Dejunk's GUI.
+function Core:ToggleGUI()
+  if ParentFrame.Initialize then ParentFrame:Initialize() end
+  ParentFrame:Toggle()
+end
 
-  -- Toggles Dejunk's GUI.
-  function Core:ToggleGUI()
-    if ParentFrame.Initialize then ParentFrame:Initialize() end
-    ParentFrame:Toggle()
-  end
+-- Enables Dejunk's GUI.
+function Core:EnableGUI()
+  ParentFrame:Enable()
+end
 
-  -- Enables Dejunk's GUI.
-  function Core:EnableGUI()
-    ParentFrame:Enable()
-  end
+-- Disables Dejunk's GUI.
+function Core:DisableGUI()
+  ParentFrame:Disable()
+end
 
-  -- Disables Dejunk's GUI.
-  function Core:DisableGUI()
-    ParentFrame:Disable()
-  end
-
-  -- Switches between global and character specific settings.
-  function Core:ToggleCharacterSpecificSettings()
-    DejunkDB:Toggle()
-    ListManager:Update()
-
-    -- If transport child frame is showing, show previous child
-    if (ParentFrame:GetContent() == TransportChildFrame) then
-      ParentFrame:SetContent(previousChild)
-    end
-
-    ParentFrame:Refresh()
-  end
-
-  -- Sets the ParentFrame's child to TransportChildFrame.
-  -- @param listName - the name of the list used for transport operations
-  -- @param transportType - the type of transport operations to perform
-  function Core:ShowTransportChild(listName, transportType)
-    previousChild = ParentFrame:GetContent()
-
-    ParentFrame:SetContent(TransportChildFrame, function()
-      TransportChildFrame:SetData(listName, transportType)
-    end)
-  end
-
-  -- Sets the ParentFrame's child to the previously displayed child.
-  function Core:ShowPreviousChild()
-    if not previousChild then return end
-    ParentFrame:SetContent(previousChild)
-  end
+-- Switches between global and character specific settings.
+function Core:ToggleCharacterSpecificSettings()
+  DejunkDB:Toggle()
+  ListManager:Update()
+  ParentFrame:SetContent(DejunkChildFrame)
+  ParentFrame:Refresh()
 end
 
 -- ============================================================================

@@ -1,9 +1,10 @@
 -- Dejunk_ListManager: manages the Inclusions, Exclusions, and Destroyables lists in the saved variables.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DCL = Addon.Libs.DCL
 
 -- Upvalues
 local assert, pairs, next = assert, pairs, next
@@ -11,12 +12,12 @@ local remove, sort, concat = table.remove, table.sort, table.concat
 local tonumber, tostring = tonumber, tostring
 
 -- Modules
-local ListManager = DJ.ListManager
+local ListManager = Addon.ListManager
 
-local Core = DJ.Core
-local Colors = DJ.Colors
-local Tools = DJ.Tools
-local DejunkDB = DJ.DejunkDB
+local Core = Addon.Core
+local Colors = Addon.Colors
+local Tools = Addon.Tools
+local DejunkDB = Addon.DejunkDB
 
 -- Variables
 ListManager.Initialized = false
@@ -261,7 +262,7 @@ local MAX_PARSE_ATTEMPTS = 100
 
 -- Set OnUpdate script
 function parseFrame:OnUpdate(elapsed)
-  if DJ.Dejunker:IsDejunking() then return end
+  if Addon.Dejunker:IsDejunking() then return end
 
   -- Removals
   for listName, list in pairs(ListManager.ToRemove) do

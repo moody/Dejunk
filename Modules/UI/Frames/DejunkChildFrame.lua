@@ -7,9 +7,6 @@ local L = Addon.Libs.L
 local DCL = Addon.Libs.DCL
 local DFL = Addon.Libs.DFL
 
--- Upvalues
-local nop = nop
-
 -- Modules
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
