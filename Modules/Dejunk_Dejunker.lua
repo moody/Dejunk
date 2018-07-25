@@ -160,16 +160,11 @@ do
   -- Starts the selling process.
   function Dejunker:StartSelling()
     assert(currentState == states.Dejunking)
-
-    if (#itemsToSell <= 0) then
-      Core:Print(L.NO_JUNK_ITEMS)
-      self:StopDejunking()
-      return
-    end
+    assert(#itemsToSell > 0)
 
     currentState = states.Selling
     sellInterval = 0
-
+    
     dejunkerFrame:SetScript("OnUpdate", sellItems_OnUpdate)
   end
 
