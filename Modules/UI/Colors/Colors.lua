@@ -113,3 +113,10 @@ for k, v in pairs(Colors.DefaultColors) do
   if Colors[k] then error("Key already exists in Colors: "..k) end
   Colors[k] = Colors.ColorTable[k]
 end
+
+-- For objects with a slider, this helps make SetColors() less verbose
+Colors.SliderColors = {
+  Colors.Slider,
+  Colors.SliderThumb,
+  Colors.SliderThumbHi
+}
