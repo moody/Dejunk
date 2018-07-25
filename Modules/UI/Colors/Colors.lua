@@ -75,6 +75,7 @@ Colors.DefaultColors = {
 
   -- GUI
   ParentFrame = "00000DF2",
+  Border = "1A1A33",
 
   Title = "3F3F80FF",
   TitleShadow = "0D0D33FF",
@@ -94,8 +95,6 @@ Colors.DefaultColors = {
 
   Destroyables = "CCCC3FFF",
   DestroyablesHi = "E6E666FF",
-
-  Area = "1A1A3380",
 
   ScrollFrame = "1A1A3380",
   Slider = "1A1A3380",

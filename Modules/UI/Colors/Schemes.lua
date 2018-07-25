@@ -16,6 +16,7 @@ do -- Gray
   Colors.SchemeNames[#Colors.SchemeNames+1] = schemeName
   Colors.Schemes[schemeName] = {
     ParentFrame = "0D0D0DF2",
+    Border = "333333",
 
     Title = "808080FF",
     TitleShadow = "333333FF",
@@ -26,8 +27,6 @@ do -- Gray
     ButtonTextHi = "FFFFFFFF",
 
     LabelText = "999999FF",
-
-    Area = "33333380",
 
     ScrollFrame = "33333380",
     Slider = "33333380",
@@ -44,6 +43,7 @@ do -- Green
   Colors.SchemeNames[#Colors.SchemeNames+1] = schemeName
   Colors.Schemes[schemeName] = {
     ParentFrame = "000D00F2",
+    Border = "1A331A",
 
     Title = "3F803FFF",
     TitleShadow = "0D330DFF",
@@ -54,8 +54,6 @@ do -- Green
     ButtonTextHi = "FFFFFFFF",
 
     LabelText = "599959FF",
-
-    Area = "1A331A80",
 
     ScrollFrame = "1A331A80",
     Slider = "1A331A80",
@@ -72,6 +70,7 @@ do -- Purple
   Colors.SchemeNames[#Colors.SchemeNames+1] = schemeName
   Colors.Schemes[schemeName] = {
     ParentFrame = "0D000DF2",
+    Border = "331A33",
 
     Title = "803F80FF",
     TitleShadow = "330D33FF",
@@ -82,8 +81,6 @@ do -- Purple
     ButtonTextHi = "FFFFFFFF",
 
     LabelText = "995999FF",
-
-    Area = "331A3380",
 
     ScrollFrame = "331A3380",
     Slider = "331A3380",
@@ -100,6 +97,7 @@ do -- Red
   Colors.SchemeNames[#Colors.SchemeNames+1] = schemeName
   Colors.Schemes[schemeName] = {
     ParentFrame = "0D0000F2",
+    Border = "331A1A",
 
     Title = "803F3FFF",
     TitleShadow = "330D0DFF",
@@ -110,8 +108,6 @@ do -- Red
     ButtonTextHi = "FFFFFFFF",
 
     LabelText = "995959FF",
-
-    Area = "331A1A80",
 
     ScrollFrame = "331A1A80",
     Slider = "331A1A80",
