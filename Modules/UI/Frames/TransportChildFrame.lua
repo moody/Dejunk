@@ -58,15 +58,14 @@ function TransportChildFrame:CreateUI()
     label:SetColors(Colors.LabelText)
     self.LabelFontString = label
     f:Add(label)
-
-    -- Edit box
-    local editBox = DFL.EditBox:Create(f)
-    editBox._editBox:SetMultiLine(true)
-    editBox:SetMinWidth(525)
-    editBox:SetMinHeight(275)
-    editBox:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
-    self.EditBox = editBox
-    f:Add(editBox)
+    
+    -- Text area
+    local textArea = DFL.TextArea:Create(f)
+    textArea:SetMinWidth(525)
+    textArea:SetMinHeight(275)
+    textArea:SetColors(Colors.LabelText, Colors.ScrollFrame, Colors.SliderColors)
+    self.TextArea = textArea
+    f:Add(textArea)
 
     -- Helper text
     local helper = DFL.FontString:Create(f, nil, DFL.Fonts.Small)
@@ -90,9 +89,10 @@ function TransportChildFrame:CreateUI()
     -- Right button
     local rightButton = DFL.Button:Create(f, L.BACK_TEXT, DFL.Fonts.Small)
     function rightButton:OnClick()
-      Addon.ParentFrame:SetContent(Addon.DejunkChildFrame)
+      Addon.Frames.ParentFrame:SetContent(Addon.Frames.DejunkChildFrame)
     end
     rightButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
+    rightButton.SetEnabled = nop
     f:Add(rightButton)
   end
 end
@@ -111,7 +111,7 @@ function TransportChildFrame:SetData(listName, type)
   local titleText = self.TitleFontString
 
   local labelText = self.LabelFontString
-  local editBox = self.EditBox._editBox
+  local editBox = self.TextArea._editBox
   local helperText = self.HelperFontString
   local leftButton = self.LeftButton
 

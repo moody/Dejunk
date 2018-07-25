@@ -117,7 +117,7 @@ end
 
 local function fsFrame_OnUpdate(self, elapsed)
   self.exportButton:SetEnabled(self:IsEnabled())
-  
+
   if (#self._data == 0) then -- No items
     self._noItemsFS:Show()
   else
@@ -165,7 +165,7 @@ function ListFrame:Create(parent, listName)
 
   -- FauxScrollFrame
   local fsFrame = DFL.FauxScrollFrame:Create(frame, ListManager.Lists[listName], createListButton, 6)
-  fsFrame:SetColors(Colors.ScrollFrame, {Colors.Slider, Colors.SliderThumb, Colors.SliderThumbHi})
+  fsFrame:SetColors(Colors.ScrollFrame, Colors.SliderColors)
   fsFrame.OnUpdate = fsFrame_OnUpdate
   fsFrame._objFrame:SetScript("OnMouseUp", addCursorItem)
   fsFrame._objFrame.AddCursorItem = addCursorItem

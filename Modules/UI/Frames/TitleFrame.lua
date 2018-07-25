@@ -40,7 +40,7 @@ function TitleFrame:CreateLeft()
   -- Character Specific Settings check button
   local charSpec = DFL.CheckButton:Create(parent, L.CHARACTER_SPECIFIC_TEXT, L.CHARACTER_SPECIFIC_TOOLTIP, DFL.Fonts.Small)
   charSpec:SetCheckRefreshFunction(function() return not DejunkPerChar.UseGlobal end)
-  charSpec:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
+  charSpec:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
   function charSpec:OnClick() Addon.Core:ToggleCharacterSpecificSettings() end
   frame:Add(charSpec)
   
@@ -51,7 +51,7 @@ function TitleFrame:CreateLeft()
     -- Item tooltip check button
     local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
     itemTooltip:SetCheckRefreshFunction(function() return DejunkGlobal.ItemTooltip end)
-    itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
+    itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
     function itemTooltip:OnClick()
       DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip
     end
@@ -60,7 +60,7 @@ function TitleFrame:CreateLeft()
     -- Minimap Icon check button
     local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
     minimapIcon:SetCheckRefreshFunction(function() return not DejunkGlobal.Minimap.hide end)
-    minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
+    minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
     function minimapIcon:OnClick() Addon.MinimapIcon:Toggle() end
     f:Add(minimapIcon)
 
@@ -106,9 +106,10 @@ function TitleFrame:CreateRight()
   
   -- Close Button
   local close = DFL.Button:Create(parent, "X")
-  close.SetEnabled = nop
-  close:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
+  close:SetMinWidth(30)
+  close:SetColors(Colors.None, Colors.Border, Colors.LabelText, Colors.ButtonTextHi, Colors.Border)
   function close:OnClick() ParentFrame:Hide() end
+  close.SetEnabled = nop
   frame:Add(close)
 
   parent:Add(frame)

@@ -35,11 +35,7 @@ function OptionsFrame:Create(parent, title)
 
   -- Scroll frame
   local sf = DFL.ScrollFrame:Create(frame)
-  sf:SetColors(Colors.ScrollFrame, {
-    Colors.Slider,
-    Colors.SliderThumb,
-    Colors.SliderThumbHi
-  })
+  sf:SetColors(Colors.ScrollFrame, Colors.SliderColors)
   sf._scrollChild:SetSpacing(DFL:Padding())
   sf:SetMinHeight(150)
   frame._scrollFrame = sf

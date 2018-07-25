@@ -38,7 +38,7 @@ do
   local function createCheckButton(text, tooltip, svKey)
     local cb = DFL.CheckButton:Create(UIParent, text, tooltip, DFL.Fonts.Small)
     cb:SetCheckRefreshFunction(function() return DejunkDB:Get(svKey) end)
-    cb:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.ScrollFrame)
+    cb:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
     function cb:OnClick(checked)
       DejunkDB:Set(svKey, checked)
       Addon.EventManager:Emit("OnOptionChanged", svKey)
@@ -47,14 +47,14 @@ do
   end
 
   local function createGeneralOptions()
-    local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.OPTIONS_TEXT)
+    local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.GENERAL_TEXT)
     
-    do -- General
-      local general = sf:CreateHeading(L.GENERAL_TEXT)
+    do -- Chat
+      local chat = sf:CreateHeading(L.CHAT_TEXT)
       -- Silent mode
-      general:Add(createCheckButton(L.SILENT_MODE_TEXT, L.SILENT_MODE_TOOLTIP, "SilentMode"))
+      chat:Add(createCheckButton(L.SILENT_MODE_TEXT, L.SILENT_MODE_TOOLTIP, "SilentMode"))
       -- Verbose mode
-      general:Add(createCheckButton(L.VERBOSE_MODE_TEXT, L.VERBOSE_MODE_TOOLTIP, "VerboseMode"))
+      chat:Add(createCheckButton(L.VERBOSE_MODE_TEXT, L.VERBOSE_MODE_TOOLTIP, "VerboseMode"))
     end
 
     do -- Selling
@@ -121,7 +121,7 @@ do
         f:Add(minLabel)
 
         local slider = DFL.Slider:Create(f)
-        slider:SetColors(Colors.Slider, Colors.SliderThumb, Colors.SliderThumbHi)
+        slider:SetColors(unpack(Colors.SliderColors))
         slider:SetOrientation(DFL.Orientations.HORIZONTAL)
         slider:SetWidth(100)
         slider:SetMinMaxValues(0, 100)
