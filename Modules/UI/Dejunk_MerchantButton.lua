@@ -1,30 +1,25 @@
 -- Dejunk_MerchantButton: displays a "Dejunk" button on the merchant frame.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
 
 -- Modules
-local MerchantButton = DJ.MerchantButton
+local MerchantButton = Addon.MerchantButton
 
-local Tools = DJ.Tools
-local DejunkDB = DJ.DejunkDB
-local Dejunker = DJ.Dejunker
-local Repairer = DJ.Repairer
-local ListManager = DJ.ListManager
-
--- Variables
-MerchantButton.Initialized = false
+local Core = Addon.Core
+local Tools = Addon.Tools
+local DejunkDB = Addon.DejunkDB
+local Dejunker = Addon.Dejunker
+local Repairer = Addon.Repairer
 
 -- ============================================================================
---                               Merchant Button
+-- Merchant Button
 -- ============================================================================
 
 -- Initializes the frame.
 function MerchantButton:Initialize()
-  if self.Initialized then return end
-
   self.Button = CreateFrame("Button", (AddonName.."MerchantButton"), MerchantFrame, "OptionsButtonTemplate")
   self.Button:SetText(AddonName)
 
@@ -38,7 +33,7 @@ function MerchantButton:Initialize()
   end
 
   self.Button:HookScript("OnUpdate", function(self, elapsed)
-    self:SetEnabled(DJ.Core:CanDejunk())
+    self:SetEnabled(Core:CanDejunk())
   end)
 
   self.Button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -46,7 +41,7 @@ function MerchantButton:Initialize()
     if (button == "LeftButton") then
       Dejunker:StartDejunking()
     elseif (button == "RightButton") then
-      DJ.Core:ToggleGUI()
+      Core:ToggleGUI()
     end
   end)
 
@@ -54,11 +49,10 @@ function MerchantButton:Initialize()
     Tools:ShowTooltip(self, "ANCHOR_RIGHT",
       self:GetText(), L.DEJUNK_BUTTON_TOOLTIP)
   end)
+  self.Button:HookScript("OnLeave", Tools.HideTooltip)
 
-  self.Button:HookScript("OnLeave", function(self)
-    Tools:HideTooltip() end)
-
-  self.Initialized = true
+  -- nil function
+  self.Initialize = nil
 end
 
 -- ============================================================================
@@ -66,17 +60,11 @@ end
 -- ============================================================================
 
 MerchantFrame:HookScript("OnShow", function()
-  if DejunkDB.SV.AutoSell then
-    Dejunker:StartDejunking() end
-
-  if DejunkDB.SV.AutoRepair then
-    Repairer:StartRepairing() end
+  if DejunkDB.SV.AutoSell then Dejunker:StartDejunking(true) end
+  if DejunkDB.SV.AutoRepair then Repairer:StartRepairing() end
 end)
 
 MerchantFrame:HookScript("OnHide", function()
-  if Dejunker:IsSelling() then
-    Dejunker:StopSelling() end
-
-  if Repairer:IsRepairing() then
-    Repairer:StopRepairing() end
+  if Dejunker:IsSelling() then Dejunker:StopSelling() end
+  if Repairer:IsRepairing() then Repairer:StopRepairing() end
 end)

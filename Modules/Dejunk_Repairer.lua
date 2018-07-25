@@ -1,15 +1,15 @@
 -- Dejunk_Repairer: handles the process of repairing.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Libs
 local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
 
 -- Modules
-local Repairer = DJ.Repairer
+local Repairer = Addon.Repairer
 
-local Core = DJ.Core
-local DejunkDB = DJ.DejunkDB
+local Core = Addon.Core
+local DejunkDB = Addon.DejunkDB
 
 -- Variables
 local isRepairing = false
@@ -132,7 +132,7 @@ function Repairer:UpdateRepairs()
 		self:StopRepairing()
 		return
 	else -- Repairs probably impossible
-		if DJ.Dejunker:IsDejunking() then return end -- Wait until junk has been sold
+		if Addon.Dejunker:IsDejunking() then return end -- Wait until junk has been sold
 
 		Core:Print(L.REPAIRED_NO_ITEMS)
 

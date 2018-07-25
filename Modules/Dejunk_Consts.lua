@@ -1,12 +1,12 @@
 -- Dejunk_Consts: provides Dejunk modules easy access to constant values.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 
 -- Upvalues
 local GetItemClassInfo, GetItemSubClassInfo = GetItemClassInfo, GetItemSubClassInfo
 
 -- Modules
-local Consts = DJ.Consts
+local Consts = Addon.Consts
 
 -- Called from Dejunk_Core during the PLAYER_ENTERING_WORLD event.
 function Consts:Initialize()
