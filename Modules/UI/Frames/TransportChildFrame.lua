@@ -61,10 +61,16 @@ function TransportChildFrame:CreateUI()
     
     -- Text area
     local textArea = DFL.TextArea:Create(f)
-    textArea:SetMinWidth(525)
+    textArea:SetMinWidth(445)
     textArea:SetMinHeight(275)
     textArea:SetColors(Colors.LabelText, Colors.ScrollFrame, Colors.SliderColors)
     self.TextArea = textArea
+    -- Keep width of text area the same size as f
+    function f:OnSetWidth(width)
+      if (width > textArea:GetWidth()) then
+        textArea:SetWidth(width)
+      end
+    end
     f:Add(textArea)
 
     -- Helper text
