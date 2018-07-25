@@ -71,35 +71,59 @@ local function createListButton(parent)
   return Addon.Objects.ListButton:Create(parent)
 end
 
+-- ============================================================================
+-- Transport Button Functions
+-- ============================================================================
+
+local transportButtonData = {
+  {
+    key = "importButton",
+    text = L.IMPORT_TEXT,
+    type = "IMPORT"
+  },
+  {
+    key = "exportButton",
+    text = L.EXPORT_TEXT,
+    type = "EXPORT"
+  }
+}
+
+local function transportButton_OnClick(self)
+  Addon.Frames.ParentFrame:SetContent(Addon.Frames.TransportChildFrame)
+  Addon.Frames.TransportChildFrame:SetData(self.listName, self.transportType)
+end
+
 local function createTransportButtons(parent, listName)
   local frame = DFL.Frame:Create(parent)
   frame:SetLayout(DFL.Layouts.FILL)
   frame:SetSpacing(DFL:Padding(0.25))
 
-  local importButton = DFL.Button:Create(frame, L.IMPORT_TEXT, DFL.Fonts.Small)
-  importButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
-  importButton:SetScript("OnClick", function(self, button, down)
-    Addon.ParentFrame:SetContent(Addon.TransportChildFrame)
-    Addon.TransportChildFrame:SetData(listName, "IMPORT")
-  end)
-  frame._importButton = importButton
-  frame:Add(importButton)
-
-  local exportButton = DFL.Button:Create(frame, L.EXPORT_TEXT, DFL.Fonts.Small)
-  exportButton:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
-  exportButton:SetScript("OnClick", function(self, button, down)
-    Addon.ParentFrame:SetContent(Addon.TransportChildFrame)
-    Addon.TransportChildFrame:SetData(listName, "EXPORT")
-  end)
-  frame._exportButton = exportButton
-  frame:Add(exportButton)
+  for _, v in ipairs(transportButtonData) do
+    local button = DFL.Button:Create(frame, v.text, DFL.Fonts.Small)
+    button:SetColors(Colors.Button, Colors.ButtonHi, Colors.ButtonText, Colors.ButtonTextHi)
+    button:SetScript("OnClick", transportButton_OnClick)
+    button.listName = listName
+    button.transportType = v.type
+    frame[v.key] = button
+    frame:Add(button)
+  end
 
   return frame
 end
 
 -- ============================================================================
--- FauxScrollFrame._objFrame Functions
+-- FauxScrollFrame Functions
 -- ============================================================================
+
+local function fsFrame_OnUpdate(self, elapsed)
+  self.exportButton:SetEnabled(self:IsEnabled())
+  
+  if (#self._data == 0) then -- No items
+    self._noItemsFS:Show()
+  else
+    self._noItemsFS:Hide()
+  end
+end
 
 -- Adds the item currently on the cursor to list.
 local function addCursorItem(self)
@@ -141,11 +165,8 @@ function ListFrame:Create(parent, listName)
 
   -- FauxScrollFrame
   local fsFrame = DFL.FauxScrollFrame:Create(frame, ListManager.Lists[listName], createListButton, 6)
-  fsFrame:SetColors(Colors.ScrollFrame, {
-    Colors.Slider,
-    Colors.SliderThumb,
-    Colors.SliderThumbHi
-  })
+  fsFrame:SetColors(Colors.ScrollFrame, {Colors.Slider, Colors.SliderThumb, Colors.SliderThumbHi})
+  fsFrame.OnUpdate = fsFrame_OnUpdate
   fsFrame._objFrame:SetScript("OnMouseUp", addCursorItem)
   fsFrame._objFrame.AddCursorItem = addCursorItem
   fsFrame._objFrame.RemoveItem = removeItem
@@ -161,16 +182,9 @@ function ListFrame:Create(parent, listName)
   fsFrame._noItemsFS:SetJustifyH("CENTER")
   fsFrame._noItemsFS:SetAlpha(0.5)
 
-  function fsFrame:OnUpdate(elapsed)
-    if not self._objFrame:GetChildren()[1]:IsVisible() then
-      self._noItemsFS:Show()
-    else
-      self._noItemsFS:Hide()
-    end
-  end
-
   -- Transport buttons
   local transportButtons = createTransportButtons(frame, listName)
+  fsFrame.exportButton = transportButtons.exportButton
   frame._transportButtons = transportButtons
   frame:Add(transportButtons)
 
