@@ -13,11 +13,14 @@ local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown =
       IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 local IsDressableItem, DressUpVisual = IsDressableItem, DressUpVisual
 
--- Addon
+-- Modules
 local ListButton = Addon.Objects.ListButton
 ListButton.Scripts = {}
 
 local Colors = Addon.Colors
+
+-- Variables
+local ICON_TEX_COORD = {0.08, 0.92, 0.08, 0.92}
 
 -- ============================================================================
 -- Creation Function
@@ -35,8 +38,7 @@ function ListButton:Create(parent)
   button.Icon = DFL.Creator:CreateTexture(button, "ARTWORK")
   button.Icon:ClearAllPoints()
   button.Icon:SetPoint(DFL.Points.LEFT, DFL:Padding(0.5), 0)
-  button.Icon:SetWidth(Addon.Consts.LIST_BUTTON_ICON_SIZE)
-  button.Icon:SetHeight(Addon.Consts.LIST_BUTTON_ICON_SIZE)
+  button.Icon:SetSize(20, 20)
 
   button.Text = DFL.Creator:CreateFontString(button)
   button.Text:SetPoint(DFL.Points.LEFT, button.Icon, DFL.Points.RIGHT, DFL:Padding(0.5), 0)
@@ -86,6 +88,7 @@ do
 
     -- Data
     self.Icon:SetTexture(self.Item.Texture)
+    self.Icon:SetTexCoord(unpack(ICON_TEX_COORD))
     self.Text:SetText(format("[%s]", self.Item.Name))
     self.Text:SetTextColor(unpack(DCL:GetColorByQuality(self.Item.Quality)))
   end
