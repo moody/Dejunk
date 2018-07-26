@@ -39,9 +39,9 @@ function TitleFrame:CreateLeft()
   
   -- Character Specific Settings check button
   local charSpec = DFL.CheckButton:Create(parent, L.CHARACTER_SPECIFIC_TEXT, L.CHARACTER_SPECIFIC_TOOLTIP, DFL.Fonts.Small)
-  charSpec:SetCheckRefreshFunction(function() return not DejunkPerChar.UseGlobal end)
   charSpec:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-  function charSpec:OnClick() Addon.Core:ToggleCharacterSpecificSettings() end
+  function charSpec:GetUserValue() return not DejunkPerChar.UseGlobal end
+  function charSpec:SetUserValue() Addon.Core:ToggleCharacterSpecificSettings() end
   frame:Add(charSpec)
   
   do -- Item tooltip & minimap icon check buttons
@@ -50,18 +50,16 @@ function TitleFrame:CreateLeft()
 
     -- Item tooltip check button
     local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
-    itemTooltip:SetCheckRefreshFunction(function() return DejunkGlobal.ItemTooltip end)
     itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function itemTooltip:OnClick()
-      DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip
-    end
+    function itemTooltip:GetUserValue() return DejunkGlobal.ItemTooltip end
+    function itemTooltip:SetUserValue() DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip end
     f:Add(itemTooltip)
 
     -- Minimap Icon check button
     local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
-    minimapIcon:SetCheckRefreshFunction(function() return not DejunkGlobal.Minimap.hide end)
     minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function minimapIcon:OnClick() Addon.MinimapIcon:Toggle() end
+    function minimapIcon:GetUserValue() return not DejunkGlobal.Minimap.hide end
+    function minimapIcon:SetUserValue() Addon.MinimapIcon:Toggle() end
     f:Add(minimapIcon)
 
     frame:Add(f)
