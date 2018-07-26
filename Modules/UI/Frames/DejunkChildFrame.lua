@@ -14,6 +14,10 @@ local Colors = Addon.Colors
 local DejunkDB = Addon.DejunkDB
 local Tools = Addon.Tools
 
+-- Variables
+local BELOW_AVERAGE_MIN_ILVL = 10
+local BELOW_AVERAGE_MAX_ILVL = 100
+
 -- ============================================================================
 -- Frame Lifecycle Functions
 -- ============================================================================
@@ -37,12 +41,9 @@ end
 do
   local function createCheckButton(text, tooltip, svKey)
     local cb = DFL.CheckButton:Create(UIParent, text, tooltip, DFL.Fonts.Small)
-    cb:SetCheckRefreshFunction(function() return DejunkDB:Get(svKey) end)
     cb:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function cb:OnClick(checked)
-      DejunkDB:Set(svKey, checked)
-      Addon.EventManager:Emit("OnOptionChanged", svKey)
-    end
+    function cb:GetUserValue() return DejunkDB:Get(svKey) end
+    function cb:SetUserValue(value) DejunkDB:Set(svKey, value) end
     return cb
   end
 
@@ -106,17 +107,19 @@ do
       -- Unsuitable Equipment
       byType:Add(createCheckButton(L.SELL_UNSUITABLE_TEXT,
         L.SELL_UNSUITABLE_TOOLTIP, "SellUnsuitable"))
-      -- Below Average Item Level
-      byType:Add(createCheckButton(
-        L.SELL_BELOW_AVERAGE_ILVL_TEXT,
-        L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
-        "SellBelowAverageILVL.Enabled")
-      )
-      do
+      
+      do -- Below Average Item Level
+        byType:Add(createCheckButton(
+          L.SELL_BELOW_AVERAGE_ILVL_TEXT,
+          L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
+          "SellBelowAverageILVL.Enabled")
+        )
+        
+        -- Slider
         local f = DFL.Frame:Create(byType, DFL.Alignments.CENTER)
         f:SetSpacing(DFL:Padding(0.5))
         
-        local minLabel = DFL.FontString:Create(f, "0")
+        local minLabel = DFL.FontString:Create(f, BELOW_AVERAGE_MIN_ILVL)
         minLabel:SetColors(Colors.LabelText)
         f:Add(minLabel)
 
@@ -124,15 +127,14 @@ do
         slider:SetColors(unpack(Colors.SliderColors))
         slider:SetOrientation(DFL.Orientations.HORIZONTAL)
         slider:SetWidth(100)
-        slider:SetMinMaxValues(0, 100)
-        slider:SetValueStep(1)
+        slider:SetMinMaxValues(BELOW_AVERAGE_MIN_ILVL, BELOW_AVERAGE_MAX_ILVL)
+        slider:SetValueStep(5)
         slider:SetShowTooltip(true)
-        function slider:OnValueChanged(value)
-          DejunkDB:Set("SellBelowAverageILVL.Value", value)
-        end
+        function slider:GetUserValue() return DejunkDB.SV.SellBelowAverageILVL.Value end
+        function slider:SetUserValue(value) DejunkDB.SV.SellBelowAverageILVL.Value = value end
         f:Add(slider)
         
-        local maxLabel = DFL.FontString:Create(f, "100")
+        local maxLabel = DFL.FontString:Create(f, BELOW_AVERAGE_MAX_ILVL)
         maxLabel:SetColors(Colors.LabelText)
         f:Add(maxLabel)
         
