@@ -1,5 +1,4 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\FrameXML\UI.xsd">
+<Ui>
 	<Script file="Libs\LibStub\LibStub.lua"/>
 	<Script file="Libs\AceLocale-3.0\AceLocale-3.0.lua"/>
   <Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
@@ -9,5 +8,5 @@
   <Script file="Libs\DethsBagLib-1.0\DethsBagLib-1.0.lua"/>
   <Script file="Libs\DethsCmdLib-1.0\DethsCmdLib-1.0.lua"/>
   <Script file="Libs\DethsColorLib-1.0\DethsColorLib-1.0.lua"/>
-  <Script file="Libs\DethsFrameLib-1.0\DethsFrameLib-1.0.lua"/>
+  <Script include="Libs\DethsFrameLib-1.0\DethsFrameLib-1.0.xml"/>
 </Ui>
