@@ -32,24 +32,20 @@ local currentState = states.None
 
 local itemsToDestroy = {}
 
-local function startAutoDestroy()
-  if (currentState == states.None) and DejunkDB.SV.AutoDestroy and not (Addon.Frames.ParentFrame.Frame and Addon.Frames.ParentFrame:IsVisible()) then
-    DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
-    if (#itemsToDestroy > 0) then
-      Destroyer:StartDestroying(true)
-    end
+function Destroyer:StartAutoDestroy()
+  Core:Debug("Destroyer", "StartAutoDestroy()")
+  if (currentState ~= states.None) then return end
+  if not DejunkDB.SV.AutoDestroy then return end
+  if ParentFrame.Frame and ParentFrame:IsVisible() then return end
+
+  DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
+  if (#itemsToDestroy > 0) then
+    Destroyer:StartDestroying(true)
   end
 end
 
 -- Register DBL listener
-DBL:AddListener(startAutoDestroy)
-
-function Destroyer:OnDejunkEvent(event, ...)
-  if (event == "OnParentFrameClosed") then
-    startAutoDestroy()
-  end
-end
-Addon.EventManager:Register(Destroyer, "OnParentFrameClosed", "OnDestroyablesItemAdded")
+DBL:AddListener(Destroyer.StartAutoDestroy)
 
 
 -- ============================================================================

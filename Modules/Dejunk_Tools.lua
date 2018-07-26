@@ -378,7 +378,6 @@ function Tools:GetItemByID(itemID)
     ItemLink = itemLink,
     Quality = quality,
     Class = class,
-    SubClass = subClass,
     Texture = texture,
     Price = price
   }

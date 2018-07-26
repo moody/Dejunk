@@ -26,7 +26,7 @@ function ParentFrame:OnInitialize()
 end
 
 function ParentFrame:OnHide()
-  Addon.EventManager:Emit("OnParentFrameClosed")
+  Addon.Destroyer:StartAutoDestroy()
 end
 
 function ParentFrame:OnUpdate(elapsed)

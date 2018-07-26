@@ -295,6 +295,8 @@ do
     end
 
     do -- IsSellBelowAverageILVLItem
+      local GetAverageItemLevel = GetAverageItemLevel
+
       -- Special check required for these generic armor types
       local SPECIAL_ARMOR_EQUIPSLOTS = {
         ["INVTYPE_FINGER"] = true,

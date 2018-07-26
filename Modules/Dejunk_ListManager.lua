@@ -378,5 +378,11 @@ function ListManager:ParseList(listName)
   end
 
   -- Sort the list once all items have been parsed
-  if not next(toAdd) then ListManager:SortList(list) end
+  if not next(toAdd) then
+    ListManager:SortList(list)
+
+    if (listName == ListManager.Destroyables) then
+      Addon.Destroyer:StartAutoDestroy()
+    end
+  end
 end
