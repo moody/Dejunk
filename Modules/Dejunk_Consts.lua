@@ -8,11 +8,22 @@ local GetItemClassInfo, GetItemSubClassInfo = GetItemClassInfo, GetItemSubClassI
 -- Modules
 local Consts = Addon.Consts
 
--- Called from Dejunk_Core during the PLAYER_ENTERING_WORLD event.
-function Consts:Initialize()
-  if self.Initialized then return end
-  self.Initialized = true
+-- ============================================================================
+-- General Constants
+-- ============================================================================
 
+Consts.SAFE_MODE_MAX = 12
+
+-- SellBelowAverageILVL
+Consts.BELOW_AVERAGE_ILVL_MIN = 10
+Consts.BELOW_AVERAGE_ILVL_MAX = 100
+
+-- ============================================================================
+-- Consts Functions
+-- ============================================================================
+
+-- Called from Core during the PLAYER_ENTERING_WORLD event.
+function Consts:Initialize()
   -- Player class
   self.PLAYER_CLASS = select(2, UnitClass("PLAYER"))
   self:BuildSuitables()
@@ -44,17 +55,11 @@ function Consts:Initialize()
     local name = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, i)
     self.WEAPON_SUBCLASSES[name] = i
   end
+
+  -- nil functions
+  self.Initialize = nil
+  self.BuildSuitables = nil
 end
-
--- ============================================================================
---                             General Constants
--- ============================================================================
-
-Consts.SAFE_MODE_MAX = 12
-
--- ============================================================================
---                             Consts Functions
--- ============================================================================
 
 -- Builds the SUITABLE_ARMOR and SUITABLE_WEAPONS Consts tables based on player class.
 function Consts:BuildSuitables()

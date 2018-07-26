@@ -4,6 +4,7 @@ local AddonName, Addon = ...
 
 -- Modules
 local DejunkDB = Addon.DejunkDB
+local Consts = Addon.Consts
 
 -- ============================================================================
 -- SV Table
@@ -37,11 +38,13 @@ function DejunkDB:Initialize()
   self:FormatGlobalSettings()
   self:FormatPerCharSettings()
   self:FormatLists()
+  self:ClampMinMaxValues()
 
   self.Initialize = nil
   self.FormatGlobalSettings = nil
   self.FormatPerCharSettings = nil
   self.FormatLists = nil
+  self.ClampMinMaxValues = nil
 end
 
 -- Toggles between global and per char SVs.
@@ -187,6 +190,18 @@ function DejunkDB:FormatPerCharSettings()
   end
 end
 
+-- Clamps existing values to their minimum or maximum value.
+function DejunkDB:ClampMinMaxValues()
+  for _, sv in pairs({DejunkGlobal, DejunkPerChar}) do
+    -- SellBelowAverageILVL
+    sv.SellBelowAverageILVL.Value = Clamp(
+      sv.SellBelowAverageILVL.Value,
+      Consts.BELOW_AVERAGE_ILVL_MIN,
+      Consts.BELOW_AVERAGE_ILVL_MAX
+    )
+  end
+end
+
 -- Converts legacy item lists to the newest format.
 function DejunkDB:FormatLists()
   local function convert(list)
@@ -238,7 +253,7 @@ function DejunkDB:Defaults()
     SellUnsuitable = false,
     SellBelowAverageILVL = {
       Enabled = false,
-      Value = 0
+      Value = Consts.BELOW_AVERAGE_ILVL_MIN
     },
 
     -- Ignore options

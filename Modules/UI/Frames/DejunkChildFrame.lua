@@ -11,12 +11,9 @@ local DFL = Addon.Libs.DFL
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
 local Colors = Addon.Colors
+local Consts = Addon.Consts
 local DejunkDB = Addon.DejunkDB
 local Tools = Addon.Tools
-
--- Variables
-local BELOW_AVERAGE_MIN_ILVL = 10
-local BELOW_AVERAGE_MAX_ILVL = 100
 
 -- ============================================================================
 -- Frame Lifecycle Functions
@@ -116,10 +113,11 @@ do
         )
         
         -- Slider
+        local minILVL, maxILVL = Consts.BELOW_AVERAGE_ILVL_MIN, Consts.BELOW_AVERAGE_ILVL_MAX
         local f = DFL.Frame:Create(byType, DFL.Alignments.CENTER)
         f:SetSpacing(DFL:Padding(0.5))
         
-        local minLabel = DFL.FontString:Create(f, BELOW_AVERAGE_MIN_ILVL)
+        local minLabel = DFL.FontString:Create(f, minILVL)
         minLabel:SetColors(Colors.LabelText)
         f:Add(minLabel)
 
@@ -127,14 +125,14 @@ do
         slider:SetColors(unpack(Colors.SliderColors))
         slider:SetOrientation(DFL.Orientations.HORIZONTAL)
         slider:SetWidth(100)
-        slider:SetMinMaxValues(BELOW_AVERAGE_MIN_ILVL, BELOW_AVERAGE_MAX_ILVL)
+        slider:SetMinMaxValues(minILVL, maxILVL)
         slider:SetValueStep(5)
         slider:SetShowTooltip(true)
         function slider:GetUserValue() return DejunkDB.SV.SellBelowAverageILVL.Value end
         function slider:SetUserValue(value) DejunkDB.SV.SellBelowAverageILVL.Value = value end
         f:Add(slider)
         
-        local maxLabel = DFL.FontString:Create(f, BELOW_AVERAGE_MAX_ILVL)
+        local maxLabel = DFL.FontString:Create(f, maxILVL)
         maxLabel:SetColors(Colors.LabelText)
         f:Add(maxLabel)
         
