@@ -1,19 +1,19 @@
 <Ui>
 	<Script file="Modules\Modules.lua"/>
 
-  <Script file="Modules\Dejunk_Consts.lua"/>
-  <Script file="Modules\Dejunk_DejunkDB.lua"/>
-  <Script file="Modules\Dejunk_ListManager.lua"/>
-  <Script file="Modules\Dejunk_Tools.lua"/>
+  <Script file="Modules\Consts.lua"/>
+  <Script file="Modules\DejunkDB.lua"/>
+  <Script file="Modules\ListManager.lua"/>
+  <Script file="Modules\Tools.lua"/>
 
-  <Script file="Modules\Dejunk_Confirmer.lua"/>
-  <Script file="Modules\Dejunk_Dejunker.lua"/>
-  <Script file="Modules\Dejunk_Destroyer.lua"/>
-  <Script file="Modules\Dejunk_Repairer.lua"/>
+  <Script file="Modules\Confirmer.lua"/>
+  <Script file="Modules\Dejunker.lua"/>
+  <Script file="Modules\Destroyer.lua"/>
+  <Script file="Modules\Repairer.lua"/>
 
   <!-- /UI/ -->
-  <Script file="Modules\UI\Dejunk_MerchantButton.lua"/>
-  <Script file="Modules\UI\Dejunk_MinimapIcon.lua"/>
+  <Script file="Modules\UI\MerchantButton.lua"/>
+  <Script file="Modules\UI\MinimapIcon.lua"/>
 
   <!-- /UI/Colors/ -->
   <Script file="Modules\UI\Colors\Colors.lua"/>

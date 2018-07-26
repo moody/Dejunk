@@ -12,4 +12,4 @@ Locales/Locales.xml
 Modules/Modules.xml
 
 Bindings.lua
-Dejunk_Core.lua
+Core.lua
