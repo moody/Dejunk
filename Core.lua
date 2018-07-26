@@ -83,7 +83,7 @@ function Core:Debug(title, msg)
   title = DCL:ColorString(title, Colors.Green)
   print(format("%s %s: %s", debug, title, msg))
 end
-Core.IsDebugging = true
+-- Core.IsDebugging = true
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
