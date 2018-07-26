@@ -53,25 +53,6 @@ end
 Consts.SAFE_MODE_MAX = 12
 
 -- ============================================================================
---                                 UI Constants
--- ============================================================================
-
--- List
-Consts.LIST_FRAME_MIN_WIDTH = 300
-Consts.LIST_BUTTON_HEIGHT = 30
-Consts.LIST_BUTTON_ICON_SIZE = 20
-
--- Slider
-Consts.SLIDER_DEFAULT_WIDTH = 16
-Consts.THUMB_DEFAULT_HEIGHT = 32
-
--- EditBox
-Consts.EDIT_BOX_MIN_WIDTH = 75
-
--- ScrollFrame
-Consts.SCROLL_FRAME_MIN_HEIGHT = 100
-
--- ============================================================================
 --                             Consts Functions
 -- ============================================================================
 
