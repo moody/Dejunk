@@ -3,7 +3,6 @@
 Dejunk is a customizable junk selling and destroying addon.
 
 ![Dejunk](/Dejunk.png?raw=true)
-![Destroy](/Destroy.png?raw=true)
 ![Key Bindings](/KeyBindings.png?raw=true)
 
 ## Features
@@ -14,7 +13,7 @@ Dejunk is a customizable junk selling and destroying addon.
 * Customize a list of items to never sell (Exclusions)
 * Sell all items of a specific quality (from Poor to Epic)
 * Sell items unsuitable for your class
-* Sell equipment below a specified item level
+* Sell equipment below average item level
 * Ignore items by type (Consumable, Trade Goods, BoE, Soulbound, etc.)
 ### Destroying
 * Automatically destroy junk items

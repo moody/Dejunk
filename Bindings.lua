@@ -1,53 +1,50 @@
 -- Bindings: sets up binding data and functions.
 
-local AddonName, DJ = ...
+local AddonName, Addon = ...
 local _G = _G
 
 -- Libs
-local L = LibStub('AceLocale-3.0'):GetLocale(AddonName)
+local L = Addon.Libs.L
+local DCL = Addon.Libs.DCL
 
--- Dejunk
-local Core = DJ.Core
-local Colors = DJ.Colors
-local Destroyer = DJ.Destroyer
-local ListManager = DJ.ListManager
-local Tools = DJ.Tools
+-- Modules
+local Core = Addon.Core
+local Colors = Addon.Colors
+local Destroyer = Addon.Destroyer
+local ListManager = Addon.ListManager
+local Tools = Addon.Tools
 
 -- Variables
 local currentItemID = nil
 
--- Hack to avoid errors when Colors:GetColor() is called before Dejunk has been
--- initialized. Called in Core:Initialize().
-function Core:InitializeBindingStrings()
-  -- Category
-  _G["BINDING_CATEGORY_DEJUNK"] = Tools:GetColorString(AddonName, Colors.DefaultColors.LabelText)
+-- Category
+_G["BINDING_CATEGORY_DEJUNK"] = DCL:ColorString(AddonName, Colors.LabelText)
 
-  -- Blank headers
-  _G["BINDING_HEADER_DEJUNKBLANK1"] = ""
-  _G["BINDING_HEADER_DEJUNKBLANK2"] = ""
-  _G["BINDING_HEADER_DEJUNKBLANK3"] = ""
+-- Blank headers
+_G["BINDING_HEADER_DEJUNKBLANK1"] = ""
+_G["BINDING_HEADER_DEJUNKBLANK2"] = ""
+_G["BINDING_HEADER_DEJUNKBLANK3"] = ""
 
-  -- Toggle options
-  _G["BINDING_NAME_DEJUNK_TOGGLE_OPTIONS"] = L.BINDINGS_TOGGLE_OPTIONS_TEXT
+-- Toggle options
+_G["BINDING_NAME_DEJUNK_TOGGLE_OPTIONS"] = L.BINDINGS_TOGGLE_OPTIONS_TEXT
 
-  -- Start destroying
-  _G["BINDING_NAME_DEJUNK_START_DESTROYING"] = L.START_DESTROYING_BUTTON_TEXT
+-- Start destroying
+_G["BINDING_NAME_DEJUNK_START_DESTROYING"] = L.START_DESTROYING_BUTTON_TEXT
 
-  -- Inclusions
-  _G["BINDING_NAME_DEJUNK_ADD_INCLUSIONS"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetInclusionsString())
-  _G["BINDING_NAME_DEJUNK_REM_INCLUSIONS"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetInclusionsString())
+-- Inclusions
+_G["BINDING_NAME_DEJUNK_ADD_INCLUSIONS"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetInclusionsString())
+_G["BINDING_NAME_DEJUNK_REM_INCLUSIONS"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetInclusionsString())
 
-  -- Exclusions
-  _G["BINDING_NAME_DEJUNK_ADD_EXCLUSIONS"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetExclusionsString())
-  _G["BINDING_NAME_DEJUNK_REM_EXCLUSIONS"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetExclusionsString())
+-- Exclusions
+_G["BINDING_NAME_DEJUNK_ADD_EXCLUSIONS"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetExclusionsString())
+_G["BINDING_NAME_DEJUNK_REM_EXCLUSIONS"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetExclusionsString())
 
-  -- Destroyables
-  _G["BINDING_NAME_DEJUNK_ADD_DESTROYABLES"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetDestroyablesString())
-  _G["BINDING_NAME_DEJUNK_REM_DESTROYABLES"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetDestroyablesString())
-end
+-- Destroyables
+_G["BINDING_NAME_DEJUNK_ADD_DESTROYABLES"] = format(L.BINDINGS_ADD_TO_LIST_TEXT, Tools:GetDestroyablesString())
+_G["BINDING_NAME_DEJUNK_REM_DESTROYABLES"] = format(L.BINDINGS_REMOVE_FROM_LIST_TEXT, Tools:GetDestroyablesString())
 
 -- ============================================================================
---                              General Bindings
+-- General Bindings
 -- ============================================================================
 
 function DejunkBindings_ToggleOptions()
@@ -59,7 +56,7 @@ function DejunkBindings_StartDestroying()
 end
 
 -- ============================================================================
---                                List Bindings
+-- List Bindings
 -- ============================================================================
 
 -- Inclusions
@@ -96,7 +93,7 @@ function DejunkBindings_RemoveFromDestroyables()
 end
 
 -- ============================================================================
---                             Item Tooltip Hook
+-- Item Tooltip Hook
 -- ============================================================================
 
 do

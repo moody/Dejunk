@@ -1,3 +1,16 @@
+### 8.0.0
+* Updated for Battle for Azeroth.
+* Removed the option to sell "Equipment Below Item Level"
+* Added the option to sell "Below Average Equipment"
+* * This option allows Dejunk to sell equippable items that are a set number of item levels below your average item level.
+
+*****
+
+### 7.3.17
+* Updated localization for Traditional Chinese.
+
+*****
+
 ### 7.3.16
 * Added partial localization support for Traditional Chinese.
 * Soulbound Poor quality items are no longer ignored while the Ignore Soulbound option is enabled.
