@@ -5,6 +5,20 @@ ignore:
   - KeyBindings.png
   - CHANGELOG.md
   - README.md
+  - Libs/DethsBagLib-1.0/DethsBagLib-1.0.toc
+  - Libs/DethsBagLib-1.0/LibStub.lua
+  - Libs/DethsBagLib-1.0/LICENSE.md
+  - Libs/DethsBagLib-1.0/README.md
+  - Libs/DethsBagLib-1.0/Tests.lua
+  - Libs/DethsCmdLib-1.0/DethsCmdLib-1.0.toc
+  - Libs/DethsCmdLib-1.0/LibStub.lua
+  - Libs/DethsColorLib-1.0/DethsColorLib-1.0.toc
+  - Libs/DethsColorLib-1.0/LibStub.lua
+  - Libs/DethsColorLib-1.0/LICENSE.md
+  - Libs/DethsColorLib-1.0/README.md
+  - Libs/DethsColorLib-1.0/Tests.lua
+  - Libs/DethsFrameLib-1.0/DethsFrameLib-1.0.toc
+  - Libs/DethsFrameLib-1.0/Tests
 
 manual-changelog:
   filename: CHANGELOG.md
