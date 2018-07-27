@@ -1,5 +1,15 @@
 enable-nolib-creation: no
 
+externals:
+  - Libs/DethsBagLib-1.0:
+    url: https://github.com/moody/DethsBagLib-1.0.git
+  - Libs/DethsCmdLib-1.0:
+    url: https://github.com/moody/DethsCmdLib-1.0.git
+  - Libs/DethsColorLib-1.0:
+    url: https://github.com/moody/DethsColorLib-1.0.git
+  - Libs/DethsFrameLib-1.0:
+    url: https://github.com/moody/DethsFrameLib-1.0.git
+
 ignore:
   - Dejunk.png
   - KeyBindings.png
