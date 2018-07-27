@@ -1,0 +1,3 @@
+[submodule "Libs/DethsFrameLib-1.0"]
+	path = Libs/DethsFrameLib-1.0
+	url = https://github.com/moody/DethsFrameLib-1.0.git
