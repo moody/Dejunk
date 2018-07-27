@@ -2,10 +2,14 @@ package-as: Dejunk
 enable-nolib-creation: no
 
 externals:
-  - Libs/DethsBagLib-1.0: https://github.com/moody/DethsBagLib-1.0
-  - Libs/DethsCmdLib-1.0: https://github.com/moody/DethsCmdLib-1.0
-  - Libs/DethsColorLib-1.0: https://github.com/moody/DethsColorLib-1.0
-  - Libs/DethsFrameLib-1.0: https://github.com/moody/DethsFrameLib-1.0
+  - Libs/DethsBagLib-1.0:
+    url: git://github.com/moody/DethsBagLib-1.0.git
+  - Libs/DethsCmdLib-1.0:
+    url: git://github.com/moody/DethsCmdLib-1.0.git
+  - Libs/DethsColorLib-1.0:
+    url: git://github.com/moody/DethsColorLib-1.0.git
+  - Libs/DethsFrameLib-1.0:
+    url: git://github.com/moody/DethsFrameLib-1.0.git
 
 ignore:
   - Dejunk.png
