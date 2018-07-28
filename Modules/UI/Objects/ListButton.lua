@@ -117,7 +117,7 @@ do
 
   function Scripts:OnEnter()
     self.Texture:SetColorTexture(unpack(Colors.ListButtonHi))
-    Addon.Tools:ShowItemTooltip(self, DFL.Anchors.TOP, self.Item.ItemLink)
+    Addon.Libs.DTL:ShowHyperlink(self, DFL.Anchors.TOP, self.Item.ItemLink)
   end
 
   function Scripts:OnLeave()

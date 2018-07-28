@@ -164,11 +164,31 @@ end
 -- ============================================================================
 
 do
+  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
+
   -- Returns true if the specified item is destroyable.
   -- @param item - the item to run through the filter
   Destroyer.Filter = function(item)
-    if item:IsLocked() then return false end
-    if not Tools:ItemCanBeDestroyed(item) then return false end
+    if -- Ignore item if it is locked, refundable, or not destroyable
+      item:IsLocked() or
+      Tools:ItemCanBeRefunded(item) or
+      not Tools:ItemCanBeDestroyed(item)
+    then
+      return false
+    end
+
+    -- If tooltip not available, ignore item if an option is enabled which
+    -- relies on tooltip data
+    if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
+      if
+        DejunkDB.SV.DestroyPetsAlreadyCollected or
+        DejunkDB.SV.DestroyToysAlreadyCollected
+      then
+        Core:Debug("Destroyer", format("%s has no tooltip. Ignoring.", item.ItemLink))
+        return false
+      end
+    end
+
     if not Destroyer:IsDestroyableItem(item) then return false end
     return true
   end
@@ -243,12 +263,12 @@ do
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DejunkDB.SV.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
+    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
   end
 
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DejunkDB.SV.DestroyToysAlreadyCollected or not item.NoValue then return false end
     if not PlayerHasToy(item.ItemID) then return false end
-    return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
+    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
   end
 end
