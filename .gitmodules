@@ -10,3 +10,6 @@
 [submodule "Libs/DethsColorLib-1.0"]
 	path = Libs/DethsColorLib-1.0
 	url = https://github.com/moody/DethsColorLib-1.0.git
+[submodule "Libs/DethsTooltipLib-1.0"]
+	path = Libs/DethsTooltipLib-1.0
+	url = https://github.com/moody/DethsTooltipLib-1.0.git
