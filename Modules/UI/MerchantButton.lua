@@ -4,6 +4,7 @@ local AddonName, Addon = ...
 
 -- Libs
 local L = Addon.Libs.L
+local DTL = Addon.Libs.DTL
 
 -- Modules
 local MerchantButton = Addon.MerchantButton
@@ -46,10 +47,9 @@ function MerchantButton:Initialize()
   end)
 
   self.Button:HookScript("OnEnter", function(self)
-    Tools:ShowTooltip(self, "ANCHOR_RIGHT",
-      self:GetText(), L.DEJUNK_BUTTON_TOOLTIP)
+    DTL:ShowTooltip(self, "ANCHOR_RIGHT", self:GetText(), L.DEJUNK_BUTTON_TOOLTIP)
   end)
-  self.Button:HookScript("OnLeave", Tools.HideTooltip)
+  self.Button:HookScript("OnLeave", DTL.HideTooltip)
 
   -- nil function
   self.Initialize = nil

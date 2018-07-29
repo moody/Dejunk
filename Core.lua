@@ -174,7 +174,7 @@ do
 
     -- Get item
     item = DBL:GetItem(bag, slot, item)
-    if not item then return end
+    if not item or Tools:ItemCanBeRefunded(item) then return end
 
     local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
     local rightText

@@ -5,6 +5,7 @@ local AddonName, Addon = ...
 -- Libs
 local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
+local DTL = Addon.Libs.DTL
 
 -- Upvalues
 local assert, remove = assert, table.remove
@@ -32,22 +33,6 @@ local currentState = states.None
 
 local itemsToDestroy = {}
 
-function Destroyer:StartAutoDestroy()
-  Core:Debug("Destroyer", "StartAutoDestroy()")
-  if (currentState ~= states.None) then return end
-  if not DejunkDB.SV.AutoDestroy then return end
-  if ParentFrame.Frame and ParentFrame:IsVisible() then return end
-
-  DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
-  if (#itemsToDestroy > 0) then
-    Destroyer:StartDestroying(true)
-  end
-end
-
--- Register DBL listener
-DBL:AddListener(Destroyer.StartAutoDestroy)
-
-
 -- ============================================================================
 -- Destroyer Frames
 -- ============================================================================
@@ -60,6 +45,21 @@ local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 -- ============================================================================
 
 do
+  -- Attempts to start the Destroying process if Auto Destroy is enabled.
+  function Destroyer:StartAutoDestroy()
+    if (currentState ~= states.None) then return end
+    if not DejunkDB.SV.AutoDestroy then return end
+    if ParentFrame.Frame and ParentFrame:IsVisible() then return end
+    
+    Core:Debug("Destroyer", "StartAutoDestroy()")
+
+    -- NOTE: We don't use self.Filter since DBL will call without args
+    DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
+    if (#itemsToDestroy > 0) then Destroyer:StartDestroying(true) end
+  end
+  -- Register DBL listener
+  DBL:AddListener(Destroyer.StartAutoDestroy)
+
   -- Starts the Destroying process.
   -- @param auto - if the process was started automatically
   function Destroyer:StartDestroying(auto)
@@ -75,6 +75,12 @@ do
     -- Update items if manually started
     if not auto then DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy) end
     local upToDate = DBL:IsUpToDate()
+
+    -- Notify if tooltips could not be parsed
+    if self.incompleteTooltips then
+      self.incompleteTooltips = false
+      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+    end
 
     -- Stop if no items
     if (#itemsToDestroy == 0) then
@@ -164,13 +170,33 @@ end
 -- ============================================================================
 
 do
+  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
+
   -- Returns true if the specified item is destroyable.
   -- @param item - the item to run through the filter
   Destroyer.Filter = function(item)
-    if item:IsLocked() then return false end
-    if not Tools:ItemCanBeDestroyed(item) then return false end
-    if not Destroyer:IsDestroyableItem(item) then return false end
-    return true
+    if -- Ignore item if it is locked, refundable, or not destroyable
+      item:IsLocked() or
+      Tools:ItemCanBeRefunded(item) or
+      not Tools:ItemCanBeDestroyed(item)
+    then
+      return false
+    end
+
+    -- If tooltip not available, ignore item if an option is enabled which
+    -- relies on tooltip data
+    if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
+      if
+        DejunkDB.SV.DestroyPetsAlreadyCollected or
+        DejunkDB.SV.DestroyToysAlreadyCollected
+      then
+        Destroyer.incompleteTooltips = true
+        return false
+      end
+    end
+
+    local isDestroyableItem = Destroyer:IsDestroyableItem(item)
+    return isDestroyableItem
   end
 
   -- Checks if an item is a junk item based on Dejunk's settings.
@@ -243,12 +269,12 @@ do
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DejunkDB.SV.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
+    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
   end
 
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DejunkDB.SV.DestroyToysAlreadyCollected or not item.NoValue then return false end
     if not PlayerHasToy(item.ItemID) then return false end
-    return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
+    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
   end
 end

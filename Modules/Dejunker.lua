@@ -6,6 +6,7 @@ local AddonName, Addon = ...
 local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
+local DTL = Addon.Libs.DTL
 
 -- Upvalues
 local assert, remove = assert, table.remove
@@ -82,6 +83,12 @@ do
     DBL:GetItemsByFilter(Dejunker.Filter, itemsToSell, maxItems)
     local upToDate = DBL:IsUpToDate()
 
+    -- Notify if tooltips could not be parsed
+    if self.incompleteTooltips then
+      self.incompleteTooltips = false
+      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+    end
+
     -- Stop if no items
     if (#itemsToSell == 0) then
       if not auto then
@@ -124,9 +131,6 @@ end
 -- ============================================================================
 
 do
-  local StaticPopup1, StaticPopup1Text, StaticPopup1Button1 =
-        StaticPopup1, StaticPopup1Text, StaticPopup1Button1
-
   -- NOTE: If a delay is not used, it can sometimes cause a disconnect
   -- I may turn this into an gui option at some point
   local SELL_DELAY = 0.25
@@ -144,9 +148,6 @@ do
       if not item or not DBL:StillInBags(item) or item:IsLocked() then return end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
-      -- Accept tradeable item dialog if shown
-      local popup = StaticPopup1:IsVisible() and (StaticPopup1Text.text_arg1 == item.ItemLink)
-      if popup then StaticPopup1Button1:Click() end
       -- Notify confirmer
       Confirmer:OnItemDejunked(item)
 
@@ -187,10 +188,34 @@ end
 -- ============================================================================
 
 do
+  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
+  
   -- Returns true if the specified item is dejunkable.
   -- @param item - the item to run through the filter
   Dejunker.Filter = function(item)
-    if item:IsLocked() or item.NoValue or not Tools:ItemCanBeSold(item) then return false end
+    if -- Ignore item if it is locked, refundable, or not sellable
+      item:IsLocked() or
+      Tools:ItemCanBeRefunded(item) or
+      item.NoValue or
+      not Tools:ItemCanBeSold(item)
+    then
+      return false
+    end
+
+    -- If tooltip not available, ignore item if an option is enabled which
+    -- relies on tooltip data
+    if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
+      if
+        DejunkDB.SV.IgnoreBindsWhenEquipped or
+        DejunkDB.SV.IgnoreSoulbound or
+        DejunkDB.SV.IgnoreEquipmentSets or
+        DejunkDB.SV.IgnoreTradeable
+      then
+        Dejunker.incompleteTooltips = true
+        return false
+      end
+    end
+
     local isJunkItem = Dejunker:IsJunkItem(item)
     return isJunkItem
   end
@@ -406,25 +431,21 @@ do
       if not DejunkDB.SV.IgnoreBindsWhenEquipped then return false end
       -- Make sure the item is actually an armor or weapon item instead of a tradeskill recipe
       if not (item.Class == Consts.ARMOR_CLASS or item.Class == Consts.WEAPON_CLASS) then return false end
-      return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_BIND_ON_EQUIP)
+      return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_BIND_ON_EQUIP)
     end
 
     function Dejunker:IsIgnoredSoulboundItem(item)
       if not DejunkDB.SV.IgnoreSoulbound or (item.Quality == LE_ITEM_QUALITY_POOR) then return false end
-      return Tools:BagItemTooltipHasText(item.Bag, item.Slot, ITEM_SOULBOUND)
+      return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
     end
 
     do -- IsIgnoredEquipmentSetsItem
-      local TRIMMED_EQUIPMENT_SETS = nil
+      -- "Equipment sets: |cFFFFFFFF%s|r" becomes "Equipment sets: "
+      local TRIMMED_EQUIPMENT_SETS = EQUIPMENT_SETS:match("(.*)|c")
 
       function Dejunker:IsIgnoredEquipmentSetsItem(item)
         if not DejunkDB.SV.IgnoreEquipmentSets then return false end
-        if not TRIMMED_EQUIPMENT_SETS then
-          TRIMMED_EQUIPMENT_SETS =
-            strtrim(DCL:RemoveColor(EQUIPMENT_SETS:gsub("%%s", "")), " ")
-        end
-
-        return Tools:BagItemTooltipHasText(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
+        return DTL:BagItemHasInLines(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
       end
     end
 
@@ -433,7 +454,7 @@ do
 
       function Dejunker:IsIgnoredTradeableItem(item)
         if not DejunkDB.SV.IgnoreTradeable then return false end
-        return Tools:BagItemTooltipHasLine(item.Bag, item.Slot, bttr1, bttr2)
+        return DTL:BagItemHasInLine(item.Bag, item.Slot, bttr1, bttr2)
       end
     end
   end
