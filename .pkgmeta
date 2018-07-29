@@ -10,6 +10,8 @@ externals:
     url: git://github.com/moody/DethsColorLib-1.0.git
   - Libs/DethsFrameLib-1.0:
     url: git://github.com/moody/DethsFrameLib-1.0.git
+  - Libs/DethsTooltipLib-1.0:
+    url: git://github.com/moody/DethsTooltipLib-1.0.git
 
 ignore:
   - Dejunk.png
@@ -30,6 +32,9 @@ ignore:
   - Libs/DethsColorLib-1.0/Tests.lua
   - Libs/DethsFrameLib-1.0/DethsFrameLib-1.0.toc
   - Libs/DethsFrameLib-1.0/Tests
+  - Libs/DethsTooltipLib-1.0/DethsTooltipLib-1.0.toc
+  - Libs/DethsTooltipLib-1.0/LibStub.lua
+  - Libs/DethsTooltipLib-1.0/Tests.lua
 
 manual-changelog:
   filename: CHANGELOG.md

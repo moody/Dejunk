@@ -11,7 +11,8 @@ Addon.Libs = {
   LDBIcon = LibStub("LibDBIcon-1.0"),
   DBL = LibStub("DethsBagLib-1.0"),
   DCL = LibStub("DethsColorLib-1.0"),
-  DFL = DFL
+  DFL = DFL,
+  DTL = LibStub("DethsTooltipLib-1.0")
 }
 
 -- Initialize Dejunk tables

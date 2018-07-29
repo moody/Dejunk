@@ -381,6 +381,7 @@ function ListManager:ParseList(listName)
   if not next(toAdd) then
     ListManager:SortList(list)
 
+    -- Start auto destroy if the Destroyables list was updated
     if (listName == ListManager.Destroyables) then
       Addon.Destroyer:StartAutoDestroy()
     end
