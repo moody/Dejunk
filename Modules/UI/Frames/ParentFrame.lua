@@ -26,6 +26,7 @@ function ParentFrame:OnInitialize()
 end
 
 function ParentFrame:OnHide()
+  -- Start auto destroy in case Destroy options were changed
   Addon.Destroyer:StartAutoDestroy()
 end
 

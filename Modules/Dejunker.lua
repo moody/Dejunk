@@ -83,6 +83,12 @@ do
     DBL:GetItemsByFilter(Dejunker.Filter, itemsToSell, maxItems)
     local upToDate = DBL:IsUpToDate()
 
+    -- Notify if tooltips could not be parsed
+    if self.incompleteTooltips then
+      self.incompleteTooltips = false
+      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+    end
+
     -- Stop if no items
     if (#itemsToSell == 0) then
       if not auto then
@@ -195,7 +201,7 @@ do
     then
       return false
     end
-    
+
     -- If tooltip not available, ignore item if an option is enabled which
     -- relies on tooltip data
     if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
@@ -205,7 +211,7 @@ do
         DejunkDB.SV.IgnoreEquipmentSets or
         DejunkDB.SV.IgnoreTradeable
       then
-        Core:Debug("Dejunker", format("%s has no tooltip. Ignoring.", item.ItemLink))
+        Dejunker.incompleteTooltips = true
         return false
       end
     end

@@ -5,6 +5,7 @@ local AddonName, Addon = ...
 -- Libs
 local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
+local DTL = Addon.Libs.DTL
 
 -- Upvalues
 local assert, remove = assert, table.remove
@@ -32,22 +33,6 @@ local currentState = states.None
 
 local itemsToDestroy = {}
 
-function Destroyer:StartAutoDestroy()
-  Core:Debug("Destroyer", "StartAutoDestroy()")
-  if (currentState ~= states.None) then return end
-  if not DejunkDB.SV.AutoDestroy then return end
-  if ParentFrame.Frame and ParentFrame:IsVisible() then return end
-
-  DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
-  if (#itemsToDestroy > 0) then
-    Destroyer:StartDestroying(true)
-  end
-end
-
--- Register DBL listener
-DBL:AddListener(Destroyer.StartAutoDestroy)
-
-
 -- ============================================================================
 -- Destroyer Frames
 -- ============================================================================
@@ -60,6 +45,21 @@ local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 -- ============================================================================
 
 do
+  -- Attempts to start the Destroying process if Auto Destroy is enabled.
+  function Destroyer:StartAutoDestroy()
+    if (currentState ~= states.None) then return end
+    if not DejunkDB.SV.AutoDestroy then return end
+    if ParentFrame.Frame and ParentFrame:IsVisible() then return end
+    
+    Core:Debug("Destroyer", "StartAutoDestroy()")
+
+    -- NOTE: We don't use self.Filter since DBL will call without args
+    DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
+    if (#itemsToDestroy > 0) then Destroyer:StartDestroying(true) end
+  end
+  -- Register DBL listener
+  DBL:AddListener(Destroyer.StartAutoDestroy)
+
   -- Starts the Destroying process.
   -- @param auto - if the process was started automatically
   function Destroyer:StartDestroying(auto)
@@ -75,6 +75,12 @@ do
     -- Update items if manually started
     if not auto then DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy) end
     local upToDate = DBL:IsUpToDate()
+
+    -- Notify if tooltips could not be parsed
+    if self.incompleteTooltips then
+      self.incompleteTooltips = false
+      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+    end
 
     -- Stop if no items
     if (#itemsToDestroy == 0) then
@@ -184,13 +190,13 @@ do
         DejunkDB.SV.DestroyPetsAlreadyCollected or
         DejunkDB.SV.DestroyToysAlreadyCollected
       then
-        Core:Debug("Destroyer", format("%s has no tooltip. Ignoring.", item.ItemLink))
+        Destroyer.incompleteTooltips = true
         return false
       end
     end
 
-    if not Destroyer:IsDestroyableItem(item) then return false end
-    return true
+    local isDestroyableItem = Destroyer:IsDestroyableItem(item)
+    return isDestroyableItem
   end
 
   -- Checks if an item is a junk item based on Dejunk's settings.
