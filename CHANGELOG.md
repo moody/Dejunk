@@ -1,38 +1,10 @@
+### 8.0.1
+* Updated esMX (Latin American Spanish) localization
+
+*****
+
 ### 8.0.0
 * Updated for Battle for Azeroth.
 * Removed the option to sell "Equipment Below Item Level"
 * Added the option to sell "Below Average Equipment"
 * * This option allows Dejunk to sell equippable items that are a set number of item levels below your average item level.
-
-*****
-
-### 7.3.17
-* Updated localization for Traditional Chinese.
-
-*****
-
-### 7.3.16
-* Added partial localization support for Traditional Chinese.
-* Soulbound Poor quality items are no longer ignored while the Ignore Soulbound option is enabled.
-
-*****
-
-### 7.3.15
-* Updated Russian localization.
-
-*****
-
-### 7.3.14
-* Added localization support for Russian.
-
-*****
-
-### 7.3.13
-* Added partial localization support for Brazilian Portuguese.
-* The destroying process should no longer force the cursor to be cleared if it already has an item or spell.
-
-*****
-
-### 7.3.12
-* Verbose Mode messages are now printed as soon as an item has been sold or destroyed instead of waiting until all items have been sold or destroyed.
-* The Dejunk merchant button now supports ElvUI.
