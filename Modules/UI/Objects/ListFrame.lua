@@ -116,8 +116,8 @@ end
 -- ============================================================================
 
 local function fsFrame_OnUpdate(self, elapsed)
-  self.exportButton:SetEnabled(self:IsEnabled())
-
+  self.exportButton:SetEnabled(self:IsEnabled() and (#self._data > 0))
+  
   if (#self._data == 0) then -- No items
     self._noItemsFS:Show()
   else
