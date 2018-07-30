@@ -140,7 +140,7 @@ end
 
 -- Toggles Dejunk's GUI.
 function Core:ToggleGUI()
-  if ParentFrame.Initialize then ParentFrame:Initialize() end
+  ParentFrame:Initialize()
   ParentFrame:Toggle()
 end
 
