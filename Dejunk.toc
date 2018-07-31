@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Dejunk
 ## Author: Dethanyel
-## Version: 8.0.0
+## Version: 8.0.1
 ## Notes: Customizable junk selling and destroying.
 ## SavedVariables: DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
