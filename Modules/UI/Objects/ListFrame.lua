@@ -20,24 +20,28 @@ local ListManager = Addon.ListManager
 -- Local Functions
 -- ============================================================================
 
+local LIST_FRAME_GENERAL_TOOLTIP = format(
+  "%s|n|n%s|n|n%s",
+  L.LIST_FRAME_ADD_TOOLTIP,
+  L.LIST_FRAME_REM_TOOLTIP,
+  L.LIST_FRAME_REM_ALL_TOOLTIP
+)
+
 -- Returns the localized text and tooltip for the list.
 local function getListStrings(listName)
-  -- NOTE: Holy fuck. Just change this to a single tooltip using [=[]=] string
-  local baseTooltip = format("%s|n|n%s|n|n%s", L.LIST_FRAME_ADD_TOOLTIP,
-    L.LIST_FRAME_REM_TOOLTIP, L.LIST_FRAME_REM_ALL_TOOLTIP)
-    
+  local text, tooltip
+  
   if (listName == ListManager.Inclusions) then
-    local tooltip = format("%s|n|n%s", L.INCLUSIONS_TOOLTIP, baseTooltip)
-    return L.INCLUSIONS_TEXT, tooltip
+    text, tooltip = L.INCLUSIONS_TEXT, L.INCLUSIONS_TOOLTIP
   elseif (listName == ListManager.Exclusions) then
-    local tooltip = format("%s|n|n%s", L.EXCLUSIONS_TOOLTIP, baseTooltip)
-    return L.EXCLUSIONS_TEXT, tooltip
+    text, tooltip = L.EXCLUSIONS_TEXT, L.EXCLUSIONS_TOOLTIP
   elseif (listName == ListManager.Destroyables) then
-    local tooltip = format("%s|n|n%s", L.DESTROYABLES_TOOLTIP, baseTooltip)
-    return L.DESTROYABLES_TEXT, tooltip
+    text, tooltip = L.DESTROYABLES_TEXT, L.DESTROYABLES_TOOLTIP
   else
     error(listName.." is not a valid list name.")
   end
+
+  return text, format("%s|n|n%s", tooltip, LIST_FRAME_GENERAL_TOOLTIP)
 end
 
 local function createTitleButton(parent, listName, text, tooltip)
