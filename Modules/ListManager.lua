@@ -1,4 +1,4 @@
--- Dejunk_ListManager: manages the Inclusions, Exclusions, and Destroyables lists in the saved variables.
+-- ListManager: manages the Inclusions, Exclusions, and Destroyables lists in the saved variables.
 
 local AddonName, Addon = ...
 
@@ -28,7 +28,7 @@ ListManager.Lists =
   ["Exclusions"] = {},
   ["Destroyables"] = {}
 
-  -- ["ListName"] = array of items returned via Tools:GetItemByID()
+  -- ["ListName"] = array of item tables
 }
 
 ListManager.ToAdd = {}
@@ -43,19 +43,16 @@ end
 
 -- Parsing Frame
 local parseFrame = CreateFrame("Frame", AddonName.."ListManagerParseFrame")
-parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = numOfAttemptsToParse
+parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = # of attempts
 
 -- ============================================================================
---                                 LM Functions
+-- General Functions
 -- ============================================================================
 
 -- Initializes the ListManager.
 function ListManager:Initialize()
-  if self.Initialized then return end
-
   self:Update()
-
-  self.Initialized = true
+  self.Initialize = nil
 end
 
 -- Updates the ListManager's references to lists in the saved variables.
@@ -95,7 +92,7 @@ function ListManager:GetListSV(listName)
   return DejunkDB.SV[listName]
 end
 
--- Gets a table of list data for use in ListManager functions.
+-- Returns list data for use in ListManager functions.
 function ListManager:GetListData(listName)
   assert(self[listName])
 
@@ -112,19 +109,11 @@ function ListManager:GetListData(listName)
     otherListName = self.Inclusions
   end
 
-  return
-  {
-    List = list,
-    ToAdd = toAdd,
-    ToRemove = toRemove,
-    SV = sv,
-    OtherListName = otherListName,
-    ColoredName = coloredName,
-  }
+  return list, toAdd, toRemove, sv, coloredName, otherListName
 end
 
 -- ============================================================================
---                               List Functions
+-- List Functions
 -- ============================================================================
 
 -- Adds an item to the specified list.
@@ -135,11 +124,7 @@ function ListManager:AddToList(listName, itemID)
   itemID = tostring(itemID)
 
   -- Initialize data
-  local listData = self:GetListData(listName)
-  local toAdd = listData.ToAdd
-  local coloredName = listData.ColoredName
-  local otherListName = listData.OtherListName
-  local sv = listData.SV
+  local _, toAdd, _, _, coloredName, otherListName = self:GetListData(listName)
 
   -- Don't add if the item is already being parsed
   if toAdd[itemID] then return end
@@ -207,10 +192,7 @@ function ListManager:DestroyList(listName)
   assert(self[listName] ~= nil)
 
   -- Initialize data
-  local listData = self:GetListData(listName)
-  local list = listData.List
-  local sv = listData.SV
-  local coloredName = listData.ColoredName
+  local list, _, _, sv, coloredName = self:GetListData(listName)
 
   if not (#list > 0) then return end
   for k in pairs(list) do list[k] = nil end
@@ -220,7 +202,7 @@ function ListManager:DestroyList(listName)
 end
 
 -- ============================================================================
---                            Transport Functions
+-- Transport Functions
 -- ============================================================================
 
 -- Parses an import string for item IDs to add to the specified list.
@@ -255,10 +237,8 @@ function ListManager:ExportFromList(listName)
 end
 
 -- ============================================================================
---                              Parsing Functions
+-- Parsing Functions
 -- ============================================================================
-
-local MAX_PARSE_ATTEMPTS = 100
 
 -- Set OnUpdate script
 function parseFrame:OnUpdate(elapsed)
@@ -277,21 +257,9 @@ end
 
 parseFrame:SetScript("OnUpdate", parseFrame.OnUpdate)
 
--- Cleans the specified list by removing queued entries.
--- @param listName - the name of the list to clean
-function ListManager:CleanList(listName)
-  assert(self[listName])
-
-  -- Initialize data
-  local listData = self:GetListData(listName)
-  local toRemove = listData.ToRemove
-  local coloredName = listData.ColoredName
-  local sv = listData.SV
-  local list = listData.List
-
-  -- This function will cause the game to stall for a bit when removing thousands of items.
-  -- So, my simple way of preventing that is to only run it a certain number of times each update.
-  local rem = function(itemID)
+do -- CleanList()
+  -- Removes an item from the specified list by ID.
+  local function removeItem(list, itemID, sv, coloredName)
     for k, v in pairs(list) do
       if (v.ItemID == itemID) then
         remove(list, k) -- remove has to be used here for the table to update as expected
@@ -302,88 +270,123 @@ function ListManager:CleanList(listName)
     end
   end
 
-  for i=1, 500 do
-    local itemID = next(toRemove)
-    if not itemID then return end
-    rem(itemID)
-    toRemove[itemID] = nil
+  -- Cleans the specified list by removing queued entries.
+  -- @param listName - the name of the list to clean
+  function ListManager:CleanList(listName)
+    assert(self[listName])
+
+    -- Initialize data
+    local list, _, toRemove, sv, coloredName = self:GetListData(listName)
+
+    -- Remove up to 500 items each update
+    for i=1, 500 do
+      local itemID = next(toRemove)
+      if not itemID then return end
+      removeItem(list, itemID, sv, coloredName)
+      toRemove[itemID] = nil
+    end
   end
 end
 
--- Parses queued itemIDs and adds them to the specified list.
--- @param listName - the name of the list to parse
-function ListManager:ParseList(listName)
-  assert(self[listName])
+do -- ParseList()
+  local MAX_PARSE_ATTEMPTS = 100
+  
+  -- Creates and returns an item by item id.
+  -- @param itemID - the item id of the item to create
+  -- @return - a table with item data
+  local function getItemByID(itemID)
+    local name, itemLink, quality, _, _, class, _, _, _, texture, price = GetItemInfo(itemID)
+    if not (name and itemLink and quality and class and texture and price) then return nil end
 
-  -- Initialize data
-  local listData = self:GetListData(listName)
-  local toAdd = listData.ToAdd
-  local coloredName = listData.ColoredName
-  local sv = listData.SV
-  local list = listData.List
+    return {
+      ItemID = itemID,
+      Name = name,
+      ItemLink = itemLink,
+      Quality = quality,
+      Class = class,
+      Texture = texture,
+      Price = price
+    }
+  end
 
   -- Returns true if the item can be sold, and the target list is Inclusions or Exclusions.
-  local canBeSold = function(item)
-    if not (listName == self.Inclusions or listName == self.Exclusions) then
-      return false end
-
-    if Tools:ItemCanBeSold(item) then
-      return true end
-
-    sv[item.ItemID] = nil
-    toAdd[item.ItemID] = nil
+  local function canBeSold(listName, item, sv, toAdd)
+    if not (listName == ListManager.Inclusions or listName == ListManager.Exclusions) then  return false end
+    if Tools:ItemCanBeSold(item) then return true end
+    -- Item cannot be sold
+    sv[item.ItemID] = nil -- Remove from sv
+    toAdd[item.ItemID] = nil -- Remove from parsing
     Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.ItemLink))
     return false
   end
 
   -- Returns true if the item can be destroyed, and the target list is Destroyables.
-  local canBeDestroyed = function(item)
-    if not (listName == self.Destroyables) then
-      return false end
-
-    if Tools:ItemCanBeDestroyed(item) then
-      return true end
-
-    sv[item.ItemID] = nil
-    toAdd[item.ItemID] = nil
+  local function canBeDestroyed(listName, item, sv, toAdd)
+    if not (listName == ListManager.Destroyables) then return false end
+    if Tools:ItemCanBeDestroyed(item) then return true end
+    -- Item cannot be destroyed
+    sv[item.ItemID] = nil -- Remove from sv
+    toAdd[item.ItemID] = nil -- Remove from parsing
     Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.ItemLink))
     return false
   end
 
-  -- Parse items
-  for itemID in pairs(toAdd) do
-    local item = Tools:GetItemByID(itemID)
-
-    -- If item is not nil, test if the item can be destroyed or sold
-    if item and (canBeSold(item) or canBeDestroyed(item)) then
-      -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
-      if not sv[itemID] then
-        sv[itemID] = true
-        Core:Print(format(L.ADDED_ITEM_TO_LIST, item.ItemLink, coloredName))
-      end
-
-      list[#list+1] = item
-      toAdd[itemID] = nil
-    elseif not sv[itemID] then -- if the item couldn't be parsed, and it is not in the saved variables (avoids erasing sv data by accident)
-      local attempts = ((parseFrame.AttemptsToParse[itemID] or 0) + 1)
-
-      if (attempts >= MAX_PARSE_ATTEMPTS) then
-        attempts = 0
-        toAdd[itemID] = nil
-        Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
-      end
-
-      parseFrame.AttemptsToParse[itemID] = attempts
+  -- Sort function to be passed into table.sort(table, function).
+  local function item_sort(a, b)
+    if (a.Quality == b.Quality) then -- Sort by name
+      return (a.Name < b.Name)
+    else -- Sort by quality
+      return (a.Quality < b.Quality)
     end
   end
 
-  -- Sort the list once all items have been parsed
-  if not next(toAdd) then
-    ListManager:SortList(list)
+  -- Parses queued itemIDs and adds them to the specified list.
+  -- @param listName - the name of the list to parse
+  function ListManager:ParseList(listName)
+    assert(self[listName])
 
-    -- Start auto destroy if the Destroyables list was updated
-    if (listName == ListManager.Destroyables) then
-      Addon.Destroyer:StartAutoDestroy()
+    -- Initialize data
+    local list, toAdd, _, sv, coloredName = self:GetListData(listName)
+
+    -- Parse items
+    for itemID in pairs(toAdd) do
+      local item = getItemByID(itemID)
+
+      -- If item is not nil, test if the item can be destroyed or sold
+      if item and (
+        canBeSold(listName, item, sv, toAdd) or
+        canBeDestroyed(listName, item, sv, toAdd)
+      )
+      then
+        -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
+        if not sv[itemID] then
+          sv[itemID] = true
+          Core:Print(format(L.ADDED_ITEM_TO_LIST, item.ItemLink, coloredName))
+        end
+
+        list[#list+1] = item
+        toAdd[itemID] = nil
+      elseif not sv[itemID] then -- if the item couldn't be parsed, and it is not in the saved variables (avoids erasing sv data by accident)
+        local attempts = ((parseFrame.AttemptsToParse[itemID] or 0) + 1)
+
+        if (attempts >= MAX_PARSE_ATTEMPTS) then
+          attempts = 0
+          toAdd[itemID] = nil
+          Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
+        end
+
+        parseFrame.AttemptsToParse[itemID] = attempts
+      end
+    end
+
+    -- Sort the list once all items have been parsed
+    if not next(toAdd) then
+      sort(list, item_sort)
+
+      -- Start auto destroy if the Destroyables list was updated
+      if (listName == ListManager.Destroyables) then
+        Addon.Destroyer:StartAutoDestroy()
+      end
     end
   end
 end
