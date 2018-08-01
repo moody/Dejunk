@@ -1,3 +1,8 @@
+### 8.0.2
+* Updated ruRU (Russian) localization
+
+*****
+
 ### 8.0.1
 * Updated esMX (Latin American Spanish) localization
 
