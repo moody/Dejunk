@@ -1,4 +1,4 @@
--- Dejunk_MerchantButton: displays a "Dejunk" button on the merchant frame.
+-- MerchantButton: displays a "Dejunk" button on the merchant frame.
 
 local AddonName, Addon = ...
 
@@ -10,7 +10,6 @@ local DTL = Addon.Libs.DTL
 local MerchantButton = Addon.MerchantButton
 
 local Core = Addon.Core
-local Tools = Addon.Tools
 local DejunkDB = Addon.DejunkDB
 local Dejunker = Addon.Dejunker
 local Repairer = Addon.Repairer

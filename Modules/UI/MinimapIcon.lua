@@ -1,4 +1,4 @@
--- Dejunk_MinimapIcon: provides a minimap button for Dejunk.
+-- MinimapIcon: provides a minimap button for Dejunk.
 
 local AddonName, Addon = ...
 
@@ -16,15 +16,15 @@ local DejunkDB = Addon.DejunkDB
 local Tools = Addon.Tools
 
 -- Variables
-local ObjectName = "DejunkMinimapIcon"
+local OBJECT_NAME = AddonName.."MinimapIcon"
 
 -- ============================================================================
---                             Minimap Button
+-- General Functions
 -- ============================================================================
 
 -- Initializes the minimap icon.
 function MinimapIcon:Initialize()
-  self.LDB = LDB:NewDataObject(ObjectName, {
+  self.LDB = LDB:NewDataObject(OBJECT_NAME, {
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
@@ -43,7 +43,7 @@ function MinimapIcon:Initialize()
 		end,
   })
 
-  LDBIcon:Register(ObjectName, self.LDB, DejunkDB:GetGlobal("Minimap"))
+  LDBIcon:Register(OBJECT_NAME, self.LDB, DejunkDB:GetGlobal("Minimap"))
 
   self.Initialize = nil
 end
@@ -51,13 +51,13 @@ end
 -- Displays the minimap icon.
 function MinimapIcon:Show()
   DejunkDB:SetGlobal("Minimap.hide", false)
-  LDBIcon:Show(ObjectName)
+  LDBIcon:Show(OBJECT_NAME)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
   DejunkDB:SetGlobal("Minimap.hide", true)
-  LDBIcon:Hide(ObjectName)
+  LDBIcon:Hide(OBJECT_NAME)
 end
 
 -- Toggles the minimap icon.

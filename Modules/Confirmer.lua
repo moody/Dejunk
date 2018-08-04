@@ -1,4 +1,4 @@
--- Dejunk_Confirmer: confirms that items have been either dejunked or destroyed and prints messages.
+-- Confirmer: confirms that items have been either dejunked or destroyed and prints messages.
 
 local AddonName, Addon = ...
 
@@ -32,7 +32,7 @@ local destroyCount = 0
 local destroyLoss = 0 -- not needed, but maybe in the future
 
 -- ============================================================================
---                               Confirmer Frame
+-- Confirmer Frame
 -- ============================================================================
 
 do
@@ -65,7 +65,7 @@ do
 end
 
 -- ============================================================================
---                            Confirmer Functions
+-- Confirmer Functions
 -- ============================================================================
 
 function Confirmer:IsConfirming()
@@ -81,7 +81,7 @@ function Confirmer:IsConfirmingDestroyedItems()
 end
 
 -- ============================================================================
---                         Dejunker Related Functions
+-- Dejunker Related Functions
 -- ============================================================================
 
 function Confirmer:OnDejunkerStart()
@@ -137,7 +137,7 @@ function Confirmer:OnDejunkerEnd()
 end
 
 -- ============================================================================
---                         Destroyer Related Functions
+-- Destroyer Related Functions
 -- ============================================================================
 
 function Confirmer:OnDestroyerStart()
