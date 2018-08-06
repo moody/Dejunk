@@ -82,21 +82,3 @@ function Tools:ItemCanBeRefunded(item)
   local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.Bag, item.Slot))
   return refundTimeRemaining and (refundTimeRemaining > 0)
 end
-
--- Creates and returns an item by item id.
--- @param itemID - the item id of the item to create
--- @return - a table with item data
-function Tools:GetItemByID(itemID)
-  local name, itemLink, quality, _, _, class, _, _, _, texture, price = GetItemInfo(itemID)
-  if not (name and itemLink and quality and class and texture and price) then return nil end
-
-  return {
-    ItemID = itemID,
-    Name = name,
-    ItemLink = itemLink,
-    Quality = quality,
-    Class = class,
-    Texture = texture,
-    Price = price
-  }
-end

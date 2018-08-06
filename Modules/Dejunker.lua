@@ -144,17 +144,14 @@ do
 
       -- Get next item
       local item = remove(itemsToSell)
-      -- Verify that the item in the bag slot has not been changed before selling
-      if not item or not DBL:StillInBags(item) or item:IsLocked() then return end
+      -- Stop if there are no more items
+      if not item then Dejunker:StopSelling() return end
+      -- Otherwise, verify that the item in the bag slot has not been changed before selling
+      if not DBL:StillInBags(item) or item:IsLocked() then return end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
       -- Notify confirmer
       Confirmer:OnItemDejunked(item)
-
-      -- If no more items, stop selling
-      if (#itemsToSell <= 0) then
-        Dejunker:StopSelling()
-      end
     end
   end
 

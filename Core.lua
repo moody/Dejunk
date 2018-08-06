@@ -1,4 +1,4 @@
--- Dejunk_Core: initializes Dejunk.
+-- Core: initializes Dejunk.
 
 local AddonName, Addon = ...
 

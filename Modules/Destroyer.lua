@@ -130,10 +130,12 @@ do
 
       -- Don't run if the cursor has an item, spell, etc.
       if GetCursorInfo() then return end
-      -- Get item
+      -- Get next item
       local item = remove(itemsToDestroy)
-      -- Verify that the item in the bag slot has not been changed before destroying
-      if not item or not DBL:StillInBags(item) or item:IsLocked() then return end
+      -- Stop if there are no more items
+      if not item then Destroyer:StopDestroyingItems() return end
+      -- Otherwise, verify that the item in the bag slot has not been changed before destroying
+      if not DBL:StillInBags(item) or item:IsLocked() then return end
       
       -- Destroy item
       PickupContainerItem(item.Bag, item.Slot)
@@ -142,11 +144,6 @@ do
       
       -- Notify confirmer
       Confirmer:OnItemDestroyed(item)
-
-      -- If no more items, stop destroying
-      if (#itemsToDestroy <= 0) then
-        Destroyer:StopDestroyingItems()
-      end
     end
   end
 
