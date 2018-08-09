@@ -167,14 +167,14 @@ end
 -- ============================================================================
 
 do
-  local item
+  local item = {}
 
   local function setBagItem(self, bag, slot)
     if not DejunkDB:GetGlobal("ItemTooltip") then return end
 
     -- Get item
-    item = DBL:GetItem(bag, slot, item)
-    if not item or Tools:ItemCanBeRefunded(item) then return end
+    if not DBL:GetItem(bag, slot, item) then return end
+    if Tools:ItemCanBeRefunded(item) then return end
 
     local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
     local rightText
