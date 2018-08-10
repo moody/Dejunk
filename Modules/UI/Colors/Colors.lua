@@ -57,7 +57,7 @@ function Colors:SetColorScheme(colorScheme)
   self.ColorTable:SetColors(self.Schemes[colorScheme])
   self.CurrentSchemeName = colorScheme
 
-  if ParentFrame._isInitialized then ParentFrame:Refresh() end
+  if ParentFrame.Frame then ParentFrame:Refresh() end
 end
 
 -- ============================================================================
