@@ -5,6 +5,7 @@
 ## Notes: Customizable junk selling and destroying.
 ## SavedVariables: DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
+## OptionalDeps: DethsBagLib-1.0, DethsCmdLib-1.0, DethsColorLib-1.0, DethsFrameLib-1.0, DethsTooltipLib-1.0
 
 Libs/Libs.xml
 Locales/Locales.xml
