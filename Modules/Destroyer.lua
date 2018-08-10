@@ -69,7 +69,7 @@ do
       return
     end
 
-    Confirmer:OnDestroyerStart()
+    Confirmer:Start("Destroyer")
     currentState = states.Destroying
 
     -- Update items if manually started
@@ -103,14 +103,14 @@ do
 
     destroyerFrame:SetScript("OnUpdate", nil)
 
-    Confirmer:OnDestroyerEnd()
+    Confirmer:Stop("Destroyer")
     currentState = states.None
   end
 
   -- Checks whether or not the Destroyer is active.
   -- @return - boolean
   function Destroyer:IsDestroying()
-    return (currentState ~= states.None) or Confirmer:IsConfirmingDestroyedItems()
+    return (currentState ~= states.None) or Confirmer:IsConfirming("Destroyer")
   end
 end
 
@@ -135,7 +135,11 @@ do
       -- Stop if there are no more items
       if not item then Destroyer:StopDestroyingItems() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before destroying
-      if not DBL:StillInBags(item) or item:IsLocked() then return end
+      if not DBL:StillInBags(item) or item:IsLocked() then
+        Core:Debug("Destroyer", format("%s could not be destroyed.", item.ItemLink))
+        DBL:Release(item)
+        return
+      end
       
       -- Destroy item
       PickupContainerItem(item.Bag, item.Slot)
@@ -143,7 +147,7 @@ do
       ClearCursor() -- Clear cursor in case any issues occurred
       
       -- Notify confirmer
-      Confirmer:OnItemDestroyed(item)
+      Confirmer:Queue("Destroyer", item)
     end
   end
 

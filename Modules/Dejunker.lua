@@ -75,7 +75,7 @@ do
       return
     end
 
-    Confirmer:OnDejunkerStart()
+    Confirmer:Start("Dejunker")
     currentState = states.Dejunking
 
     -- Get junk items
@@ -115,14 +115,14 @@ do
 
     dejunkerFrame:SetScript("OnUpdate", nil)
 
-    Confirmer:OnDejunkerEnd()
+    Confirmer:Stop("Dejunker")
     currentState = states.None
   end
 
   -- Checks whether or not the Dejunker is active.
   -- @return - boolean
   function Dejunker:IsDejunking()
-    return (currentState ~= states.None) or Confirmer:IsConfirmingDejunkedItems()
+    return (currentState ~= states.None) or Confirmer:IsConfirming("Dejunker")
   end
 end
 
@@ -147,11 +147,15 @@ do
       -- Stop if there are no more items
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before selling
-      if not DBL:StillInBags(item) or item:IsLocked() then return end
+      if not DBL:StillInBags(item) or item:IsLocked() then
+        Core:Debug("Dejunker", format("%s could not be sold.", item.ItemLink))
+        DBL:Release(item)
+        return
+      end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
       -- Notify confirmer
-      Confirmer:OnItemDejunked(item)
+      Confirmer:Queue("Dejunker", item)
     end
   end
 
