@@ -1,3 +1,9 @@
+### 8.0.3
+* Added a "Start Destroying" button to the Dejunk frame
+* Fixed bugs
+
+*****
+
 ### 8.0.2
 * Updated ruRU (Russian) localization
 
