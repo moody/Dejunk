@@ -100,7 +100,14 @@ function TitleFrame:CreateRight()
   
   -- Main frame
   local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPRIGHT)
+  frame:SetLayout(DFL.Layouts.FLOW_EQUAL_H)
   frame:SetSpacing(DFL:Padding(0.25))
+
+  -- Start destroying button
+  local destroy = DFL.Button:Create(parent, L.START_DESTROYING_BUTTON_TEXT)
+  destroy:SetColors(Colors.None, Colors.Border, Colors.LabelText, Colors.ButtonTextHi, Colors.Border)
+  function destroy:OnClick() Addon.Destroyer:StartDestroying() end
+  frame:Add(destroy)
   
   -- Close Button
   local close = DFL.Button:Create(parent, "X")
