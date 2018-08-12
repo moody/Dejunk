@@ -25,6 +25,8 @@ ignore:
   - Libs/DethsBagLib-1.0/Tests.lua
   - Libs/DethsCmdLib-1.0/DethsCmdLib-1.0.toc
   - Libs/DethsCmdLib-1.0/LibStub.lua
+  - Libs/DethsCmdLib-1.0/LICENSE.md
+  - Libs/DethsCmdLib-1.0/README.md
   - Libs/DethsColorLib-1.0/DethsColorLib-1.0.toc
   - Libs/DethsColorLib-1.0/LibStub.lua
   - Libs/DethsColorLib-1.0/LICENSE.md
