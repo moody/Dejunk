@@ -76,28 +76,26 @@ local defaults = {
 
 -- Converts the old version of the DB into the new one.
 local function reformat()
-  local globalProfile = DejunkGlobal.Profiles.Global
+  local globalProfile = DEJUNK_ADDON_SV.Profiles.Global
 
   -- If DejunkGlobal has old values, move them to the global profile
-  for k, v in pairs(DejunkGlobal) do
-    if (k == "Global") or (k == "Profiles") then
-      -- Do nothing
-    elseif (k == "ColorScheme") or (k == "Minimap") or (k == "ItemTooltip") then
-      -- Move the value to Global
-      DB.Global[k] = v
-      DejunkGlobal[k] = nil
-    else
-      -- Move the value to the Global profile
-      globalProfile[k] = v
-      DejunkGlobal[k] = nil
+  if DejunkGlobal then
+    for k, v in pairs(DejunkGlobal) do
+      if (defaults.Global[k] ~= nil) then
+        DB.Global[k] = v -- Move the value to Global
+      elseif (defaults.Profile[k] ~= nil) then
+        globalProfile[k] = v -- Move the value to the Global profile
+      end
     end
+    -- Delete table
+    DejunkGlobal = nil
   end
 
   -- Move DejunkPerChar values to the player profile
   -- The profile will be for the current player if DejunkPerChar exists
   if DejunkPerChar then
     for k, v in pairs(DejunkPerChar) do
-      if (k ~= "Global") and (k ~= "Profiles") and (k ~= "UseGlobal") then
+      if (defaults.Profile[k] ~= nil) then
         DB.Profile[k] = v -- Move the value to Profile
       end
     end
