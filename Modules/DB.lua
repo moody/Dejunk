@@ -16,7 +16,7 @@ local defaults = {
   Profile = {
     -- General options
     SilentMode = false,
-    VerboseMode = false,
+    VerboseMode = true,
     AutoSell = false,
     SafeMode = true,
     AutoRepair = false,

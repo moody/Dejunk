@@ -1,6 +1,7 @@
 ### 8.0.3
 * Added a "Start Destroying" button to the Dejunk frame
-* Fixed bug causing "Below Average Equipment" to ignore poor quality items
+* Set "Verbose Mode" to be enabled by default
+* Fixed a bug causing "Below Average Equipment" to ignore poor quality items
 * Updated libraries
 * Various code improvements
 
