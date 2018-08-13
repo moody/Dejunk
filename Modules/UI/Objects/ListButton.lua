@@ -6,6 +6,7 @@ local AddonName, Addon = ...
 local L = Addon.Libs.L
 local DCL = Addon.Libs.DCL
 local DFL = Addon.Libs.DFL
+local DTL = Addon.Libs.DTL
 
 -- Upvalues
 local GetMouseFocus = GetMouseFocus
@@ -117,11 +118,11 @@ do
 
   function Scripts:OnEnter()
     self.Texture:SetColorTexture(unpack(Colors.ListButtonHi))
-    Addon.Libs.DTL:ShowHyperlink(self, DFL.Anchors.TOP, self.Item.ItemLink)
+    DTL:ShowHyperlink(self, DFL.Anchors.TOP, self.Item.ItemLink)
   end
 
   function Scripts:OnLeave()
     self.Texture:SetColorTexture(unpack(Colors.ListButton))
-    DFL:HideTooltip()
+    DTL:HideTooltip()
   end
 end
