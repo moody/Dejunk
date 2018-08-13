@@ -10,7 +10,7 @@ local DTL = Addon.Libs.DTL
 local MerchantButton = Addon.MerchantButton
 
 local Core = Addon.Core
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local Dejunker = Addon.Dejunker
 local Repairer = Addon.Repairer
 
@@ -59,8 +59,8 @@ end
 -- ============================================================================
 
 MerchantFrame:HookScript("OnShow", function()
-  if DejunkDB.SV.AutoSell then Dejunker:StartDejunking(true) end
-  if DejunkDB.SV.AutoRepair then Repairer:StartRepairing() end
+  if DB.Profile.AutoSell then Dejunker:StartDejunking(true) end
+  if DB.Profile.AutoRepair then Repairer:StartRepairing() end
 end)
 
 MerchantFrame:HookScript("OnHide", function()

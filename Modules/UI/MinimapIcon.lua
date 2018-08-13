@@ -12,7 +12,7 @@ local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
 
 local Colors = Addon.Colors
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local Tools = Addon.Tools
 
 -- Variables
@@ -43,26 +43,26 @@ function MinimapIcon:Initialize()
 		end,
   })
 
-  LDBIcon:Register(OBJECT_NAME, self.LDB, DejunkDB:GetGlobal("Minimap"))
+  LDBIcon:Register(OBJECT_NAME, self.LDB, DB:GetGlobal("Minimap"))
 
   self.Initialize = nil
 end
 
 -- Displays the minimap icon.
 function MinimapIcon:Show()
-  DejunkDB:SetGlobal("Minimap.hide", false)
+  DB:SetGlobal("Minimap.hide", false)
   LDBIcon:Show(OBJECT_NAME)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
-  DejunkDB:SetGlobal("Minimap.hide", true)
+  DB:SetGlobal("Minimap.hide", true)
   LDBIcon:Hide(OBJECT_NAME)
 end
 
 -- Toggles the minimap icon.
 function MinimapIcon:Toggle()
-  if DejunkDB:GetGlobal("Minimap.hide") then
+  if DB:GetGlobal("Minimap.hide") then
     self:Show()
   else
     self:Hide()

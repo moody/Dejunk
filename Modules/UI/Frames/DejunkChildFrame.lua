@@ -12,7 +12,7 @@ local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
 local Colors = Addon.Colors
 local Consts = Addon.Consts
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local Tools = Addon.Tools
 
 -- ============================================================================
@@ -39,8 +39,8 @@ do
   local function createCheckButton(text, tooltip, svKey)
     local cb = DFL.CheckButton:Create(UIParent, text, tooltip, DFL.Fonts.Small)
     cb:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function cb:GetUserValue() return DejunkDB:Get(svKey) end
-    function cb:SetUserValue(value) DejunkDB:Set(svKey, value) end
+    function cb:GetUserValue() return DB:Get(svKey) end
+    function cb:SetUserValue(value) DB:Set(svKey, value) end
     return cb
   end
 
@@ -128,8 +128,8 @@ do
         slider:SetMinMaxValues(minILVL, maxILVL)
         slider:SetValueStep(5)
         slider:SetShowTooltip(true)
-        function slider:GetUserValue() return DejunkDB.SV.SellBelowAverageILVL.Value end
-        function slider:SetUserValue(value) DejunkDB.SV.SellBelowAverageILVL.Value = value end
+        function slider:GetUserValue() return DB.Profile.SellBelowAverageILVL.Value end
+        function slider:SetUserValue(value) DB.Profile.SellBelowAverageILVL.Value = value end
         f:Add(slider)
         
         local maxLabel = DFL.FontString:Create(f, maxILVL)

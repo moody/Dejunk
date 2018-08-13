@@ -13,7 +13,7 @@ local GetCoinTextureString = GetCoinTextureString
 -- Addon
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 
 -- Data for modules which use Confirmer
 local Modules = {
@@ -64,7 +64,7 @@ do -- Destroyer module data
 
   function module:PrintFinalMessage()
     -- Show basic message if not printing verbose
-    if not DejunkDB.SV.VerboseMode then
+    if not DB.Profile.VerboseMode and (self.count > 0) then
       if (self.count == 1) then
         Core:Print(L.DESTROYED_ITEM)
       else

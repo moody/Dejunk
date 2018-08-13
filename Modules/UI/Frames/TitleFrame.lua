@@ -10,6 +10,7 @@ local DFL = Addon.Libs.DFL
 local TitleFrame = Addon.Frames.TitleFrame
 
 local Colors = Addon.Colors
+local DB = Addon.DB
 local ParentFrame = Addon.Frames.ParentFrame
 
 -- ============================================================================
@@ -40,7 +41,7 @@ function TitleFrame:CreateLeft()
   -- Character Specific Settings check button
   local charSpec = DFL.CheckButton:Create(parent, L.CHARACTER_SPECIFIC_TEXT, L.CHARACTER_SPECIFIC_TOOLTIP, DFL.Fonts.Small)
   charSpec:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-  function charSpec:GetUserValue() return not DejunkPerChar.UseGlobal end
+  function charSpec:GetUserValue() return not (DB:GetProfileKey() == "Global") end
   function charSpec:SetUserValue() Addon.Core:ToggleCharacterSpecificSettings() end
   frame:Add(charSpec)
   
@@ -51,14 +52,14 @@ function TitleFrame:CreateLeft()
     -- Item tooltip check button
     local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
     itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function itemTooltip:GetUserValue() return DejunkGlobal.ItemTooltip end
-    function itemTooltip:SetUserValue() DejunkGlobal.ItemTooltip = not DejunkGlobal.ItemTooltip end
+    function itemTooltip:GetUserValue() return DB.Global.ItemTooltip end
+    function itemTooltip:SetUserValue() DB.Global.ItemTooltip = not DB.Global.ItemTooltip end
     f:Add(itemTooltip)
 
     -- Minimap Icon check button
     local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
     minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function minimapIcon:GetUserValue() return not DejunkGlobal.Minimap.hide end
+    function minimapIcon:GetUserValue() return not DB.Global.Minimap.hide end
     function minimapIcon:SetUserValue() Addon.MinimapIcon:Toggle() end
     f:Add(minimapIcon)
 

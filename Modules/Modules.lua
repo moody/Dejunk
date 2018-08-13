@@ -20,7 +20,7 @@ Addon.Core = {}
 
 Addon.Consts = {}
 Addon.Colors = {}
-Addon.DejunkDB = {}
+Addon.DB = {}
 Addon.ListManager = {}
 Addon.Tools = {}
 

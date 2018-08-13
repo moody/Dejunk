@@ -9,7 +9,7 @@ local DCL = Addon.Libs.DCL
 -- Modules
 local Colors = Addon.Colors
 
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local ParentFrame = Addon.Frames.ParentFrame
 
 -- Variables
@@ -23,7 +23,7 @@ Colors.CurrentSchemeName = nil
 
 -- Initializes the Colors table.
 function Colors:Initialize()
-  local colorScheme = DejunkDB:GetGlobal("ColorScheme")
+  local colorScheme = DB:GetGlobal("ColorScheme")
   if (colorScheme == nil) or (self.Schemes[colorScheme] == nil) then
     colorScheme = self.SchemeNames[1]
   end
@@ -53,7 +53,7 @@ function Colors:SetColorScheme(colorScheme)
   assert(type(colorScheme) == "string", "colorScheme must exist and be a string")
   if not self.Schemes[colorScheme] then colorScheme = self.SchemeNames[1] end
 
-  DejunkDB:SetGlobal("ColorScheme", colorScheme)
+  DB:SetGlobal("ColorScheme", colorScheme)
   self.ColorTable:SetColors(self.Schemes[colorScheme])
   self.CurrentSchemeName = colorScheme
 

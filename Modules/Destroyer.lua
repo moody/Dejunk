@@ -19,7 +19,7 @@ local Destroyer = Addon.Destroyer
 local Confirmer = Addon.Confirmer
 local Consts = Addon.Consts
 local Core = Addon.Core
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local ListManager = Addon.ListManager
 local ParentFrame = Addon.Frames.ParentFrame
 local Tools = Addon.Tools
@@ -48,7 +48,7 @@ do
   -- Attempts to start the Destroying process if Auto Destroy is enabled.
   function Destroyer:StartAutoDestroy()
     if (currentState ~= states.None) then return end
-    if not DejunkDB.SV.AutoDestroy then return end
+    if not DB.Profile.AutoDestroy then return end
     if ParentFrame.Frame and ParentFrame:IsVisible() then return end
     
     Core:Debug("Destroyer", "StartAutoDestroy()")
@@ -188,8 +188,8 @@ do
     -- relies on tooltip data
     if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
       if
-        DejunkDB.SV.DestroyPetsAlreadyCollected or
-        DejunkDB.SV.DestroyToysAlreadyCollected
+        DB.Profile.DestroyPetsAlreadyCollected or
+        DB.Profile.DestroyToysAlreadyCollected
       then
         Destroyer.incompleteTooltips = true
         return false
@@ -216,19 +216,19 @@ do
     ]]
 
     -- 1
-    if DejunkDB.SV.DestroyIgnoreExclusions and
+    if DB.Profile.DestroyIgnoreExclusions and
       ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
       return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
     end
 
     -- 2
-    if DejunkDB.SV.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
+    if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
       local destroy, reason = self:ItemPriceBelowThreshold(item)
       return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
     end
 
     -- 3
-    if DejunkDB.SV.DestroyInclusions and
+    if DB.Profile.DestroyInclusions and
       ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
       local destroy, reason = self:ItemPriceBelowThreshold(item)
       return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
@@ -252,8 +252,8 @@ do
 
   -- Returns true if the item's price is less than the set price threshold.
   function Destroyer:ItemPriceBelowThreshold(item)
-    if DejunkDB.SV.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
-      local threshold = DejunkDB.SV.DestroyPriceThreshold
+    if DB.Profile.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
+      local threshold = DB.Profile.DestroyPriceThreshold
       local thresholdCopperPrice = (threshold.Gold * 10000) +
         (threshold.Silver * 100) + threshold.Copper
 
@@ -268,13 +268,13 @@ do
   end
 
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
-    if not DejunkDB.SV.DestroyPetsAlreadyCollected or not item.NoValue then return false end
+    if not DB.Profile.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
     return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
   end
 
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
-    if not DejunkDB.SV.DestroyToysAlreadyCollected or not item.NoValue then return false end
+    if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
     if not PlayerHasToy(item.ItemID) then return false end
     return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
   end

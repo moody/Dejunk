@@ -9,7 +9,7 @@ local DFL = Addon.Libs.DFL
 local CurrencyField = Addon.Objects.CurrencyField
 
 local Colors = Addon.Colors
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 
 -- Consts
 local MONEY_ICONS_TEXTURE = "Interface\\MoneyFrame\\UI-MoneyIcons"
@@ -41,12 +41,12 @@ local function getStringWidth(font, numCharacters, numeric)
 end
 
 local function getUserValue(self)
-  return DejunkDB:Get(self._svKey)
+  return DB:Get(self._svKey)
 end
 
 local function setUserValue(self, value)
   value = floor(abs(value))
-  DejunkDB:Set(self._svKey, value)
+  DB:Set(self._svKey, value)
 end
 
 local function getEditBox(svKey, maxLetters, font)
@@ -74,7 +74,7 @@ end
 -- ============================================================================
 
 function CurrencyField:Create(parent, svKey, font)
-  assert((type(svKey) == "string") and (type(DejunkDB:Get(svKey)) == "table"))
+  assert((type(svKey) == "string") and (type(DB:Get(svKey)) == "table"))
 
   local frame = DFL.Frame:Create(parent, DFL.Alignments.LEFT, DFL.Directions.RIGHT)
   frame:SetSpacing(DFL:Padding(0.5))

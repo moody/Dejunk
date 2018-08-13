@@ -2,7 +2,7 @@
 	<Script file="Modules\Modules.lua"/>
 
   <Script file="Modules\Consts.lua"/>
-  <Script file="Modules\DejunkDB.lua"/>
+  <Script file="Modules\DB.lua"/>
   <Script file="Modules\ListManager.lua"/>
   <Script file="Modules\Tools.lua"/>
 
