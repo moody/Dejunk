@@ -1,6 +1,8 @@
 ### 8.0.3
 * Added a "Start Destroying" button to the Dejunk frame
-* Fixed bugs
+* Fixed bug causing "Below Average Equipment" to ignore poor quality items
+* Updated libraries
+* Various code improvements
 
 *****
 
