@@ -355,11 +355,11 @@ do
         local diff = max(average - DB.Profile.SellBelowAverageILVL.Value, 0)
 
         if (item.ItemLevel <= diff) then -- Sell
+          return "BELOW", diff
+        else  -- Ignore, unless poor quality
           if (item.Quality >= LE_ITEM_QUALITY_COMMON) then
-            return "BELOW", diff
+            return "ABOVE", diff
           end
-        else -- Ignore
-          return "ABOVE", diff
         end
       end
     end
