@@ -175,7 +175,7 @@ do
   local item = {}
 
   local function setBagItem(self, bag, slot)
-    if not DB:GetGlobal("ItemTooltip") then return end
+    if not DB.Global.ItemTooltip then return end
 
     -- Get item
     if not DBL:GetItem(bag, slot, item) then return end

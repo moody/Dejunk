@@ -23,7 +23,7 @@ Colors.CurrentSchemeName = nil
 
 -- Initializes the Colors table.
 function Colors:Initialize()
-  local colorScheme = DB:GetGlobal("ColorScheme")
+  local colorScheme = DB.Global.ColorScheme
   if (colorScheme == nil) or (self.Schemes[colorScheme] == nil) then
     colorScheme = self.SchemeNames[1]
   end
@@ -53,7 +53,7 @@ function Colors:SetColorScheme(colorScheme)
   assert(type(colorScheme) == "string", "colorScheme must exist and be a string")
   if not self.Schemes[colorScheme] then colorScheme = self.SchemeNames[1] end
 
-  DB:SetGlobal("ColorScheme", colorScheme)
+  DB.Global.ColorScheme = colorScheme
   self.ColorTable:SetColors(self.Schemes[colorScheme])
   self.CurrentSchemeName = colorScheme
 
