@@ -43,6 +43,8 @@ ignore:
   - Libs/DethsFrameLib-1.0/Tests
   - Libs/DethsTooltipLib-1.0/DethsTooltipLib-1.0.toc
   - Libs/DethsTooltipLib-1.0/LibStub.lua
+  - Libs/DethsTooltipLib-1.0/LICENSE.md
+  - Libs/DethsTooltipLib-1.0/README.md
   - Libs/DethsTooltipLib-1.0/Tests.lua
 
 manual-changelog:
