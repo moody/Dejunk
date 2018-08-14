@@ -17,7 +17,7 @@ local ListManager = Addon.ListManager
 local Core = Addon.Core
 local Colors = Addon.Colors
 local Tools = Addon.Tools
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 
 -- Variables
 ListManager.Initialized = false
@@ -89,7 +89,7 @@ end
 -- @param listName - the name of the list to get SVs
 function ListManager:GetListSV(listName)
   assert(self[listName])
-  return DejunkDB.SV[listName]
+  return DB.Profile[listName]
 end
 
 -- Returns list data for use in ListManager functions.

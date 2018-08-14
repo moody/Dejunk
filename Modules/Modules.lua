@@ -2,7 +2,7 @@
 
 local AddonName, Addon = ...
 
-local DFL = Addon.DethsFrameLib
+local DFL = LibStub("DethsFrameLib-1.0")
 
 -- Libs
 Addon.Libs = {
@@ -20,7 +20,7 @@ Addon.Core = {}
 
 Addon.Consts = {}
 Addon.Colors = {}
-Addon.DejunkDB = {}
+Addon.DB = {}
 Addon.ListManager = {}
 Addon.Tools = {}
 

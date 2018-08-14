@@ -11,7 +11,7 @@ local DCL = Addon.Libs.DCL
 local Core = Addon.Core
 
 local Colors = Addon.Colors
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local Confirmer = Addon.Confirmer
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
@@ -46,7 +46,7 @@ end
 
 -- Initializes modules.
 function Core:Initialize()
-  DejunkDB:Initialize()
+  DB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
   Addon.Consts:Initialize()
@@ -64,7 +64,7 @@ end
 -- Prints a formatted message ("[Dejunk] msg").
 -- @param msg - the message to print
 function Core:Print(msg)
-  if DejunkDB.SV.SilentMode then return end
+  if DB.Profile.SilentMode then return end
   local title = DCL:ColorString("[Dejunk]", Colors.LabelText)
   print(format("%s %s", title, msg))
 end
@@ -72,7 +72,7 @@ end
 -- Attempts to print a message if verbose mode is enabled.
 -- @param msg - the message to print
 function Core:PrintVerbose(msg)
-  if DejunkDB.SV.VerboseMode then Core:Print(msg) end
+  if DB.Profile.VerboseMode then Core:Print(msg) end
 end
 
 -- Prints a debug message ("[Dejunk Debug] title: msg").
@@ -156,9 +156,14 @@ end
 
 -- Switches between global and character specific settings.
 function Core:ToggleCharacterSpecificSettings()
-  DejunkDB:Toggle()
+  if (DB:GetProfileKey() == "Global") then
+    DB:SetProfile()
+  else
+    DB:SetProfile("Global")
+  end
+
   ListManager:Update()
-  ParentFrame:SetContent(DejunkChildFrame)
+  -- ParentFrame:SetContent(DejunkChildFrame)
   ParentFrame:Refresh()
 end
 
@@ -167,14 +172,14 @@ end
 -- ============================================================================
 
 do
-  local item
+  local item = {}
 
   local function setBagItem(self, bag, slot)
-    if not DejunkDB:GetGlobal("ItemTooltip") then return end
+    if not DB.Global.ItemTooltip then return end
 
     -- Get item
-    item = DBL:GetItem(bag, slot, item)
-    if not item or Tools:ItemCanBeRefunded(item) then return end
+    if not DBL:GetItem(bag, slot, item) then return end
+    if Tools:ItemCanBeRefunded(item) then return end
 
     local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
     local rightText

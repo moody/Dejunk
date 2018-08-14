@@ -25,15 +25,26 @@ ignore:
   - Libs/DethsBagLib-1.0/Tests.lua
   - Libs/DethsCmdLib-1.0/DethsCmdLib-1.0.toc
   - Libs/DethsCmdLib-1.0/LibStub.lua
+  - Libs/DethsCmdLib-1.0/LICENSE.md
+  - Libs/DethsCmdLib-1.0/README.md
   - Libs/DethsColorLib-1.0/DethsColorLib-1.0.toc
   - Libs/DethsColorLib-1.0/LibStub.lua
   - Libs/DethsColorLib-1.0/LICENSE.md
   - Libs/DethsColorLib-1.0/README.md
   - Libs/DethsColorLib-1.0/Tests.lua
+  - Libs/DethsDBLib-1.0/DethsDBLib-1.0.toc
+  - Libs/DethsDBLib-1.0/LibStub.lua
+  - Libs/DethsDBLib-1.0/LICENSE.md
+  - Libs/DethsDBLib-1.0/README.md
+  - Libs/DethsDBLib-1.0/Tests.lua
   - Libs/DethsFrameLib-1.0/DethsFrameLib-1.0.toc
+  - Libs/DethsFrameLib-1.0/LibStub.lua
+  - Libs/DethsFrameLib-1.0/LICENSE.md
   - Libs/DethsFrameLib-1.0/Tests
   - Libs/DethsTooltipLib-1.0/DethsTooltipLib-1.0.toc
   - Libs/DethsTooltipLib-1.0/LibStub.lua
+  - Libs/DethsTooltipLib-1.0/LICENSE.md
+  - Libs/DethsTooltipLib-1.0/README.md
   - Libs/DethsTooltipLib-1.0/Tests.lua
 
 manual-changelog:

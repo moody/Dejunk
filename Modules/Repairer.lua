@@ -19,7 +19,7 @@ local GetMoney, GetRepairAllCost, PlaySound, RepairAllItems, UIErrorsFrame =
 local Repairer = Addon.Repairer
 
 local Core = Addon.Core
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 
 -- Variables
 local REPAIR_DELAY = 0.5
@@ -112,7 +112,7 @@ local function start_OnUpdate(self, elapsed)
 		end
 
 		local guildBankLimit = GetGuildBankWithdrawMoney()
-		canGuildRepair = DejunkDB.SV.UseGuildRepair and
+		canGuildRepair = DB.Profile.UseGuildRepair and
       (CanGuildBankRepair() and ((guildBankLimit == -1) or (guildBankLimit >= repairCost)))
 
 		totalRepairCost = repairCost

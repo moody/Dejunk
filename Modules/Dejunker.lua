@@ -17,7 +17,7 @@ local Confirmer = Addon.Confirmer
 
 local Core = Addon.Core
 local Consts = Addon.Consts
-local DejunkDB = Addon.DejunkDB
+local DB = Addon.DB
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
 
@@ -75,11 +75,11 @@ do
       return
     end
 
-    Confirmer:OnDejunkerStart()
+    Confirmer:Start("Dejunker")
     currentState = states.Dejunking
 
     -- Get junk items
-    local maxItems = DejunkDB.SV.SafeMode and Consts.SAFE_MODE_MAX
+    local maxItems = DB.Profile.SafeMode and Consts.SAFE_MODE_MAX
     DBL:GetItemsByFilter(Dejunker.Filter, itemsToSell, maxItems)
     local upToDate = DBL:IsUpToDate()
 
@@ -102,7 +102,7 @@ do
     if not upToDate then Core:Print(L.ONLY_SELLING_CACHED) end
 
     -- Print safe mode message if necessary
-    if DejunkDB.SV.SafeMode and (#itemsToSell == Consts.SAFE_MODE_MAX) then
+    if DB.Profile.SafeMode and (#itemsToSell == Consts.SAFE_MODE_MAX) then
       Core:Print(format(L.SAFE_MODE_MESSAGE, Consts.SAFE_MODE_MAX))
     end
 
@@ -115,14 +115,14 @@ do
 
     dejunkerFrame:SetScript("OnUpdate", nil)
 
-    Confirmer:OnDejunkerEnd()
+    Confirmer:Stop("Dejunker")
     currentState = states.None
   end
 
   -- Checks whether or not the Dejunker is active.
   -- @return - boolean
   function Dejunker:IsDejunking()
-    return (currentState ~= states.None) or Confirmer:IsConfirmingDejunkedItems()
+    return (currentState ~= states.None) or Confirmer:IsConfirming("Dejunker")
   end
 end
 
@@ -147,11 +147,15 @@ do
       -- Stop if there are no more items
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before selling
-      if not DBL:StillInBags(item) or item:IsLocked() then return end
+      if not DBL:StillInBags(item) or item:IsLocked() then
+        Core:Debug("Dejunker", format("%s could not be sold.", item.ItemLink))
+        DBL:Release(item)
+        return
+      end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
       -- Notify confirmer
-      Confirmer:OnItemDejunked(item)
+      Confirmer:Queue("Dejunker", item)
     end
   end
 
@@ -203,10 +207,10 @@ do
     -- relies on tooltip data
     if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
       if
-        DejunkDB.SV.IgnoreBindsWhenEquipped or
-        DejunkDB.SV.IgnoreSoulbound or
-        DejunkDB.SV.IgnoreEquipmentSets or
-        DejunkDB.SV.IgnoreTradeable
+        DB.Profile.IgnoreBindsWhenEquipped or
+        DB.Profile.IgnoreSoulbound or
+        DB.Profile.IgnoreEquipmentSets or
+        DB.Profile.IgnoreTradeable
       then
         Dejunker.incompleteTooltips = true
         return false
@@ -293,15 +297,15 @@ do
   do -- Sell options
     function Dejunker:IsSellByQualityItem(quality)
       return
-      ((quality == LE_ITEM_QUALITY_POOR) and DejunkDB.SV.SellPoor) or
-      ((quality == LE_ITEM_QUALITY_COMMON) and DejunkDB.SV.SellCommon) or
-      ((quality == LE_ITEM_QUALITY_UNCOMMON) and DejunkDB.SV.SellUncommon) or
-      ((quality == LE_ITEM_QUALITY_RARE) and DejunkDB.SV.SellRare) or
-      ((quality == LE_ITEM_QUALITY_EPIC) and DejunkDB.SV.SellEpic)
+      ((quality == LE_ITEM_QUALITY_POOR) and DB.Profile.SellPoor) or
+      ((quality == LE_ITEM_QUALITY_COMMON) and DB.Profile.SellCommon) or
+      ((quality == LE_ITEM_QUALITY_UNCOMMON) and DB.Profile.SellUncommon) or
+      ((quality == LE_ITEM_QUALITY_RARE) and DB.Profile.SellRare) or
+      ((quality == LE_ITEM_QUALITY_EPIC) and DB.Profile.SellEpic)
     end
 
     function Dejunker:IsUnsuitableItem(item)
-      if not DejunkDB.SV.SellUnsuitable then return false end
+      if not DB.Profile.SellUnsuitable then return false end
 
       local suitable = true
 
@@ -344,18 +348,18 @@ do
       end
 
       function Dejunker:IsSellBelowAverageILVLItem(item)
-        if not DejunkDB.SV.SellBelowAverageILVL.Enabled or
+        if not DB.Profile.SellBelowAverageILVL.Enabled or
         not IsEquipmentItem(item) then return nil end
 
         local average = floor(GetAverageItemLevel())
-        local diff = max(average - DejunkDB.SV.SellBelowAverageILVL.Value, 0)
+        local diff = max(average - DB.Profile.SellBelowAverageILVL.Value, 0)
 
         if (item.ItemLevel <= diff) then -- Sell
+          return "BELOW", diff
+        else  -- Ignore, unless poor quality
           if (item.Quality >= LE_ITEM_QUALITY_COMMON) then
-            return "BELOW", diff
+            return "ABOVE", diff
           end
-        else -- Ignore
-          return "ABOVE", diff
         end
       end
     end
@@ -363,14 +367,14 @@ do
 
   do -- Ignore options
     function Dejunker:IsIgnoredBattlePetItem(item)
-      if not DejunkDB.SV.IgnoreBattlePets then return false end
+      if not DB.Profile.IgnoreBattlePets then return false end
 
       return (item.Class == Consts.BATTLEPET_CLASS) or
             (item.SubClass == Consts.COMPANION_SUBCLASS)
     end
 
     function Dejunker:IsIgnoredConsumableItem(item)
-      if not DejunkDB.SV.IgnoreConsumables then return false end
+      if not DB.Profile.IgnoreConsumables then return false end
 
       if (item.Class == Consts.CONSUMABLE_CLASS) then
         -- Ignore poor quality consumables to avoid confusion
@@ -381,27 +385,27 @@ do
     end
 
     function Dejunker:IsIgnoredGemItem(item)
-      if not DejunkDB.SV.IgnoreGems then return false end
+      if not DB.Profile.IgnoreGems then return false end
       return (item.Class == Consts.GEM_CLASS)
     end
 
     function Dejunker:IsIgnoredGlyphItem(item)
-      if not DejunkDB.SV.IgnoreGlyphs then return false end
+      if not DB.Profile.IgnoreGlyphs then return false end
       return (item.Class == Consts.GLYPH_CLASS)
     end
 
     function Dejunker:IsIgnoredItemEnhancementItem(item)
-      if not DejunkDB.SV.IgnoreItemEnhancements then return false end
+      if not DB.Profile.IgnoreItemEnhancements then return false end
       return (item.Class == Consts.ITEM_ENHANCEMENT_CLASS)
     end
 
     function Dejunker:IsIgnoredRecipeItem(item)
-      if not DejunkDB.SV.IgnoreRecipes then return false end
+      if not DB.Profile.IgnoreRecipes then return false end
       return (item.Class == Consts.RECIPE_CLASS)
     end
 
     function Dejunker:IsIgnoredTradeGoodsItem(item)
-      if not DejunkDB.SV.IgnoreTradeGoods then return false end
+      if not DB.Profile.IgnoreTradeGoods then return false end
       return (item.Class == Consts.TRADEGOODS_CLASS)
     end
 
@@ -414,7 +418,7 @@ do
       }
 
       function Dejunker:IsIgnoredCosmeticItem(item)
-        if not DejunkDB.SV.IgnoreCosmetic or
+        if not DB.Profile.IgnoreCosmetic or
         not (item.Class == Consts.ARMOR_CLASS) or
         IGNORE_ARMOR_EQUIPSLOTS[item.EquipSlot] then
           return false end
@@ -425,14 +429,14 @@ do
     end
 
     function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
-      if not DejunkDB.SV.IgnoreBindsWhenEquipped then return false end
+      if not DB.Profile.IgnoreBindsWhenEquipped then return false end
       -- Make sure the item is actually an armor or weapon item instead of a tradeskill recipe
       if not (item.Class == Consts.ARMOR_CLASS or item.Class == Consts.WEAPON_CLASS) then return false end
       return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_BIND_ON_EQUIP)
     end
 
     function Dejunker:IsIgnoredSoulboundItem(item)
-      if not DejunkDB.SV.IgnoreSoulbound or (item.Quality == LE_ITEM_QUALITY_POOR) then return false end
+      if not DB.Profile.IgnoreSoulbound or (item.Quality == LE_ITEM_QUALITY_POOR) then return false end
       return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
     end
 
@@ -441,7 +445,7 @@ do
       local TRIMMED_EQUIPMENT_SETS = EQUIPMENT_SETS:match("(.*)|c")
 
       function Dejunker:IsIgnoredEquipmentSetsItem(item)
-        if not DejunkDB.SV.IgnoreEquipmentSets then return false end
+        if not DB.Profile.IgnoreEquipmentSets then return false end
         return DTL:BagItemHasInLines(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
       end
     end
@@ -450,7 +454,7 @@ do
       local bttr1, bttr2 = BIND_TRADE_TIME_REMAINING:match("(.+)%%s(.+)")
 
       function Dejunker:IsIgnoredTradeableItem(item)
-        if not DejunkDB.SV.IgnoreTradeable then return false end
+        if not DB.Profile.IgnoreTradeable then return false end
         return DTL:BagItemHasInLine(item.Bag, item.Slot, bttr1, bttr2)
       end
     end
