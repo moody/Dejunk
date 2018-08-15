@@ -175,10 +175,13 @@ do
   local item = {}
 
   local function setBagItem(self, bag, slot)
-    if not DB.Global.ItemTooltip then return end
+    if not DB.Global.ItemTooltip or DBL:IsEmpty(bag, slot) then return end
 
-    -- Get item
-    if not DBL:GetItem(bag, slot, item) then return end
+    -- Only update the item if it has changed
+    if not ((bag == item.Bag) and (slot == item.Slot) and DBL:StillInBags(item)) then
+      -- Return if updating the item fails or if the updated item is not in the bag slot.
+      if not DBL:GetItem(bag, slot, item) then return end
+    end
     if Tools:ItemCanBeRefunded(item) then return end
 
     local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
