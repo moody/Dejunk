@@ -163,7 +163,10 @@ function Core:ToggleCharacterSpecificSettings()
   end
 
   ListManager:Update()
-  -- ParentFrame:SetContent(DejunkChildFrame)
+  
+  if (ParentFrame:GetContent() ~= DejunkChildFrame) then
+    ParentFrame:SetContent(DejunkChildFrame)
+  end
   ParentFrame:Refresh()
 end
 
