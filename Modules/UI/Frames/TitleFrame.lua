@@ -77,7 +77,7 @@ function TitleFrame:CreateMiddle()
 
   -- Title
   local title = DFL.FontString:Create(parent, strupper(AddonName), DFL.Fonts.NumberHuge)
-  title:SetShadowOffset(2, -1.5)
+  -- title:SetShadowOffset(2, -1.5)
   title:SetColors(Colors.Title, Colors.TitleShadow)
   self.TitleFontString = title
   frame:Add(title)
