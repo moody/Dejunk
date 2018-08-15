@@ -50,8 +50,6 @@ do
     if (currentState ~= states.None) then return end
     if not DB.Profile.AutoDestroy then return end
     if ParentFrame.Frame and ParentFrame:IsVisible() then return end
-    
-    Core:Debug("Destroyer", "StartAutoDestroy()")
 
     -- NOTE: We don't use self.Filter since DBL will call without args
     DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
@@ -136,7 +134,6 @@ do
       if not item then Destroyer:StopDestroyingItems() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before destroying
       if not DBL:StillInBags(item) or item:IsLocked() then
-        Core:Debug("Destroyer", format("%s could not be destroyed.", item.ItemLink))
         DBL:Release(item)
         return
       end
