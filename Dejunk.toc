@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Dejunk
 ## Author: Dethanyel
-## Version: 8.0.3
+## Version: 8.0.4
 ## Notes: Customizable junk selling and destroying.
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV, DejunkGlobal
@@ -10,7 +10,6 @@
 
 Libs/Libs.xml
 Locales/Locales.xml
-
 Modules/Modules.xml
 
 Bindings.lua
