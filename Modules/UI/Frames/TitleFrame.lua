@@ -73,25 +73,14 @@ function TitleFrame:CreateMiddle()
   local parent = self.Frame
 
   -- Main frame
-  local frame = DFL.Frame:Create(parent, DFL.Alignments.CENTER)
+  local frame = DFL.Frame:Create(parent, DFL.Alignments.TOP)
 
   -- Title
   local title = DFL.FontString:Create(parent, strupper(AddonName), DFL.Fonts.NumberHuge)
-  title:SetShadowOffset(2, -1.5)
+  -- title:SetShadowOffset(2, -1.5)
   title:SetColors(Colors.Title, Colors.TitleShadow)
   self.TitleFontString = title
   frame:Add(title)
-
-  -- Mouse over and click functionality
-  frame:SetScript("OnEnter", function()
-    title:SetColors(Colors.LabelText, Colors.TitleShadow)
-    title:Refresh()
-  end)
-  frame:SetScript("OnLeave", function()
-    title:SetColors(Colors.Title, Colors.TitleShadow)
-    title:Refresh()
-  end)
-  frame:SetScript("OnMouseDown", function() Colors:NextScheme() end)
 
   parent:Add(frame)
 end
@@ -109,6 +98,12 @@ function TitleFrame:CreateRight()
   destroy:SetColors(Colors.None, Colors.Border, Colors.LabelText, Colors.ButtonTextHi, Colors.Border)
   function destroy:OnClick() Addon.Destroyer:StartDestroying() end
   frame:Add(destroy)
+
+  -- Scheme button
+  local scheme = DFL.Button:Create(parent, L.COLOR_SCHEME_TEXT)
+  scheme:SetColors(Colors.None, Colors.Border, Colors.LabelText, Colors.ButtonTextHi, Colors.Border)
+  function scheme:OnClick() Colors:NextScheme() end
+  frame:Add(scheme)
   
   -- Close Button
   local close = DFL.Button:Create(parent, "X")

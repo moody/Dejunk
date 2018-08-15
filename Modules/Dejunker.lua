@@ -148,7 +148,6 @@ do
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before selling
       if not DBL:StillInBags(item) or item:IsLocked() then
-        Core:Debug("Dejunker", format("%s could not be sold.", item.ItemLink))
         DBL:Release(item)
         return
       end

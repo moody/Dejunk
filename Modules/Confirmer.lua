@@ -15,6 +15,12 @@ local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
 
+-- Variables
+local MAX_ATTEMPTS = 20
+local confirmAttempts = {
+  -- [item] = count
+}
+
 -- Data for modules which use Confirmer
 local Modules = {
   Dejunker = { Items = {} },
@@ -142,14 +148,17 @@ function Confirmer:ConfirmNextItem(module)
   local item = tremove(module.Items, 1)
   if not item then return end
 
-  if DBL:StillInBags(item) then
-    if item:IsLocked() then -- Item probably being sold or destroyed, add it back to list and try again later
-      module.Items[#module.Items+1] = item
-    else -- Item is still in bags, so it cannot be confirmed
+  if DBL:StillInBags(item) then -- Give the item a chance to finish updating
+    local count = (confirmAttempts[item] or 0) + 1
+    if (count >= MAX_ATTEMPTS) then -- Stop trying to confirm
+      confirmAttempts[item] = nil
       Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
       DBL:Release(item)
+    else -- Try again later
+      confirmAttempts[item] = count
+      module.Items[#module.Items+1] = item
     end
-    
+
     return
   end
 

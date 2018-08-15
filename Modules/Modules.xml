@@ -12,12 +12,9 @@
   <Script file="Modules\Repairer.lua"/>
 
   <!-- /UI/ -->
+  <Script file="Modules\UI\Colors.lua"/>
   <Script file="Modules\UI\MerchantButton.lua"/>
   <Script file="Modules\UI\MinimapIcon.lua"/>
-
-  <!-- /UI/Colors/ -->
-  <Script file="Modules\UI\Colors\Colors.lua"/>
-  <Script file="Modules\UI\Colors\Schemes.lua"/>
   
   <!-- /UI/Frames/ -->
   <Script file="Modules\UI\Frames\ParentFrame.lua"/>

@@ -9,7 +9,7 @@ local Consts = Addon.Consts
 -- Default database values
 local defaults = {
   Global = {
-    ColorScheme = "Default",
+    ColorScheme = 1,
     Minimap = { hide = false },
     ItemTooltip = true
   },
