@@ -25,7 +25,6 @@ L["CANNOT_DESTROY_WHILE_DEJUNKING"] = "Não é possível destruir enquanto itens
 L["CANNOT_DESTROY_WHILE_LIST_UPDATING"] = "Não é possível destruir enquanto %s está sendo atualizado."
 L["CHARACTER_SPECIFIC_TEXT"] = "Configurações Específicas do Personagem"
 L["CHARACTER_SPECIFIC_TOOLTIP"] = "Clique aqui para alternar entre as configurações globais e as configurações específicas deste personagem."
-L["COLOR_SCHEME_SET_TEXT"] = "Esquema de cor definido para %s."
 L["COLOR_SCHEME_TEXT"] = "Esquema"
 L["COMMON_TEXT"] = "Comum"
 L["DEJUNK_BUTTON_TOOLTIP"] = "Clique com o botão direito para alternar as opções"
