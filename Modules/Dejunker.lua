@@ -204,7 +204,7 @@ do
 
     -- If tooltip not available, ignore item if an option is enabled which
     -- relies on tooltip data
-    if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
+    if DTL:ScanBagItemFindLine(item.Bag, item.Slot, false, RETRIEVING_ITEM_INFO) then
       if
         DB.Profile.IgnoreBindsWhenEquipped or
         DB.Profile.IgnoreSoulbound or
@@ -219,243 +219,235 @@ do
     local isJunkItem = Dejunker:IsJunkItem(item)
     return isJunkItem
   end
+end
 
-  -- Checks if an item is a junk item based on Dejunk's settings.
-  -- @param item - a DethsBagLib item
-  -- @return boolean - true if the item is considered junk
-  -- @return string - the reason the item is or is not considered junk
-  function Dejunker:IsJunkItem(item)
-    --[[ Priority
-    1. Is it excluded?
-    2. Is it included?
-    3. Custom checks
-    4. Is it a sell by quality item?
-    ]]
+-- Returns a boolean value and a reason string based on whether or not Dejunk
+-- will sell the item.
+-- @param item - a DethsBagLib item
+function Dejunker:IsJunkItem(item)
+  --[[ Priority
+  1. Is it excluded?
+  2. Is it included?
+  3. Custom checks
+  4. Is it a sell by quality item?
+  ]]
 
-    -- 1
-    if ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
-      return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT)
-    end
-
-    -- 2
-    if ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
-      return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT)
-    end
-    
-    -- 3
-
-    -- Ignore by category
-    if self:IsIgnoredBattlePetItem(item) then
-      return false, L.REASON_IGNORE_BATTLEPETS_TEXT end
-    if self:IsIgnoredConsumableItem(item) then
-      return false, L.REASON_IGNORE_CONSUMABLES_TEXT end
-    if self:IsIgnoredGemItem(item) then
-      return false, L.REASON_IGNORE_GEMS_TEXT end
-    if self:IsIgnoredGlyphItem(item) then
-      return false, L.REASON_IGNORE_GLYPHS_TEXT end
-    if self:IsIgnoredItemEnhancementItem(item) then
-      return false, L.REASON_IGNORE_ITEM_ENHANCEMENTS_TEXT end
-    if self:IsIgnoredRecipeItem(item) then
-      return false, L.REASON_IGNORE_RECIPES_TEXT end
-    if self:IsIgnoredTradeGoodsItem(item) then
-      return false, L.REASON_IGNORE_TRADE_GOODS_TEXT end
-
-    -- Ignore by type
-    if self:IsIgnoredCosmeticItem(item) then
-      return false, L.REASON_IGNORE_COSMETIC_TEXT end
-    if self:IsIgnoredBindsWhenEquippedItem(item) then
-      return false, L.REASON_IGNORE_BOE_TEXT end
-    if self:IsIgnoredSoulboundItem(item) then
-      return false, L.REASON_IGNORE_SOULBOUND_TEXT end
-    if self:IsIgnoredEquipmentSetsItem(item) then
-      return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
-    if self:IsIgnoredTradeableItem(item) then
-      return false, L.REASON_IGNORE_TRADEABLE_TEXT end
-
-    -- Sell by type
-    if self:IsUnsuitableItem(item) then
-      return true, L.REASON_SELL_UNSUITABLE_TEXT
-    end
-
-    local isBelowType, itemLevel = self:IsSellBelowAverageILVLItem(item)
-    if (isBelowType == "BELOW") then
-      return true, format(L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT, itemLevel)
-    elseif (isBelowType == "ABOVE") then
-      return false, format(L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT, itemLevel)
-    end
-
-    -- 4
-    if self:IsSellByQualityItem(item.Quality) then
-      return true, L.REASON_SELL_BY_QUALITY_TEXT
-    end
-
-    -- Default
-    return false, L.REASON_ITEM_NOT_FILTERED_TEXT
+  -- 1
+  if ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+    return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT)
   end
 
-  do -- Sell options
-    function Dejunker:IsSellByQualityItem(quality)
-      return
-      ((quality == LE_ITEM_QUALITY_POOR) and DB.Profile.SellPoor) or
-      ((quality == LE_ITEM_QUALITY_COMMON) and DB.Profile.SellCommon) or
-      ((quality == LE_ITEM_QUALITY_UNCOMMON) and DB.Profile.SellUncommon) or
-      ((quality == LE_ITEM_QUALITY_RARE) and DB.Profile.SellRare) or
-      ((quality == LE_ITEM_QUALITY_EPIC) and DB.Profile.SellEpic)
+  -- 2
+  if ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+    return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT)
+  end
+  
+  -- 3
+
+  -- Ignore by category
+  if self:IsIgnoredBattlePetItem(item) then
+    return false, L.REASON_IGNORE_BATTLEPETS_TEXT end
+  if self:IsIgnoredConsumableItem(item) then
+    return false, L.REASON_IGNORE_CONSUMABLES_TEXT end
+  if self:IsIgnoredGemItem(item) then
+    return false, L.REASON_IGNORE_GEMS_TEXT end
+  if self:IsIgnoredGlyphItem(item) then
+    return false, L.REASON_IGNORE_GLYPHS_TEXT end
+  if self:IsIgnoredItemEnhancementItem(item) then
+    return false, L.REASON_IGNORE_ITEM_ENHANCEMENTS_TEXT end
+  if self:IsIgnoredRecipeItem(item) then
+    return false, L.REASON_IGNORE_RECIPES_TEXT end
+  if self:IsIgnoredTradeGoodsItem(item) then
+    return false, L.REASON_IGNORE_TRADE_GOODS_TEXT end
+
+  -- Ignore by type
+  if self:IsIgnoredCosmeticItem(item) then
+    return false, L.REASON_IGNORE_COSMETIC_TEXT end
+  if self:IsIgnoredBindsWhenEquippedItem(item) then
+    return false, L.REASON_IGNORE_BOE_TEXT end
+  if self:IsIgnoredSoulboundItem(item) then
+    return false, L.REASON_IGNORE_SOULBOUND_TEXT end
+  if self:IsIgnoredEquipmentSetsItem(item) then
+    return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
+  if self:IsIgnoredTradeableItem(item) then
+    return false, L.REASON_IGNORE_TRADEABLE_TEXT end
+
+  -- Sell by type
+  if self:IsUnsuitableItem(item) then
+    return true, L.REASON_SELL_UNSUITABLE_TEXT
+  end
+
+  local isBelowType, itemLevel = self:IsSellBelowAverageILVLItem(item)
+  if (isBelowType == "BELOW") then
+    return true, format(L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT, itemLevel)
+  elseif (isBelowType == "ABOVE") then
+    return false, format(L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT, itemLevel)
+  end
+
+  -- 4
+  if self:IsSellByQualityItem(item.Quality) then
+    return true, L.REASON_SELL_BY_QUALITY_TEXT
+  end
+
+  -- Default
+  return false, L.REASON_ITEM_NOT_FILTERED_TEXT
+end
+
+do -- Sell options
+  function Dejunker:IsSellByQualityItem(quality)
+    return
+    ((quality == LE_ITEM_QUALITY_POOR) and DB.Profile.SellPoor) or
+    ((quality == LE_ITEM_QUALITY_COMMON) and DB.Profile.SellCommon) or
+    ((quality == LE_ITEM_QUALITY_UNCOMMON) and DB.Profile.SellUncommon) or
+    ((quality == LE_ITEM_QUALITY_RARE) and DB.Profile.SellRare) or
+    ((quality == LE_ITEM_QUALITY_EPIC) and DB.Profile.SellEpic)
+  end
+
+  function Dejunker:IsUnsuitableItem(item)
+    if not DB.Profile.SellUnsuitable then return false end
+
+    local suitable = true
+
+    if (item.Class == Consts.ARMOR_CLASS) then
+      local index = Consts.ARMOR_SUBCLASSES[item.SubClass]
+      suitable = (Consts.SUITABLE_ARMOR[index] or (item.EquipSlot == "INVTYPE_CLOAK"))
+    elseif (item.Class == Consts.WEAPON_CLASS) then
+      local index = Consts.WEAPON_SUBCLASSES[item.SubClass]
+      suitable = Consts.SUITABLE_WEAPONS[index]
     end
 
-    function Dejunker:IsUnsuitableItem(item)
-      if not DB.Profile.SellUnsuitable then return false end
+    return not suitable
+  end
 
-      local suitable = true
+  do -- IsSellBelowAverageILVLItem
+    local GetAverageItemLevel = GetAverageItemLevel
 
+    -- Special check required for these generic armor types
+    local SPECIAL_ARMOR_EQUIPSLOTS = {
+      ["INVTYPE_FINGER"] = true,
+      ["INVTYPE_NECK"] = true,
+      ["INVTYPE_TRINKET"] = true,
+      ["INVTYPE_HOLDABLE"] = true
+    }
+
+    -- Returns true if the item is an equippable item;
+    -- excluding generic armor/weapon types, cosmetic items, and fishing poles.
+    -- @return - boolean
+    local function IsEquipmentItem(item)
       if (item.Class == Consts.ARMOR_CLASS) then
-        local index = Consts.ARMOR_SUBCLASSES[item.SubClass]
-        suitable = (Consts.SUITABLE_ARMOR[index] or (item.EquipSlot == "INVTYPE_CLOAK"))
+        if SPECIAL_ARMOR_EQUIPSLOTS[item.EquipSlot] then return true end
+        local scValue = Consts.ARMOR_SUBCLASSES[item.SubClass]
+        return (scValue ~= LE_ITEM_ARMOR_GENERIC) and (scValue ~= LE_ITEM_ARMOR_COSMETIC)
       elseif (item.Class == Consts.WEAPON_CLASS) then
-        local index = Consts.WEAPON_SUBCLASSES[item.SubClass]
-        suitable = Consts.SUITABLE_WEAPONS[index]
+        local scValue = Consts.WEAPON_SUBCLASSES[item.SubClass]
+        return (scValue ~= LE_ITEM_WEAPON_GENERIC) and (scValue ~= LE_ITEM_WEAPON_FISHINGPOLE)
+      else
+        return false
       end
-
-      return not suitable
     end
 
-    do -- IsSellBelowAverageILVLItem
-      local GetAverageItemLevel = GetAverageItemLevel
+    function Dejunker:IsSellBelowAverageILVLItem(item)
+      if not DB.Profile.SellBelowAverageILVL.Enabled or
+      not IsEquipmentItem(item) then return nil end
 
-      -- Special check required for these generic armor types
-      local SPECIAL_ARMOR_EQUIPSLOTS = {
-        ["INVTYPE_FINGER"] = true,
-        ["INVTYPE_NECK"] = true,
-        ["INVTYPE_TRINKET"] = true,
-        ["INVTYPE_HOLDABLE"] = true
-      }
+      local average = floor(GetAverageItemLevel())
+      local diff = max(average - DB.Profile.SellBelowAverageILVL.Value, 0)
 
-      -- Returns true if the item is an equippable item;
-      -- excluding generic armor/weapon types, cosmetic items, and fishing poles.
-      -- @return - boolean
-      local function IsEquipmentItem(item)
-        if (item.Class == Consts.ARMOR_CLASS) then
-          if SPECIAL_ARMOR_EQUIPSLOTS[item.EquipSlot] then return true end
-          local scValue = Consts.ARMOR_SUBCLASSES[item.SubClass]
-          return (scValue ~= LE_ITEM_ARMOR_GENERIC) and (scValue ~= LE_ITEM_ARMOR_COSMETIC)
-        elseif (item.Class == Consts.WEAPON_CLASS) then
-          local scValue = Consts.WEAPON_SUBCLASSES[item.SubClass]
-          return (scValue ~= LE_ITEM_WEAPON_GENERIC) and (scValue ~= LE_ITEM_WEAPON_FISHINGPOLE)
-        else
-          return false
-        end
-      end
-
-      function Dejunker:IsSellBelowAverageILVLItem(item)
-        if not DB.Profile.SellBelowAverageILVL.Enabled or
-        not IsEquipmentItem(item) then return nil end
-
-        local average = floor(GetAverageItemLevel())
-        local diff = max(average - DB.Profile.SellBelowAverageILVL.Value, 0)
-
-        if (item.ItemLevel <= diff) then -- Sell
-          return "BELOW", diff
-        else  -- Ignore, unless poor quality
-          if (item.Quality >= LE_ITEM_QUALITY_COMMON) then
-            return "ABOVE", diff
-          end
+      if (item.ItemLevel <= diff) then -- Sell
+        return "BELOW", diff
+      else  -- Ignore, unless poor quality
+        if (item.Quality >= LE_ITEM_QUALITY_COMMON) then
+          return "ABOVE", diff
         end
       end
     end
   end
+end
 
-  do -- Ignore options
-    function Dejunker:IsIgnoredBattlePetItem(item)
-      if not DB.Profile.IgnoreBattlePets then return false end
+do -- Ignore options
+  function Dejunker:IsIgnoredBattlePetItem(item)
+    if not DB.Profile.IgnoreBattlePets then return false end
 
-      return (item.Class == Consts.BATTLEPET_CLASS) or
-            (item.SubClass == Consts.COMPANION_SUBCLASS)
+    return (item.Class == Consts.BATTLEPET_CLASS) or
+          (item.SubClass == Consts.COMPANION_SUBCLASS)
+  end
+
+  function Dejunker:IsIgnoredConsumableItem(item)
+    if not DB.Profile.IgnoreConsumables then return false end
+
+    if (item.Class == Consts.CONSUMABLE_CLASS) then
+      -- Ignore poor quality consumables to avoid confusion
+      return (item.Quality ~= LE_ITEM_QUALITY_POOR)
     end
 
-    function Dejunker:IsIgnoredConsumableItem(item)
-      if not DB.Profile.IgnoreConsumables then return false end
+    return false
+  end
 
-      if (item.Class == Consts.CONSUMABLE_CLASS) then
-        -- Ignore poor quality consumables to avoid confusion
-        return (item.Quality ~= LE_ITEM_QUALITY_POOR)
-      end
+  function Dejunker:IsIgnoredGemItem(item)
+    if not DB.Profile.IgnoreGems then return false end
+    return (item.Class == Consts.GEM_CLASS)
+  end
 
-      return false
-    end
+  function Dejunker:IsIgnoredGlyphItem(item)
+    if not DB.Profile.IgnoreGlyphs then return false end
+    return (item.Class == Consts.GLYPH_CLASS)
+  end
 
-    function Dejunker:IsIgnoredGemItem(item)
-      if not DB.Profile.IgnoreGems then return false end
-      return (item.Class == Consts.GEM_CLASS)
-    end
+  function Dejunker:IsIgnoredItemEnhancementItem(item)
+    if not DB.Profile.IgnoreItemEnhancements then return false end
+    return (item.Class == Consts.ITEM_ENHANCEMENT_CLASS)
+  end
 
-    function Dejunker:IsIgnoredGlyphItem(item)
-      if not DB.Profile.IgnoreGlyphs then return false end
-      return (item.Class == Consts.GLYPH_CLASS)
-    end
+  function Dejunker:IsIgnoredRecipeItem(item)
+    if not DB.Profile.IgnoreRecipes then return false end
+    return (item.Class == Consts.RECIPE_CLASS)
+  end
 
-    function Dejunker:IsIgnoredItemEnhancementItem(item)
-      if not DB.Profile.IgnoreItemEnhancements then return false end
-      return (item.Class == Consts.ITEM_ENHANCEMENT_CLASS)
-    end
+  function Dejunker:IsIgnoredTradeGoodsItem(item)
+    if not DB.Profile.IgnoreTradeGoods then return false end
+    return (item.Class == Consts.TRADEGOODS_CLASS)
+  end
 
-    function Dejunker:IsIgnoredRecipeItem(item)
-      if not DB.Profile.IgnoreRecipes then return false end
-      return (item.Class == Consts.RECIPE_CLASS)
-    end
+  do -- IsIgnoredCosmeticItem
+    -- Ignore these generic types since they provide no cosmetic appearance
+    local IGNORE_ARMOR_EQUIPSLOTS = {
+      ["INVTYPE_FINGER"] = true,
+      ["INVTYPE_NECK"] = true,
+      ["INVTYPE_TRINKET"] = true
+    }
 
-    function Dejunker:IsIgnoredTradeGoodsItem(item)
-      if not DB.Profile.IgnoreTradeGoods then return false end
-      return (item.Class == Consts.TRADEGOODS_CLASS)
-    end
-
-    do -- IsIgnoredCosmeticItem
-      -- Ignore these generic types since they provide no cosmetic appearance
-      local IGNORE_ARMOR_EQUIPSLOTS = {
-        ["INVTYPE_FINGER"] = true,
-        ["INVTYPE_NECK"] = true,
-        ["INVTYPE_TRINKET"] = true
-      }
-
-      function Dejunker:IsIgnoredCosmeticItem(item)
-        if not DB.Profile.IgnoreCosmetic or
+    function Dejunker:IsIgnoredCosmeticItem(item)
+      if
+        not DB.Profile.IgnoreCosmetic or
         not (item.Class == Consts.ARMOR_CLASS) or
-        IGNORE_ARMOR_EQUIPSLOTS[item.EquipSlot] then
-          return false end
-
-        local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
-        return (subClass == LE_ITEM_ARMOR_COSMETIC) or (subClass == LE_ITEM_ARMOR_GENERIC)
+        IGNORE_ARMOR_EQUIPSLOTS[item.EquipSlot]
+      then
+        return false
       end
+      
+      local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
+      return (subClass == LE_ITEM_ARMOR_COSMETIC) or (subClass == LE_ITEM_ARMOR_GENERIC)
     end
+  end
 
-    function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
-      if not DB.Profile.IgnoreBindsWhenEquipped then return false end
-      -- Make sure the item is actually an armor or weapon item instead of a tradeskill recipe
-      if not (item.Class == Consts.ARMOR_CLASS or item.Class == Consts.WEAPON_CLASS) then return false end
-      return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_BIND_ON_EQUIP)
+  function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
+    return DB.Profile.IgnoreBindsWhenEquipped and item:IsBindsWhenEquipped()
+  end
+
+  function Dejunker:IsIgnoredSoulboundItem(item)
+    return DB.Profile.IgnoreSoulbound and (item.Quality ~= LE_ITEM_QUALITY_POOR) and item:IsSoulbound()
+  end
+
+  do -- IsIgnoredEquipmentSetsItem
+    local EQUIPMENT_SETS_CAPTURE = EQUIPMENT_SETS:gsub("%%s", "(.*)")
+
+    function Dejunker:IsIgnoredEquipmentSetsItem(item)
+      return DB.Profile.IgnoreEquipmentSets and
+      (not not DTL:ScanBagItemMatch(item.Bag, item.Slot, false, EQUIPMENT_SETS_CAPTURE))
     end
+  end
 
-    function Dejunker:IsIgnoredSoulboundItem(item)
-      if not DB.Profile.IgnoreSoulbound or (item.Quality == LE_ITEM_QUALITY_POOR) then return false end
-      return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
-    end
-
-    do -- IsIgnoredEquipmentSetsItem
-      -- "Equipment sets: |cFFFFFFFF%s|r" becomes "Equipment sets: "
-      local TRIMMED_EQUIPMENT_SETS = EQUIPMENT_SETS:match("(.*)|c")
-
-      function Dejunker:IsIgnoredEquipmentSetsItem(item)
-        if not DB.Profile.IgnoreEquipmentSets then return false end
-        return DTL:BagItemHasInLines(item.Bag, item.Slot, TRIMMED_EQUIPMENT_SETS)
-      end
-    end
-
-    do -- IsIgnoredTradeableItem
-      local bttr1, bttr2 = BIND_TRADE_TIME_REMAINING:match("(.+)%%s(.+)")
-
-      function Dejunker:IsIgnoredTradeableItem(item)
-        if not DB.Profile.IgnoreTradeable then return false end
-        return DTL:BagItemHasInLine(item.Bag, item.Slot, bttr1, bttr2)
-      end
-    end
+  function Dejunker:IsIgnoredTradeableItem(item)
+    return DB.Profile.IgnoreTradeable and item:IsTradeable()
   end
 end

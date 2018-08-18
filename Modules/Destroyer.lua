@@ -167,7 +167,7 @@ end
 -- Filter Functions
 -- ============================================================================
 
-do
+do -- Filter
   local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
 
   -- Returns true if the specified item is destroyable.
@@ -183,7 +183,7 @@ do
 
     -- If tooltip not available, ignore item if an option is enabled which
     -- relies on tooltip data
-    if DTL:GetBagItemLine(item.Bag, item.Slot, RETRIEVING_ITEM_INFO) then
+    if DTL:ScanBagItemFindLine(item.Bag, item.Slot, false, RETRIEVING_ITEM_INFO) then
       if
         DB.Profile.DestroyPetsAlreadyCollected or
         DB.Profile.DestroyToysAlreadyCollected
@@ -196,83 +196,94 @@ do
     local isDestroyableItem = Destroyer:IsDestroyableItem(item)
     return isDestroyableItem
   end
+end
 
-  -- Checks if an item is a junk item based on Dejunk's settings.
-  -- @param item - a DethsBagLib item
-  -- @return - true if the item is considered junk, and false otherwise
-  function Destroyer:IsDestroyableItem(item)
-    --[[ Priority
-    1. Are we ignoring Exclusions?
-    2. Are we destroying Poor items?
-      2.1 Threshold?
-    3. Are we destroying Inclusions?
-      3.1 Threshold?
-    4. Is it on the Destroyables list?
-      4.1 Threshold?
-    5. Custom
-    ]]
+-- Returns a boolean value and a reason string based on whether or not Dejunk
+-- will destroy the item.
+-- @param item - a DethsBagLib item
+function Destroyer:IsDestroyableItem(item)
+  --[[ Priority
+  1. Are we ignoring Exclusions?
+  2. Are we destroying Poor items?
+    2.1 Threshold?
+  3. Are we destroying Inclusions?
+    3.1 Threshold?
+  4. Is it on the Destroyables list?
+    4.1 Threshold?
+  5. Custom
+  ]]
 
-    -- 1
-    if DB.Profile.DestroyIgnoreExclusions and
-      ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
-      return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
-    end
-
-    -- 2
-    if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
-      local destroy, reason = self:ItemPriceBelowThreshold(item)
-      return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
-    end
-
-    -- 3
-    if DB.Profile.DestroyInclusions and
-      ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
-      local destroy, reason = self:ItemPriceBelowThreshold(item)
-      return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
-    end
-
-    -- 4
-    if ListManager:IsOnList(ListManager.Destroyables, item.ItemID) then
-      local destroy, reason = self:ItemPriceBelowThreshold(item)
-      return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
-    end
-
-    -- 5
-    if self:IsDestroyPetsAlreadyCollected(item) then
-      return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT end
-    if self:IsDestroyToysAlreadyCollectedItem(item) then
-      return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT end
-
-    -- Default
-    return false, L.REASON_ITEM_NOT_FILTERED_TEXT
+  -- 1
+  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+    return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end
+
+  -- 2
+  if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
+  end
+
+  -- 3
+  if DB.Profile.DestroyInclusions and ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
+  end
+
+  -- 4
+  if ListManager:IsOnList(ListManager.Destroyables, item.ItemID) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
+  end
+
+  -- 5
+  if self:IsDestroyPetsAlreadyCollected(item) then
+    return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT end
+  if self:IsDestroyToysAlreadyCollectedItem(item) then
+    return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT end
+
+  -- Default
+  return false, L.REASON_ITEM_NOT_FILTERED_TEXT
+end
+
+do -- DestroyUsePriceThreshold
+  local GetCoinTextureString = GetCoinTextureString
+  local COPPER_PER_GOLD = COPPER_PER_GOLD
+  local COPPER_PER_SILVER = COPPER_PER_SILVER
 
   -- Returns true if the item's price is less than the set price threshold.
   function Destroyer:ItemPriceBelowThreshold(item)
     if DB.Profile.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
-      local threshold = DB.Profile.DestroyPriceThreshold
-      local thresholdCopperPrice = (threshold.Gold * 10000) +
-        (threshold.Silver * 100) + threshold.Copper
+      local t = DB.Profile.DestroyPriceThreshold
+      local threshold = (t.Gold * COPPER_PER_GOLD) + (t.Silver * COPPER_PER_SILVER) + t.Copper
 
-      if ((item.Price * item.Quantity) >= thresholdCopperPrice) then
-        return false, format(L.REASON_DESTROY_THRESHOLD_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+      if ((item.Price * item.Quantity) >= threshold) then
+        return false, format(L.REASON_DESTROY_THRESHOLD_MET_TEXT, GetCoinTextureString(threshold))
       else
-        return true, format(L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT, GetCoinTextureString(thresholdCopperPrice))
+        return true, format(L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT, GetCoinTextureString(threshold))
       end
     end
 
     return true
   end
+end
+
+do -- DestroyPetsAlreadyCollected
+  -- "Collected (%d/%d)" -> "Collected (.*)"
+  local ITEM_PET_KNOWN_CAPTURE = ITEM_PET_KNOWN:gsub("%%d/%%d", ".*")
 
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DB.Profile.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND, COLLECTED)
+    return item:IsSoulbound() and (not not DTL:ScanBagItemMatch(item.Bag, item.Slot, false, ITEM_PET_KNOWN_CAPTURE))
   end
+end
 
+do -- DestroyToysAlreadyCollected
+  local PlayerHasToy = PlayerHasToy
+  
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
-    if not PlayerHasToy(item.ItemID) then return false end
-    return DTL:BagItemHasInLines(item.Bag, item.Slot, ITEM_SOULBOUND)
+    return PlayerHasToy(item.ItemID) and item:IsSoulbound()
   end
 end
