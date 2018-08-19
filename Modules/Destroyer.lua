@@ -34,13 +34,6 @@ local currentState = states.None
 local itemsToDestroy = {}
 
 -- ============================================================================
--- Destroyer Frames
--- ============================================================================
-
--- destroyerFrame is used for destroying items
-local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
-
--- ============================================================================
 -- Destroying Functions
 -- ============================================================================
 
@@ -77,7 +70,7 @@ do
     -- Notify if tooltips could not be parsed
     if self.incompleteTooltips then
       self.incompleteTooltips = false
-      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+      Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
     end
 
     -- Stop if no items
@@ -98,9 +91,7 @@ do
   -- Cancels the Destroying process.
   function Destroyer:StopDestroying()
     assert(currentState ~= states.None)
-
-    destroyerFrame:SetScript("OnUpdate", nil)
-
+    self.OnUpdate = nil
     Confirmer:Stop("Destroyer")
     currentState = states.None
   end
@@ -152,13 +143,13 @@ do
   function Destroyer:StartDestroyingItems()
     assert(currentState == states.Destroying)
     destroyInterval = 0
-    destroyerFrame:SetScript("OnUpdate", destroyItems_OnUpdate)
+    self.OnUpdate = destroyItems_OnUpdate
   end
 
   -- Cancels the destroying items process.
   function Destroyer:StopDestroyingItems()
     assert(currentState == states.Destroying)
-    destroyerFrame:SetScript("OnUpdate", nil)
+    self.OnUpdate = nil
     self:StopDestroying()
   end
 end
@@ -167,35 +158,31 @@ end
 -- Filter Functions
 -- ============================================================================
 
-do -- Filter
-  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
+-- Returns true if the specified item is destroyable.
+-- @param item - the item to run through the filter
+Destroyer.Filter = function(item)
+  if -- Ignore item if it is locked, refundable, or not destroyable
+    item:IsLocked() or
+    Tools:ItemCanBeRefunded(item) or
+    not Tools:ItemCanBeDestroyed(item)
+  then
+    return false
+  end
 
-  -- Returns true if the specified item is destroyable.
-  -- @param item - the item to run through the filter
-  Destroyer.Filter = function(item)
-    if -- Ignore item if it is locked, refundable, or not destroyable
-      item:IsLocked() or
-      Tools:ItemCanBeRefunded(item) or
-      not Tools:ItemCanBeDestroyed(item)
+  -- If tooltip not available, ignore item if an option is enabled which
+  -- relies on tooltip data
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if
+      DB.Profile.DestroyPetsAlreadyCollected or
+      DB.Profile.DestroyToysAlreadyCollected
     then
+      Destroyer.incompleteTooltips = true
       return false
     end
-
-    -- If tooltip not available, ignore item if an option is enabled which
-    -- relies on tooltip data
-    if DTL:ScanBagItemFindLine(item.Bag, item.Slot, false, RETRIEVING_ITEM_INFO) then
-      if
-        DB.Profile.DestroyPetsAlreadyCollected or
-        DB.Profile.DestroyToysAlreadyCollected
-      then
-        Destroyer.incompleteTooltips = true
-        return false
-      end
-    end
-
-    local isDestroyableItem = Destroyer:IsDestroyableItem(item)
-    return isDestroyableItem
   end
+
+  local isDestroyableItem = Destroyer:IsDestroyableItem(item)
+  return isDestroyableItem
 end
 
 -- Returns a boolean value and a reason string based on whether or not Dejunk
@@ -275,7 +262,7 @@ do -- DestroyPetsAlreadyCollected
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DB.Profile.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return item:IsSoulbound() and (not not DTL:ScanBagItemMatch(item.Bag, item.Slot, false, ITEM_PET_KNOWN_CAPTURE))
+    return DTL:ScanBagSlot(item.Bag, item.Slot) and DTL:IsSoulbound() and (not not DTL:Match(false, ITEM_PET_KNOWN_CAPTURE))
   end
 end
 
@@ -284,6 +271,6 @@ do -- DestroyToysAlreadyCollected
   
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
-    return PlayerHasToy(item.ItemID) and item:IsSoulbound()
+    return PlayerHasToy(item.ItemID) and DTL:ScanBagSlot(item.Bag, item.Slot) and DTL:IsSoulbound()
   end
 end

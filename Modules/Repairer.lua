@@ -33,26 +33,6 @@ local guildRepairError = false
 local usedGuildRepair = false
 
 -- ============================================================================
--- Repairer Frame
--- ============================================================================
-
-local repairFrame = CreateFrame("Frame", AddonName.."RepairerFrame")
-
-function repairFrame:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
-    local _, msg = ...
-
-		if (isRepairing and (msg == ERR_GUILD_NOT_ENOUGH_MONEY)) then
-      UIErrorsFrame:Clear()
-      guildRepairError = true
-    end
-  end
-end
-
-repairFrame:SetScript("OnEvent", repairFrame.OnEvent)
-repairFrame:RegisterEvent("UI_ERROR_MESSAGE")
-
--- ============================================================================
 -- OnUpdate Scripts
 -- ============================================================================
 
@@ -62,7 +42,7 @@ local function repairer_OnUpdate(self, elapsed)
 		--[[
 			NOTE: An error message will be shown if the guild bank does not have
 			enough money, so we clear the UIErrorsFrame when the event fires while
-			currentlyRepairing (see repairFrame OnEvent script).
+			currentlyRepairing (see Repairer:OnEvent()).
 
 			Also, guildRepairError will be set to true if that event occurs.
 
@@ -117,8 +97,8 @@ local function start_OnUpdate(self, elapsed)
 
 		totalRepairCost = repairCost
 		repairInterval = REPAIR_DELAY
-
-		repairFrame:SetScript("OnUpdate", repairer_OnUpdate)
+		
+		self.OnUpdate = repairer_OnUpdate
 	end
 end
 
@@ -126,12 +106,23 @@ end
 -- General Functions
 -- ============================================================================
 
+-- Event handler.
+function Repairer:OnEvent(event, ...)
+  if (event == "UI_ERROR_MESSAGE") then
+    local _, msg = ...
+
+		if (isRepairing and (msg == ERR_GUILD_NOT_ENOUGH_MONEY)) then
+      UIErrorsFrame:Clear()
+      guildRepairError = true
+    end
+  end
+end
+
 -- Starts the repairing process.
 function Repairer:StartRepairing()
   isRepairing = true
 	repairInterval = 0
-	
-  repairFrame:SetScript("OnUpdate", start_OnUpdate)
+	self.OnUpdate = start_OnUpdate
 end
 
 -- Cancels the repairing process.
@@ -143,7 +134,7 @@ function Repairer:StopRepairing()
   guildRepairError = false
 	usedGuildRepair = false
 
-	repairFrame:SetScript("OnUpdate", nil)
+	self.OnUpdate = nil
 end
 
 -- Checks whether or not the Repairer is active.

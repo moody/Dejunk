@@ -81,17 +81,19 @@ do -- Destroyer module data
 end
 
 -- ============================================================================
--- Confirmer Frame
+-- Confirmer Functions
 -- ============================================================================
 
-do
-  local frame = CreateFrame("Frame", AddonName.."ConfirmerFrame")
-  local DELAY = 0.1 -- 0.1sec
+do -- OnUpdate(), called in Core:OnUpdate()
+  local MIN_DELAY = 0.1 -- 0.1sec
+  local delay = 0
   local interval = 0
 
-  function frame:OnUpdate(elapsed)
+  function Confirmer:OnUpdate(elapsed)
     interval = interval + elapsed
-    if (interval >= DELAY) then
+    delay = max(Core.Latency, MIN_DELAY)
+    
+    if (interval >= delay) then
       interval = 0
 
       -- Confirm module items
@@ -105,13 +107,7 @@ do
       end
     end
   end
-
-  frame:SetScript("OnUpdate", frame.OnUpdate)
 end
-
--- ============================================================================
--- Confirmer Functions
--- ============================================================================
 
 function Confirmer:IsConfirming(moduleName)
   if moduleName then
@@ -155,6 +151,7 @@ function Confirmer:ConfirmNextItem(module)
       Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
       DBL:Release(item)
     else -- Try again later
+      -- Core:Debug("Confirmer", format("[%s] = %s", item.ItemID, count))
       confirmAttempts[item] = count
       module.Items[#module.Items+1] = item
     end

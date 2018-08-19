@@ -15,37 +15,18 @@ local DB = Addon.DB
 local Confirmer = Addon.Confirmer
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
+local Repairer = Addon.Repairer
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
 local ParentFrame = Addon.Frames.ParentFrame
-local TitleFrame = Addon.Frames.TitleFrame
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
-local TransportChildFrame = Addon.Frames.TransportChildFrame
 
 -- ============================================================================
---                                 Core Frame
--- ============================================================================
-
-do
-  local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
-
-  function coreFrame:OnEvent(event, ...)
-    if (event == "PLAYER_LOGIN") then
-      self:UnregisterEvent(event)
-      Core:Initialize()
-    end
-  end
-
-  coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-  coreFrame:RegisterEvent("PLAYER_LOGIN")
-end
-
--- ============================================================================
---                              General Functions
+-- DethsAddonLib Functions
 -- ============================================================================
 
 -- Initializes modules.
-function Core:Initialize()
+function Core:OnInitialize()
   DB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
@@ -54,12 +35,40 @@ function Core:Initialize()
   Addon.MinimapIcon:Initialize()
 
   -- Setup slash command
-  LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, function()
-    self:ToggleGUI()
-  end)
-
-  self.Initialize = nil
+  LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, self.ToggleGUI)
 end
+
+do -- OnUpdate()
+  local GetNetStats = GetNetStats
+  local DELAY = 10 -- seconds
+  local interval = DELAY
+
+  function Core:OnUpdate(elapsed)
+    interval = interval + elapsed
+    if (interval >= DELAY) then -- Update latency
+      interval = 0
+      local home, world = select(3, GetNetStats())
+      self.Latency = max(home, world) * 0.001
+      -- self:Debug("Core", "Latency: "..self.Latency)
+    end
+
+    if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
+    if Destroyer.OnUpdate then Destroyer:OnUpdate(elapsed) end
+    if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
+    Confirmer:OnUpdate(elapsed)
+  end
+end
+
+function Core:OnEvent(event, ...)
+  -- self:Debug("Core", "OnEvent: "..event)
+  Dejunker:OnEvent(event, ...)
+  Repairer:OnEvent(event, ...)
+end
+Core:RegisterEvent("UI_ERROR_MESSAGE")
+
+-- ============================================================================
+-- General Functions
+-- ============================================================================
 
 -- Prints a formatted message ("[Dejunk] msg").
 -- @param msg - the message to print
@@ -78,12 +87,10 @@ end
 -- Prints a debug message ("[Dejunk Debug] title: msg").
 -- @param msg - the message to print
 function Core:Debug(title, msg)
-  if not self.IsDebugging then return end
-  local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
-  title = DCL:ColorString(title, Colors.Green)
-  print(format("%s %s: %s", debug, title, msg))
+  -- local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
+  -- title = DCL:ColorString(title, Colors.Green)
+  -- print(format("%s %s: %s", debug, title, msg))
 end
--- Core.IsDebugging = true
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
@@ -135,7 +142,7 @@ function Core:IsBusy()
 end
 
 -- ============================================================================
---                                 UI Functions
+-- UI Functions
 -- ============================================================================
 
 -- Toggles Dejunk's GUI.
@@ -171,7 +178,7 @@ function Core:ToggleCharacterSpecificSettings()
 end
 
 -- ============================================================================
---                                Tooltip Hook
+-- Tooltip Hook
 -- ============================================================================
 
 do

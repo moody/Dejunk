@@ -16,7 +16,7 @@ Addon.Libs = {
 }
 
 -- Initialize Dejunk tables
-Addon.Core = {}
+Addon.Core = LibStub("DethsAddonLib-1.0"):Create(AddonName)
 
 Addon.Consts = {}
 Addon.Colors = {}
