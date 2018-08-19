@@ -34,9 +34,8 @@ ListManager.Lists =
 ListManager.ToAdd = {}
 ListManager.ToRemove = {}
 
--- Add list keys to ListManager, ToAdd, and ToRemove
+-- Add list keys to ToAdd and ToRemove
 for k in pairs(ListManager.Lists) do
-  ListManager[k] = k
   ListManager.ToAdd[k] = {}
   ListManager.ToRemove[k] = {}
 end
@@ -88,13 +87,13 @@ end
 -- Gets a list from saved variables.
 -- @param listName - the name of the list to get SVs
 function ListManager:GetListSV(listName)
-  assert(self[listName])
+  assert(self.Lists[listName])
   return DB.Profile[listName]
 end
 
 -- Returns list data for use in ListManager functions.
 function ListManager:GetListData(listName)
-  assert(self[listName])
+  assert(self.Lists[listName])
 
   local list = self.Lists[listName]
   local toAdd = self.ToAdd[listName]
@@ -120,7 +119,7 @@ end
 -- @param listName - the name of the list to add to
 -- @param itemID - the item id of the item to add
 function ListManager:AddToList(listName, itemID)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
   itemID = tostring(itemID)
 
   -- Initialize data
@@ -149,7 +148,7 @@ end
 -- @param itemID - the item id of the item to remove
 -- @param notify - if true, prints a message if the item is not on the list
 function ListManager:RemoveFromList(listName, itemID, notify)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
   itemID = tostring(itemID)
 
   if self:IsOnList(listName, itemID) then
@@ -168,7 +167,7 @@ end
 -- @param itemID - the item id of the item to search for
 -- @return - boolean
 function ListManager:IsOnList(listName, itemID)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
   itemID = tostring(itemID)
 
   return self:GetListSV(listName)[itemID]
@@ -189,7 +188,7 @@ end
 -- Removes all entries from the specified list.
 -- @param listName - the name of the list to destroy
 function ListManager:DestroyList(listName)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
 
   -- Initialize data
   local list, _, _, sv, coloredName = self:GetListData(listName)
@@ -209,7 +208,7 @@ end
 -- @param listName - the name of the list to import into
 -- @param string - the import string with format: "itemID;itemID;itemID;"
 function ListManager:ImportToList(listName, string)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
 
   for itemID in string:gmatch('([^;]+)') do
     itemID = tonumber(itemID)
@@ -223,7 +222,7 @@ end
 -- @param listName - the name of the list to export
 -- @return - a string with format: "itemID;itemID;itemID;"
 function ListManager:ExportFromList(listName)
-  assert(self[listName] ~= nil)
+  assert(self.Lists[listName] ~= nil)
 
   -- Initialize data
   local sv = self:GetListSV(listName)
@@ -273,7 +272,7 @@ do -- CleanList()
   -- Cleans the specified list by removing queued entries.
   -- @param listName - the name of the list to clean
   function ListManager:CleanList(listName)
-    assert(self[listName])
+    assert(self.Lists[listName])
 
     -- Initialize data
     local list, _, toRemove, sv, coloredName = self:GetListData(listName)
@@ -311,7 +310,7 @@ do -- ParseList()
 
   -- Returns true if the item can be sold, and the target list is Inclusions or Exclusions.
   local function canBeSold(listName, item, sv, toAdd)
-    if not (listName == ListManager.Inclusions or listName == ListManager.Exclusions) then  return false end
+    if not (listName == "Inclusions" or listName == "Exclusions") then  return false end
     if Tools:ItemCanBeSold(item) then return true end
     -- Item cannot be sold
     sv[item.ItemID] = nil -- Remove from sv
@@ -322,7 +321,7 @@ do -- ParseList()
 
   -- Returns true if the item can be destroyed, and the target list is Destroyables.
   local function canBeDestroyed(listName, item, sv, toAdd)
-    if not (listName == ListManager.Destroyables) then return false end
+    if not (listName == "Destroyables") then return false end
     if Tools:ItemCanBeDestroyed(item) then return true end
     -- Item cannot be destroyed
     sv[item.ItemID] = nil -- Remove from sv
@@ -343,7 +342,7 @@ do -- ParseList()
   -- Parses queued itemIDs and adds them to the specified list.
   -- @param listName - the name of the list to parse
   function ListManager:ParseList(listName)
-    assert(self[listName])
+    assert(self.Lists[listName])
 
     -- Initialize data
     local list, toAdd, _, sv, coloredName = self:GetListData(listName)
@@ -384,7 +383,7 @@ do -- ParseList()
       sort(list, item_sort)
 
       -- Start auto destroy if the Destroyables list was updated
-      if (listName == ListManager.Destroyables) then
+      if (listName == "Destroyables") then
         Addon.Destroyer:StartAutoDestroy()
       end
     end

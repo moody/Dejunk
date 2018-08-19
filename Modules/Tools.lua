@@ -39,13 +39,13 @@ end
 -- Returns the list name as a localized string in color.
 -- @param listName - a list name key defined in ListManager
 function Tools:GetColoredListName(listName)
-  assert(ListManager[listName])
+  assert(ListManager.Lists[listName])
 
-  if (listName == ListManager.Inclusions) then
+  if (listName == "Inclusions") then
     return self:GetInclusionsString()
-  elseif (listName == ListManager.Exclusions) then
+  elseif (listName == "Exclusions") then
     return self:GetExclusionsString()
-  elseif (listName == ListManager.Destroyables) then
+  elseif (listName == "Destroyables") then
     return self:GetDestroyablesString()
   else
     error(format("Unsupported list name: \"%s\"", listName))

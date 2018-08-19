@@ -104,11 +104,11 @@ function Core:CanDejunk()
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListManager:IsParsing(ListManager.Inclusions) or
-     ListManager:IsParsing(ListManager.Exclusions) then
+  if ListManager:IsParsing("Inclusions") or
+     ListManager:IsParsing("Exclusions") then
     return false, format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
-      Tools:GetColoredListName(ListManager.Inclusions),
-      Tools:GetColoredListName(ListManager.Exclusions))
+      Tools:GetColoredListName("Inclusions"),
+      Tools:GetColoredListName("Exclusions"))
   end
 
   return true
@@ -126,9 +126,9 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
-  if ListManager:IsParsing(ListManager.Destroyables) then
+  if ListManager:IsParsing("Destroyables") then
     return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING,
-      Tools:GetColoredListName(ListManager.Destroyables))
+      Tools:GetColoredListName("Destroyables"))
   end
 
   return true

@@ -201,7 +201,7 @@ function Destroyer:IsDestroyableItem(item)
   ]]
 
   -- 1
-  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end
 
@@ -212,13 +212,13 @@ function Destroyer:IsDestroyableItem(item)
   end
 
   -- 3
-  if DB.Profile.DestroyInclusions and ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+  if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
   -- 4
-  if ListManager:IsOnList(ListManager.Destroyables, item.ItemID) then
+  if ListManager:IsOnList("Destroyables", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end

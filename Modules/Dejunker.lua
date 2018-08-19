@@ -217,12 +217,12 @@ function Dejunker:IsJunkItem(item)
   ]]
 
   -- 1
-  if ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+  if ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT)
   end
 
   -- 2
-  if ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+  if ListManager:IsOnList("Inclusions", item.ItemID) then
     return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT)
   end
   
