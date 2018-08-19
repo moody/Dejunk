@@ -16,3 +16,6 @@
 [submodule "Libs/DethsDBLib-1.0"]
 	path = Libs/DethsDBLib-1.0
 	url = https://github.com/moody/DethsDBLib-1.0.git
+[submodule "Libs/DethsAddonLib-1.0"]
+	path = Libs/DethsAddonLib-1.0
+	url = https://github.com/moody/DethsAddonLib-1.0.git

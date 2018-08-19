@@ -6,7 +6,7 @@
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV, DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
-## OptionalDeps: DethsBagLib-1.0, DethsCmdLib-1.0, DethsColorLib-1.0, DethsDBLib-1.0, DethsFrameLib-1.0, DethsTooltipLib-1.0
+## OptionalDeps: DethsAddonLib-1.0, DethsBagLib-1.0, DethsCmdLib-1.0, DethsColorLib-1.0, DethsDBLib-1.0, DethsFrameLib-1.0, DethsTooltipLib-1.0
 
 Libs/Libs.xml
 Locales/Locales.xml

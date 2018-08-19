@@ -5,10 +5,11 @@
   <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
   <Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
 
-  <Script file="Libs\DethsTooltipLib-1.0\DethsTooltipLib-1.0.lua"/>
-  <Script file="Libs\DethsBagLib-1.0\DethsBagLib-1.0.lua"/>
+  <Script file="Libs\DethsAddonLib-1.0\DethsAddonLib-1.0.lua"/>
   <Script file="Libs\DethsCmdLib-1.0\DethsCmdLib-1.0.lua"/>
   <Script file="Libs\DethsColorLib-1.0\DethsColorLib-1.0.lua"/>
   <Script file="Libs\DethsDBLib-1.0\DethsDBLib-1.0.lua"/>
   <Include file="Libs\DethsFrameLib-1.0\DethsFrameLib-1.0.xml"/>
+  <Script file="Libs\DethsTooltipLib-1.0\DethsTooltipLib-1.0.lua"/>
+  <Script file="Libs\DethsBagLib-1.0\DethsBagLib-1.0.lua"/>
 </Ui>
