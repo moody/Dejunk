@@ -62,12 +62,13 @@ do
 
     Confirmer:Start("Destroyer")
     currentState = states.Destroying
+    self.incompleteTooltips = false
 
     -- Update items if manually started
     if not auto then DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy) end
     local upToDate = DBL:IsUpToDate()
 
-    -- Notify if tooltips could not be parsed
+    -- Notify if tooltips could not be scanned
     if self.incompleteTooltips then
       self.incompleteTooltips = false
       Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
@@ -224,10 +225,23 @@ function Destroyer:IsDestroyableItem(item)
   end
 
   -- 5
-  if self:IsDestroyPetsAlreadyCollected(item) then
-    return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT end
-  if self:IsDestroyToysAlreadyCollectedItem(item) then
-    return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT end
+
+  -- These options require tooltip scanning
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if -- Only return false if one of these options is enabled
+      DB.Profile.DestroyPetsAlreadyCollected or
+      DB.Profile.DestroyToysAlreadyCollected
+    then
+      Destroyer.incompleteTooltips = true
+      return false, "..."
+    end
+  else -- Tooltip can be scanned
+    if self:IsDestroyPetsAlreadyCollected(item) then
+      return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT
+    elseif self:IsDestroyToysAlreadyCollectedItem(item) then
+      return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT
+    end
+  end
 
   -- Default
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
@@ -262,7 +276,7 @@ do -- DestroyPetsAlreadyCollected
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DB.Profile.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return DTL:ScanBagSlot(item.Bag, item.Slot) and DTL:IsSoulbound() and (not not DTL:Match(false, ITEM_PET_KNOWN_CAPTURE))
+    return DTL:IsSoulbound() and (not not DTL:Match(false, ITEM_PET_KNOWN_CAPTURE))
   end
 end
 
@@ -271,6 +285,6 @@ do -- DestroyToysAlreadyCollected
   
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
-    return PlayerHasToy(item.ItemID) and DTL:ScanBagSlot(item.Bag, item.Slot) and DTL:IsSoulbound()
+    return PlayerHasToy(item.ItemID) and DTL:IsSoulbound()
   end
 end

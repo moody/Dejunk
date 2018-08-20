@@ -67,13 +67,14 @@ do
 
     Confirmer:Start("Dejunker")
     currentState = states.Dejunking
+    self.incompleteTooltips = false
 
     -- Get junk items
     local maxItems = DB.Profile.SafeMode and Consts.SAFE_MODE_MAX
     DBL:GetItemsByFilter(Dejunker.Filter, itemsToSell, maxItems)
     local upToDate = DBL:IsUpToDate()
 
-    -- Notify if tooltips could not be parsed
+    -- Notify if tooltips could not be scanned
     if self.incompleteTooltips then
       self.incompleteTooltips = false
       Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
@@ -186,21 +187,6 @@ Dejunker.Filter = function(item)
     return false
   end
 
-  -- If tooltip not available, ignore item if an option is enabled which
-  -- relies on tooltip data
-  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
-    if
-      DB.Profile.IgnoreBindsWhenEquipped or
-      DB.Profile.IgnoreSoulbound or
-      DB.Profile.IgnoreEquipmentSets or
-      DB.Profile.IgnoreTradeable
-    then
-      -- Core:Debug("Dejunker", item.ItemLink.." not scannable.")
-      Dejunker.incompleteTooltips = true
-      return false
-    end
-  end
-
   local isJunkItem = Dejunker:IsJunkItem(item)
   return isJunkItem
 end
@@ -247,14 +233,29 @@ function Dejunker:IsJunkItem(item)
   -- Ignore by type
   if self:IsIgnoredCosmeticItem(item) then
     return false, L.REASON_IGNORE_COSMETIC_TEXT end
-  if self:IsIgnoredBindsWhenEquippedItem(item) then
-    return false, L.REASON_IGNORE_BOE_TEXT end
-  if self:IsIgnoredSoulboundItem(item) then
-    return false, L.REASON_IGNORE_SOULBOUND_TEXT end
-  if self:IsIgnoredEquipmentSetsItem(item) then
-    return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
-  if self:IsIgnoredTradeableItem(item) then
-    return false, L.REASON_IGNORE_TRADEABLE_TEXT end
+  
+  -- These Ignore options require tooltip scanning
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if -- Only return false if one of these options is enabled
+      DB.Profile.IgnoreBindsWhenEquipped or
+      DB.Profile.IgnoreSoulbound or
+      DB.Profile.IgnoreEquipmentSets or
+      DB.Profile.IgnoreTradeable
+    then
+      self.incompleteTooltips = true
+      return false, "..."
+    end
+  else -- Tooltip can be scanned
+    if self:IsIgnoredBindsWhenEquippedItem(item) then
+      return false, L.REASON_IGNORE_BOE_TEXT
+    elseif self:IsIgnoredSoulboundItem(item) then
+      return false, L.REASON_IGNORE_SOULBOUND_TEXT
+    elseif self:IsIgnoredEquipmentSetsItem(item) then
+      return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT
+    elseif self:IsIgnoredTradeableItem(item) then
+      return false, L.REASON_IGNORE_TRADEABLE_TEXT
+    end
+  end
 
   -- Sell by type
   if self:IsUnsuitableItem(item) then
@@ -415,15 +416,12 @@ do -- Ignore options
   end
 
   function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
-    return DB.Profile.IgnoreBindsWhenEquipped and
-    DTL:ScanBagSlot(item.Bag, item.Slot) and
-    DTL:IsBindsWhenEquipped()
+    return DB.Profile.IgnoreBindsWhenEquipped and DTL:IsBindsWhenEquipped()
   end
 
   function Dejunker:IsIgnoredSoulboundItem(item)
     return DB.Profile.IgnoreSoulbound and
     (item.Quality ~= LE_ITEM_QUALITY_POOR) and
-    DTL:ScanBagSlot(item.Bag, item.Slot) and
     DTL:IsSoulbound()
   end
 
@@ -432,14 +430,11 @@ do -- Ignore options
 
     function Dejunker:IsIgnoredEquipmentSetsItem(item)
       return DB.Profile.IgnoreEquipmentSets and
-      DTL:ScanBagSlot(item.Bag, item.Slot) and
       (not not DTL:Match(false, EQUIPMENT_SETS_CAPTURE))
     end
   end
 
   function Dejunker:IsIgnoredTradeableItem(item)
-    return DB.Profile.IgnoreTradeable and
-    DTL:ScanBagSlot(item.Bag, item.Slot) and
-    DTL:IsTradeable()
+    return DB.Profile.IgnoreTradeable and DTL:IsTradeable()
   end
 end
