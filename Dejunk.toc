@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: Dejunk
 ## Author: Dethanyel
-## Version: 8.0.5
+## Version: 8.0.6
 ## Notes: Customizable junk selling and destroying.
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV, DejunkGlobal
