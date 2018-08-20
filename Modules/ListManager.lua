@@ -102,10 +102,10 @@ function ListManager:GetListData(listName)
   local coloredName = Tools:GetColoredListName(listName)
 
   local otherListName = nil
-  if (listName == self.Inclusions) then
-    otherListName = self.Exclusions
-  elseif (listName == self.Exclusions) then
-    otherListName = self.Inclusions
+  if (listName == "Inclusions") then
+    otherListName = "Exclusions"
+  elseif (listName == "Exclusions") then
+    otherListName = "Inclusions"
   end
 
   return list, toAdd, toRemove, sv, coloredName, otherListName
