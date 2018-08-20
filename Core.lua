@@ -48,8 +48,8 @@ do -- OnUpdate()
     if (interval >= DELAY) then -- Update latency
       interval = 0
       local home, world = select(3, GetNetStats())
-      self.Latency = max(home, world) * 0.001
-      -- self:Debug("Core", "Latency: "..self.Latency)
+      local latency = max(home, world) * 0.001 -- convert to seconds
+      self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
     end
 
     if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
@@ -60,7 +60,6 @@ do -- OnUpdate()
 end
 
 function Core:OnEvent(event, ...)
-  -- self:Debug("Core", "OnEvent: "..event)
   Dejunker:OnEvent(event, ...)
   Repairer:OnEvent(event, ...)
 end
@@ -84,13 +83,15 @@ function Core:PrintVerbose(msg)
   if DB.Profile.VerboseMode then Core:Print(msg) end
 end
 
+--[[
 -- Prints a debug message ("[Dejunk Debug] title: msg").
 -- @param msg - the message to print
 function Core:Debug(title, msg)
-  -- local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
-  -- title = DCL:ColorString(title, Colors.Green)
-  -- print(format("%s %s: %s", debug, title, msg))
+  local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
+  title = DCL:ColorString(title, Colors.Green)
+  print(format("%s %s: %s", debug, title, msg))
 end
+--]] Core.Debug = nop
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.

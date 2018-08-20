@@ -14,6 +14,15 @@ local assert, remove = assert, table.remove
 local ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY =
       ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY
 
+local LE_ITEM_QUALITY_POOR, LE_ITEM_QUALITY_COMMON, LE_ITEM_QUALITY_UNCOMMON =
+      LE_ITEM_QUALITY_POOR, LE_ITEM_QUALITY_COMMON, LE_ITEM_QUALITY_UNCOMMON
+local LE_ITEM_QUALITY_RARE, LE_ITEM_QUALITY_EPIC =
+      LE_ITEM_QUALITY_RARE, LE_ITEM_QUALITY_EPIC
+local LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC =
+      LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC
+local LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE =
+      LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE
+
 -- Modules
 local Dejunker = Addon.Dejunker
 local Confirmer = Addon.Confirmer
@@ -120,16 +129,13 @@ end
 -- ============================================================================
 
 do
-  -- NOTE: If a delay is not used, it can sometimes cause a disconnect
-  -- I may turn this into an gui option at some point
-  local SELL_DELAY = 0.25
-  local sellInterval = 0
+  local interval = 0
 
   -- Selling update function
   local function sellItems_OnUpdate(self, elapsed)
-    sellInterval = (sellInterval + elapsed)
-    if (sellInterval >= SELL_DELAY) then
-      sellInterval = 0
+    interval = interval + elapsed
+    if (interval >= Core.MinDelay) then
+      interval = 0
 
       -- Get next item
       local item = remove(itemsToSell)
@@ -152,7 +158,7 @@ do
     assert(currentState == states.Dejunking)
     assert(#itemsToSell > 0)
     currentState = states.Selling
-    sellInterval = 0
+    interval = 0
     self.OnUpdate = sellItems_OnUpdate
   end
 
@@ -416,7 +422,9 @@ do -- Ignore options
   end
 
   function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
-    return DB.Profile.IgnoreBindsWhenEquipped and DTL:IsBindsWhenEquipped()
+    return DB.Profile.IgnoreBindsWhenEquipped and
+    (item.Quality ~= LE_ITEM_QUALITY_POOR) and
+    DTL:IsBindsWhenEquipped()
   end
 
   function Dejunker:IsIgnoredSoulboundItem(item)

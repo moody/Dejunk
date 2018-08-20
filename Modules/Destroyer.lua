@@ -109,14 +109,13 @@ end
 -- ============================================================================
 
 do
-  local DESTROY_DELAY = 0.25
-  local destroyInterval = 0
+  local interval = 0
 
   -- Destroying update function
   local function destroyItems_OnUpdate(self, elapsed)
-    destroyInterval = (destroyInterval + elapsed)
-    if (destroyInterval >= DESTROY_DELAY) then
-      destroyInterval = 0
+    interval = interval + elapsed
+    if (interval >= Core.MinDelay) then
+      interval = 0
 
       -- Don't run if the cursor has an item, spell, etc.
       if GetCursorInfo() then return end
@@ -143,7 +142,7 @@ do
   -- Starts the destroying items process.
   function Destroyer:StartDestroyingItems()
     assert(currentState == states.Destroying)
-    destroyInterval = 0
+    interval = 0
     self.OnUpdate = destroyItems_OnUpdate
   end
 

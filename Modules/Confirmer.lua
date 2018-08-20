@@ -16,7 +16,7 @@ local Core = Addon.Core
 local DB = Addon.DB
 
 -- Variables
-local MAX_ATTEMPTS = 20
+local MAX_ATTEMPTS = 50
 local confirmAttempts = {
   -- [item] = count
 }
@@ -85,21 +85,17 @@ end
 -- ============================================================================
 
 do -- OnUpdate(), called in Core:OnUpdate()
-  local MIN_DELAY = 0.1 -- 0.1sec
-  local delay = 0
   local interval = 0
 
   function Confirmer:OnUpdate(elapsed)
     interval = interval + elapsed
-    delay = max(Core.Latency, MIN_DELAY)
-    
-    if (interval >= delay) then
+    if (interval >= Core.MinDelay) then
       interval = 0
 
       -- Confirm module items
       for _, module in pairs(Modules) do
         if (#module.Items > 0) then
-          Confirmer:ConfirmNextItem(module)
+          for i=1, #module.Items do Confirmer:ConfirmNextItem(module) end
         elseif module.finalMessageQueued then
           module:PrintFinalMessage()
           module.finalMessageQueued = nil
@@ -151,7 +147,7 @@ function Confirmer:ConfirmNextItem(module)
       Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
       DBL:Release(item)
     else -- Try again later
-      -- Core:Debug("Confirmer", format("[%s] = %s", item.ItemID, count))
+      -- Core:Debug("Confirmer", format("[%s, %s, %s] = %s", item.Bag, item.Slot, item.ItemID, count))
       confirmAttempts[item] = count
       module.Items[#module.Items+1] = item
     end
@@ -166,6 +162,7 @@ function Confirmer:ConfirmNextItem(module)
     Core:PrintVerbose(format(module.CONFIRM_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
   end
 
+  confirmAttempts[item] = nil
   module:OnConfirm(item)
   DBL:Release(item)
 end
