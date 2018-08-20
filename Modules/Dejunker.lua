@@ -1,4 +1,4 @@
--- Dejunk_Dejunker: handles the process of selling junk items to merchants.
+-- Dejunker: handles the process of selling junk items to merchants.
 
 local AddonName, Addon = ...
 

@@ -1,4 +1,4 @@
--- Dejunk_Destroyer: handles the process of destroying items in the player's bags.
+-- Destroyer: handles the process of destroying items in the player's bags.
 
 local AddonName, Addon = ...
 
