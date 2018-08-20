@@ -8,41 +8,36 @@ local DCL = Addon.Libs.DCL
 
 -- Upvalues
 local assert, pairs, next = assert, pairs, next
-local remove, sort, concat = table.remove, table.sort, table.concat
-local tonumber, tostring = tonumber, tostring
+local tremove, sort, concat = table.remove, table.sort, table.concat
+local format, select, tonumber, tostring = format, select, tonumber, tostring
+
+local GetItemInfo = GetItemInfo
 
 -- Modules
 local ListManager = Addon.ListManager
-
-local Core = Addon.Core
-local Colors = Addon.Colors
-local Tools = Addon.Tools
-local DB = Addon.DB
-
--- Variables
-ListManager.Initialized = false
-
-ListManager.Lists =
-{
+ListManager.Lists = {
   ["Inclusions"] = {},
   ["Exclusions"] = {},
   ["Destroyables"] = {}
-
   -- ["ListName"] = array of item tables
 }
-
 ListManager.ToAdd = {}
 ListManager.ToRemove = {}
-
 -- Add list keys to ToAdd and ToRemove
 for k in pairs(ListManager.Lists) do
   ListManager.ToAdd[k] = {}
   ListManager.ToRemove[k] = {}
 end
 
--- Parsing Frame
-local parseFrame = CreateFrame("Frame", AddonName.."ListManagerParseFrame")
-parseFrame.AttemptsToParse = {} -- Format: ["itemID"] = # of attempts
+local Core = Addon.Core
+local Colors = Addon.Colors
+local Dejunker = Addon.Dejunker
+local Destroyer = Addon.Destroyer
+local Tools = Addon.Tools
+local DB = Addon.DB
+
+-- Consts
+local MAX_NUMBER = 2147483647 -- 32-bit signed
 
 -- ============================================================================
 -- General Functions
@@ -173,18 +168,6 @@ function ListManager:IsOnList(listName, itemID)
   return self:GetListSV(listName)[itemID]
 end
 
--- Sorts the specified item list.
--- @param list - a table of items to sort
-function ListManager:SortList(list)
-  -- Sort by name when same quality, otherwise sort by quality.
-  sort(list, function(a, b)
-    if ((a.Quality - b.Quality) == 0) then
-      return (a.Name < b.Name) end
-
-    return (a.Quality < b.Quality)
-  end)
-end
-
 -- Removes all entries from the specified list.
 -- @param listName - the name of the list to destroy
 function ListManager:DestroyList(listName)
@@ -212,7 +195,7 @@ function ListManager:ImportToList(listName, string)
 
   for itemID in string:gmatch('([^;]+)') do
     itemID = tonumber(itemID)
-    if (itemID and (itemID > 0)) then
+    if (itemID and (itemID > 0) and (itemID <= MAX_NUMBER)) then
       self:AddToList(listName, itemID)
     end
   end
@@ -239,29 +222,27 @@ end
 -- Parsing Functions
 -- ============================================================================
 
--- Set OnUpdate script
-function parseFrame:OnUpdate(elapsed)
-  if Addon.Dejunker:IsDejunking() then return end
+-- OnUpdate(), called in Core:OnUpdate()
+function ListManager:OnUpdate(elapsed)
+  if Dejunker:IsDejunking() or Destroyer:IsDestroying() then return end
 
   -- Removals
-  for listName, list in pairs(ListManager.ToRemove) do
-    if next(list) then ListManager:CleanList(listName) end
+  for listName, list in pairs(self.ToRemove) do
+    if next(list) then self:CleanList(listName) end
   end
 
   -- Additions
-  for listName, list in pairs(ListManager.ToAdd) do
-    if next(list) then ListManager:ParseList(listName) end
+  for listName, list in pairs(self.ToAdd) do
+    if next(list) then self:ParseList(listName) end
   end
 end
-
-parseFrame:SetScript("OnUpdate", parseFrame.OnUpdate)
 
 do -- CleanList()
   -- Removes an item from the specified list by ID.
   local function removeItem(list, itemID, sv, coloredName)
     for k, v in pairs(list) do
       if (v.ItemID == itemID) then
-        remove(list, k) -- remove has to be used here for the table to update as expected
+        tremove(list, k) -- tremove has to be used here for the table to update as expected
         sv[itemID] = nil
         Core:Print(format(L.REMOVED_ITEM_FROM_LIST, v.ItemLink, coloredName))
         return
@@ -289,6 +270,9 @@ end
 
 do -- ParseList()
   local MAX_PARSE_ATTEMPTS = 100
+  local parseAttempts = {
+    -- [itemID] = count
+  }
   
   -- Creates and returns an item by item id.
   -- @param itemID - the item id of the item to create
@@ -364,17 +348,17 @@ do -- ParseList()
         end
 
         list[#list+1] = item
+        parseAttempts[itemID] = nil
         toAdd[itemID] = nil
       elseif not sv[itemID] then -- if the item couldn't be parsed, and it is not in the saved variables (avoids erasing sv data by accident)
-        local attempts = ((parseFrame.AttemptsToParse[itemID] or 0) + 1)
-
+        local attempts = (parseAttempts[itemID] or 0) + 1
         if (attempts >= MAX_PARSE_ATTEMPTS) then
-          attempts = 0
+          parseAttempts[itemID] = nil
           toAdd[itemID] = nil
           Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
+        else
+          parseAttempts[itemID] = attempts
         end
-
-        parseFrame.AttemptsToParse[itemID] = attempts
       end
     end
 
@@ -383,9 +367,7 @@ do -- ParseList()
       sort(list, item_sort)
 
       -- Start auto destroy if the Destroyables list was updated
-      if (listName == "Destroyables") then
-        Addon.Destroyer:StartAutoDestroy()
-      end
+      if (listName == "Destroyables") then Destroyer:StartAutoDestroy() end
     end
   end
 end

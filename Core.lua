@@ -7,6 +7,10 @@ local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
 
+-- Upvalues
+local format, max, print, select = format, max, print, select
+local GetNetStats = GetNetStats
+
 -- Modules
 local Core = Addon.Core
 
@@ -39,19 +43,20 @@ function Core:OnInitialize()
 end
 
 do -- OnUpdate()
-  local GetNetStats = GetNetStats
   local DELAY = 10 -- seconds
   local interval = DELAY
+  local home, world, latency
 
   function Core:OnUpdate(elapsed)
     interval = interval + elapsed
     if (interval >= DELAY) then -- Update latency
       interval = 0
-      local home, world = select(3, GetNetStats())
-      local latency = max(home, world) * 0.001 -- convert to seconds
+      home, world = select(3, GetNetStats())
+      latency = max(home, world) * 0.001 -- convert to seconds
       self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
     end
 
+    ListManager:OnUpdate(elapsed)
     if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
     if Destroyer.OnUpdate then Destroyer:OnUpdate(elapsed) end
     if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end

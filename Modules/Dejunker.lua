@@ -9,7 +9,8 @@ local DCL = Addon.Libs.DCL
 local DTL = Addon.Libs.DTL
 
 -- Upvalues
-local assert, remove = assert, table.remove
+local assert, floor, format, max, tremove =
+      assert, floor, format, max, table.remove
 
 local ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY =
       ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY
@@ -22,6 +23,8 @@ local LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC =
       LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC
 local LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE =
       LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE
+
+local UseContainerItem = UseContainerItem
 
 -- Modules
 local Dejunker = Addon.Dejunker
@@ -138,7 +141,7 @@ do
       interval = 0
 
       -- Get next item
-      local item = remove(itemsToSell)
+      local item = tremove(itemsToSell)
       -- Stop if there are no more items
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before selling

@@ -8,7 +8,7 @@ local DBL = Addon.Libs.DBL
 local DTL = Addon.Libs.DTL
 
 -- Upvalues
-local assert, remove = assert, table.remove
+local assert, format, tremove = assert, format, table.remove
 
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
@@ -120,7 +120,7 @@ do
       -- Don't run if the cursor has an item, spell, etc.
       if GetCursorInfo() then return end
       -- Get next item
-      local item = remove(itemsToDestroy)
+      local item = tremove(itemsToDestroy)
       -- Stop if there are no more items
       if not item then Destroyer:StopDestroyingItems() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before destroying

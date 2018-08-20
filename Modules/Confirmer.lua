@@ -7,7 +7,7 @@ local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 
 -- Upvalues
-local assert, tremove = assert, table.remove
+local assert, format, pairs, tremove = assert, format, pairs, table.remove
 local GetCoinTextureString = GetCoinTextureString
 
 -- Addon
