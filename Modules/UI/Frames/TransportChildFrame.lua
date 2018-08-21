@@ -112,7 +112,7 @@ end
 -- @param type - the type of transport operations to perform
 function TransportChildFrame:SetData(listName, type)
   assert(types[type])
-  assert(ListManager[listName])
+  assert(ListManager.Lists[listName])
   
   local titleText = self.TitleFontString
 

@@ -21,13 +21,11 @@ function ParentFrame:OnInitialize()
   frame:SetPadding(DFL:Padding())
   frame:SetSpacing(DFL:Padding())
 
+  -- Start auto destroy on hide in case Destroy options were changed
+  frame:SetScript("OnHide", Addon.Destroyer.StartAutoDestroy)
+
   self:SetTitle(Addon.Frames.TitleFrame)
   self:SetContent(Addon.Frames.DejunkChildFrame)
-end
-
-function ParentFrame:OnHide()
-  -- Start auto destroy in case Destroy options were changed
-  Addon.Destroyer:StartAutoDestroy()
 end
 
 function ParentFrame:OnUpdate(elapsed)

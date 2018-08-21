@@ -31,11 +31,11 @@ local LIST_FRAME_GENERAL_TOOLTIP = format(
 local function getListStrings(listName)
   local text, tooltip
   
-  if (listName == ListManager.Inclusions) then
+  if (listName == "Inclusions") then
     text, tooltip = L.INCLUSIONS_TEXT, L.INCLUSIONS_TOOLTIP
-  elseif (listName == ListManager.Exclusions) then
+  elseif (listName == "Exclusions") then
     text, tooltip = L.EXCLUSIONS_TEXT, L.EXCLUSIONS_TOOLTIP
-  elseif (listName == ListManager.Destroyables) then
+  elseif (listName == "Destroyables") then
     text, tooltip = L.DESTROYABLES_TEXT, L.DESTROYABLES_TOOLTIP
   else
     error(listName.." is not a valid list name.")

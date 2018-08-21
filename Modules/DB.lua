@@ -77,6 +77,7 @@ local defaults = {
 -- Converts the old version of the DB into the new one.
 local function reformat()
   local globalProfile = DEJUNK_ADDON_SV.Profiles.Global
+  local useGlobal = false -- for DejunkPerChar.UseGlobal
 
   -- If DejunkGlobal has old values, move them to the global profile
   if DejunkGlobal then
@@ -99,6 +100,8 @@ local function reformat()
         DB.Profile[k] = v -- Move the value to Profile
       end
     end
+    -- Cache UseGlobal
+    useGlobal = DejunkPerChar.UseGlobal
     -- Delete table
     DejunkPerChar = nil
   end
@@ -114,6 +117,9 @@ local function reformat()
     Consts.BELOW_AVERAGE_ILVL_MIN,
     Consts.BELOW_AVERAGE_ILVL_MAX
   )
+
+  -- Set profile to Global if DejunkerPerChar.UseGlobal was true
+  if useGlobal then DB:SetProfile("Global") end
 end
 
 -- Initializes the database.

@@ -7,6 +7,10 @@ local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
 
+-- Upvalues
+local format, max, print, select = format, max, print, select
+local GetNetStats = GetNetStats
+
 -- Modules
 local Core = Addon.Core
 
@@ -15,37 +19,18 @@ local DB = Addon.DB
 local Confirmer = Addon.Confirmer
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
+local Repairer = Addon.Repairer
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
 local ParentFrame = Addon.Frames.ParentFrame
-local TitleFrame = Addon.Frames.TitleFrame
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
-local TransportChildFrame = Addon.Frames.TransportChildFrame
 
 -- ============================================================================
---                                 Core Frame
--- ============================================================================
-
-do
-  local coreFrame = CreateFrame("Frame", AddonName.."CoreFrame")
-
-  function coreFrame:OnEvent(event, ...)
-    if (event == "PLAYER_LOGIN") then
-      self:UnregisterEvent(event)
-      Core:Initialize()
-    end
-  end
-
-  coreFrame:SetScript("OnEvent", coreFrame.OnEvent)
-  coreFrame:RegisterEvent("PLAYER_LOGIN")
-end
-
--- ============================================================================
---                              General Functions
+-- DethsAddonLib Functions
 -- ============================================================================
 
 -- Initializes modules.
-function Core:Initialize()
+function Core:OnInitialize()
   DB:Initialize()
   Colors:Initialize()
   ListManager:Initialize()
@@ -54,12 +39,40 @@ function Core:Initialize()
   Addon.MinimapIcon:Initialize()
 
   -- Setup slash command
-  LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, function()
-    self:ToggleGUI()
-  end)
-
-  self.Initialize = nil
+  LibStub:GetLibrary("DethsCmdLib-1.0"):Create(AddonName, self.ToggleGUI)
 end
+
+do -- OnUpdate()
+  local DELAY = 10 -- seconds
+  local interval = DELAY
+  local home, world, latency
+
+  function Core:OnUpdate(elapsed)
+    interval = interval + elapsed
+    if (interval >= DELAY) then -- Update latency
+      interval = 0
+      home, world = select(3, GetNetStats())
+      latency = max(home, world) * 0.001 -- convert to seconds
+      self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
+    end
+
+    ListManager:OnUpdate(elapsed)
+    if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
+    if Destroyer.OnUpdate then Destroyer:OnUpdate(elapsed) end
+    if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
+    Confirmer:OnUpdate(elapsed)
+  end
+end
+
+function Core:OnEvent(event, ...)
+  Dejunker:OnEvent(event, ...)
+  Repairer:OnEvent(event, ...)
+end
+Core:RegisterEvent("UI_ERROR_MESSAGE")
+
+-- ============================================================================
+-- General Functions
+-- ============================================================================
 
 -- Prints a formatted message ("[Dejunk] msg").
 -- @param msg - the message to print
@@ -75,15 +88,15 @@ function Core:PrintVerbose(msg)
   if DB.Profile.VerboseMode then Core:Print(msg) end
 end
 
+--[[
 -- Prints a debug message ("[Dejunk Debug] title: msg").
 -- @param msg - the message to print
 function Core:Debug(title, msg)
-  if not self.IsDebugging then return end
   local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
   title = DCL:ColorString(title, Colors.Green)
   print(format("%s %s: %s", debug, title, msg))
 end
--- Core.IsDebugging = true
+--]] Core.Debug = nop
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
@@ -97,11 +110,11 @@ function Core:CanDejunk()
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListManager:IsParsing(ListManager.Inclusions) or
-     ListManager:IsParsing(ListManager.Exclusions) then
+  if ListManager:IsParsing("Inclusions") or
+     ListManager:IsParsing("Exclusions") then
     return false, format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
-      Tools:GetColoredListName(ListManager.Inclusions),
-      Tools:GetColoredListName(ListManager.Exclusions))
+      Tools:GetColoredListName("Inclusions"),
+      Tools:GetColoredListName("Exclusions"))
   end
 
   return true
@@ -119,9 +132,9 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
-  if ListManager:IsParsing(ListManager.Destroyables) then
+  if ListManager:IsParsing("Destroyables") then
     return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING,
-      Tools:GetColoredListName(ListManager.Destroyables))
+      Tools:GetColoredListName("Destroyables"))
   end
 
   return true
@@ -135,7 +148,7 @@ function Core:IsBusy()
 end
 
 -- ============================================================================
---                                 UI Functions
+-- UI Functions
 -- ============================================================================
 
 -- Toggles Dejunk's GUI.
@@ -171,7 +184,7 @@ function Core:ToggleCharacterSpecificSettings()
 end
 
 -- ============================================================================
---                                Tooltip Hook
+-- Tooltip Hook
 -- ============================================================================
 
 do

@@ -1,4 +1,4 @@
--- Dejunk_Consts: provides Dejunk modules easy access to constant values.
+-- Consts: provides Dejunk modules easy access to constant values.
 
 local AddonName, Addon = ...
 

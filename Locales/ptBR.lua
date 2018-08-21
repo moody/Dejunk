@@ -1,5 +1,5 @@
 -- Dejunk: ptBR (Brazilian Portuguese) localization file.
--- Translation by alexandrer0x (https://wow.curseforge.com/members/alexandrer0x).
+-- Translators: alexandrer0x
 
 local AddonName, AddonTable = ...
 local L = LibStub('AceLocale-3.0'):NewLocale(AddonName, 'ptBR')

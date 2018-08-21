@@ -7,7 +7,7 @@ local L = Addon.Libs.L
 local DBL = Addon.Libs.DBL
 
 -- Upvalues
-local assert, tremove = assert, table.remove
+local assert, format, pairs, tremove = assert, format, pairs, table.remove
 local GetCoinTextureString = GetCoinTextureString
 
 -- Addon
@@ -16,7 +16,7 @@ local Core = Addon.Core
 local DB = Addon.DB
 
 -- Variables
-local MAX_ATTEMPTS = 20
+local MAX_ATTEMPTS = 50
 local confirmAttempts = {
   -- [item] = count
 }
@@ -81,23 +81,21 @@ do -- Destroyer module data
 end
 
 -- ============================================================================
--- Confirmer Frame
+-- Confirmer Functions
 -- ============================================================================
 
-do
-  local frame = CreateFrame("Frame", AddonName.."ConfirmerFrame")
-  local DELAY = 0.1 -- 0.1sec
+do -- OnUpdate(), called in Core:OnUpdate()
   local interval = 0
 
-  function frame:OnUpdate(elapsed)
+  function Confirmer:OnUpdate(elapsed)
     interval = interval + elapsed
-    if (interval >= DELAY) then
+    if (interval >= Core.MinDelay) then
       interval = 0
 
       -- Confirm module items
       for _, module in pairs(Modules) do
         if (#module.Items > 0) then
-          Confirmer:ConfirmNextItem(module)
+          for i=1, #module.Items do Confirmer:ConfirmNextItem(module) end
         elseif module.finalMessageQueued then
           module:PrintFinalMessage()
           module.finalMessageQueued = nil
@@ -105,13 +103,7 @@ do
       end
     end
   end
-
-  frame:SetScript("OnUpdate", frame.OnUpdate)
 end
-
--- ============================================================================
--- Confirmer Functions
--- ============================================================================
 
 function Confirmer:IsConfirming(moduleName)
   if moduleName then
@@ -155,6 +147,7 @@ function Confirmer:ConfirmNextItem(module)
       Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
       DBL:Release(item)
     else -- Try again later
+      -- Core:Debug("Confirmer", format("[%s, %s, %s] = %s", item.Bag, item.Slot, item.ItemID, count))
       confirmAttempts[item] = count
       module.Items[#module.Items+1] = item
     end
@@ -169,6 +162,7 @@ function Confirmer:ConfirmNextItem(module)
     Core:PrintVerbose(format(module.CONFIRM_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
   end
 
+  confirmAttempts[item] = nil
   module:OnConfirm(item)
   DBL:Release(item)
 end

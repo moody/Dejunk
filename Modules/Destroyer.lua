@@ -1,4 +1,4 @@
--- Dejunk_Destroyer: handles the process of destroying items in the player's bags.
+-- Destroyer: handles the process of destroying items in the player's bags.
 
 local AddonName, Addon = ...
 
@@ -8,7 +8,7 @@ local DBL = Addon.Libs.DBL
 local DTL = Addon.Libs.DTL
 
 -- Upvalues
-local assert, remove = assert, table.remove
+local assert, format, tremove = assert, format, table.remove
 
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
@@ -32,13 +32,6 @@ local states = {
 local currentState = states.None
 
 local itemsToDestroy = {}
-
--- ============================================================================
--- Destroyer Frames
--- ============================================================================
-
--- destroyerFrame is used for destroying items
-local destroyerFrame = CreateFrame("Frame", AddonName.."DejunkDestroyerFrame")
 
 -- ============================================================================
 -- Destroying Functions
@@ -69,15 +62,16 @@ do
 
     Confirmer:Start("Destroyer")
     currentState = states.Destroying
+    self.incompleteTooltips = false
 
     -- Update items if manually started
     if not auto then DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy) end
     local upToDate = DBL:IsUpToDate()
 
-    -- Notify if tooltips could not be parsed
+    -- Notify if tooltips could not be scanned
     if self.incompleteTooltips then
       self.incompleteTooltips = false
-      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+      Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
     end
 
     -- Stop if no items
@@ -98,9 +92,7 @@ do
   -- Cancels the Destroying process.
   function Destroyer:StopDestroying()
     assert(currentState ~= states.None)
-
-    destroyerFrame:SetScript("OnUpdate", nil)
-
+    self.OnUpdate = nil
     Confirmer:Stop("Destroyer")
     currentState = states.None
   end
@@ -117,19 +109,18 @@ end
 -- ============================================================================
 
 do
-  local DESTROY_DELAY = 0.25
-  local destroyInterval = 0
+  local interval = 0
 
   -- Destroying update function
   local function destroyItems_OnUpdate(self, elapsed)
-    destroyInterval = (destroyInterval + elapsed)
-    if (destroyInterval >= DESTROY_DELAY) then
-      destroyInterval = 0
+    interval = interval + elapsed
+    if (interval >= Core.MinDelay) then
+      interval = 0
 
       -- Don't run if the cursor has an item, spell, etc.
       if GetCursorInfo() then return end
       -- Get next item
-      local item = remove(itemsToDestroy)
+      local item = tremove(itemsToDestroy)
       -- Stop if there are no more items
       if not item then Destroyer:StopDestroyingItems() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before destroying
@@ -151,14 +142,14 @@ do
   -- Starts the destroying items process.
   function Destroyer:StartDestroyingItems()
     assert(currentState == states.Destroying)
-    destroyInterval = 0
-    destroyerFrame:SetScript("OnUpdate", destroyItems_OnUpdate)
+    interval = 0
+    self.OnUpdate = destroyItems_OnUpdate
   end
 
   -- Cancels the destroying items process.
   function Destroyer:StopDestroyingItems()
     assert(currentState == states.Destroying)
-    destroyerFrame:SetScript("OnUpdate", nil)
+    self.OnUpdate = nil
     self:StopDestroying()
   end
 end
@@ -167,35 +158,31 @@ end
 -- Filter Functions
 -- ============================================================================
 
-do -- Filter
-  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
+-- Returns true if the specified item is destroyable.
+-- @param item - the item to run through the filter
+Destroyer.Filter = function(item)
+  if -- Ignore item if it is locked, refundable, or not destroyable
+    item:IsLocked() or
+    Tools:ItemCanBeRefunded(item) or
+    not Tools:ItemCanBeDestroyed(item)
+  then
+    return false
+  end
 
-  -- Returns true if the specified item is destroyable.
-  -- @param item - the item to run through the filter
-  Destroyer.Filter = function(item)
-    if -- Ignore item if it is locked, refundable, or not destroyable
-      item:IsLocked() or
-      Tools:ItemCanBeRefunded(item) or
-      not Tools:ItemCanBeDestroyed(item)
+  -- If tooltip not available, ignore item if an option is enabled which
+  -- relies on tooltip data
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if
+      DB.Profile.DestroyPetsAlreadyCollected or
+      DB.Profile.DestroyToysAlreadyCollected
     then
+      Destroyer.incompleteTooltips = true
       return false
     end
-
-    -- If tooltip not available, ignore item if an option is enabled which
-    -- relies on tooltip data
-    if DTL:ScanBagItemFindLine(item.Bag, item.Slot, false, RETRIEVING_ITEM_INFO) then
-      if
-        DB.Profile.DestroyPetsAlreadyCollected or
-        DB.Profile.DestroyToysAlreadyCollected
-      then
-        Destroyer.incompleteTooltips = true
-        return false
-      end
-    end
-
-    local isDestroyableItem = Destroyer:IsDestroyableItem(item)
-    return isDestroyableItem
   end
+
+  local isDestroyableItem = Destroyer:IsDestroyableItem(item)
+  return isDestroyableItem
 end
 
 -- Returns a boolean value and a reason string based on whether or not Dejunk
@@ -214,7 +201,7 @@ function Destroyer:IsDestroyableItem(item)
   ]]
 
   -- 1
-  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end
 
@@ -225,22 +212,35 @@ function Destroyer:IsDestroyableItem(item)
   end
 
   -- 3
-  if DB.Profile.DestroyInclusions and ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+  if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
   -- 4
-  if ListManager:IsOnList(ListManager.Destroyables, item.ItemID) then
+  if ListManager:IsOnList("Destroyables", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end
 
   -- 5
-  if self:IsDestroyPetsAlreadyCollected(item) then
-    return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT end
-  if self:IsDestroyToysAlreadyCollectedItem(item) then
-    return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT end
+
+  -- These options require tooltip scanning
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if -- Only return false if one of these options is enabled
+      DB.Profile.DestroyPetsAlreadyCollected or
+      DB.Profile.DestroyToysAlreadyCollected
+    then
+      Destroyer.incompleteTooltips = true
+      return false, "..."
+    end
+  else -- Tooltip can be scanned
+    if self:IsDestroyPetsAlreadyCollected(item) then
+      return true, L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT
+    elseif self:IsDestroyToysAlreadyCollectedItem(item) then
+      return true, L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT
+    end
+  end
 
   -- Default
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
@@ -275,7 +275,7 @@ do -- DestroyPetsAlreadyCollected
   function Destroyer:IsDestroyPetsAlreadyCollected(item)
     if not DB.Profile.DestroyPetsAlreadyCollected or not item.NoValue then return false end
     if not (item.SubClass == Consts.COMPANION_SUBCLASS) then return false end
-    return item:IsSoulbound() and (not not DTL:ScanBagItemMatch(item.Bag, item.Slot, false, ITEM_PET_KNOWN_CAPTURE))
+    return DTL:IsSoulbound() and (not not DTL:Match(false, ITEM_PET_KNOWN_CAPTURE))
   end
 end
 
@@ -284,6 +284,6 @@ do -- DestroyToysAlreadyCollected
   
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
-    return PlayerHasToy(item.ItemID) and item:IsSoulbound()
+    return PlayerHasToy(item.ItemID) and DTL:IsSoulbound()
   end
 end

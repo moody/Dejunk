@@ -1,4 +1,4 @@
--- Dejunk_Dejunker: handles the process of selling junk items to merchants.
+-- Dejunker: handles the process of selling junk items to merchants.
 
 local AddonName, Addon = ...
 
@@ -9,7 +9,22 @@ local DCL = Addon.Libs.DCL
 local DTL = Addon.Libs.DTL
 
 -- Upvalues
-local assert, remove = assert, table.remove
+local assert, floor, format, max, tremove =
+      assert, floor, format, max, table.remove
+
+local ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY =
+      ERR_INTERNAL_BAG_ERROR, ERR_VENDOR_DOESNT_BUY
+
+local LE_ITEM_QUALITY_POOR, LE_ITEM_QUALITY_COMMON, LE_ITEM_QUALITY_UNCOMMON =
+      LE_ITEM_QUALITY_POOR, LE_ITEM_QUALITY_COMMON, LE_ITEM_QUALITY_UNCOMMON
+local LE_ITEM_QUALITY_RARE, LE_ITEM_QUALITY_EPIC =
+      LE_ITEM_QUALITY_RARE, LE_ITEM_QUALITY_EPIC
+local LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC =
+      LE_ITEM_ARMOR_GENERIC, LE_ITEM_ARMOR_COSMETIC
+local LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE =
+      LE_ITEM_WEAPON_GENERIC, LE_ITEM_WEAPON_FISHINGPOLE
+
+local UseContainerItem = UseContainerItem
 
 -- Modules
 local Dejunker = Addon.Dejunker
@@ -31,34 +46,21 @@ local currentState = states.None
 
 local itemsToSell = {}
 
--- ============================================================================
--- Dejunker Frame
--- ============================================================================
+-- Event handler.
+function Dejunker:OnEvent(event, ...)
+  if (event == "UI_ERROR_MESSAGE") then
+    local _, msg = ...
 
-local dejunkerFrame = CreateFrame("Frame", AddonName.."DejunkerFrame")
-
-do -- OnEvent
-  local ERR_INTERNAL_BAG_ERROR = ERR_INTERNAL_BAG_ERROR
-  local ERR_VENDOR_DOESNT_BUY = ERR_VENDOR_DOESNT_BUY
-
-  function dejunkerFrame:OnEvent(event, ...)
-    if (event == "UI_ERROR_MESSAGE") then
-      local _, msg = ...
-
-      if Dejunker:IsDejunking() then
-        if (msg == ERR_INTERNAL_BAG_ERROR) then
-          UIErrorsFrame:Clear()
-        elseif (msg == ERR_VENDOR_DOESNT_BUY) then
-          UIErrorsFrame:Clear()
-          Core:Print(L.VENDOR_DOESNT_BUY)
-          Dejunker:StopDejunking()
-        end
+    if self:IsDejunking() then
+      if (msg == ERR_INTERNAL_BAG_ERROR) then
+        UIErrorsFrame:Clear()
+      elseif (msg == ERR_VENDOR_DOESNT_BUY) then
+        UIErrorsFrame:Clear()
+        Core:Print(L.VENDOR_DOESNT_BUY)
+        self:StopDejunking()
       end
     end
   end
-
-  dejunkerFrame:SetScript("OnEvent", dejunkerFrame.OnEvent)
-  dejunkerFrame:RegisterEvent("UI_ERROR_MESSAGE")
 end
 
 -- ============================================================================
@@ -77,16 +79,17 @@ do
 
     Confirmer:Start("Dejunker")
     currentState = states.Dejunking
+    self.incompleteTooltips = false
 
     -- Get junk items
     local maxItems = DB.Profile.SafeMode and Consts.SAFE_MODE_MAX
     DBL:GetItemsByFilter(Dejunker.Filter, itemsToSell, maxItems)
     local upToDate = DBL:IsUpToDate()
 
-    -- Notify if tooltips could not be parsed
+    -- Notify if tooltips could not be scanned
     if self.incompleteTooltips then
       self.incompleteTooltips = false
-      if not auto then Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS) end
+      Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
     end
 
     -- Stop if no items
@@ -112,9 +115,7 @@ do
   -- Cancels the Dejunking process.
   function Dejunker:StopDejunking()
     assert(currentState ~= states.None)
-
-    dejunkerFrame:SetScript("OnUpdate", nil)
-
+    self.OnUpdate = nil
     Confirmer:Stop("Dejunker")
     currentState = states.None
   end
@@ -131,19 +132,16 @@ end
 -- ============================================================================
 
 do
-  -- NOTE: If a delay is not used, it can sometimes cause a disconnect
-  -- I may turn this into an gui option at some point
-  local SELL_DELAY = 0.25
-  local sellInterval = 0
+  local interval = 0
 
   -- Selling update function
   local function sellItems_OnUpdate(self, elapsed)
-    sellInterval = (sellInterval + elapsed)
-    if (sellInterval >= SELL_DELAY) then
-      sellInterval = 0
+    interval = interval + elapsed
+    if (interval >= Core.MinDelay) then
+      interval = 0
 
       -- Get next item
-      local item = remove(itemsToSell)
+      local item = tremove(itemsToSell)
       -- Stop if there are no more items
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed before selling
@@ -162,17 +160,15 @@ do
   function Dejunker:StartSelling()
     assert(currentState == states.Dejunking)
     assert(#itemsToSell > 0)
-
     currentState = states.Selling
-    sellInterval = 0
-    
-    dejunkerFrame:SetScript("OnUpdate", sellItems_OnUpdate)
+    interval = 0
+    self.OnUpdate = sellItems_OnUpdate
   end
 
   -- Cancels the selling process and stops dejunking.
   function Dejunker:StopSelling()
     assert(currentState == states.Selling)
-    dejunkerFrame:SetScript("OnUpdate", nil)
+    self.OnUpdate = nil
     self:StopDejunking()
   end
 
@@ -187,38 +183,21 @@ end
 -- Filter Functions
 -- ============================================================================
 
-do
-  local RETRIEVING_ITEM_INFO = RETRIEVING_ITEM_INFO
-  
-  -- Returns true if the specified item is dejunkable.
-  -- @param item - the item to run through the filter
-  Dejunker.Filter = function(item)
-    if -- Ignore item if it is locked, refundable, or not sellable
-      item:IsLocked() or
-      Tools:ItemCanBeRefunded(item) or
-      item.NoValue or
-      not Tools:ItemCanBeSold(item)
-    then
-      return false
-    end
-
-    -- If tooltip not available, ignore item if an option is enabled which
-    -- relies on tooltip data
-    if DTL:ScanBagItemFindLine(item.Bag, item.Slot, false, RETRIEVING_ITEM_INFO) then
-      if
-        DB.Profile.IgnoreBindsWhenEquipped or
-        DB.Profile.IgnoreSoulbound or
-        DB.Profile.IgnoreEquipmentSets or
-        DB.Profile.IgnoreTradeable
-      then
-        Dejunker.incompleteTooltips = true
-        return false
-      end
-    end
-
-    local isJunkItem = Dejunker:IsJunkItem(item)
-    return isJunkItem
+-- Returns true if the specified item is dejunkable.
+-- @param item - the item to run through the filter
+Dejunker.Filter = function(item)
+  if -- Ignore item if it is locked, refundable, or not sellable
+    item:IsLocked() or
+    Tools:ItemCanBeRefunded(item) or
+    item.NoValue or
+    not Tools:ItemCanBeSold(item)
+  then
+    -- Core:Debug("Dejunker", "Filtered out "..item.ItemLink)
+    return false
   end
+
+  local isJunkItem = Dejunker:IsJunkItem(item)
+  return isJunkItem
 end
 
 -- Returns a boolean value and a reason string based on whether or not Dejunk
@@ -233,12 +212,12 @@ function Dejunker:IsJunkItem(item)
   ]]
 
   -- 1
-  if ListManager:IsOnList(ListManager.Exclusions, item.ItemID) then
+  if ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT)
   end
 
   -- 2
-  if ListManager:IsOnList(ListManager.Inclusions, item.ItemID) then
+  if ListManager:IsOnList("Inclusions", item.ItemID) then
     return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT)
   end
   
@@ -263,14 +242,29 @@ function Dejunker:IsJunkItem(item)
   -- Ignore by type
   if self:IsIgnoredCosmeticItem(item) then
     return false, L.REASON_IGNORE_COSMETIC_TEXT end
-  if self:IsIgnoredBindsWhenEquippedItem(item) then
-    return false, L.REASON_IGNORE_BOE_TEXT end
-  if self:IsIgnoredSoulboundItem(item) then
-    return false, L.REASON_IGNORE_SOULBOUND_TEXT end
-  if self:IsIgnoredEquipmentSetsItem(item) then
-    return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT end
-  if self:IsIgnoredTradeableItem(item) then
-    return false, L.REASON_IGNORE_TRADEABLE_TEXT end
+  
+  -- These Ignore options require tooltip scanning
+  if not DTL:ScanBagSlot(item.Bag, item.Slot) then
+    if -- Only return false if one of these options is enabled
+      DB.Profile.IgnoreBindsWhenEquipped or
+      DB.Profile.IgnoreSoulbound or
+      DB.Profile.IgnoreEquipmentSets or
+      DB.Profile.IgnoreTradeable
+    then
+      self.incompleteTooltips = true
+      return false, "..."
+    end
+  else -- Tooltip can be scanned
+    if self:IsIgnoredBindsWhenEquippedItem(item) then
+      return false, L.REASON_IGNORE_BOE_TEXT
+    elseif self:IsIgnoredSoulboundItem(item) then
+      return false, L.REASON_IGNORE_SOULBOUND_TEXT
+    elseif self:IsIgnoredEquipmentSetsItem(item) then
+      return false, L.REASON_IGNORE_EQUIPMENT_SETS_TEXT
+    elseif self:IsIgnoredTradeableItem(item) then
+      return false, L.REASON_IGNORE_TRADEABLE_TEXT
+    end
+  end
 
   -- Sell by type
   if self:IsUnsuitableItem(item) then
@@ -431,11 +425,15 @@ do -- Ignore options
   end
 
   function Dejunker:IsIgnoredBindsWhenEquippedItem(item)
-    return DB.Profile.IgnoreBindsWhenEquipped and item:IsBindsWhenEquipped()
+    return DB.Profile.IgnoreBindsWhenEquipped and
+    (item.Quality ~= LE_ITEM_QUALITY_POOR) and
+    DTL:IsBindsWhenEquipped()
   end
 
   function Dejunker:IsIgnoredSoulboundItem(item)
-    return DB.Profile.IgnoreSoulbound and (item.Quality ~= LE_ITEM_QUALITY_POOR) and item:IsSoulbound()
+    return DB.Profile.IgnoreSoulbound and
+    (item.Quality ~= LE_ITEM_QUALITY_POOR) and
+    DTL:IsSoulbound()
   end
 
   do -- IsIgnoredEquipmentSetsItem
@@ -443,11 +441,11 @@ do -- Ignore options
 
     function Dejunker:IsIgnoredEquipmentSetsItem(item)
       return DB.Profile.IgnoreEquipmentSets and
-      (not not DTL:ScanBagItemMatch(item.Bag, item.Slot, false, EQUIPMENT_SETS_CAPTURE))
+      (not not DTL:Match(false, EQUIPMENT_SETS_CAPTURE))
     end
   end
 
   function Dejunker:IsIgnoredTradeableItem(item)
-    return DB.Profile.IgnoreTradeable and item:IsTradeable()
+    return DB.Profile.IgnoreTradeable and DTL:IsTradeable()
   end
 end

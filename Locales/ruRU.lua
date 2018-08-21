@@ -1,5 +1,5 @@
 -- Dejunk: ruRU (Russian) localization file.
--- Translation by Hubbotu (https://wow.curseforge.com/members/Hubbotu).
+-- Translators: Hubbotu
 
 local AddonName, AddonTable = ...
 local L = LibStub('AceLocale-3.0'):NewLocale(AddonName, 'ruRU')
