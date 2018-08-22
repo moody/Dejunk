@@ -11,7 +11,7 @@ local assert, pairs, next = assert, pairs, next
 local tremove, sort, concat = table.remove, table.sort, table.concat
 local format, select, tonumber, tostring = format, select, tonumber, tostring
 
-local GetItemInfo = GetItemInfo
+local GetItemInfo, GetItemInfoInstant = GetItemInfo, GetItemInfoInstant
 
 -- Modules
 local ListManager = Addon.ListManager
@@ -52,14 +52,14 @@ end
 -- Updates the ListManager's references to lists in the saved variables.
 function ListManager:Update()
   -- Clear item lists
-  for k, v in pairs(self.Lists) do
-    for i in pairs(v) do v[i] = nil end
+  for _, list in pairs(self.Lists) do
+    for k in pairs(list) do list[k] = nil end
   end
 
   -- Load lists' items
-  for k, v in pairs(self.ToAdd) do
-    for itemID in pairs(self:GetListSV(k)) do
-      v[itemID] = true
+  for listName, toAdd in pairs(self.ToAdd) do
+    for itemID in pairs(self:GetListSV(listName)) do
+      toAdd[itemID] = true
     end
   end
 end
@@ -222,18 +222,25 @@ end
 -- Parsing Functions
 -- ============================================================================
 
--- OnUpdate(), called in Core:OnUpdate()
-function ListManager:OnUpdate(elapsed)
-  if Dejunker:IsDejunking() or Destroyer:IsDestroying() then return end
+do -- OnUpdate(), called in Core:OnUpdate()
+  local interval = 0
 
-  -- Removals
-  for listName, list in pairs(self.ToRemove) do
-    if next(list) then self:CleanList(listName) end
-  end
-
-  -- Additions
-  for listName, list in pairs(self.ToAdd) do
-    if next(list) then self:ParseList(listName) end
+  function ListManager:OnUpdate(elapsed)
+    if Dejunker:IsDejunking() or Destroyer:IsDestroying() then return end
+    
+    -- Removals
+    for listName, list in pairs(self.ToRemove) do
+      if next(list) then self:CleanList(listName) end
+    end
+    
+    -- Additions
+    interval = interval + elapsed
+    if (interval >= Core.MinDelay) then
+      interval = 0
+      for listName, list in pairs(self.ToAdd) do
+        if next(list) then self:ParseList(listName) end
+      end
+    end
   end
 end
 
@@ -269,7 +276,7 @@ do -- CleanList()
 end
 
 do -- ParseList()
-  local MAX_PARSE_ATTEMPTS = 100
+  local MAX_PARSE_ATTEMPTS = 50
   local parseAttempts = {
     -- [itemID] = count
   }
@@ -293,23 +300,17 @@ do -- ParseList()
   end
 
   -- Returns true if the item can be sold, and the target list is Inclusions or Exclusions.
-  local function canBeSold(listName, item, sv, toAdd)
-    if not (listName == "Inclusions" or listName == "Exclusions") then  return false end
+  local function canBeSold(listName, item)
+    if not (listName == "Inclusions" or listName == "Exclusions") then return false end
     if Tools:ItemCanBeSold(item) then return true end
-    -- Item cannot be sold
-    sv[item.ItemID] = nil -- Remove from sv
-    toAdd[item.ItemID] = nil -- Remove from parsing
     Core:Print(format(L.ITEM_CANNOT_BE_SOLD, item.ItemLink))
     return false
   end
 
   -- Returns true if the item can be destroyed, and the target list is Destroyables.
-  local function canBeDestroyed(listName, item, sv, toAdd)
+  local function canBeDestroyed(listName, item)
     if not (listName == "Destroyables") then return false end
     if Tools:ItemCanBeDestroyed(item) then return true end
-    -- Item cannot be destroyed
-    sv[item.ItemID] = nil -- Remove from sv
-    toAdd[item.ItemID] = nil -- Remove from parsing
     Core:Print(format(L.ITEM_CANNOT_BE_DESTROYED, item.ItemLink))
     return false
   end
@@ -333,31 +334,42 @@ do -- ParseList()
 
     -- Parse items
     for itemID in pairs(toAdd) do
-      local item = getItemByID(itemID)
-
-      -- If item is not nil, test if the item can be destroyed or sold
-      if item and (
-        canBeSold(listName, item, sv, toAdd) or
-        canBeDestroyed(listName, item, sv, toAdd)
-      )
-      then
-        -- Print added msg if the item is NOT being parsed from sv (see ListManager:Update())
-        if not sv[itemID] then
-          sv[itemID] = true
-          Core:Print(format(L.ADDED_ITEM_TO_LIST, item.ItemLink, coloredName))
-        end
-
-        list[#list+1] = item
-        parseAttempts[itemID] = nil
-        toAdd[itemID] = nil
-      elseif not sv[itemID] then -- if the item couldn't be parsed, and it is not in the saved variables (avoids erasing sv data by accident)
-        local attempts = (parseAttempts[itemID] or 0) + 1
-        if (attempts >= MAX_PARSE_ATTEMPTS) then
+      -- Instantly fail if item doesn't exist
+      if not GetItemInfoInstant(itemID) then
+        sv[itemID] = nil -- remove from sv
+        toAdd[itemID] = nil -- remove from parsing
+        Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
+      else
+        -- Attempt to parse the item
+        local item = getItemByID(itemID)
+        if item then
+          -- Add item if it can be sold or destroyed
+          if (canBeSold(listName, item) or canBeDestroyed(listName, item)) then
+            -- Add to sv and print message if not loading from sv
+            if not sv[itemID] then
+              sv[itemID] = true -- add to sv
+              Core:Print(format(L.ADDED_ITEM_TO_LIST, item.ItemLink, coloredName))
+            end
+            -- Add item table to list
+            list[#list+1] = item
+          else
+            -- Remove from sv since item cannot be added
+            sv[itemID] = nil
+          end
+          -- Remove from parsing
           parseAttempts[itemID] = nil
           toAdd[itemID] = nil
-          Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
         else
-          parseAttempts[itemID] = attempts
+          -- Retry parsing until max attempts reached
+          local attempts = (parseAttempts[itemID] or 0) + 1
+          if (attempts >= MAX_PARSE_ATTEMPTS) then
+            parseAttempts[itemID] = nil
+            sv[itemID] = nil -- remove from sv
+            toAdd[itemID] = nil -- remove from parsing
+            Core:Print(format(L.FAILED_TO_PARSE_ITEM_ID, DCL:ColorString(itemID, DCL.CSS.Grey)))
+          else
+            parseAttempts[itemID] = attempts
+          end
         end
       end
     end
