@@ -2,55 +2,58 @@ package-as: Dejunk
 enable-nolib-creation: no
 
 externals:
-  - Libs/DethsBagLib-1.0:
-    url: git://github.com/moody/DethsBagLib-1.0.git
-  - Libs/DethsCmdLib-1.0:
-    url: git://github.com/moody/DethsCmdLib-1.0.git
-  - Libs/DethsColorLib-1.0:
-    url: git://github.com/moody/DethsColorLib-1.0.git
-  - Libs/DethsFrameLib-1.0:
-    url: git://github.com/moody/DethsFrameLib-1.0.git
-  - Libs/DethsTooltipLib-1.0:
-    url: git://github.com/moody/DethsTooltipLib-1.0.git
+  - Libs/DethsLibLoader:
+    url: git://github.com/moody/DethsLibLoader.git
+  - Libs/DethsAddonLib:
+    url: git://github.com/moody/DethsAddonLib.git
+  - Libs/DethsBagLib:
+    url: git://github.com/moody/DethsBagLib.git
+  - Libs/DethsCmdLib:
+    url: git://github.com/moody/DethsCmdLib.git
+  - Libs/DethsColorLib:
+    url: git://github.com/moody/DethsColorLib.git
+  - Libs/DethsDBLib:
+    url: git://github.com/moody/DethsDBLib.git
+  - Libs/DethsFrameLib:
+    url: git://github.com/moody/DethsFrameLib.git
+  - Libs/DethsTooltipLib:
+    url: git://github.com/moody/DethsTooltipLib.git
 
 ignore:
   - Dejunk.png
   - KeyBindings.png
   - CHANGELOG.md
   - README.md
-  - Libs/DethsAddonLib-1.0/DethsAddonLib-1.0.toc
-  - Libs/DethsAddonLib-1.0/LibStub.lua
-  - Libs/DethsAddonLib-1.0/LICENSE.md
-  - Libs/DethsAddonLib-1.0/README.md
-  - Libs/DethsAddonLib-1.0/Tests.lua
-  - Libs/DethsBagLib-1.0/DethsBagLib-1.0.toc
-  - Libs/DethsBagLib-1.0/LibStub.lua
-  - Libs/DethsBagLib-1.0/LICENSE.md
-  - Libs/DethsBagLib-1.0/README.md
-  - Libs/DethsBagLib-1.0/Tests.lua
-  - Libs/DethsCmdLib-1.0/DethsCmdLib-1.0.toc
-  - Libs/DethsCmdLib-1.0/LibStub.lua
-  - Libs/DethsCmdLib-1.0/LICENSE.md
-  - Libs/DethsCmdLib-1.0/README.md
-  - Libs/DethsColorLib-1.0/DethsColorLib-1.0.toc
-  - Libs/DethsColorLib-1.0/LibStub.lua
-  - Libs/DethsColorLib-1.0/LICENSE.md
-  - Libs/DethsColorLib-1.0/README.md
-  - Libs/DethsColorLib-1.0/Tests.lua
-  - Libs/DethsDBLib-1.0/DethsDBLib-1.0.toc
-  - Libs/DethsDBLib-1.0/LibStub.lua
-  - Libs/DethsDBLib-1.0/LICENSE.md
-  - Libs/DethsDBLib-1.0/README.md
-  - Libs/DethsDBLib-1.0/Tests.lua
-  - Libs/DethsFrameLib-1.0/DethsFrameLib-1.0.toc
-  - Libs/DethsFrameLib-1.0/LibStub.lua
-  - Libs/DethsFrameLib-1.0/LICENSE.md
-  - Libs/DethsFrameLib-1.0/Tests
-  - Libs/DethsTooltipLib-1.0/DethsTooltipLib-1.0.toc
-  - Libs/DethsTooltipLib-1.0/LibStub.lua
-  - Libs/DethsTooltipLib-1.0/LICENSE.md
-  - Libs/DethsTooltipLib-1.0/README.md
-  - Libs/DethsTooltipLib-1.0/Tests.lua
+  - Libs/DethsLibLoader/DethsLibLoader.toc
+  - Libs/DethsLibLoader/LICENSE.md
+  - Libs/DethsLibLoader/README.md
+  - Libs/DethsLibLoader/Tests
+  - Libs/DethsAddonLib/DethsAddonLib.toc
+  - Libs/DethsAddonLib/LICENSE.md
+  - Libs/DethsAddonLib/README.md
+  - Libs/DethsAddonLib/Tests.lua
+  - Libs/DethsBagLib/DethsBagLib.toc
+  - Libs/DethsBagLib/LICENSE.md
+  - Libs/DethsBagLib/README.md
+  - Libs/DethsBagLib/Tests.lua
+  - Libs/DethsCmdLib/DethsCmdLib.toc
+  - Libs/DethsCmdLib/LICENSE.md
+  - Libs/DethsCmdLib/README.md
+  - Libs/DethsColorLib/DethsColorLib.toc
+  - Libs/DethsColorLib/LICENSE.md
+  - Libs/DethsColorLib/README.md
+  - Libs/DethsColorLib/Tests.lua
+  - Libs/DethsDBLib/DethsDBLib.toc
+  - Libs/DethsDBLib/LICENSE.md
+  - Libs/DethsDBLib/README.md
+  - Libs/DethsDBLib/Tests.lua
+  - Libs/DethsFrameLib/DethsFrameLib.toc
+  - Libs/DethsFrameLib/LICENSE.md
+  - Libs/DethsFrameLib/Tests
+  - Libs/DethsTooltipLib/DethsTooltipLib.toc
+  - Libs/DethsTooltipLib/LICENSE.md
+  - Libs/DethsTooltipLib/README.md
+  - Libs/DethsTooltipLib/Tests.lua
 
 manual-changelog:
   filename: CHANGELOG.md

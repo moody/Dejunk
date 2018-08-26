@@ -2,21 +2,21 @@
 
 local AddonName, Addon = ...
 
-local DFL = LibStub("DethsFrameLib-1.0")
+local DFL = DethsLibLoader("DethsFrameLib", "1.0")
 
 -- Libs
 Addon.Libs = {
   L = LibStub('AceLocale-3.0'):GetLocale(AddonName),
   LDB = LibStub("LibDataBroker-1.1"),
   LDBIcon = LibStub("LibDBIcon-1.0"),
-  DBL = LibStub("DethsBagLib-1.0"),
-  DCL = LibStub("DethsColorLib-1.0"),
+  DBL = DethsLibLoader("DethsBagLib", "1.0"),
+  DCL = DethsLibLoader("DethsColorLib", "1.0"),
   DFL = DFL,
-  DTL = LibStub("DethsTooltipLib-1.0")
+  DTL = DethsLibLoader("DethsTooltipLib", "1.0")
 }
 
 -- Initialize Dejunk tables
-Addon.Core = LibStub("DethsAddonLib-1.0"):Create(AddonName)
+Addon.Core = DethsLibLoader("DethsAddonLib", "1.0"):Create(AddonName)
 
 Addon.Consts = {}
 Addon.Colors = {}
