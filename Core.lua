@@ -39,7 +39,7 @@ function Core:OnInitialize()
   Addon.MinimapIcon:Initialize()
 
   -- Setup slash command
-  DethsLibLoader("DethsCmdLib", "1.0"):Create(AddonName, self.ToggleGUI)
+  DethsLibLoader("DethsCmdLib", "1.0"):Create(AddonName, self.ToggleGUI, "dj")
 end
 
 do -- OnUpdate()
