@@ -1,21 +1,24 @@
-[submodule "Libs/DethsFrameLib-1.0"]
-	path = Libs/DethsFrameLib-1.0
-	url = https://github.com/moody/DethsFrameLib-1.0.git
-[submodule "Libs/DethsBagLib-1.0"]
-	path = Libs/DethsBagLib-1.0
-	url = https://github.com/moody/DethsBagLib-1.0.git
-[submodule "Libs/DethsCmdLib-1.0"]
-	path = Libs/DethsCmdLib-1.0
-	url = https://github.com/moody/DethsCmdLib-1.0.git
-[submodule "Libs/DethsColorLib-1.0"]
-	path = Libs/DethsColorLib-1.0
-	url = https://github.com/moody/DethsColorLib-1.0.git
-[submodule "Libs/DethsTooltipLib-1.0"]
-	path = Libs/DethsTooltipLib-1.0
-	url = https://github.com/moody/DethsTooltipLib-1.0.git
-[submodule "Libs/DethsDBLib-1.0"]
-	path = Libs/DethsDBLib-1.0
-	url = https://github.com/moody/DethsDBLib-1.0.git
-[submodule "Libs/DethsAddonLib-1.0"]
-	path = Libs/DethsAddonLib-1.0
-	url = https://github.com/moody/DethsAddonLib-1.0.git
+[submodule "Libs/DethsFrameLib"]
+	path = Libs/DethsFrameLib
+	url = https://github.com/moody/DethsFrameLib.git
+[submodule "Libs/DethsBagLib"]
+	path = Libs/DethsBagLib
+	url = https://github.com/moody/DethsBagLib.git
+[submodule "Libs/DethsCmdLib"]
+	path = Libs/DethsCmdLib
+	url = https://github.com/moody/DethsCmdLib.git
+[submodule "Libs/DethsColorLib"]
+	path = Libs/DethsColorLib
+	url = https://github.com/moody/DethsColorLib.git
+[submodule "Libs/DethsTooltipLib"]
+	path = Libs/DethsTooltipLib
+	url = https://github.com/moody/DethsTooltipLib.git
+[submodule "Libs/DethsDBLib"]
+	path = Libs/DethsDBLib
+	url = https://github.com/moody/DethsDBLib.git
+[submodule "Libs/DethsAddonLib"]
+	path = Libs/DethsAddonLib
+	url = https://github.com/moody/DethsAddonLib.git
+[submodule "Libs/DethsLibLoader"]
+	path = Libs/DethsLibLoader
+	url = https://github.com/moody/DethsLibLoader.git
