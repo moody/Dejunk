@@ -47,6 +47,7 @@ local defaults = {
     IgnoreBindsWhenEquipped = false,
     IgnoreSoulbound = false,
     IgnoreEquipmentSets = false,
+    IgnoreReadable = false,
     IgnoreTradeable = false,
 
     -- Destroy options

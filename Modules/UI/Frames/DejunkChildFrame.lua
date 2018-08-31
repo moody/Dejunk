@@ -172,6 +172,8 @@ do
       byType:Add(createCheckButton(L.IGNORE_COSMETIC_TEXT, L.IGNORE_COSMETIC_TOOLTIP, "IgnoreCosmetic"))
       -- Equipment Sets
       byType:Add(createCheckButton(L.IGNORE_EQUIPMENT_SETS_TEXT, L.IGNORE_EQUIPMENT_SETS_TOOLTIP, "IgnoreEquipmentSets"))
+      -- Readable
+      byType:Add(createCheckButton(L.IGNORE_READABLE_TEXT, L.IGNORE_READABLE_TOOLTIP, "IgnoreReadable"))
       -- Soulbound
       byType:Add(createCheckButton(L.IGNORE_SOULBOUND_TEXT, L.IGNORE_SOULBOUND_TOOLTIP, "IgnoreSoulbound"))
       -- Tradeable
@@ -255,8 +257,8 @@ do
 
       -- Ignore Readable
       ignore:Add(createCheckButton(
-        L.DESTROY_IGNORE_READABLE_TEXT,
-        L.DESTROY_IGNORE_READABLE_TOOLTIP,
+        L.IGNORE_READABLE_TEXT,
+        L.IGNORE_READABLE_TOOLTIP,
         "DestroyIgnoreReadable")
       )
     end

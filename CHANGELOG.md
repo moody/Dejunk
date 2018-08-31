@@ -1,3 +1,3 @@
 ### 8.0.7
-* Added an "Ignore Readable" option to Destroy
+* Added "Ignore Readable" for both selling and destroying
 * Updated libraries

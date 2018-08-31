@@ -220,7 +220,7 @@ function Destroyer:IsDestroyableItem(item)
 
   -- 4
   if DB.Profile.DestroyIgnoreReadable and item.Readable then
-    return false, L.REASON_DESTROY_IGNORE_READABLE_TEXT
+    return false, L.REASON_IGNORE_READABLE_TEXT
   end
 
   -- 5
