@@ -252,6 +252,13 @@ do
       )
       exclusions:SetColors(Colors.Exclusions)
       ignore:Add(exclusions)
+
+      -- Ignore Readable
+      ignore:Add(createCheckButton(
+        L.DESTROY_IGNORE_READABLE_TEXT,
+        L.DESTROY_IGNORE_READABLE_TOOLTIP,
+        "DestroyIgnoreReadable")
+      )
     end
 
     return sf

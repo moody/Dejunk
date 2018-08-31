@@ -62,6 +62,7 @@ local defaults = {
     DestroyPetsAlreadyCollected = false,
     DestroyToysAlreadyCollected = false,
     DestroyIgnoreExclusions = false,
+    DestroyIgnoreReadable = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},
