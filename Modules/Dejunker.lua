@@ -242,6 +242,8 @@ function Dejunker:IsJunkItem(item)
   -- Ignore by type
   if self:IsIgnoredCosmeticItem(item) then
     return false, L.REASON_IGNORE_COSMETIC_TEXT end
+  if DB.Profile.IgnoreReadable and item.Readable then
+    return false, L.REASON_IGNORE_READABLE_TEXT end
   
   -- These Ignore options require tooltip scanning
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then

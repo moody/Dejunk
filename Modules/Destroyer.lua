@@ -12,6 +12,7 @@ local assert, format, tremove = assert, format, table.remove
 
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
+local LE_ITEM_QUALITY_POOR = LE_ITEM_QUALITY_POOR
 
 -- Modules
 local Destroyer = Addon.Destroyer
@@ -190,40 +191,43 @@ end
 -- @param item - a DethsBagLib item
 function Destroyer:IsDestroyableItem(item)
   --[[ Priority
-  1. Are we ignoring Exclusions?
-  2. Are we destroying Poor items?
-    2.1 Threshold?
-  3. Are we destroying Inclusions?
-    3.1 Threshold?
-  4. Is it on the Destroyables list?
-    4.1 Threshold?
-  5. Custom
+  1. Is it on the Destroyables list?
+    a. Threshold?
+  2. Are we destroying Inclusions?
+    a. Threshold?
+  3. Are we ignoring Exclusions?
+    a. Threshold?
+  4. Ignore checks
+  5. Destroy checks
   ]]
 
   -- 1
-  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList("Exclusions", item.ItemID) then
-    return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
-  end
-
-  -- 2
-  if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
-    local destroy, reason = self:ItemPriceBelowThreshold(item)
-    return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
-  end
-
-  -- 3
-  if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
-    local destroy, reason = self:ItemPriceBelowThreshold(item)
-    return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
-  end
-
-  -- 4
   if ListManager:IsOnList("Destroyables", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end
 
+  -- 2
+  if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
+  end
+
+  -- 3
+  if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList("Exclusions", item.ItemID) then
+    return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
+  end
+
+  -- 4
+  if DB.Profile.DestroyIgnoreReadable and item.Readable then
+    return false, L.REASON_IGNORE_READABLE_TEXT
+  end
+
   -- 5
+  if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
+    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
+  end
 
   -- These options require tooltip scanning
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then
