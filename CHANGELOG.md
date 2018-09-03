@@ -1,3 +1,2 @@
-### 8.0.7
-* Added "Ignore Readable" for both selling and destroying
-* Updated libraries
+### 8.0.8
+* Updated locales
