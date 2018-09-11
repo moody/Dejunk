@@ -10,7 +10,7 @@ Addon.Libs = {
   LDB = LibStub("LibDataBroker-1.1"),
   LDBIcon = LibStub("LibDBIcon-1.0"),
   DBL = DethsLibLoader("DethsBagLib", "1.0"),
-  DCL = DethsLibLoader("DethsColorLib", "1.0"),
+  DCL = DethsLibLoader("DethsColorLib", "1.1"),
   DFL = DFL,
   DTL = DethsLibLoader("DethsTooltipLib", "1.0")
 }
