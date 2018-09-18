@@ -75,26 +75,30 @@ Core:RegisterEvent("UI_ERROR_MESSAGE")
 -- ============================================================================
 
 -- Prints a formatted message ("[Dejunk] msg").
--- @param msg - the message to print
-function Core:Print(msg)
+-- @param ... - the messages to print
+function Core:Print(...)
   if DB.Profile.SilentMode then return end
-  local title = DCL:ColorString("[Dejunk]", Colors.LabelText)
-  print(format("%s %s", title, msg))
+  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.LabelText), ...)
 end
 
 -- Attempts to print a message if verbose mode is enabled.
--- @param msg - the message to print
-function Core:PrintVerbose(msg)
-  if DB.Profile.VerboseMode then Core:Print(msg) end
+-- @param ... - the messages to print
+function Core:PrintVerbose(...)
+  if DB.Profile.VerboseMode then self:Print(...) end
 end
 
---[[
--- Prints a debug message ("[Dejunk Debug] title: msg").
--- @param msg - the message to print
-function Core:Debug(title, msg)
-  local debug = DCL:ColorString("[Dejunk Debug]", Colors.Red)
-  title = DCL:ColorString(title, Colors.Green)
-  print(format("%s %s: %s", debug, title, msg))
+---[[
+-- Prints a debug message ("[Dejunk Debug] title: ...").
+-- @param title - the title of the debug message
+-- @param ... - the messages to print
+function Core:Debug(title, ...)
+  print(
+    DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red),
+    (select("#", ...) > 0) and
+    DCL:ColorString(title, Colors.Green)..":" or
+    title,
+    ...
+  )
 end
 --]] Core.Debug = nop
 

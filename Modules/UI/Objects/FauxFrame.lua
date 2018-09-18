@@ -14,29 +14,6 @@ local FauxFrame = Addon.Objects.FauxFrame
 local Colors = Addon.Colors
 
 -- ============================================================================
--- Local Functions
--- ============================================================================
-
-local function createTitleButton(parent)
-  local titleButton = DFL.Button:Create(parent, "", DFL.Fonts.Huge)
-  titleButton:RegisterForClicks("RightButtonUp")
-  titleButton:SetColors(Colors.None, Colors.None, Colors.LabelText, Colors.LabelText)
-
-  -- Scripts
-  titleButton:SetScript("OnEnter", function(self)
-    DFL.Button.Scripts.OnEnter(self)
-    DFL:ShowTooltip(self, DFL.Anchors.TOP, self._label:GetText(), self.Tooltip)
-  end)
-
-  titleButton:SetScript("OnLeave", function(self)
-    DFL.Button.Scripts.OnLeave(self)
-    DFL:HideTooltip()
-  end)
-
-  return titleButton
-end
-
--- ============================================================================
 -- Transport Button Functions
 -- ============================================================================
 
@@ -104,7 +81,9 @@ function FauxFrame:Create(parent, listName, buttonFunc, numObjects)
   frame:SetSpacing(DFL:Padding(0.25))
 
   -- Title button
-  local titleButton = createTitleButton(frame)
+  local titleButton = DFL.Button:Create(frame, "", DFL.Fonts.Huge)
+  titleButton:RegisterForClicks("RightButtonUp")
+  titleButton:SetColors(Colors.None, Colors.None, Colors.LabelText, Colors.LabelText)
   frame.TitleButton = titleButton
   frame:Add(titleButton)
 

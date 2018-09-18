@@ -38,6 +38,7 @@ Addon.Frames = {
   ParentFrame = DFL.ParentFrame:Create(),
   TitleFrame = DFL.ChildFrame:Create(),
   DejunkChildFrame = DFL.ChildFrame:Create(),
+  ProfileChildFrame = DFL.ChildFrame:Create(),
   TransportChildFrame = DFL.ChildFrame:Create()
 }
 

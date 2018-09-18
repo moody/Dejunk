@@ -47,13 +47,23 @@ local function createListButton(parent)
 end
 
 -- ============================================================================
--- TitleButton Functions
+-- TitleButton Scripts
 -- ============================================================================
 
 local function titleButton_OnClick(self, button)
   if ((button == "RightButton") and IsShiftKeyDown() and IsAltKeyDown()) then
     ListManager:DestroyList(self.ListName)
   end
+end
+
+local function titleButton_OnEnter(self)
+  DFL.Button.Scripts.OnEnter(self)
+  DFL:ShowTooltip(self, DFL.Anchors.TOP, self._label:GetText(), self.Tooltip)
+end
+
+local function titleButton_OnLeave(self)
+  DFL.Button.Scripts.OnLeave(self)
+  DFL:HideTooltip()
 end
 
 -- ============================================================================
@@ -96,6 +106,8 @@ function ListFrame:Create(parent, listName)
   -- Title button
   local titleButton = frame.TitleButton
   titleButton:SetScript("OnClick", titleButton_OnClick)
+  titleButton:SetScript("OnEnter", titleButton_OnEnter)
+  titleButton:SetScript("OnLeave", titleButton_OnLeave)
   titleButton:SetColors(Colors.None, Colors.None, Colors[listName], Colors[listName.."Hi"])
   titleButton:SetText(title)
   titleButton.Tooltip = tooltip

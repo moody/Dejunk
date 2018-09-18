@@ -20,6 +20,7 @@
   <Script file="Modules\UI\Frames\ParentFrame.lua"/>
   <Script file="Modules\UI\Frames\TitleFrame.lua"/>
   <Script file="Modules\UI\Frames\DejunkChildFrame.lua"/>
+  <Script file="Modules\UI\Frames\ProfileChildFrame.lua"/>
   <Script file="Modules\UI\Frames\TransportChildFrame.lua"/>
 
   <!-- /UI/Objects/ -->
@@ -29,4 +30,6 @@
   <Script file="Modules\UI\Objects\ListButton.lua"/>
   <Script file="Modules\UI\Objects\ListFrame.lua"/>
   <Script file="Modules\UI\Objects\OptionsFrame.lua"/>
+  <Script file="Modules\UI\Objects\ProfileButton.lua"/>
+  <Script file="Modules\UI\Objects\ProfileFrame.lua"/>
 </Ui>
