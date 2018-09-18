@@ -24,6 +24,8 @@
 
   <!-- /UI/Objects/ -->
   <Script file="Modules\UI\Objects\CurrencyField.lua"/>
+  <Script file="Modules\UI\Objects\FauxButton.lua"/>
+  <Script file="Modules\UI\Objects\FauxFrame.lua"/>
   <Script file="Modules\UI\Objects\ListButton.lua"/>
   <Script file="Modules\UI\Objects\ListFrame.lua"/>
   <Script file="Modules\UI\Objects\OptionsFrame.lua"/>

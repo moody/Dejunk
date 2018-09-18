@@ -44,7 +44,11 @@ Addon.Frames = {
 -- /UI/Objects/
 Addon.Objects = {
   CurrencyField = DFL:NewObjectTable(),
+  FauxButton = DFL:NewObjectTable(),
+  FauxFrame = DFL:NewObjectTable(),
   ListButton = DFL:NewObjectTable(),
   ListFrame = DFL:NewObjectTable(),
-  OptionsFrame = DFL:NewObjectTable()
+  OptionsFrame = DFL:NewObjectTable(),
+  ProfileButton = DFL:NewObjectTable(),
+  ProfileFrame = DFL:NewObjectTable()
 }
