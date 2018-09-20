@@ -42,8 +42,6 @@ function ProfileFrame:Create(parent)
   -- Mixins
   DFL:AddMixins(frame, self.Functions)
 
-  frame:RefreshData()
-
   return frame
 end
 

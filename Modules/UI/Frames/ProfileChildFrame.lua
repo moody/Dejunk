@@ -25,5 +25,11 @@ function ProfileChildFrame:OnInitialize()
   frame:SetSpacing(DFL:Padding(0.5))
   
   -- Add ProfileFrame
-  frame:Add(Addon.Objects.ProfileFrame:Create(frame))
+  local profileFrame = Addon.Objects.ProfileFrame:Create(frame)
+  self.ProfileFrame = profileFrame
+  frame:Add(profileFrame)
+end
+
+function ProfileChildFrame:OnShow()
+  self.ProfileFrame:RefreshData()
 end
