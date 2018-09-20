@@ -46,6 +46,22 @@ do
 
   local function createGeneralOptions()
     local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.GENERAL_TEXT)
+
+    do -- Global
+      local global = sf:CreateHeading(L.GLOBAL_TEXT)
+      -- Item tooltip
+      local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
+      itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
+      function itemTooltip:GetUserValue() return DB.Global.ItemTooltip end
+      function itemTooltip:SetUserValue() DB.Global.ItemTooltip = not DB.Global.ItemTooltip end
+      global:Add(itemTooltip)
+      -- Minimap Icon
+      local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
+      minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
+      function minimapIcon:GetUserValue() return not DB.Global.Minimap.hide end
+      function minimapIcon:SetUserValue() Addon.MinimapIcon:Toggle() end
+      global:Add(minimapIcon)
+    end
     
     do -- Chat
       local chat = sf:CreateHeading(L.CHAT_TEXT)
