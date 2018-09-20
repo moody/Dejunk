@@ -127,7 +127,7 @@ end
 -- Initializes the database.
 function DB:Initialize()
   self.Initialize = nil
-  local db = DethsLibLoader("DethsDBLib", "1.0"):Create(AddonName, defaults)
+  local db = DethsLibLoader("DethsDBLib", "1.1"):Create(AddonName, defaults)
   setmetatable(self, {__index = db})
   if not db:ProfileExists("Global") then db:CreateProfile("Global") end
   reformat()
