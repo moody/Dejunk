@@ -40,8 +40,8 @@ function FauxButton:Create(parent)
   DFL:AddMixins(button, self.Functions)
   DFL:AddScripts(button, self.Scripts)
 
-  button:SetMinWidth(275)
-  button:SetMinHeight(32)
+  button:SetWidth(275)
+  button:SetHeight(32)
   button:Refresh()
   
   return button
@@ -77,11 +77,6 @@ do
 
     -- Hook
     if self.OnRefresh then self:OnRefresh() end
-  end
-
-  function Functions:Resize()
-    self:SetWidth(self:GetMinWidth())
-    self:SetHeight(self:GetMinHeight())
   end
 end
 
