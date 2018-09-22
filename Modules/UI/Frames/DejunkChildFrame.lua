@@ -71,14 +71,6 @@ do
       chat:Add(createCheckButton(L.VERBOSE_MODE_TEXT, L.VERBOSE_MODE_TOOLTIP, "VerboseMode"))
     end
 
-    do -- Selling
-      local selling = sf:CreateHeading(L.SELLING_TEXT)
-      -- Auto sell
-      selling:Add(createCheckButton(L.AUTO_SELL_TEXT, L.AUTO_SELL_TOOLTIP, "AutoSell"))
-      -- Safe mode
-      selling:Add(createCheckButton(L.SAFE_MODE_TEXT, format(L.SAFE_MODE_TOOLTIP, Addon.Consts.SAFE_MODE_MAX), "SafeMode"))
-    end
-
     do -- Repairing
       local repairing = sf:CreateHeading(L.REPAIRING_TEXT)
       -- Auto repair
@@ -92,6 +84,14 @@ do
 
   local function createSellOptions()
     local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.SELL_TEXT)
+
+    do -- General
+      local general = sf:CreateHeading(L.GENERAL_TEXT)
+      -- Auto sell
+      general:Add(createCheckButton(L.AUTO_SELL_TEXT, L.AUTO_SELL_TOOLTIP, "AutoSell"))
+      -- Safe mode
+      general:Add(createCheckButton(L.SAFE_MODE_TEXT, format(L.SAFE_MODE_TOOLTIP, Addon.Consts.SAFE_MODE_MAX), "SafeMode"))
+    end
 
     do -- By Quality
       local byQuality = sf:CreateHeading(L.BY_QUALITY_TEXT)
