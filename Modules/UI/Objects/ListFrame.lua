@@ -72,7 +72,7 @@ end
 
 -- Adds the item currently on the cursor to list.
 local function addCursorItem(self)
-  if self:IsEnabled() and CursorHasItem() then
+  if self:GetParent():IsEnabled() and CursorHasItem() then
     local infoType, itemID = GetCursorInfo()
 
     if (infoType == "item") then
@@ -85,7 +85,7 @@ end
 
 -- Removes the item from the list by id.
 local function removeItem(self, itemID)
-  if self:IsEnabled() then
+  if self:GetParent():IsEnabled() then
     ListManager:RemoveFromList(self.ListName, itemID)
   end
 end

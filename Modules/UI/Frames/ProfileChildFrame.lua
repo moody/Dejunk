@@ -22,6 +22,7 @@ local Tools = Addon.Tools
 function ProfileChildFrame:OnInitialize()
   local frame = self.Frame
   frame:SetDirection(DFL.Directions.DOWN)
+  frame:SetLayout(DFL.Layouts.FILL_W)
   frame:SetSpacing(DFL:Padding(0.5))
   
   -- Add ProfileFrame

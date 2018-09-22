@@ -34,11 +34,6 @@ function ProfileFrame:Create(parent)
   local titleButton = frame.TitleButton
   titleButton:SetText(L.PROFILES_TEXT)
 
-  -- FauxScrollFrame
-  local fsFrame = frame.FSFrame
-  fsFrame._objFrame:SetMinWidth(600)
-  fsFrame._objFrame:SetLayout(DFL.Layouts.FILL)
-
   -- Mixins
   DFL:AddMixins(frame, self.Functions)
 

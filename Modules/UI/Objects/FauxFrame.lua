@@ -77,7 +77,7 @@ local BLANK_TABLE = {}
 -- @param parent - the parent frame
 -- @param listName - the name of a ListManager list, or "Profiles"
 function FauxFrame:Create(parent, listName, buttonFunc, numObjects)  
-  local frame = DFL.Frame:Create(parent, DFL.Alignments.TOP, DFL.Directions.DOWN)
+  local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPLEFT, DFL.Directions.DOWN, DFL.Layouts.FILL_W)
   frame:SetSpacing(DFL:Padding(0.25))
 
   -- Title button

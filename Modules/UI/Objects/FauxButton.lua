@@ -8,7 +8,7 @@ local DCL = Addon.Libs.DCL
 local DFL = Addon.Libs.DFL
 
 -- Upvalues
-local GetMouseFocus = GetMouseFocus
+local GameTooltip, GetMouseFocus = GameTooltip, GetMouseFocus
 
 -- Modules
 local FauxButton = Addon.Objects.FauxButton
@@ -78,6 +78,11 @@ do
     -- Hook
     if self.OnRefresh then self:OnRefresh() end
   end
+
+  function Functions:Resize()
+    self:SetWidth(self:GetMinWidth())
+    self:SetHeight(self:GetMinHeight())
+  end
 end
 
 -- ============================================================================
@@ -98,6 +103,6 @@ do
 
   function Scripts:OnLeave()
     self.Texture:SetColorTexture(unpack(Colors.ListButton))
-    DFL:HideTooltip()
+    GameTooltip:Hide()
   end
 end

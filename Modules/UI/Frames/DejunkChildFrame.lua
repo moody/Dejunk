@@ -301,7 +301,7 @@ end
 function DejunkChildFrame:CreateLists()
   local parent = self.Frame
   local frame = DFL.Frame:Create(parent)
-  frame:SetLayout(DFL.Layouts.FLEX)
+  frame:SetLayout(DFL.Layouts.FILL_W)
   frame:SetSpacing(DFL:Padding(0.5))
   frame:Add(Addon.Objects.ListFrame:Create(parent, "Inclusions"))
   frame:Add(Addon.Objects.ListFrame:Create(parent, "Exclusions"))
