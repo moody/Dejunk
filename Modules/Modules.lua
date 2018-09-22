@@ -2,7 +2,7 @@
 
 local AddonName, Addon = ...
 
-local DFL = DethsLibLoader("DethsFrameLib", "1.0")
+local DFL = DethsLibLoader("DethsFrameLib", "1.1")
 
 -- Libs
 Addon.Libs = {
