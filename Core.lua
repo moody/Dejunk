@@ -87,7 +87,7 @@ function Core:PrintVerbose(...)
   if DB.Profile.VerboseMode then self:Print(...) end
 end
 
----[[
+--[[
 -- Prints a debug message ("[Dejunk Debug] title: ...").
 -- @param title - the title of the debug message
 -- @param ... - the messages to print
