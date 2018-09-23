@@ -46,6 +46,22 @@ do
 
   local function createGeneralOptions()
     local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.GENERAL_TEXT)
+
+    do -- Global
+      local global = sf:CreateHeading(L.GLOBAL_TEXT)
+      -- Item tooltip
+      local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
+      itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
+      function itemTooltip:GetUserValue() return DB.Global.ItemTooltip end
+      function itemTooltip:SetUserValue() DB.Global.ItemTooltip = not DB.Global.ItemTooltip end
+      global:Add(itemTooltip)
+      -- Minimap Icon
+      local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
+      minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
+      function minimapIcon:GetUserValue() return not DB.Global.Minimap.hide end
+      function minimapIcon:SetUserValue() Addon.MinimapIcon:Toggle() end
+      global:Add(minimapIcon)
+    end
     
     do -- Chat
       local chat = sf:CreateHeading(L.CHAT_TEXT)
@@ -53,14 +69,6 @@ do
       chat:Add(createCheckButton(L.SILENT_MODE_TEXT, L.SILENT_MODE_TOOLTIP, "SilentMode"))
       -- Verbose mode
       chat:Add(createCheckButton(L.VERBOSE_MODE_TEXT, L.VERBOSE_MODE_TOOLTIP, "VerboseMode"))
-    end
-
-    do -- Selling
-      local selling = sf:CreateHeading(L.SELLING_TEXT)
-      -- Auto sell
-      selling:Add(createCheckButton(L.AUTO_SELL_TEXT, L.AUTO_SELL_TOOLTIP, "AutoSell"))
-      -- Safe mode
-      selling:Add(createCheckButton(L.SAFE_MODE_TEXT, format(L.SAFE_MODE_TOOLTIP, Addon.Consts.SAFE_MODE_MAX), "SafeMode"))
     end
 
     do -- Repairing
@@ -76,6 +84,14 @@ do
 
   local function createSellOptions()
     local sf = Addon.Objects.OptionsFrame:Create(DejunkChildFrame.Frame, L.SELL_TEXT)
+
+    do -- General
+      local general = sf:CreateHeading(L.GENERAL_TEXT)
+      -- Auto sell
+      general:Add(createCheckButton(L.AUTO_SELL_TEXT, L.AUTO_SELL_TOOLTIP, "AutoSell"))
+      -- Safe mode
+      general:Add(createCheckButton(L.SAFE_MODE_TEXT, format(L.SAFE_MODE_TOOLTIP, Addon.Consts.SAFE_MODE_MAX), "SafeMode"))
+    end
 
     do -- By Quality
       local byQuality = sf:CreateHeading(L.BY_QUALITY_TEXT)
@@ -285,7 +301,7 @@ end
 function DejunkChildFrame:CreateLists()
   local parent = self.Frame
   local frame = DFL.Frame:Create(parent)
-  frame:SetLayout(DFL.Layouts.FLEX)
+  frame:SetLayout(DFL.Layouts.FILL_W)
   frame:SetSpacing(DFL:Padding(0.5))
   frame:Add(Addon.Objects.ListFrame:Create(parent, "Inclusions"))
   frame:Add(Addon.Objects.ListFrame:Create(parent, "Exclusions"))

@@ -12,6 +12,8 @@ local TitleFrame = Addon.Frames.TitleFrame
 local Colors = Addon.Colors
 local DB = Addon.DB
 local ParentFrame = Addon.Frames.ParentFrame
+local DejunkChildFrame = Addon.Frames.DejunkChildFrame
+local ProfileChildFrame = Addon.Frames.ProfileChildFrame
 
 -- ============================================================================
 -- Frame Lifecycle Functions
@@ -35,36 +37,22 @@ function TitleFrame:CreateLeft()
   local parent = self.Frame
 
   -- Main frame
-  local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPLEFT, DFL.Directions.DOWN)
+  local frame = DFL.Frame:Create(parent, DFL.Alignments.TOPLEFT, DFL.Directions.DOWN, DFL.Layouts.FILL_W)
   frame:SetSpacing(DFL:Padding(0.25))
-  
-  -- Character Specific Settings check button
-  local charSpec = DFL.CheckButton:Create(parent, L.CHARACTER_SPECIFIC_TEXT, L.CHARACTER_SPECIFIC_TOOLTIP, DFL.Fonts.Small)
-  charSpec:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-  function charSpec:GetUserValue() return not (DB:GetProfileKey() == "Global") end
-  function charSpec:SetUserValue() Addon.Core:ToggleCharacterSpecificSettings() end
-  frame:Add(charSpec)
-  
-  do -- Item tooltip & minimap icon check buttons
-    local f = DFL.Frame:Create(frame)
-    f:SetSpacing(DFL:Padding(0.25))
 
-    -- Item tooltip check button
-    local itemTooltip = DFL.CheckButton:Create(parent, L.ITEM_TOOLTIP_TEXT, L.ITEM_TOOLTIP_TOOLTIP, DFL.Fonts.Small)
-    itemTooltip:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function itemTooltip:GetUserValue() return DB.Global.ItemTooltip end
-    function itemTooltip:SetUserValue() DB.Global.ItemTooltip = not DB.Global.ItemTooltip end
-    f:Add(itemTooltip)
-
-    -- Minimap Icon check button
-    local minimapIcon = DFL.CheckButton:Create(parent, L.MINIMAP_CHECKBUTTON_TEXT, L.MINIMAP_CHECKBUTTON_TOOLTIP, DFL.Fonts.Small)
-    minimapIcon:SetColors(Colors.LabelText, Colors.ParentFrame, Colors.Border)
-    function minimapIcon:GetUserValue() return not DB.Global.Minimap.hide end
-    function minimapIcon:SetUserValue() Addon.MinimapIcon:Toggle() end
-    f:Add(minimapIcon)
-
-    frame:Add(f)
+  -- Profiles button
+  local profiles = DFL.Button:Create(parent, L.PROFILES_TEXT)
+  profiles:SetColors(Colors.None, Colors.Border, Colors.LabelText, Colors.ButtonTextHi, Colors.Border)
+  function profiles:OnClick()
+    if (self:GetText() == L.PROFILES_TEXT) then
+      ParentFrame:SetContent(ProfileChildFrame)
+      self:SetText(L.MAIN_MENU_TEXT)
+    else
+      ParentFrame:SetContent(DejunkChildFrame)
+      self:SetText(L.PROFILES_TEXT)
+    end
   end
+  frame:Add(profiles)
   
   parent:Add(frame)
 end
