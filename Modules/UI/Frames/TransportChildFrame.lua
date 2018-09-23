@@ -229,7 +229,7 @@ local function setProfileData(self, type)
         StaticPopup_Show("DEJUNK_IMPORT_PROFILE_POPUP")
         importTable = profile
       else
-        Core:Print(L.PROFILE_IMPORT_FAILED_TEXT)
+        Core:Print(L.PROFILE_INVALID_IMPORT_TEXT)
       end
       editBox:ClearFocus()
     end)

@@ -76,15 +76,15 @@ do
     GameTooltip:SetText(self.Data, 1.0, 0.82, 0)
     if (self.Data ~= DB:GetProfileKey()) then
       GameTooltip:AddDoubleLine(
-        DCL:ColorString(L.PROFILE_ACTIVATE_TEXT, Colors.Exclusions),
-        DCL:ColorString(L.PROFILE_ACTIVATE_TOOLTIP, DCL.CSS.White)
+        DCL:ColorString(L.ACTIVATE_TEXT, Colors.Exclusions),
+        DCL:ColorString(L.LEFT_CLICK_TEXT, DCL.CSS.White)
       )
       GameTooltip:AddDoubleLine(
-        DCL:ColorString(L.PROFILE_COPY_TEXT, Colors.Destroyables),
+        DCL:ColorString(L.COPY_TEXT, Colors.Destroyables),
         DCL:ColorString(L.PROFILE_COPY_TOOLTIP, DCL.CSS.White)
       )
       GameTooltip:AddDoubleLine(
-        DCL:ColorString(L.PROFILE_DELETE_TEXT, Colors.Inclusions),
+        DCL:ColorString(L.DELETE_TEXT, Colors.Inclusions),
         DCL:ColorString(L.PROFILE_DELETE_TOOLTIP, DCL.CSS.White)
       )
     else
