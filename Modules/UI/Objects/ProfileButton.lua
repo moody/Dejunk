@@ -8,17 +8,20 @@ local DCL = Addon.Libs.DCL
 local DFL = Addon.Libs.DFL
 
 -- Upvalues
-local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown =
-      IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
+local GameTooltip, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown =
+      GameTooltip, IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 
 -- Modules
 local ProfileButton = Addon.Objects.ProfileButton
+ProfileButton.Scripts = {}
+
 local Core = Addon.Core
 local Colors = Addon.Colors
 local DB = Addon.DB
 local ListManager = Addon.ListManager
 local ParentFrame = Addon.Frames.ParentFrame
 local DejunkChildFrame = Addon.Frames.DejunkChildFrame
+local ProfileChildFrame = Addon.Frames.ProfileChildFrame
 
 -- ============================================================================
 -- Creation Function
@@ -29,16 +32,9 @@ local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 function ProfileButton:Create(parent)
   local button = Addon.Objects.FauxButton:Create(parent)
 
-  button:SetScript("OnUpdate", function(self)
-    if self.Data and (self.Data == DB:GetProfileKey()) then
-      DFL:AddBorder(self, unpack(Colors.Inclusions))
-    else
-      DFL:RemoveBorder(self)
-    end
-  end)
-
   -- Mixins
   DFL:AddMixins(button, self.Functions)
+  DFL:AddScripts(button, self.Scripts)
 
   return button
 end
@@ -47,51 +43,74 @@ end
 -- Functions
 -- ============================================================================
 
-local Functions = ProfileButton.Functions
+do
+  local Functions = ProfileButton.Functions
 
-function Functions:OnClick(button, down)
-  -- Change profile
-  if (button == "LeftButton") then
-    DB:SetProfile(self.Data)
-    ListManager:Update()
-    ParentFrame:SetContent(DejunkChildFrame)
-    ParentFrame:Refresh()
-    Core:Debug("ProfileButton", format("Set profile to %s.", self.Data))
-  elseif (button == "RightButton") then
-    -- Delete profile
-    if IsShiftKeyDown() and IsControlKeyDown() and IsAltKeyDown() then
-      if (self.Data == DB:GetPlayerKey()) then
-        Core:Debug("ProfileButton", "Attempt to delete player profile.")
-        return
+  function Functions:OnClick(button, down)
+    if (button == "LeftButton") then
+      -- Change profile
+      if DB:SetProfile(self.Data) then
+        ListManager:Update()
+        ProfileChildFrame.ProfileFrame:RefreshData()
+        Core:Print(format(L.PROFILE_ACTIVATED_TEXT, DCL:ColorString(self.Text:GetText(), Colors.Exclusions)))
       end
-      if (self.Data == DB:GetProfileKey()) then
-        Core:Debug("ProfileButton", "Attempt to delete current profile.")
-        return
+    elseif (button == "RightButton") then
+      -- Delete profile
+      if IsShiftKeyDown() and IsAltKeyDown() and not IsControlKeyDown() then
+        if DB:DeleteProfile(self.Data) then
+          ProfileChildFrame.ProfileFrame:RefreshData()
+          Core:Print(format(L.PROFILE_DELETED_TEXT, DCL:ColorString(self.Text:GetText(), Colors.Inclusions)))
+        end
+      -- Copy profile
+      elseif IsControlKeyDown() and not (IsShiftKeyDown() or IsAltKeyDown()) then
+        if DB:CopyProfile(self.Data) then
+          ListManager:Update()
+          Core:Print(format(L.PROFILE_COPIED_TEXT, DCL:ColorString(self.Text:GetText(), Colors.Destroyables)))
+        end
       end
-      DB:DeleteProfile(self.Data)
-      self:GetParent():GetParent():GetParent():RefreshData()
-    -- Copy profile
-    elseif IsShiftKeyDown() and not (IsControlKeyDown() or IsAltKeyDown()) then
-      if (self.Data == DB:GetProfileKey()) then
-        Core:Debug("ProfileButton", "Attempt to copy current profile.")
-        return
-      end
-      DB:CopyProfile(self.Data)
-      ListManager:Update()
-      Core:Debug("ProfileButton", "Copied profile.")
     end
+  end
+
+  function Functions:OnEnter()
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:SetText(self.Data, 1.0, 0.82, 0)
+    if (self.Data ~= DB:GetProfileKey()) then
+      GameTooltip:AddDoubleLine(
+        DCL:ColorString(L.PROFILE_ACTIVATE_TEXT, Colors.Exclusions),
+        DCL:ColorString(L.PROFILE_ACTIVATE_TOOLTIP, DCL.CSS.White)
+      )
+      GameTooltip:AddDoubleLine(
+        DCL:ColorString(L.PROFILE_COPY_TEXT, Colors.Destroyables),
+        DCL:ColorString(L.PROFILE_COPY_TOOLTIP, DCL.CSS.White)
+      )
+      GameTooltip:AddDoubleLine(
+        DCL:ColorString(L.PROFILE_DELETE_TEXT, Colors.Inclusions),
+        DCL:ColorString(L.PROFILE_DELETE_TOOLTIP, DCL.CSS.White)
+      )
+    else
+      GameTooltip:AddLine(L.PROFILE_ACTIVE_TEXT, 1, 1, 1)
+    end
+    GameTooltip:Show()
+  end
+
+  function Functions:OnRefresh()
+    self.Text:SetText((self.Data == "Global") and L.GLOBAL_TEXT or self.Data)
+    self.Text:SetTextColor(1, 1, 1, 1)
   end
 end
 
-function Functions:OnEnter()
-  DFL:ShowTooltip(self, DFL.Anchors.TOP,
-    self.Data,
-    "Copy:   Shift + Right Click",
-    "Delete: Shift Ctrl Alt + Right Click"
-  )
-end
+-- ============================================================================
+-- Scripts
+-- ============================================================================
 
-function Functions:OnRefresh()
-  self.Text:SetText(self.Data)
-  self.Text:SetTextColor(unpack(Colors.LabelText))
+do
+  local Scripts = ProfileButton.Scripts
+
+  function Scripts:OnUpdate(elapsed)
+    if self.Data and (self.Data == DB:GetProfileKey()) then
+      DFL:AddBorder(self, unpack(Colors.Green))
+    else
+      DFL:RemoveBorder(self)
+    end
+  end
 end
