@@ -171,22 +171,6 @@ function Core:DisableGUI()
   ParentFrame:Disable()
 end
 
--- Switches between global and character specific settings.
-function Core:ToggleCharacterSpecificSettings()
-  if (DB:GetProfileKey() == "Global") then
-    DB:SetProfile()
-  else
-    DB:SetProfile("Global")
-  end
-
-  ListManager:Update()
-  
-  if (ParentFrame:GetContent() ~= DejunkChildFrame) then
-    ParentFrame:SetContent(DejunkChildFrame)
-  end
-  ParentFrame:Refresh()
-end
-
 -- ============================================================================
 -- Tooltip Hook
 -- ============================================================================
