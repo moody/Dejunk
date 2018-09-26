@@ -48,7 +48,11 @@ local itemsToSell = {}
 
 -- Event handler.
 function Dejunker:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
+  if (event == "MERCHANT_SHOW") then
+    if DB.Profile.AutoSell then self:StartDejunking(true) end
+  elseif (event == "MERCHANT_CLOSED") then
+    if self:IsSelling() then self:StopSelling() end
+  elseif (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
     if self:IsDejunking() then
