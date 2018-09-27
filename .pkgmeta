@@ -33,6 +33,7 @@ ignore:
   - Libs/DethsAddonLib/README.md
   - Libs/DethsAddonLib/Tests.lua
   - Libs/DethsBagLib/DethsBagLib.toc
+  - Libs/DethsBagLib/CHANGELOG.md
   - Libs/DethsBagLib/LICENSE.md
   - Libs/DethsBagLib/README.md
   - Libs/DethsBagLib/Tests.lua
