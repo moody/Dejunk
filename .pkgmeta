@@ -33,6 +33,7 @@ ignore:
   - Libs/DethsAddonLib/README.md
   - Libs/DethsAddonLib/Tests.lua
   - Libs/DethsBagLib/DethsBagLib.toc
+  - Libs/DethsBagLib/CHANGELOG.md
   - Libs/DethsBagLib/LICENSE.md
   - Libs/DethsBagLib/README.md
   - Libs/DethsBagLib/Tests.lua
@@ -40,6 +41,7 @@ ignore:
   - Libs/DethsCmdLib/LICENSE.md
   - Libs/DethsCmdLib/README.md
   - Libs/DethsColorLib/DethsColorLib.toc
+  - Libs/DethsColorLib/CHANGELOG.md
   - Libs/DethsColorLib/LICENSE.md
   - Libs/DethsColorLib/README.md
   - Libs/DethsColorLib/Tests.lua

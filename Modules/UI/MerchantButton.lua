@@ -53,17 +53,3 @@ function MerchantButton:Initialize()
   -- nil function
   self.Initialize = nil
 end
-
--- ============================================================================
---                             Merchant Frame Hook
--- ============================================================================
-
-MerchantFrame:HookScript("OnShow", function()
-  if DB.Profile.AutoSell then Dejunker:StartDejunking(true) end
-  if DB.Profile.AutoRepair then Repairer:StartRepairing() end
-end)
-
-MerchantFrame:HookScript("OnHide", function()
-  if Dejunker:IsSelling() then Dejunker:StopSelling() end
-  if Repairer:IsRepairing() then Repairer:StopRepairing() end
-end)

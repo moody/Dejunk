@@ -48,7 +48,11 @@ local itemsToSell = {}
 
 -- Event handler.
 function Dejunker:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
+  if (event == "MERCHANT_SHOW") then
+    if DB.Profile.AutoSell then self:StartDejunking(true) end
+  elseif (event == "MERCHANT_CLOSED") then
+    if self:IsSelling() then self:StopSelling() end
+  elseif (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
     if self:IsDejunking() then
@@ -132,7 +136,21 @@ end
 -- ============================================================================
 
 do
+  local _G, STATICPOPUP_NUMDIALOGS = _G, STATICPOPUP_NUMDIALOGS
   local interval = 0
+
+  -- Identifies and handles the StaticPopup shown when attempting to vendor a
+  -- tradeable item.
+  local function handleStaticPopup()
+    local popup
+    for i=1, STATICPOPUP_NUMDIALOGS do
+      popup = _G["StaticPopup"..i]
+      if popup and popup:IsShown() and (popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL") then
+        popup.button1:Click()
+        return
+      end
+    end
+  end
 
   -- Selling update function
   local function sellItems_OnUpdate(self, elapsed)
@@ -151,6 +169,8 @@ do
       end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
+      -- Handle StaticPopup
+      handleStaticPopup()
       -- Notify confirmer
       Confirmer:Queue("Dejunker", item)
     end

@@ -68,6 +68,8 @@ function Core:OnEvent(event, ...)
   Dejunker:OnEvent(event, ...)
   Repairer:OnEvent(event, ...)
 end
+Core:RegisterEvent("MERCHANT_SHOW")
+Core:RegisterEvent("MERCHANT_CLOSED")
 Core:RegisterEvent("UI_ERROR_MESSAGE")
 
 -- ============================================================================

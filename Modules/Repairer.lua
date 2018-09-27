@@ -108,13 +108,17 @@ end
 
 -- Event handler.
 function Repairer:OnEvent(event, ...)
-  if (event == "UI_ERROR_MESSAGE") then
+	if (event == "MERCHANT_SHOW") then
+		if DB.Profile.AutoRepair then self:StartRepairing() end
+	elseif (event == "MERCHANT_CLOSED") then
+		if self:IsRepairing() then self:StopRepairing() end
+  elseif (event == "UI_ERROR_MESSAGE") then
     local _, msg = ...
 
 		if (isRepairing and (msg == ERR_GUILD_NOT_ENOUGH_MONEY)) then
       UIErrorsFrame:Clear()
       guildRepairError = true
-    end
+		end
   end
 end
 
