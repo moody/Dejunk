@@ -1,4 +1,3 @@
-### 8.0.9
-* Fixed issue with popup dialog when a tradeable item is Dejunked
+### 8.0.10
 * Updated locales
 * Updated libraries
