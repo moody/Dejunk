@@ -1,3 +1,3 @@
-### 8.0.11
+# 8.1.0
+
 * Updated locales
-* Updated libraries
