@@ -26,9 +26,12 @@ ignore:
   - Dejunk.png
   - KeyBindings.png
   - README.md
-  - Libs/LibStub/LibStub.xml
+  - Libs/LibStub/tests
+  - Libs/LibStub/LibStub.toc
+  - Libs/AceLocale-3.0/AceLocale-3.0.xml
   - Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml
   - Libs/LibDataBroker-1.1/README.textile
+  - Libs/LibDBIcon-1.0/lib.xml
   - Libs/DethsLibLoader/DethsLibLoader.toc
   - Libs/DethsLibLoader/LICENSE.md
   - Libs/DethsLibLoader/README.md
