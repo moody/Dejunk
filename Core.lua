@@ -9,7 +9,9 @@ local DCL = Addon.Libs.DCL
 
 -- Upvalues
 local format, max, print, select = format, max, print, select
+
 local GetNetStats = GetNetStats
+local IsShiftKeyDown, IsAltKeyDown = IsShiftKeyDown, IsAltKeyDown
 
 -- Modules
 local Core = Addon.Core
@@ -23,7 +25,6 @@ local Repairer = Addon.Repairer
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
 local ParentFrame = Addon.Frames.ParentFrame
-local DejunkChildFrame = Addon.Frames.DejunkChildFrame
 
 -- ============================================================================
 -- DethsAddonLib Functions

@@ -1,29 +1,34 @@
 package-as: Dejunk
+
 enable-nolib-creation: no
 
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
+
 externals:
-  - Libs/DethsLibLoader:
-    url: git://github.com/moody/DethsLibLoader.git
-  - Libs/DethsAddonLib:
-    url: git://github.com/moody/DethsAddonLib.git
-  - Libs/DethsBagLib:
-    url: git://github.com/moody/DethsBagLib.git
-  - Libs/DethsCmdLib:
-    url: git://github.com/moody/DethsCmdLib.git
-  - Libs/DethsColorLib:
-    url: git://github.com/moody/DethsColorLib.git
-  - Libs/DethsDBLib:
-    url: git://github.com/moody/DethsDBLib.git
-  - Libs/DethsFrameLib:
-    url: git://github.com/moody/DethsFrameLib.git
-  - Libs/DethsTooltipLib:
-    url: git://github.com/moody/DethsTooltipLib.git
+  Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
+  Libs/AceLocale-3.0: https://repos.wowace.com/wow/ace3/trunk/AceLocale-3.0
+  Libs/AceSerializer-3.0: https://repos.wowace.com/wow/ace3/trunk/AceSerializer-3.0
+  Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+  Libs/LibDataBroker-1.1: https://repos.wowace.com/wow/libdatabroker-1-1
+  Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
+  Libs/DethsLibLoader: git://github.com/moody/DethsLibLoader.git
+  Libs/DethsAddonLib: git://github.com/moody/DethsAddonLib.git
+  Libs/DethsBagLib: git://github.com/moody/DethsBagLib.git
+  Libs/DethsCmdLib: git://github.com/moody/DethsCmdLib.git
+  Libs/DethsColorLib: git://github.com/moody/DethsColorLib.git
+  Libs/DethsDBLib: git://github.com/moody/DethsDBLib.git
+  Libs/DethsFrameLib: git://github.com/moody/DethsFrameLib.git
+  Libs/DethsTooltipLib: git://github.com/moody/DethsTooltipLib.git
 
 ignore:
   - Dejunk.png
   - KeyBindings.png
-  - CHANGELOG.md
   - README.md
+  - Libs/LibStub/LibStub.xml
+  - Libs/CallbackHandler-1.0/CallbackHandler-1.0.xml
+  - Libs/LibDataBroker-1.1/README.textile
   - Libs/DethsLibLoader/DethsLibLoader.toc
   - Libs/DethsLibLoader/LICENSE.md
   - Libs/DethsLibLoader/README.md
@@ -57,7 +62,3 @@ ignore:
   - Libs/DethsTooltipLib/LICENSE.md
   - Libs/DethsTooltipLib/README.md
   - Libs/DethsTooltipLib/Tests.lua
-
-manual-changelog:
-  filename: CHANGELOG.md
-  markup-type: markdown
