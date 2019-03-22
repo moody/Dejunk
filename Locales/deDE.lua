@@ -1,43 +1,8 @@
 -- Dejunk: deDE (German) localization file.
--- Translators: pas06
+-- Credits: https://wow.curseforge.com/projects/dejunk/localization/translators
 
 local AddonName, AddonTable = ...
 local L = LibStub('AceLocale-3.0'):NewLocale(AddonName, 'deDE')
 if not L then return end
 
-L["ADDED_ITEM_TO_LIST"] = "Gegenstand %s wurde zu %s hinzugefügt."
-L["AUTO_REPAIR_TEXT"] = "Autom. reparieren"
-L["AUTO_REPAIR_TOOLTIP"] = "Repariert automatisch Gegenstände, sobald ein Händlerfenster geöffnet wird."
-L["AUTO_SELL_TEXT"] = "Autom. verkaufen"
-L["AUTO_SELL_TOOLTIP"] = "Verkauft automatisch Schrottgegenstände, sobald ein Händlerfenster geöffnet wird."
-L["CHARACTER_SPECIFIC_TEXT"] = "Charakterspezifische Einstellungen"
-L["CHARACTER_SPECIFIC_TOOLTIP"] = "Klicke hier, um zwischen globalen Einstellungen und charakterspezifischen Einstellungen umzuschalten."
-L["COMMON_TEXT"] = "Gewöhnlich"
-L["DEJUNK_BUTTON_TOOLTIP"] = "Rechtsklick, um die Einstellungen zu öffnen."
-L["EPIC_TEXT"] = "Episch"
-L["EXCLUSIONS_TEXT"] = "Behalten"
-L["EXCLUSIONS_TOOLTIP"] = "Gegenstände auf dieser Liste werden niemals verkauft."
-L["INCLUSIONS_TEXT"] = "Verkaufen"
-L["INCLUSIONS_TOOLTIP"] = "Gegenstände auf dieser Liste werden immer verkauft."
-L["ITEM_ALREADY_ON_LIST"] = "%s ist bereits auf %s."
-L["ITEM_CANNOT_BE_SOLD"] = "%s kann nicht verkauft werden."
-L["LIST_FRAME_ADD_TOOLTIP"] = "Füge einen Gegenstand hinzu, indem du ihn in das untenstehende Fenster ziehst. (Gegenstände können nur von deinem Inventar aus hinzugefügt werden.)"
-L["LIST_FRAME_REM_TOOLTIP"] = "Du kannst einen Gegenstand entfernen, indem du einen Eintrag markierst und mit der rechten Maustaste klickst."
-L["NO_CACHED_JUNK_ITEMS"] = "Es wurden keine Schrottgegenstände im Zwischenspeicher gefunden. Versuche es später noch einmal."
-L["NO_JUNK_ITEMS"] = "Es gibt keine zu verkaufenden Schrottgegenstände."
-L["ONLY_SELLING_CACHED"] = "Manche Gegenstände konnten nicht abgerufen werden. Es werden nur bereits zwischengespeicherte Schrottgegenstände verkauft."
-L["POOR_TEXT"] = "Schlecht"
-L["RARE_TEXT"] = "Selten"
-L["REMOVED_ITEM_FROM_LIST"] = "%s wurde von %s entfernt."
-L["REPAIRED_ALL_ITEMS"] = "Alle Gegenstände wurden für %s repariert."
-L["REPAIRED_ALL_ITEMS_GUILD"] = "Alle Gegenstände wurden für %s repariert (Gilde)."
-L["REPAIRED_NO_ITEMS"] = "Nicht genug Geld für Reparatur."
-L["SAFE_MODE_MESSAGE"] = "Sicherer Modus aktiviert: Es werden nur %s Gegenstände verkauft."
-L["SAFE_MODE_TEXT"] = "Sicherer Modus"
-L["SAFE_MODE_TOOLTIP"] = "Verkauft nur bis zu %s Gegenstände gleichzeitig."
-L["SELL_ALL_TOOLTIP"] = "Verkauft alle Gegenstände von dieser Qualität."
-L["SILENT_MODE_TEXT"] = "Lautlosmodus"
-L["SILENT_MODE_TOOLTIP"] = "Deaktiviert Dejunk-Chatfensternachrichten."
-L["SOLD_YOUR_JUNK"] = "Dein Schrott wurde für %s verkauft."
-L["UNCOMMON_TEXT"] = "Ungewöhnlich"
-L["VENDOR_DOESNT_BUY"] = "Dieser Händler kauft nichts."
+--@localization(locale="deDE", format="lua_additive_table")@

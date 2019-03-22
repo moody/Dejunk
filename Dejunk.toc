@@ -24,8 +24,18 @@ Libs/DethsDBLib/DethsDBLib.lua
 Libs/DethsFrameLib/DethsFrameLib.xml
 Libs/DethsTooltipLib/DethsTooltipLib.lua
 
-Libs/Libs.xml
-Locales/Locales.xml
+Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\frFR.lua
+Locales\itIT.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
+
 Modules/Modules.xml
 
 Bindings.lua
