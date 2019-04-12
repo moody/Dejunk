@@ -1,3 +1,3 @@
-# 8.1.1
+# 8.1.2
 
-* Updated esES (Spanish) locale
+- Update locales
