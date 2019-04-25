@@ -1,3 +1,6 @@
+# only build tags
+if: tag IS present
+
 sudo: false
 language: minimal
 
