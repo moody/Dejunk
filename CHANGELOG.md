@@ -1,3 +1,3 @@
-# 8.1.2
+# 8.1.3
 
-- Update locales
+- Added tooltip message for locked items
