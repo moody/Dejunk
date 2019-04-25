@@ -1,3 +1,3 @@
-# 8.1.1
+# 8.1.3
 
-* Updated esES (Spanish) locale
+- Added tooltip message for locked items

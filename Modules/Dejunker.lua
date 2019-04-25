@@ -225,23 +225,29 @@ end
 -- @param item - a DethsBagLib item
 function Dejunker:IsJunkItem(item)
   --[[ Priority
-  1. Is it excluded?
-  2. Is it included?
-  3. Custom checks
-  4. Is it a sell by quality item?
+  1. Is it locked?
+  2. Is it excluded?
+  3. Is it included?
+  4. Custom checks
+  5. Is it a sell by quality item?
   ]]
 
   -- 1
+  if item:IsLocked() then
+    return false, L.REASON_ITEM_IS_LOCKED_TEXT
+  end
+
+  -- 2
   if ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, format(L.REASON_ITEM_ON_LIST_TEXT, L.EXCLUSIONS_TEXT)
   end
 
-  -- 2
+  -- 3
   if ListManager:IsOnList("Inclusions", item.ItemID) then
     return true, format(L.REASON_ITEM_ON_LIST_TEXT, L.INCLUSIONS_TEXT)
   end
-  
-  -- 3
+
+  -- 4
 
   -- Ignore by category
   if self:IsIgnoredBattlePetItem(item) then
@@ -264,7 +270,7 @@ function Dejunker:IsJunkItem(item)
     return false, L.REASON_IGNORE_COSMETIC_TEXT end
   if DB.Profile.IgnoreReadable and item.Readable then
     return false, L.REASON_IGNORE_READABLE_TEXT end
-  
+
   -- These Ignore options require tooltip scanning
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then
     if -- Only return false if one of these options is enabled
@@ -300,7 +306,7 @@ function Dejunker:IsJunkItem(item)
     return false, format(L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT, itemLevel)
   end
 
-  -- 4
+  -- 5
   if self:IsSellByQualityItem(item.Quality) then
     return true, L.REASON_SELL_BY_QUALITY_TEXT
   end
@@ -440,7 +446,7 @@ do -- Ignore options
       then
         return false
       end
-      
+
       local subClass = Consts.ARMOR_SUBCLASSES[item.SubClass]
       return (subClass == LE_ITEM_ARMOR_COSMETIC) or (subClass == LE_ITEM_ARMOR_GENERIC)
     end
