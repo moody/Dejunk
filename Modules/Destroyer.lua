@@ -129,12 +129,12 @@ do
         DBL:Release(item)
         return
       end
-      
+
       -- Destroy item
       PickupContainerItem(item.Bag, item.Slot)
       DeleteCursorItem()
       ClearCursor() -- Clear cursor in case any issues occurred
-      
+
       -- Notify confirmer
       Confirmer:Queue("Destroyer", item)
     end
@@ -191,39 +191,45 @@ end
 -- @param item - a DethsBagLib item
 function Destroyer:IsDestroyableItem(item)
   --[[ Priority
-  1. Is it on the Destroyables list?
+  1. Is it locked?
+  2. Is it on the Destroyables list?
     a. Threshold?
-  2. Are we destroying Inclusions?
+  3. Are we destroying Inclusions?
     a. Threshold?
-  3. Are we ignoring Exclusions?
+  4. Are we ignoring Exclusions?
     a. Threshold?
-  4. Ignore checks
-  5. Destroy checks
+  5. Ignore checks
+  6. Destroy checks
   ]]
 
   -- 1
+  if item:IsLocked() then
+    return false, L.REASON_ITEM_IS_LOCKED_TEXT
+  end
+
+  -- 2
   if ListManager:IsOnList("Destroyables", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end
 
-  -- 2
+  -- 3
   if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
-  -- 3
+  -- 4
   if DB.Profile.DestroyIgnoreExclusions and ListManager:IsOnList("Exclusions", item.ItemID) then
     return false, L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end
 
-  -- 4
+  -- 5
   if DB.Profile.DestroyIgnoreReadable and item.Readable then
     return false, L.REASON_IGNORE_READABLE_TEXT
   end
 
-  -- 5
+  -- 6
   if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
     local destroy, reason = self:ItemPriceBelowThreshold(item)
     return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
@@ -285,7 +291,7 @@ end
 
 do -- DestroyToysAlreadyCollected
   local PlayerHasToy = PlayerHasToy
-  
+
   function Destroyer:IsDestroyToysAlreadyCollectedItem(item)
     if not DB.Profile.DestroyToysAlreadyCollected or not item.NoValue then return false end
     return PlayerHasToy(item.ItemID) and DTL:IsSoulbound()
