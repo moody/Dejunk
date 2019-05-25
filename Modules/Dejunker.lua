@@ -127,7 +127,7 @@ do
   -- Checks whether or not the Dejunker is active.
   -- @return - boolean
   function Dejunker:IsDejunking()
-    return (currentState ~= states.None) or Confirmer:IsConfirming("Dejunker")
+    return (currentState ~= states.None)
   end
 end
 
