@@ -127,7 +127,12 @@ do
   -- Checks whether or not the Dejunker is active.
   -- @return - boolean
   function Dejunker:IsDejunking()
-    return (currentState ~= states.None) or Confirmer:IsConfirming("Dejunker")
+    return (currentState ~= states.None)
+  end
+
+  -- Returns true if the Dejunker is active or items are being confirmed.
+  function Dejunker:IsBusy()
+    return self:IsDejunking() or Confirmer:IsConfirming("Dejunker")
   end
 end
 

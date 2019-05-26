@@ -1,3 +1,3 @@
-# 8.1.3
+# 8.1.4
 
-- Added tooltip message for locked items
+- Fixed error related to merchants which do not buy items

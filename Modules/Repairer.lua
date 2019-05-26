@@ -20,6 +20,7 @@ local Repairer = Addon.Repairer
 
 local Core = Addon.Core
 local DB = Addon.DB
+local Dejunker = Addon.Dejunker
 
 -- Variables
 local REPAIR_DELAY = 0.5
@@ -54,7 +55,7 @@ local function repairer_OnUpdate(self, elapsed)
 
 			if not canRepair then -- Guild repair should have been successful
 				PlaySound(ITEM_REPAIR_SOUND_ID)
-				Core:Print(format(L.REPAIRED_ALL_ITEMS_GUILD, GetCoinTextureString(totalRepairCost)))
+				Core:Print(L.REPAIRED_ALL_ITEMS_GUILD:format(GetCoinTextureString(totalRepairCost)))
 				Repairer:StopRepairing()
 				return
 			end
@@ -68,11 +69,11 @@ local function repairer_OnUpdate(self, elapsed)
 	elseif (GetMoney() >= totalRepairCost) then
 		RepairAllItems(false) -- Use player money
 		PlaySound(ITEM_REPAIR_SOUND_ID)
-		Core:Print(format(L.REPAIRED_ALL_ITEMS, GetCoinTextureString(totalRepairCost)))
+		Core:Print(L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(totalRepairCost)))
 		Repairer:StopRepairing()
 		return
 	else -- Repairs probably impossible
-		if Addon.Dejunker:IsDejunking() then return end -- Wait until junk has been sold
+    if Dejunker:IsBusy() then return end -- Wait until junk has been sold
 		Core:Print(L.REPAIRED_NO_ITEMS)
 		Repairer:StopRepairing()
 		return
@@ -97,7 +98,7 @@ local function start_OnUpdate(self, elapsed)
 
 		totalRepairCost = repairCost
 		repairInterval = REPAIR_DELAY
-		
+
 		self.OnUpdate = repairer_OnUpdate
 	end
 end
