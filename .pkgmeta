@@ -18,7 +18,9 @@ externals:
   Libs/DethsBagLib: git://github.com/moody/DethsBagLib.git
   Libs/DethsCmdLib: git://github.com/moody/DethsCmdLib.git
   Libs/DethsColorLib: git://github.com/moody/DethsColorLib.git
-  Libs/DethsDBLib: git://github.com/moody/DethsDBLib.git
+  Libs/DethsDBLib:
+    url: git://github.com/moody/DethsDBLib.git
+    tag: 2.0.0
   Libs/DethsFrameLib: git://github.com/moody/DethsFrameLib.git
   Libs/DethsTooltipLib: git://github.com/moody/DethsTooltipLib.git
 
@@ -57,7 +59,7 @@ ignore:
   - Libs/DethsDBLib/CHANGELOG.md
   - Libs/DethsDBLib/LICENSE.md
   - Libs/DethsDBLib/README.md
-  - Libs/DethsDBLib/Tests.lua
+  - Libs/DethsDBLib/tests
   - Libs/DethsFrameLib/DethsFrameLib.toc
   - Libs/DethsFrameLib/LICENSE.md
   - Libs/DethsFrameLib/Tests

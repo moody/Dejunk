@@ -20,7 +20,7 @@ Libs\DethsAddonLib\DethsAddonLib.lua
 Libs\DethsBagLib\DethsBagLib.lua
 Libs\DethsCmdLib\DethsCmdLib.lua
 Libs\DethsColorLib\DethsColorLib.lua
-Libs\DethsDBLib\DethsDBLib.lua
+Libs\DethsDBLib\DethsDBLib.xml
 Libs\DethsFrameLib\DethsFrameLib.xml
 Libs\DethsTooltipLib\DethsTooltipLib.lua
 
