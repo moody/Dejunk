@@ -109,19 +109,21 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
+  if Dejunker:IsBusy() then
     return false, L.DEJUNKING_IN_PROGRESS
   end
 
-  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
+  if Destroyer:IsBusy() then
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListManager:IsParsing("Inclusions") or
-     ListManager:IsParsing("Exclusions") then
-    return false, format(L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING,
-      Tools:GetColoredListName("Inclusions"),
-      Tools:GetColoredListName("Exclusions"))
+  if ListManager:IsParsing("Inclusions") or ListManager:IsParsing("Exclusions") then
+    return
+      false,
+      L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING:format(
+        Tools:GetColoredListName("Inclusions"),
+        Tools:GetColoredListName("Exclusions")
+      )
   end
 
   return true
@@ -131,17 +133,20 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDestroy()
-  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
+  if Destroyer:IsBusy() then
     return false, L.DESTROYING_IN_PROGRESS
   end
 
-  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
+  if Dejunker:IsBusy() then
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
   if ListManager:IsParsing("Destroyables") then
-    return false, format(L.CANNOT_DESTROY_WHILE_LIST_UPDATING,
-      Tools:GetColoredListName("Destroyables"))
+    return
+      false,
+      L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(
+        Tools:GetColoredListName("Destroyables")
+      )
   end
 
   return true

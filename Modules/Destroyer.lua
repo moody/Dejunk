@@ -103,6 +103,11 @@ do
   function Destroyer:IsDestroying()
     return (currentState ~= states.None)
   end
+
+  -- Returns true if the Destroyer is active or items are being confirmed.
+  function Destroyer:IsBusy()
+    return self:IsDestroying() or Confirmer:IsConfirming("Destroyer")
+  end
 end
 
 -- ============================================================================

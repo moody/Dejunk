@@ -129,6 +129,11 @@ do
   function Dejunker:IsDejunking()
     return (currentState ~= states.None)
   end
+
+  -- Returns true if the Dejunker is active or items are being confirmed.
+  function Dejunker:IsBusy()
+    return self:IsDejunking() or Confirmer:IsConfirming("Dejunker")
+  end
 end
 
 -- ============================================================================
