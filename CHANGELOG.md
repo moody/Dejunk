@@ -1,3 +1,3 @@
-# 8.1.4
+# 8.1.5
 
-- Fixed error related to merchants which do not buy items
+- Updated DB version
