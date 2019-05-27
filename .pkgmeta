@@ -20,7 +20,7 @@ externals:
   Libs/DethsColorLib: git://github.com/moody/DethsColorLib.git
   Libs/DethsDBLib:
     url: git://github.com/moody/DethsDBLib.git
-    tag: 2.0.0
+    tag: 2.0.1
   Libs/DethsFrameLib: git://github.com/moody/DethsFrameLib.git
   Libs/DethsTooltipLib: git://github.com/moody/DethsTooltipLib.git
 
