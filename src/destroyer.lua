@@ -13,6 +13,7 @@ local assert, format, tremove = assert, format, table.remove
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
 local LE_ITEM_QUALITY_POOR = LE_ITEM_QUALITY_POOR
+local GetCoinTextureString = _G.GetCoinTextureString
 
 -- Modules
 local Destroyer = Addon.Destroyer
@@ -22,8 +23,8 @@ local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local ListManager = Addon.ListManager
-local ParentFrame = Addon.Frames.ParentFrame
 local Tools = Addon.Tools
+local UI = Addon.UI
 
 -- Variables
 local states = {
@@ -43,7 +44,7 @@ do
   function Destroyer:StartAutoDestroy()
     if (currentState ~= states.None) then return end
     if not DB.Profile.AutoDestroy then return end
-    if ParentFrame.Frame and ParentFrame:IsVisible() then return end
+    if UI:IsShown() then return end
 
     -- NOTE: We don't use self.Filter since DBL will call without args
     DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
@@ -261,26 +262,19 @@ function Destroyer:IsDestroyableItem(item)
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
 end
 
-do -- DestroyUsePriceThreshold
-  local GetCoinTextureString = GetCoinTextureString
-  local COPPER_PER_GOLD = COPPER_PER_GOLD
-  local COPPER_PER_SILVER = COPPER_PER_SILVER
+-- Returns true if the item's price is less than the set price percent threshold.
+function Destroyer:ItemPriceBelowThreshold(item)
+  if DB.Profile.DestroyPricePercentThreshold.Enabled and Tools:ItemCanBeSold(item) then
+    local threshold = Tools:GetPricePercentThreshold()
 
-  -- Returns true if the item's price is less than the set price threshold.
-  function Destroyer:ItemPriceBelowThreshold(item)
-    if DB.Profile.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
-      local t = DB.Profile.DestroyPriceThreshold
-      local threshold = (t.Gold * COPPER_PER_GOLD) + (t.Silver * COPPER_PER_SILVER) + t.Copper
-
-      if ((item.Price * item.Quantity) >= threshold) then
-        return false, format(L.REASON_DESTROY_THRESHOLD_MET_TEXT, GetCoinTextureString(threshold))
-      else
-        return true, format(L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT, GetCoinTextureString(threshold))
-      end
+    if ((item.Price * item.Quantity) >= threshold) then
+      return false, L.REASON_DESTROY_THRESHOLD_MET_TEXT:format(GetCoinTextureString(threshold))
+    else
+      return true, L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT:format(GetCoinTextureString(threshold))
     end
-
-    return true
   end
+
+  return true
 end
 
 do -- DestroyPetsAlreadyCollected

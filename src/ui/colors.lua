@@ -11,7 +11,6 @@ local Colors = Addon.Colors
 Colors.Schemes = {}
 
 local DB = Addon.DB
-local ParentFrame = Addon.Frames.ParentFrame
 
 -- Variables
 local currentIndex
@@ -31,12 +30,10 @@ end
 -- @param index - the index of a color scheme in Colors.Schemes
 function Colors:SetColorScheme(index)
   if not self.Schemes[index] then index = 1 end
-  
+
   DB.Global.ColorScheme = index
   self.ColorTable:SetColors(self.Schemes[index])
   currentIndex = index
-
-  if ParentFrame.Frame then ParentFrame:Refresh() end
 end
 
 -- Switches to the next color scheme.

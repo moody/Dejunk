@@ -1,19 +1,15 @@
 -- MinimapIcon: provides a minimap button for Dejunk.
 
 local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
-local DCL = Addon.Libs.DCL
-local LDB = Addon.Libs.LDB
-local LDBIcon = Addon.Libs.LDBIcon
-
--- Modules
-local MinimapIcon = Addon.MinimapIcon
-
 local Colors = Addon.Colors
 local DB = Addon.DB
-local Tools = Addon.Tools
+local DCL = Addon.Libs.DCL
+local Destroyer = Addon.Destroyer
+local L = Addon.Libs.L
+local LDB = Addon.Libs.LDB
+local LDBIcon = Addon.Libs.LDBIcon
+local MinimapIcon = Addon.MinimapIcon
+local UI = Addon.UI
 
 -- Variables
 local OBJECT_NAME = AddonName.."MinimapIcon"
@@ -29,9 +25,9 @@ function MinimapIcon:Initialize()
 
     OnClick = function(_, button)
       if (button == "LeftButton") then
-        Addon.Core:ToggleGUI()
+        UI:Toggle()
       elseif (button == "RightButton") then
-        Addon.Destroyer:StartDestroying()
+        Destroyer:StartDestroying()
       end
     end,
 

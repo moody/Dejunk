@@ -52,11 +52,9 @@ local defaults = {
 
     -- Destroy options
     AutoDestroy = false,
-    DestroyUsePriceThreshold = false,
-    DestroyPriceThreshold = {
-      Gold = 0,
-      Silver = 0,
-      Copper = 0
+    DestroyPricePercentThreshold = {
+      Enabled = true,
+      Value = Consts.PRICE_THRESHOLD_PERCENT_MIN
     },
     DestroyPoor = false,
     DestroyInclusions = false,
@@ -118,6 +116,17 @@ local function reformat()
     DB.Profile.SellBelowAverageILVL.Value,
     Consts.BELOW_AVERAGE_ILVL_MIN,
     Consts.BELOW_AVERAGE_ILVL_MAX
+  )
+
+  globalProfile.DestroyPricePercentThreshold.Value = Clamp(
+    globalProfile.DestroyPricePercentThreshold.Value,
+    Consts.PRICE_THRESHOLD_PERCENT_MIN,
+    Consts.PRICE_THRESHOLD_PERCENT_MAX
+  )
+  DB.Profile.DestroyPricePercentThreshold.Value = Clamp(
+    DB.Profile.DestroyPricePercentThreshold.Value,
+    Consts.PRICE_THRESHOLD_PERCENT_MIN,
+    Consts.PRICE_THRESHOLD_PERCENT_MAX
   )
 
   -- Set profile to Global if DejunkerPerChar.UseGlobal was true

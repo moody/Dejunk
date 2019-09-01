@@ -1,21 +1,17 @@
 -- Tools: a collection of helpful functions.
 
 local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
-local DCL = Addon.Libs.DCL
-
--- Upvalues
 local assert = assert
-local GetItemInfo = GetItemInfo
-
--- Modules
-local Tools = Addon.Tools
-
 local Colors = Addon.Colors
 local Consts = Addon.Consts
+local DB = Addon.DB
+local DCL = Addon.Libs.DCL
+local floor = math.floor
+local GetMoney = _G.GetMoney
+local L = Addon.Libs.L
 local ListManager = Addon.ListManager
+local StaticPopup_Show = _G.StaticPopup_Show
+local Tools = Addon.Tools
 
 -- ============================================================================
 -- List Name Functions
@@ -81,4 +77,51 @@ end
 function Tools:ItemCanBeRefunded(item)
   local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.Bag, item.Slot))
   return refundTimeRemaining and (refundTimeRemaining > 0)
+end
+
+-- ============================================================================
+-- DB Functions
+-- ============================================================================
+
+function Tools:GetPricePercentThreshold()
+  return floor(
+    (GetMoney() * DB.Profile.DestroyPricePercentThreshold.Value) + 0.5
+  )
+end
+
+-- ============================================================================
+-- Popup Functions
+-- ============================================================================
+
+do -- DEJUNK_YES_NO_POPUP
+  local DEJUNK_YES_NO_POPUP = {
+    button1 = _G.YES,
+    button2 = _G.NO,
+    showAlert = 1,
+    timeout = 0,
+    exclusive = 1,
+    whileDead = 1,
+    hideOnEscape = 1
+  }
+  _G.StaticPopupDialogs.DEJUNK_YES_NO_POPUP = DEJUNK_YES_NO_POPUP
+
+  --[[
+    Shows a simple Yes or No popup for confirming an action.
+
+    options = {
+      text = string,
+      onAccept = function,
+      onCancel = function,
+      onShow = function,
+      onHide = function
+    }
+  ]]
+  function Tools:YesNoPopup(options)
+    DEJUNK_YES_NO_POPUP.text = options.text
+    DEJUNK_YES_NO_POPUP.OnAccept = options.onAccept
+    DEJUNK_YES_NO_POPUP.OnCancel = options.onCancel
+    DEJUNK_YES_NO_POPUP.OnShow = options.onShow
+    DEJUNK_YES_NO_POPUP.OnHide = options.onHide
+    StaticPopup_Show("DEJUNK_YES_NO_POPUP")
+  end
 end
