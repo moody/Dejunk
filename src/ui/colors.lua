@@ -5,7 +5,7 @@ local Colors = Addon.Colors
 
 local _colors = {
   -- General
-  Primary = "999999FF",
+  Primary = "AAAAAAFF",
   Red = "CC3F3FFF",
   Green = "3FCC3FFF",
   -- Blue = "3F3FCCFF",
