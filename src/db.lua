@@ -104,28 +104,24 @@ local function reformat()
     DejunkPerChar = nil
   end
 
-  -- Clamp min-max value variables
-  globalProfile.SellBelowAverageILVL.Value = Clamp(
-    globalProfile.SellBelowAverageILVL.Value,
-    Consts.BELOW_AVERAGE_ILVL_MIN,
-    Consts.BELOW_AVERAGE_ILVL_MAX
-  )
-  DB.Profile.SellBelowAverageILVL.Value = Clamp(
-    DB.Profile.SellBelowAverageILVL.Value,
-    Consts.BELOW_AVERAGE_ILVL_MIN,
-    Consts.BELOW_AVERAGE_ILVL_MAX
-  )
+  -- Iterate all profiles
+  for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
+    profile.DestroyUsePriceThreshold = nil
+    profile.DestroyPriceThreshold = nil
 
-  globalProfile.DestroyPricePercentThreshold.Value = Clamp(
-    globalProfile.DestroyPricePercentThreshold.Value,
-    Consts.PRICE_THRESHOLD_PERCENT_MIN,
-    Consts.PRICE_THRESHOLD_PERCENT_MAX
-  )
-  DB.Profile.DestroyPricePercentThreshold.Value = Clamp(
-    DB.Profile.DestroyPricePercentThreshold.Value,
-    Consts.PRICE_THRESHOLD_PERCENT_MIN,
-    Consts.PRICE_THRESHOLD_PERCENT_MAX
-  )
+    -- Clamp min-max value variables
+    profile.SellBelowAverageILVL.Value = Clamp(
+      profile.SellBelowAverageILVL.Value,
+      Consts.BELOW_AVERAGE_ILVL_MIN,
+      Consts.BELOW_AVERAGE_ILVL_MAX
+    )
+
+    profile.DestroyPricePercentThreshold.Value = Clamp(
+      profile.DestroyPricePercentThreshold.Value,
+      Consts.PRICE_THRESHOLD_PERCENT_MIN,
+      Consts.PRICE_THRESHOLD_PERCENT_MAX
+    )
+  end
 
   -- Set profile to Global if DejunkerPerChar.UseGlobal was true
   if useGlobal then DB:SetProfile("Global") end
