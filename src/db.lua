@@ -1,15 +1,13 @@
 -- DB: provides addon modules easy access to saved variables.
 
 local AddonName, Addon = ...
-
--- Addon
-local DB = Addon.DB
+local Clamp = _G.Clamp
 local Consts = Addon.Consts
+local DB = Addon.DB
 
 -- Default database values
 local defaults = {
   Global = {
-    ColorScheme = 1,
     Minimap = { hide = false },
     ItemTooltip = true
   },
@@ -76,7 +74,7 @@ local defaults = {
 
 -- Converts the old version of the DB into the new one.
 local function reformat()
-  local globalProfile = DEJUNK_ADDON_SV.Profiles.Global
+  local globalProfile = _G.DEJUNK_ADDON_SV.Profiles.Global
   local useGlobal = false -- for DejunkPerChar.UseGlobal
 
   -- If DejunkGlobal has old values, move them to the global profile
