@@ -10,6 +10,7 @@ local floor = math.floor
 local GetMoney = _G.GetMoney
 local L = Addon.Libs.L
 local ListManager = Addon.ListManager
+local max = math.max
 local StaticPopup_Show = _G.StaticPopup_Show
 local Tools = Addon.Tools
 
@@ -84,8 +85,9 @@ end
 -- ============================================================================
 
 function Tools:GetPricePercentThreshold()
-  return floor(
-    (GetMoney() * DB.Profile.DestroyPricePercentThreshold.Value) + 0.5
+  return max(
+    floor((GetMoney() * DB.Profile.DestroyPricePercentThreshold.Value) + 0.5),
+    1
   )
 end
 
