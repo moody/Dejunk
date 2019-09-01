@@ -35,7 +35,7 @@ function Sell:AddGeneral(parent)
   Utils:CheckBox({
     parent = parent,
     label = L.SAFE_MODE_TEXT,
-    tooltip = L.SAFE_MODE_TOOLTIP,
+    tooltip = L.SAFE_MODE_TOOLTIP:format(Consts.SAFE_MODE_MAX),
     get = function() return DB.Profile.SafeMode end,
     set = function(value) DB.Profile.SafeMode = value end
   })
