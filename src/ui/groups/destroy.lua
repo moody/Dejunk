@@ -42,9 +42,9 @@ function Destroy:AddGeneral(parent)
 
     local slider = AceGUI:Create("Slider")
     slider:SetSliderValues(
-      Consts.PRICE_THRESHOLD_PERCENT_MIN,
-      Consts.PRICE_THRESHOLD_PERCENT_MAX,
-      Consts.PRICE_THRESHOLD_PERCENT_STEP
+      Consts.PRICE_PERCENT_THRESHOLD_MIN,
+      Consts.PRICE_PERCENT_THRESHOLD_MAX,
+      Consts.PRICE_PERCENT_THRESHOLD_STEP
     )
     slider:SetIsPercent(true)
     slider:SetLabel(GetCoinTextureString(Tools:GetPricePercentThreshold()))

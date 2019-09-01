@@ -19,9 +19,9 @@ Consts.BELOW_AVERAGE_ILVL_MIN = 10
 Consts.BELOW_AVERAGE_ILVL_MAX = 100
 
 -- DestroyPricePercentThreshold
-Consts.PRICE_THRESHOLD_PERCENT_MIN = 0.1 / 100
-Consts.PRICE_THRESHOLD_PERCENT_MAX = 5 / 100
-Consts.PRICE_THRESHOLD_PERCENT_STEP = 0.1 / 100
+Consts.PRICE_PERCENT_THRESHOLD_MIN = 0.1 / 100
+Consts.PRICE_PERCENT_THRESHOLD_MAX = 5 / 100
+Consts.PRICE_PERCENT_THRESHOLD_STEP = 0.1 / 100
 
 -- ============================================================================
 -- Consts Functions
