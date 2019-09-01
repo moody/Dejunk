@@ -30,7 +30,6 @@ local GetNetStats = _G.GetNetStats
 -- Initializes modules.
 function Core:OnInitialize()
   DB:Initialize()
-  Colors:Initialize()
   ListManager:Initialize()
   Consts:Initialize()
   MerchantButton:Initialize()
@@ -84,7 +83,7 @@ Core:RegisterEvent("UI_ERROR_MESSAGE")
 -- @param ... - the messages to print
 function Core:Print(...)
   if DB.Profile.SilentMode then return end
-  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.LabelText), ...)
+  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary), ...)
 end
 
 -- Attempts to print a message if verbose mode is enabled.
@@ -182,7 +181,7 @@ do
     end
     if Tools:ItemCanBeRefunded(item) then return end
 
-    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
+    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.Primary)
     local rightText
 
     if not IsShiftKeyDown() then -- Dejunk tooltip

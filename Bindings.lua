@@ -14,7 +14,7 @@ local UI = Addon.UI
 local currentItemID = nil
 
 -- Category
-_G["BINDING_CATEGORY_DEJUNK"] = DCL:ColorString(AddonName, Colors.LabelText)
+_G["BINDING_CATEGORY_DEJUNK"] = DCL:ColorString(AddonName, Colors.Primary)
 
 -- Blank headers
 _G["BINDING_HEADER_DEJUNKBLANK1"] = ""

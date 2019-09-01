@@ -23,7 +23,7 @@ local function setProfile(key)
   if DB:SetProfile(key) then
     ListManager:Update()
     Core:Print(
-      L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Exclusions))
+      L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Green))
     )
     return true
   end
@@ -35,7 +35,7 @@ end
 local function copyProfile(key)
   if DB:CopyProfile(key) then
     Core:Print(
-      L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Destroyables))
+      L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
     return true
   end
@@ -47,7 +47,7 @@ end
 local function deleteProfile(key)
   if DB:DeleteProfile(key) then
     Core:Print(
-      L.PROFILE_DELETED_TEXT:format(DCL:ColorString(key, Colors.Inclusions))
+      L.PROFILE_DELETED_TEXT:format(DCL:ColorString(key, Colors.Red))
     )
     return true
   end
@@ -60,7 +60,7 @@ end
 local function createProfile(key, importTable)
   if DB:ProfileExists(key) then
     Core:Print(
-      L.PROFILE_EXISTS_TEXT:format(DCL:ColorString(key, Colors.Destroyables))
+      L.PROFILE_EXISTS_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
     return false
   elseif DB:CreateProfile(key, importTable) then
@@ -205,7 +205,7 @@ function Profiles:Profiles(parent)
       onValueChanged = function(self, event, key)
         Tools:YesNoPopup({
           text = L.DELETE_PROFILE_POPUP:format(
-            DCL:ColorString(key, Colors.Destroyables)
+            DCL:ColorString(key, Colors.Yellow)
           ),
           onAccept = function() deleteProfile(key) end,
           onHide = function() Profiles:UpdateDropdowns() end
