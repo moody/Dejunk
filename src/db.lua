@@ -106,21 +106,36 @@ local function reformat()
 
   -- Iterate all profiles
   for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
-    profile.DestroyUsePriceThreshold = nil
-    profile.DestroyPriceThreshold = nil
-
-    -- Clamp min-max value variables
+    -- Clamp min-max values
     profile.SellBelowAverageILVL.Value = Clamp(
       profile.SellBelowAverageILVL.Value,
       Consts.BELOW_AVERAGE_ILVL_MIN,
       Consts.BELOW_AVERAGE_ILVL_MAX
     )
 
-    profile.DestroyBelowPrice.Value = Clamp(
-      profile.DestroyBelowPrice.Value,
-      Consts.DESTROY_BELOW_PRICE_MIN,
-      Consts.DESTROY_BELOW_PRICE_MAX
-    )
+    do -- DestroyPriceThreshold -> DestroyBelowPrice
+      if type(profile.DestroyUsePriceThreshold) == "boolean" then
+        profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
+      end
+
+      if profile.DestroyPriceThreshold then
+        profile.DestroyBelowPrice.Value =
+          (profile.DestroyPriceThreshold.Gold * 100 * 100) +
+          (profile.DestroyPriceThreshold.Silver * 100) +
+          profile.DestroyPriceThreshold.Copper
+      end
+
+      -- Clamp min-max values
+      profile.DestroyBelowPrice.Value = Clamp(
+        profile.DestroyBelowPrice.Value,
+        Consts.DESTROY_BELOW_PRICE_MIN,
+        Consts.DESTROY_BELOW_PRICE_MAX
+      )
+
+      -- Wipe old values
+      profile.DestroyUsePriceThreshold = nil
+      profile.DestroyPriceThreshold = nil
+    end
   end
 
   -- Set profile to Global if DejunkerPerChar.UseGlobal was true
