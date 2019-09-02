@@ -1,4 +1,4 @@
-## Interface: 80100
+## Interface: 80200
 ## Title: Dejunk
 ## Author: Dethanyel
 ## Version: @project-version@
@@ -6,64 +6,61 @@
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV, DejunkGlobal
 ## SavedVariablesPerCharacter: DejunkPerChar
-## OptionalDeps: DethsAddonLib, DethsBagLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsFrameLib, DethsTooltipLib
+## OptionalDeps: DethsAddonLib, DethsBagLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsTooltipLib
 ## X-Curse-Project-ID: 257636
 
-Libs\LibStub\LibStub.lua
-Libs\AceLocale-3.0\AceLocale-3.0.lua
-Libs\AceSerializer-3.0\AceSerializer-3.0.lua
-Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
-Libs\DethsLibLoader\DethsLibLoader.lua
-Libs\DethsAddonLib\DethsAddonLib.lua
-Libs\DethsBagLib\DethsBagLib.lua
-Libs\DethsCmdLib\DethsCmdLib.lua
-Libs\DethsColorLib\DethsColorLib.lua
-Libs\DethsDBLib\DethsDBLib.xml
-Libs\DethsFrameLib\DethsFrameLib.xml
-Libs\DethsTooltipLib\DethsTooltipLib.lua
+libs\LibStub\LibStub.lua
+libs\AceLocale-3.0\AceLocale-3.0.lua
+libs\AceSerializer-3.0\AceSerializer-3.0.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
+libs\AceGUI-3.0\AceGUI-3.0.xml
+libs\DethsLibLoader\DethsLibLoader.lua
+libs\DethsAddonLib\DethsAddonLib.lua
+libs\DethsBagLib\DethsBagLib.lua
+libs\DethsCmdLib\DethsCmdLib.lua
+libs\DethsColorLib\DethsColorLib.lua
+libs\DethsDBLib\DethsDBLib.xml
+libs\DethsTooltipLib\DethsTooltipLib.lua
 
-Locales\enUS.lua
-Locales\deDE.lua
-Locales\esES.lua
-Locales\esMX.lua
-Locales\frFR.lua
-Locales\itIT.lua
-Locales\koKR.lua
-Locales\ptBR.lua
-Locales\ruRU.lua
-Locales\zhCN.lua
-Locales\zhTW.lua
+locales\enUS.lua
+locales\deDE.lua
+locales\esES.lua
+locales\esMX.lua
+locales\frFR.lua
+locales\itIT.lua
+locales\koKR.lua
+locales\ptBR.lua
+locales\ruRU.lua
+locales\zhCN.lua
+locales\zhTW.lua
 
-Modules\Modules.lua
-Modules\Consts.lua
-Modules\DB.lua
-Modules\ListManager.lua
-Modules\Tools.lua
-Modules\Confirmer.lua
-Modules\Dejunker.lua
-Modules\Destroyer.lua
-Modules\Repairer.lua
+src\_init.lua
+src\consts.lua
+src\db.lua
+src\list-manager.lua
+src\tools.lua
+src\confirmer.lua
+src\dejunker.lua
+src\destroyer.lua
+src\repairer.lua
 
-Modules\UI\Colors.lua
-Modules\UI\MerchantButton.lua
-Modules\UI\MinimapIcon.lua
+src\ui\colors.lua
+src\ui\merchant-button.lua
+src\ui\minimap-icon.lua
+src\ui\utils.lua
+src\ui\main.lua
 
-Modules\UI\Frames\ParentFrame.lua
-Modules\UI\Frames\TitleFrame.lua
-Modules\UI\Frames\DejunkChildFrame.lua
-Modules\UI\Frames\ProfileChildFrame.lua
-Modules\UI\Frames\TransportChildFrame.lua
+src\ui\groups\general.lua
+src\ui\groups\sell.lua
+src\ui\groups\ignore.lua
+src\ui\groups\destroy.lua
+src\ui\groups\lists.lua
+src\ui\groups\profiles.lua
 
-Modules\UI\Objects\CurrencyField.lua
-Modules\UI\Objects\FauxButton.lua
-Modules\UI\Objects\FauxFrame.lua
-Modules\UI\Objects\ListButton.lua
-Modules\UI\Objects\ListFrame.lua
-Modules\UI\Objects\OptionsFrame.lua
-Modules\UI\Objects\ProfileButton.lua
-Modules\UI\Objects\ProfileFrame.lua
+src\ui\widgets\ListFrame.lua
 
 Bindings.lua
-Core.lua
+
+src\core.lua

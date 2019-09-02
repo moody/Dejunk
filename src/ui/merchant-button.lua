@@ -1,18 +1,12 @@
 -- MerchantButton: displays a "Dejunk" button on the merchant frame.
 
 local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
-local DTL = Addon.Libs.DTL
-
--- Modules
-local MerchantButton = Addon.MerchantButton
-
 local Core = Addon.Core
-local DB = Addon.DB
 local Dejunker = Addon.Dejunker
-local Repairer = Addon.Repairer
+local DTL = Addon.Libs.DTL
+local L = Addon.Libs.L
+local MerchantButton = Addon.MerchantButton
+local UI = Addon.UI
 
 -- ============================================================================
 -- Merchant Button
@@ -41,7 +35,7 @@ function MerchantButton:Initialize()
     if (button == "LeftButton") then
       Dejunker:StartDejunking()
     elseif (button == "RightButton") then
-      Core:ToggleGUI()
+      UI:Toggle()
     end
   end)
 

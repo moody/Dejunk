@@ -1,3 +1,4 @@
-# 8.1.5
+# 8.2.0
 
-- Updated DB version
+- Migrated interface to AceGUI
+- Changed destroy option "Price Threshold" to "Destroy Below Price"

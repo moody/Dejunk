@@ -2,23 +2,19 @@
 
 local AddonName, Addon = ...
 local _G = _G
-
--- Libs
-local L = Addon.Libs.L
-local DCL = Addon.Libs.DCL
-
--- Modules
-local Core = Addon.Core
 local Colors = Addon.Colors
+local DCL = Addon.Libs.DCL
 local Destroyer = Addon.Destroyer
+local L = Addon.Libs.L
 local ListManager = Addon.ListManager
 local Tools = Addon.Tools
+local UI = Addon.UI
 
 -- Variables
 local currentItemID = nil
 
 -- Category
-_G["BINDING_CATEGORY_DEJUNK"] = DCL:ColorString(AddonName, Colors.LabelText)
+_G["BINDING_CATEGORY_DEJUNK"] = DCL:ColorString(AddonName, Colors.Primary)
 
 -- Blank headers
 _G["BINDING_HEADER_DEJUNKBLANK1"] = ""
@@ -48,7 +44,7 @@ _G["BINDING_NAME_DEJUNK_REM_DESTROYABLES"] = format(L.BINDINGS_REMOVE_FROM_LIST_
 -- ============================================================================
 
 function DejunkBindings_ToggleOptions()
-  Core:ToggleGUI()
+  UI:Toggle()
 end
 
 function DejunkBindings_StartDestroying()

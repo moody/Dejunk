@@ -13,6 +13,7 @@ local assert, format, tremove = assert, format, table.remove
 local GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor =
       GetCursorInfo, PickupContainerItem, DeleteCursorItem, ClearCursor
 local LE_ITEM_QUALITY_POOR = LE_ITEM_QUALITY_POOR
+local GetCoinTextureString = _G.GetCoinTextureString
 
 -- Modules
 local Destroyer = Addon.Destroyer
@@ -22,8 +23,8 @@ local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local ListManager = Addon.ListManager
-local ParentFrame = Addon.Frames.ParentFrame
 local Tools = Addon.Tools
+local UI = Addon.UI
 
 -- Variables
 local states = {
@@ -43,7 +44,7 @@ do
   function Destroyer:StartAutoDestroy()
     if (currentState ~= states.None) then return end
     if not DB.Profile.AutoDestroy then return end
-    if ParentFrame.Frame and ParentFrame:IsVisible() then return end
+    if UI:IsShown() then return end
 
     -- NOTE: We don't use self.Filter since DBL will call without args
     DBL:GetItemsByFilter(Destroyer.Filter, itemsToDestroy)
@@ -198,11 +199,11 @@ function Destroyer:IsDestroyableItem(item)
   --[[ Priority
   1. Is it locked?
   2. Is it on the Destroyables list?
-    a. Threshold?
+    a. Destroy below price?
   3. Are we destroying Inclusions?
-    a. Threshold?
+    a. Destroy below price?
   4. Are we ignoring Exclusions?
-    a. Threshold?
+    a. Destroy below price?
   5. Ignore checks
   6. Destroy checks
   ]]
@@ -214,13 +215,13 @@ function Destroyer:IsDestroyableItem(item)
 
   -- 2
   if ListManager:IsOnList("Destroyables", item.ItemID) then
-    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    local destroy, reason = self:IsDestroyBelowPrice(item)
     return destroy, reason or format(L.REASON_ITEM_ON_LIST_TEXT, L.DESTROYABLES_TEXT)
   end
 
   -- 3
   if DB.Profile.DestroyInclusions and ListManager:IsOnList("Inclusions", item.ItemID) then
-    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    local destroy, reason = self:IsDestroyBelowPrice(item)
     return destroy, reason or L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
@@ -236,7 +237,7 @@ function Destroyer:IsDestroyableItem(item)
 
   -- 6
   if DB.Profile.DestroyPoor and (item.Quality == LE_ITEM_QUALITY_POOR) then
-    local destroy, reason = self:ItemPriceBelowThreshold(item)
+    local destroy, reason = self:IsDestroyBelowPrice(item)
     return destroy, reason or L.REASON_DESTROY_BY_QUALITY_TEXT
   end
 
@@ -261,26 +262,19 @@ function Destroyer:IsDestroyableItem(item)
   return false, L.REASON_ITEM_NOT_FILTERED_TEXT
 end
 
-do -- DestroyUsePriceThreshold
-  local GetCoinTextureString = GetCoinTextureString
-  local COPPER_PER_GOLD = COPPER_PER_GOLD
-  local COPPER_PER_SILVER = COPPER_PER_SILVER
+-- Returns true if the item's price is below the max destroy price.
+function Destroyer:IsDestroyBelowPrice(item)
+  if DB.Profile.DestroyBelowPrice.Enabled and Tools:ItemCanBeSold(item) then
+    local maxPrice = DB.Profile.DestroyBelowPrice.Value
 
-  -- Returns true if the item's price is less than the set price threshold.
-  function Destroyer:ItemPriceBelowThreshold(item)
-    if DB.Profile.DestroyUsePriceThreshold and Tools:ItemCanBeSold(item) then
-      local t = DB.Profile.DestroyPriceThreshold
-      local threshold = (t.Gold * COPPER_PER_GOLD) + (t.Silver * COPPER_PER_SILVER) + t.Copper
-
-      if ((item.Price * item.Quantity) >= threshold) then
-        return false, format(L.REASON_DESTROY_THRESHOLD_MET_TEXT, GetCoinTextureString(threshold))
-      else
-        return true, format(L.REASON_DESTROY_THRESHOLD_NOT_MET_TEXT, GetCoinTextureString(threshold))
-      end
+    if ((item.Price * item.Quantity) >= maxPrice) then
+      return false, L.REASON_DESTROY_IS_NOT_BELOW_PRICE_TEXT:format(GetCoinTextureString(maxPrice))
+    else
+      return true, L.REASON_DESTROY_IS_BELOW_PRICE_TEXT:format(GetCoinTextureString(maxPrice))
     end
-
-    return true
   end
+
+  return true
 end
 
 do -- DestroyPetsAlreadyCollected

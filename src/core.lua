@@ -1,30 +1,27 @@
 -- Core: initializes Dejunk.
 
 local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
+local Colors = Addon.Colors
+local Confirmer = Addon.Confirmer
+local Consts = Addon.Consts
+local Core = Addon.Core
+local DB = Addon.DB
 local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
-
--- Upvalues
-local format, max, print, select = format, max, print, select
-
-local GetNetStats = GetNetStats
-local IsShiftKeyDown, IsAltKeyDown = IsShiftKeyDown, IsAltKeyDown
-
--- Modules
-local Core = Addon.Core
-
-local Colors = Addon.Colors
-local DB = Addon.DB
-local Confirmer = Addon.Confirmer
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
-local Repairer = Addon.Repairer
+local L = Addon.Libs.L
 local ListManager = Addon.ListManager
+local MerchantButton = Addon.MerchantButton
+local MinimapIcon = Addon.MinimapIcon
+local Repairer = Addon.Repairer
 local Tools = Addon.Tools
-local ParentFrame = Addon.Frames.ParentFrame
+local UI = Addon.UI
+
+-- Upvalues
+local format, max, print, select = string.format, math.max, print, select
+local IsShiftKeyDown, IsAltKeyDown = _G.IsShiftKeyDown, _G.IsAltKeyDown
+local GetNetStats = _G.GetNetStats
 
 -- ============================================================================
 -- DethsAddonLib Functions
@@ -33,14 +30,17 @@ local ParentFrame = Addon.Frames.ParentFrame
 -- Initializes modules.
 function Core:OnInitialize()
   DB:Initialize()
-  Colors:Initialize()
   ListManager:Initialize()
-  Addon.Consts:Initialize()
-  Addon.MerchantButton:Initialize()
-  Addon.MinimapIcon:Initialize()
+  Consts:Initialize()
+  MerchantButton:Initialize()
+  MinimapIcon:Initialize()
 
   -- Setup slash command
-  DethsLibLoader("DethsCmdLib", "1.0"):Create(AddonName, self.ToggleGUI, "dj")
+  _G.DethsLibLoader("DethsCmdLib", "1.0"):Create(
+    AddonName,
+    function() UI:Toggle() end,
+    "dj"
+  )
 end
 
 do -- OnUpdate()
@@ -49,6 +49,8 @@ do -- OnUpdate()
   local home, world, latency
 
   function Core:OnUpdate(elapsed)
+    UI:OnUpdate(elapsed)
+
     interval = interval + elapsed
     if (interval >= DELAY) then -- Update latency
       interval = 0
@@ -81,7 +83,7 @@ Core:RegisterEvent("UI_ERROR_MESSAGE")
 -- @param ... - the messages to print
 function Core:Print(...)
   if DB.Profile.SilentMode then return end
-  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.LabelText), ...)
+  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary), ...)
 end
 
 -- Attempts to print a message if verbose mode is enabled.
@@ -163,26 +165,6 @@ function Core:IsBusy()
 end
 
 -- ============================================================================
--- UI Functions
--- ============================================================================
-
--- Toggles Dejunk's GUI.
-function Core:ToggleGUI()
-  ParentFrame:Initialize()
-  ParentFrame:Toggle()
-end
-
--- Enables Dejunk's GUI.
-function Core:EnableGUI()
-  ParentFrame:Enable()
-end
-
--- Disables Dejunk's GUI.
-function Core:DisableGUI()
-  ParentFrame:Disable()
-end
-
--- ============================================================================
 -- Tooltip Hook
 -- ============================================================================
 
@@ -199,7 +181,7 @@ do
     end
     if Tools:ItemCanBeRefunded(item) then return end
 
-    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.LabelText)
+    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.Primary)
     local rightText
 
     if not IsShiftKeyDown() then -- Dejunk tooltip

@@ -1,15 +1,13 @@
 -- DB: provides addon modules easy access to saved variables.
 
 local AddonName, Addon = ...
-
--- Addon
-local DB = Addon.DB
+local Clamp = _G.Clamp
 local Consts = Addon.Consts
+local DB = Addon.DB
 
 -- Default database values
 local defaults = {
   Global = {
-    ColorScheme = 1,
     Minimap = { hide = false },
     ItemTooltip = true
   },
@@ -52,11 +50,9 @@ local defaults = {
 
     -- Destroy options
     AutoDestroy = false,
-    DestroyUsePriceThreshold = false,
-    DestroyPriceThreshold = {
-      Gold = 0,
-      Silver = 0,
-      Copper = 0
+    DestroyBelowPrice = {
+      Enabled = false,
+      Value = Consts.DESTROY_BELOW_PRICE_MIN
     },
     DestroyPoor = false,
     DestroyInclusions = false,
@@ -78,7 +74,7 @@ local defaults = {
 
 -- Converts the old version of the DB into the new one.
 local function reformat()
-  local globalProfile = DEJUNK_ADDON_SV.Profiles.Global
+  local globalProfile = _G.DEJUNK_ADDON_SV.Profiles.Global
   local useGlobal = false -- for DejunkPerChar.UseGlobal
 
   -- If DejunkGlobal has old values, move them to the global profile
@@ -108,17 +104,39 @@ local function reformat()
     DejunkPerChar = nil
   end
 
-  -- Clamp min-max value variables
-  globalProfile.SellBelowAverageILVL.Value = Clamp(
-    globalProfile.SellBelowAverageILVL.Value,
-    Consts.BELOW_AVERAGE_ILVL_MIN,
-    Consts.BELOW_AVERAGE_ILVL_MAX
-  )
-  DB.Profile.SellBelowAverageILVL.Value = Clamp(
-    DB.Profile.SellBelowAverageILVL.Value,
-    Consts.BELOW_AVERAGE_ILVL_MIN,
-    Consts.BELOW_AVERAGE_ILVL_MAX
-  )
+  -- Iterate all profiles
+  for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
+    -- Clamp min-max values
+    profile.SellBelowAverageILVL.Value = Clamp(
+      profile.SellBelowAverageILVL.Value,
+      Consts.BELOW_AVERAGE_ILVL_MIN,
+      Consts.BELOW_AVERAGE_ILVL_MAX
+    )
+
+    do -- DestroyPriceThreshold -> DestroyBelowPrice
+      if type(profile.DestroyUsePriceThreshold) == "boolean" then
+        profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
+      end
+
+      if profile.DestroyPriceThreshold then
+        profile.DestroyBelowPrice.Value =
+          (profile.DestroyPriceThreshold.Gold * 100 * 100) +
+          (profile.DestroyPriceThreshold.Silver * 100) +
+          profile.DestroyPriceThreshold.Copper
+      end
+
+      -- Clamp min-max values
+      profile.DestroyBelowPrice.Value = Clamp(
+        profile.DestroyBelowPrice.Value,
+        Consts.DESTROY_BELOW_PRICE_MIN,
+        Consts.DESTROY_BELOW_PRICE_MAX
+      )
+
+      -- Wipe old values
+      profile.DestroyUsePriceThreshold = nil
+      profile.DestroyPriceThreshold = nil
+    end
+  end
 
   -- Set profile to Global if DejunkerPerChar.UseGlobal was true
   if useGlobal then DB:SetProfile("Global") end
