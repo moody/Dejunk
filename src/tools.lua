@@ -81,17 +81,6 @@ function Tools:ItemCanBeRefunded(item)
 end
 
 -- ============================================================================
--- DB Functions
--- ============================================================================
-
-function Tools:GetPricePercentThreshold()
-  return max(
-    floor((GetMoney() * DB.Profile.DestroyPricePercentThreshold.Value) + 0.5),
-    1
-  )
-end
-
--- ============================================================================
 -- Popup Functions
 -- ============================================================================
 

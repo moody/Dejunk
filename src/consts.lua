@@ -18,10 +18,10 @@ Consts.SAFE_MODE_MAX = 12
 Consts.BELOW_AVERAGE_ILVL_MIN = 10
 Consts.BELOW_AVERAGE_ILVL_MAX = 100
 
--- DestroyPricePercentThreshold
-Consts.PRICE_PERCENT_THRESHOLD_MIN = 0.1 / 100
-Consts.PRICE_PERCENT_THRESHOLD_MAX = 5 / 100
-Consts.PRICE_PERCENT_THRESHOLD_STEP = 0.1 / 100
+-- DestroyBelowPrice
+Consts.DESTROY_BELOW_PRICE_MIN = 0 -- 0 copper
+Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
+Consts.DESTROY_BELOW_PRICE_STEP = 10 -- 10 copper
 
 -- ============================================================================
 -- Consts Functions

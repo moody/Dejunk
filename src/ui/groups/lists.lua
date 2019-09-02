@@ -19,9 +19,9 @@ local function getListHelpText(listName)
   elseif listName == "Exclusions" then
     return L.EXCLUSIONS_HELP_TEXT
   elseif listName == "Destroyables" then
-    if DB.Profile.DestroyPricePercentThreshold.Enabled then
-      return L.DESTROYABLES_HELP_THRESHOLD_TEXT:format(
-        GetCoinTextureString(Tools:GetPricePercentThreshold())
+    if DB.Profile.DestroyBelowPrice.Enabled then
+      return L.DESTROYABLES_HELP_BELOW_PRICE_TEXT:format(
+        GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value)
       )
     end
 
@@ -72,19 +72,12 @@ local function getListFunc(listName)
   return function(list, parent)
     Utils:Heading(parent, listText)
 
-    do -- Help label
-      local helpLabel = Utils:Label({
-        parent = parent,
-        text = getListHelpText(listName),
-        fullWidth = true
-      })
-
-      if listName == "Destroyables" then
-        Utils:SetTicker(helpLabel, function(self)
-          self:SetText(getListHelpText(listName))
-        end)
-      end
-    end
+    -- Help label
+    Utils:Label({
+      parent = parent,
+      text = getListHelpText(listName),
+      fullWidth = true
+    })
 
     -- Space
     Utils:Label({ parent = parent, text = " ", fullWidth = true })

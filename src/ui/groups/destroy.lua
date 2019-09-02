@@ -34,7 +34,7 @@ function Destroy:AddGeneral(parent)
     set = function(value) DB.Profile.AutoDestroy = value end
   })
 
-  do -- Price threshold
+  do -- Below price
     local group = Utils:SimpleGroup({
       parent = parent,
       fullWidth = true
@@ -42,30 +42,25 @@ function Destroy:AddGeneral(parent)
 
     local slider = AceGUI:Create("Slider")
     slider:SetSliderValues(
-      Consts.PRICE_PERCENT_THRESHOLD_MIN,
-      Consts.PRICE_PERCENT_THRESHOLD_MAX,
-      Consts.PRICE_PERCENT_THRESHOLD_STEP
+      Consts.DESTROY_BELOW_PRICE_MIN,
+      Consts.DESTROY_BELOW_PRICE_MAX,
+      Consts.DESTROY_BELOW_PRICE_STEP
     )
-    slider:SetIsPercent(true)
-    slider:SetLabel(GetCoinTextureString(Tools:GetPricePercentThreshold()))
-    slider:SetValue(DB.Profile.DestroyPricePercentThreshold.Value)
-    slider:SetDisabled(not DB.Profile.DestroyPricePercentThreshold.Enabled)
+    slider:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
+    slider:SetValue(DB.Profile.DestroyBelowPrice.Value)
+    slider:SetDisabled(not DB.Profile.DestroyBelowPrice.Enabled)
     slider:SetCallback("OnValueChanged", function(widget, event, value)
-      DB.Profile.DestroyPricePercentThreshold.Value = value
-      slider:SetLabel(GetCoinTextureString(Tools:GetPricePercentThreshold()))
-    end)
-
-    Utils:SetTicker(slider, function(self)
-      self:SetLabel(GetCoinTextureString(Tools:GetPricePercentThreshold()))
+      DB.Profile.DestroyBelowPrice.Value = value
+      slider:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
     end)
 
     Utils:CheckBox({
       parent = group,
-      label = L.PRICE_PERCENT_THRESHOLD_TEXT,
-      tooltip = L.PRICE_PERCENT_THRESHOLD_TOOLTIP,
-      get = function() return DB.Profile.DestroyPricePercentThreshold.Enabled end,
+      label = L.DESTROY_BELOW_PRICE_TEXT,
+      tooltip = L.DESTROY_BELOW_PRICE_TOOLTIP,
+      get = function() return DB.Profile.DestroyBelowPrice.Enabled end,
       set = function(value)
-        DB.Profile.DestroyPricePercentThreshold.Enabled = value
+        DB.Profile.DestroyBelowPrice.Enabled = value
         slider:SetDisabled(not value)
       end
     })

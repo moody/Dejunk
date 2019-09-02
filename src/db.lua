@@ -50,9 +50,9 @@ local defaults = {
 
     -- Destroy options
     AutoDestroy = false,
-    DestroyPricePercentThreshold = {
-      Enabled = true,
-      Value = Consts.PRICE_PERCENT_THRESHOLD_MIN
+    DestroyBelowPrice = {
+      Enabled = false,
+      Value = Consts.DESTROY_BELOW_PRICE_MIN
     },
     DestroyPoor = false,
     DestroyInclusions = false,
@@ -116,10 +116,10 @@ local function reformat()
       Consts.BELOW_AVERAGE_ILVL_MAX
     )
 
-    profile.DestroyPricePercentThreshold.Value = Clamp(
-      profile.DestroyPricePercentThreshold.Value,
-      Consts.PRICE_PERCENT_THRESHOLD_MIN,
-      Consts.PRICE_PERCENT_THRESHOLD_MAX
+    profile.DestroyBelowPrice.Value = Clamp(
+      profile.DestroyBelowPrice.Value,
+      Consts.DESTROY_BELOW_PRICE_MIN,
+      Consts.DESTROY_BELOW_PRICE_MAX
     )
   end
 
