@@ -121,8 +121,9 @@ function Sell:AddByType(parent)
     slider:SetLabel(L.ITEM_LEVELS_TEXT)
     slider:SetValue(DB.Profile.SellBelowAverageILVL.Value)
     slider:SetDisabled(not DB.Profile.SellBelowAverageILVL.Enabled)
-    slider:SetCallback("OnValueChanged", function(widget, event, value)
+    slider:SetCallback("OnValueChanged", function(self, event, value)
       DB.Profile.SellBelowAverageILVL.Value = value
+      self.editbox:ClearFocus()
     end)
 
     Utils:CheckBox({

@@ -49,9 +49,10 @@ function Destroy:AddGeneral(parent)
     slider:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
     slider:SetValue(DB.Profile.DestroyBelowPrice.Value)
     slider:SetDisabled(not DB.Profile.DestroyBelowPrice.Enabled)
-    slider:SetCallback("OnValueChanged", function(widget, event, value)
+    slider:SetCallback("OnValueChanged", function(self, event, value)
       DB.Profile.DestroyBelowPrice.Value = value
-      slider:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
+      self:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
+      self.editbox:ClearFocus()
     end)
 
     Utils:CheckBox({
