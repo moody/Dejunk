@@ -118,11 +118,11 @@ local function reformat()
         profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
       end
 
-      if profile.DestroyPriceThreshold then
+      if type(profile.DestroyPriceThreshold) == "table" then
         profile.DestroyBelowPrice.Value =
-          (profile.DestroyPriceThreshold.Gold * 100 * 100) +
-          (profile.DestroyPriceThreshold.Silver * 100) +
-          profile.DestroyPriceThreshold.Copper
+          ((profile.DestroyPriceThreshold.Gold or 0) * 100 * 100) +
+          ((profile.DestroyPriceThreshold.Silver or 0) * 100) +
+          (profile.DestroyPriceThreshold.Copper or 0)
       end
 
       -- Clamp min-max values
