@@ -1,4 +1,3 @@
-# 8.2.0
+# 8.2.1
 
-- Migrated interface to AceGUI
-- Changed destroy option "Price Threshold" to "Destroy Below Price"
+- Bug fix
