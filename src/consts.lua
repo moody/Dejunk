@@ -46,9 +46,15 @@ local NUM_LE_ITEM_WEAPONS = _G.NUM_LE_ITEM_WEAPONS
 Consts.SAFE_MODE_MAX = 12
 
 -- SellBelowPrice
-Consts.SELL_BELOW_PRICE_MIN = 2 -- 2 copper
-Consts.SELL_BELOW_PRICE_MAX = 100 * 100 * 1 -- 1 gold
-Consts.SELL_BELOW_PRICE_STEP = 1 -- 1 copper
+if Addon.IS_RETAIL then
+  Consts.SELL_BELOW_PRICE_MIN = 100 -- 1 silver
+  Consts.SELL_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
+  Consts.SELL_BELOW_PRICE_STEP = 100 -- 1 silver
+else
+  Consts.SELL_BELOW_PRICE_MIN = 2 -- 2 copper
+  Consts.SELL_BELOW_PRICE_MAX = 100 * 100 * 1 -- 1 gold
+  Consts.SELL_BELOW_PRICE_STEP = 1 -- 1 copper
+end
 
 -- SellBelowAverageILVL
 Consts.SELL_BELOW_AVERAGE_ILVL_MIN = 10
