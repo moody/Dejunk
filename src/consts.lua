@@ -56,9 +56,15 @@ Consts.SELL_BELOW_AVERAGE_ILVL_MAX = 100
 Consts.SELL_BELOW_AVERAGE_ILVL_STEP = 1
 
 -- DestroyBelowPrice
-Consts.DESTROY_BELOW_PRICE_MIN = 2 -- 2 copper
-Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 1 -- 1 gold
-Consts.DESTROY_BELOW_PRICE_STEP = 1 -- 1 copper
+if Addon.IS_RETAIL then
+  Consts.DESTROY_BELOW_PRICE_MIN = 100 -- 1 silver
+  Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
+  Consts.DESTROY_BELOW_PRICE_STEP = 100 -- 1 silver
+else
+  Consts.DESTROY_BELOW_PRICE_MIN = 2 -- 2 copper
+  Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 1 -- 1 gold
+  Consts.DESTROY_BELOW_PRICE_STEP = 1 -- 1 copper
+end
 
 -- DestroyExcessSoulShards
 Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN = 3
