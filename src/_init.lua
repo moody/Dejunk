@@ -1,22 +1,32 @@
 local AddonName, Addon = ...
 
+-- Version flags
+Addon.IS_RETAIL = select(4, _G.GetBuildInfo()) >= 80000
+Addon.IS_CLASSIC = not Addon.IS_RETAIL
+
 -- Libs
 Addon.Libs = {
-  AceGUI = LibStub('AceGUI-3.0'),
-  L = LibStub('AceLocale-3.0'):GetLocale(AddonName),
-  LDB = LibStub("LibDataBroker-1.1"),
-  LDBIcon = LibStub("LibDBIcon-1.0"),
-  DBL = DethsLibLoader("DethsBagLib", "1.1"),
-  DCL = DethsLibLoader("DethsColorLib", "1.1"),
-  DTL = DethsLibLoader("DethsTooltipLib", "1.0")
+  AceGUI = _G.LibStub("AceGUI-3.0"),
+  L = _G.LibStub("AceLocale-3.0"):GetLocale(AddonName),
+  LDB = _G.LibStub("LibDataBroker-1.1"),
+  LDBIcon = _G.LibStub("LibDBIcon-1.0"),
+  DBL = Addon.DethsBagLib,
+  DCL = Addon.DethsColorLib,
+  DTL = _G.DethsLibLoader("DethsTooltipLib", "1.0")
 }
 
 -- Initialize Dejunk tables
-Addon.Core = DethsLibLoader("DethsAddonLib", "1.0"):Create(AddonName)
+Addon.Core = _G.DethsLibLoader("DethsAddonLib", "1.0"):Create(AddonName)
 
 Addon.Consts = {}
-Addon.Colors = {}
+Addon.Colors = {
+  Primary = "4FAFE3FF",
+  Red = "E34F4FFF",
+  Green = "4FE34FFF",
+  Yellow = "E3E34FFF"
+}
 Addon.DB = {}
+Addon.Filters = {}
 Addon.ListManager = {}
 Addon.Tools = {}
 

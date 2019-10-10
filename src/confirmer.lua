@@ -145,7 +145,6 @@ function Confirmer:ConfirmNextItem(module)
     if (count >= MAX_ATTEMPTS) then -- Stop trying to confirm
       confirmAttempts[item] = nil
       Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
-      DBL:Release(item)
     else -- Try again later
       -- Core:Debug("Confirmer", format("[%s, %s, %s] = %s", item.Bag, item.Slot, item.ItemID, count))
       confirmAttempts[item] = count
@@ -164,5 +163,4 @@ function Confirmer:ConfirmNextItem(module)
 
   confirmAttempts[item] = nil
   module:OnConfirm(item)
-  DBL:Release(item)
 end

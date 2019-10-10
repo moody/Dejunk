@@ -14,16 +14,29 @@ local UI = Addon.UI
 
 -- Initializes the frame.
 function MerchantButton:Initialize()
-  self.Button = CreateFrame("Button", (AddonName.."MerchantButton"), MerchantFrame, "OptionsButtonTemplate")
+  self.Button = _G.CreateFrame(
+    "Button",
+    AddonName .. "MerchantButton",
+    _G.MerchantFrame,
+    "OptionsButtonTemplate"
+  )
   self.Button:SetText(AddonName)
 
   -- Skin & position button for ElvUI if necessary
   local E = _G["ElvUI"] and _G["ElvUI"][1] -- ElvUI Engine
   if E and E.private.skins.blizzard.enable and E.private.skins.blizzard.merchant then
     E:GetModule("Skins"):HandleButton(self.Button)
-    self.Button:SetPoint("TOPLEFT", 11, -28)
+    if Addon.IS_RETAIL then
+      self.Button:SetPoint("TOPLEFT", 11, -28)
+    else
+      self.Button:SetPoint("BOTTOMLEFT", _G.MerchantItem1, "TOPLEFT", 0, 8)
+    end
   else
-    self.Button:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
+    if Addon.IS_RETAIL then
+      self.Button:SetPoint("TOPRIGHT", _G.MerchantFrameLootFilter, "TOPLEFT", -4, 0)
+    else
+      self.Button:SetPoint("TOPLEFT", 60, -28)
+    end
   end
 
   self.Button:HookScript("OnUpdate", function(self, elapsed)

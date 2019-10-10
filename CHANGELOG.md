@@ -1,3 +1,3 @@
-# 8.2.1
+# 8.2.2
 
-- Bug fix
+- Merged Classic and retail codebases

@@ -1,11 +1,11 @@
-local AddonName, Addon = ...
-local L = Addon.Libs.L
-local AceGUI = Addon.Libs.AceGUI
-local Utils = Addon.UI.Utils
-local Sell = Addon.UI.Groups.Sell
+local _, Addon = ...
 local Consts = Addon.Consts
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
+local GetCoinTextureString = _G.GetCoinTextureString
+local L = Addon.Libs.L
+local Sell = Addon.UI.Groups.Sell
+local Utils = Addon.UI.Utils
 
 function Sell:Create(parent)
   Utils:Heading(parent, L.SELL_TEXT)
@@ -38,6 +38,28 @@ function Sell:AddGeneral(parent)
     tooltip = L.SAFE_MODE_TOOLTIP:format(Consts.SAFE_MODE_MAX),
     get = function() return DB.Profile.SafeMode end,
     set = function(value) DB.Profile.SafeMode = value end
+  })
+
+  -- Below Price
+  Utils:CheckBoxSlider({
+    parent = parent,
+    checkBox = {
+      label = L.SELL_BELOW_PRICE_TEXT,
+      tooltip = L.SELL_BELOW_PRICE_TOOLTIP,
+      get = function() return DB.Profile.SellBelowPrice.Enabled end,
+      set = function(value) DB.Profile.SellBelowPrice.Enabled = value end
+    },
+    slider = {
+      label = GetCoinTextureString(DB.Profile.SellBelowPrice.Value),
+      value = DB.Profile.SellBelowPrice.Value,
+      min = Consts.SELL_BELOW_PRICE_MIN,
+      max = Consts.SELL_BELOW_PRICE_MAX,
+      step = Consts.SELL_BELOW_PRICE_STEP,
+      onValueChanged = function(self, event, value)
+        DB.Profile.SellBelowPrice.Value = value
+        self:SetLabel(GetCoinTextureString(DB.Profile.SellBelowPrice.Value))
+      end
+    }
   })
 end
 
@@ -105,38 +127,34 @@ function Sell:AddByType(parent)
   Utils:CheckBox({
     parent = parent,
     label = L.SELL_UNSUITABLE_TEXT,
-    tooltip = L.SELL_UNSUITABLE_TOOLTIP,
+    tooltip =
+      Addon.IS_RETAIL and
+      L.SELL_UNSUITABLE_TOOLTIP or
+      L.SELL_UNSUITABLE_TOOLTIP_CLASSIC,
     get = function() return DB.Profile.SellUnsuitable end,
     set = function(value) DB.Profile.SellUnsuitable = value end
   })
 
-  do -- Below Average Equipment
-    local group = Utils:SimpleGroup({
+  -- Below Average ILVL
+  if Addon.IS_RETAIL then
+    Utils:CheckBoxSlider({
       parent = parent,
-      fullWidth = true
+      checkBox = {
+        label = L.SELL_BELOW_AVERAGE_ILVL_TEXT,
+        tooltip = L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
+        get = function() return DB.Profile.SellBelowAverageILVL.Enabled end,
+        set = function(value) DB.Profile.SellBelowAverageILVL.Enabled = value end
+      },
+      slider = {
+        label = L.ITEM_LEVELS_TEXT,
+        value = DB.Profile.SellBelowAverageILVL.Value,
+        min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
+        max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
+        step = Consts.SELL_BELOW_AVERAGE_ILVL_STEP,
+        onValueChanged = function(self, event, value)
+          DB.Profile.SellBelowAverageILVL.Value = value
+        end
+      }
     })
-
-    local slider = AceGUI:Create("Slider")
-    slider:SetSliderValues(Consts.BELOW_AVERAGE_ILVL_MIN, Consts.BELOW_AVERAGE_ILVL_MAX, 1)
-    slider:SetLabel(L.ITEM_LEVELS_TEXT)
-    slider:SetValue(DB.Profile.SellBelowAverageILVL.Value)
-    slider:SetDisabled(not DB.Profile.SellBelowAverageILVL.Enabled)
-    slider:SetCallback("OnValueChanged", function(self, event, value)
-      DB.Profile.SellBelowAverageILVL.Value = value
-      self.editbox:ClearFocus()
-    end)
-
-    Utils:CheckBox({
-      parent = group,
-      label = L.SELL_BELOW_AVERAGE_ILVL_TEXT,
-      tooltip = L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
-      get = function() return DB.Profile.SellBelowAverageILVL.Enabled end,
-      set = function(value)
-        DB.Profile.SellBelowAverageILVL.Enabled = value
-        slider:SetDisabled(not value)
-      end
-    })
-
-    group:AddChild(slider)
   end
 end

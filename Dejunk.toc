@@ -1,14 +1,18 @@
-## Interface: 80200
+#@retail@
+## Interface: 80205
+#@end-retail@
+#@non-retail@
+# ## Interface: 11302
+#@end-non-retail@
 ## Title: Dejunk
 ## Author: Dethanyel
 ## Version: @project-version@
 ## Notes: Customizable junk selling and destroying.
 ## X-DethsDBLib: DEJUNK_ADDON_SV
-## SavedVariables: DEJUNK_ADDON_SV, DejunkGlobal
-## SavedVariablesPerCharacter: DejunkPerChar
+## SavedVariables: DEJUNK_ADDON_SV
 ## OptionalDeps: DethsAddonLib, DethsBagLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsTooltipLib
-## X-Curse-Project-ID: 257636
 
+# Libraries
 libs\LibStub\LibStub.lua
 libs\AceLocale-3.0\AceLocale-3.0.lua
 libs\AceSerializer-3.0\AceSerializer-3.0.lua
@@ -18,12 +22,13 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 libs\AceGUI-3.0\AceGUI-3.0.xml
 libs\DethsLibLoader\DethsLibLoader.lua
 libs\DethsAddonLib\DethsAddonLib.lua
-libs\DethsBagLib\DethsBagLib.lua
+libs\DethsBagLib\DethsBagLib.xml
 libs\DethsCmdLib\DethsCmdLib.lua
-libs\DethsColorLib\DethsColorLib.lua
+libs\DethsColorLib\DethsColorLib.xml
 libs\DethsDBLib\DethsDBLib.xml
 libs\DethsTooltipLib\DethsTooltipLib.lua
 
+# Locales
 locales\enUS.lua
 locales\deDE.lua
 locales\esES.lua
@@ -36,9 +41,11 @@ locales\ruRU.lua
 locales\zhCN.lua
 locales\zhTW.lua
 
+# General
 src\_init.lua
 src\consts.lua
 src\db.lua
+src\item-tooltip.lua
 src\list-manager.lua
 src\tools.lua
 src\confirmer.lua
@@ -46,7 +53,35 @@ src\dejunker.lua
 src\destroyer.lua
 src\repairer.lua
 
-src\ui\colors.lua
+# Filters (order matters)
+src\filters\filters.lua
+
+src\filters\dejunker\lists.lua
+src\filters\dejunker\ignore-battle-pets.lua
+src\filters\dejunker\ignore-consumables.lua
+src\filters\dejunker\ignore-gems.lua
+src\filters\dejunker\ignore-glyphs.lua
+src\filters\dejunker\ignore-item-enhancements.lua
+src\filters\dejunker\ignore-recipes.lua
+src\filters\dejunker\ignore-trade-goods.lua
+src\filters\dejunker\ignore-cosmetic.lua
+src\filters\dejunker\ignore-readable.lua
+src\filters\dejunker\ignore-binds-when-equipped.lua
+src\filters\dejunker\ignore-soulbound.lua
+src\filters\dejunker\ignore-tradeable.lua
+src\filters\dejunker\ignore-equipment-sets.lua
+src\filters\dejunker\unsuitable-equipment.lua
+src\filters\dejunker\below-average-item-level.lua
+src\filters\dejunker\by-quality.lua
+
+src\filters\destroyer\lists.lua
+src\filters\destroyer\ignore-readable.lua
+src\filters\destroyer\excess-soul-shards.lua
+src\filters\destroyer\pets-already-collected.lua
+src\filters\destroyer\toys-already-collected.lua
+src\filters\destroyer\by-quality.lua
+
+# UI
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
 src\ui\utils.lua
@@ -61,6 +96,8 @@ src\ui\groups\profiles.lua
 
 src\ui\widgets\ListFrame.lua
 
+# Bindings
 Bindings.lua
 
+# Core
 src\core.lua
