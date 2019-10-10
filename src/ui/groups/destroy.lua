@@ -34,40 +34,27 @@ function Destroy:AddGeneral(parent)
     set = function(value) DB.Profile.AutoDestroy = value end
   })
 
-  do -- Below price
-    local group = Utils:SimpleGroup({
-      parent = parent,
-      fullWidth = true
-    })
-
-    local slider = AceGUI:Create("Slider")
-    slider:SetSliderValues(
-      Consts.DESTROY_BELOW_PRICE_MIN,
-      Consts.DESTROY_BELOW_PRICE_MAX,
-      Consts.DESTROY_BELOW_PRICE_STEP
-    )
-    slider:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
-    slider:SetValue(DB.Profile.DestroyBelowPrice.Value)
-    slider:SetDisabled(not DB.Profile.DestroyBelowPrice.Enabled)
-    slider:SetCallback("OnValueChanged", function(self, event, value)
-      DB.Profile.DestroyBelowPrice.Value = value
-      self:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
-      self.editbox:ClearFocus()
-    end)
-
-    Utils:CheckBox({
-      parent = group,
+  -- Below Price
+  Utils:CheckBoxSlider({
+    parent = parent,
+    checkBox = {
       label = L.DESTROY_BELOW_PRICE_TEXT,
       tooltip = L.DESTROY_BELOW_PRICE_TOOLTIP,
       get = function() return DB.Profile.DestroyBelowPrice.Enabled end,
-      set = function(value)
-        DB.Profile.DestroyBelowPrice.Enabled = value
-        slider:SetDisabled(not value)
+      set = function(value) DB.Profile.DestroyBelowPrice.Enabled = value end
+    },
+    slider = {
+      label = GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value),
+      value = DB.Profile.DestroyBelowPrice.Value,
+      min = Consts.DESTROY_BELOW_PRICE_MIN,
+      max = Consts.DESTROY_BELOW_PRICE_MAX,
+      step = Consts.DESTROY_BELOW_PRICE_STEP,
+      onValueChanged = function(self, event, value)
+        DB.Profile.DestroyBelowPrice.Value = value
+        self:SetLabel(GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value))
       end
-    })
-
-    group:AddChild(slider)
-  end
+    }
+  })
 end
 
 function Destroy:AddDestroy(parent)
@@ -95,23 +82,50 @@ function Destroy:AddDestroy(parent)
     set = function(value) DB.Profile.DestroyInclusions = value end
   })
 
-  -- Pets already collected
-  Utils:CheckBox({
-    parent = parent,
-    label = L.DESTROY_PETS_ALREADY_COLLECTED_TEXT,
-    tooltip = L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP,
-    get = function() return DB.Profile.DestroyPetsAlreadyCollected end,
-    set = function(value) DB.Profile.DestroyPetsAlreadyCollected = value end
-  })
+  if Addon.IS_RETAIL then
+    -- Pets already collected
+    Utils:CheckBox({
+      parent = parent,
+      label = L.DESTROY_PETS_ALREADY_COLLECTED_TEXT,
+      tooltip = L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP,
+      get = function() return DB.Profile.DestroyPetsAlreadyCollected end,
+      set = function(value) DB.Profile.DestroyPetsAlreadyCollected = value end
+    })
 
-  -- Toys already collected
-  Utils:CheckBox({
-    parent = parent,
-    label = L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT,
-    tooltip = L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP,
-    get = function() return DB.Profile.DestroyToysAlreadyCollected end,
-    set = function(value) DB.Profile.DestroyToysAlreadyCollected = value end
-  })
+    -- Toys already collected
+    Utils:CheckBox({
+      parent = parent,
+      label = L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT,
+      tooltip = L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP,
+      get = function() return DB.Profile.DestroyToysAlreadyCollected end,
+      set = function(value) DB.Profile.DestroyToysAlreadyCollected = value end
+    })
+  end
+
+  -- Excess Soul Shards
+  if Addon.IS_CLASSIC then
+    Utils:CheckBoxSlider({
+      parent = parent,
+      checkBox = {
+        label = L.DESTROY_EXCESS_SOUL_SHARDS_TEXT,
+        tooltip = L.DESTROY_EXCESS_SOUL_SHARDS_TOOLTIP,
+        get = function() return DB.Profile.DestroyExcessSoulShards.Enabled end,
+        set = function(value)
+          DB.Profile.DestroyExcessSoulShards.Enabled = value
+        end
+      },
+      slider = {
+        label = L.DESTROY_EXCESS_SOUL_SHARDS_SLIDER_LABEL,
+        value = DB.Profile.DestroyExcessSoulShards.Value,
+        min = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
+        max = Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX,
+        step = Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP,
+        onValueChanged = function(self, event, value)
+          DB.Profile.DestroyExcessSoulShards.Value = value
+        end
+      }
+    })
+  end
 end
 
 function Destroy:AddIgnore(parent)

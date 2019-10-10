@@ -6,22 +6,20 @@ local Confirmer = Addon.Confirmer
 local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
-local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
+local GetNetStats = _G.GetNetStats
 local L = Addon.Libs.L
 local ListManager = Addon.ListManager
+local max = math.max
 local MerchantButton = Addon.MerchantButton
 local MinimapIcon = Addon.MinimapIcon
+local print = print
 local Repairer = Addon.Repairer
+local select = select
 local Tools = Addon.Tools
 local UI = Addon.UI
-
--- Upvalues
-local format, max, print, select = string.format, math.max, print, select
-local IsShiftKeyDown, IsAltKeyDown = _G.IsShiftKeyDown, _G.IsAltKeyDown
-local GetNetStats = _G.GetNetStats
 
 -- ============================================================================
 -- DethsAddonLib Functions
@@ -105,7 +103,7 @@ function Core:Debug(title, ...)
     ...
   )
 end
---]] Core.Debug = nop
+--]] Core.Debug = _G.nop
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.
@@ -162,50 +160,4 @@ function Core:IsBusy()
     Destroyer:IsDestroying() or
     ListManager:IsParsing() or
     Confirmer:IsConfirming()
-end
-
--- ============================================================================
--- Tooltip Hook
--- ============================================================================
-
-do
-  local item = {}
-
-  local function setBagItem(self, bag, slot)
-    if not DB.Global.ItemTooltip or DBL:IsEmpty(bag, slot) then return end
-
-    -- Only update the item if it has changed
-    if not ((bag == item.Bag) and (slot == item.Slot) and DBL:StillInBags(item)) then
-      -- Return if updating the item fails or if the updated item is not in the bag slot.
-      if not DBL:GetItem(bag, slot, item) then return end
-    end
-    if Tools:ItemCanBeRefunded(item) then return end
-
-    local leftText = DCL:ColorString(format("%s:", AddonName), Colors.Primary)
-    local rightText
-
-    if not IsShiftKeyDown() then -- Dejunk tooltip
-      -- Return if item cannot be sold
-      if item.NoValue or not Tools:ItemCanBeSold(item) then return end
-      local isJunkItem, reasonText = Dejunker:IsJunkItem(item)
-
-      rightText = isJunkItem and
-        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_SOLD), Colors.Red) or
-        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_SOLD), Colors.Green)
-    else -- Destroy tooltip
-      -- Return if item cannot be destroyed
-      if not Tools:ItemCanBeDestroyed(item) then return end
-      local isJunkItem, reasonText = Destroyer:IsDestroyableItem(item)
-
-      rightText = isJunkItem and
-        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_BE_DESTROYED), Colors.Red) or
-        DCL:ColorString((IsAltKeyDown() and reasonText or L.ITEM_WILL_NOT_BE_DESTROYED), Colors.Green)
-    end
-
-    self:AddLine(" ") -- blank line
-    self:AddDoubleLine(leftText, rightText)
-    self:Show()
-  end
-
-  hooksecurefunc(GameTooltip, "SetBagItem", setBagItem)
 end

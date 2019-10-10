@@ -1,8 +1,8 @@
-local AddonName, Addon = ...
+local _, Addon = ...
+local DB = Addon.DB
+local Ignore = Addon.UI.Groups.Ignore
 local L = Addon.Libs.L
 local Utils = Addon.UI.Utils
-local Ignore = Addon.UI.Groups.Ignore
-local DB = Addon.DB
 
 function Ignore:Create(parent)
   Utils:Heading(parent, L.IGNORE_TEXT)
@@ -18,13 +18,15 @@ function Ignore:AddByCategory(parent)
   })
 
   -- Battle Pets
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_BATTLEPETS_TEXT,
-    tooltip = L.IGNORE_BATTLEPETS_TOOLTIP,
-    get = function() return DB.Profile.IgnoreBattlePets end,
-    set = function(value) DB.Profile.IgnoreBattlePets = value end
-  })
+  if Addon.IS_RETAIL then
+    Utils:CheckBox({
+      parent = parent,
+      label = L.IGNORE_BATTLEPETS_TEXT,
+      tooltip = L.IGNORE_BATTLEPETS_TOOLTIP,
+      get = function() return DB.Profile.IgnoreBattlePets end,
+      set = function(value) DB.Profile.IgnoreBattlePets = value end
+    })
+  end
 
   -- Consumables
   Utils:CheckBox({
@@ -35,23 +37,25 @@ function Ignore:AddByCategory(parent)
     set = function(value) DB.Profile.IgnoreConsumables = value end
   })
 
-  -- Gems
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_GEMS_TEXT,
-    tooltip = L.IGNORE_GEMS_TOOLTIP,
-    get = function() return DB.Profile.IgnoreGems end,
-    set = function(value) DB.Profile.IgnoreGems = value end
-  })
+  if Addon.IS_RETAIL then
+    -- Gems
+    Utils:CheckBox({
+      parent = parent,
+      label = L.IGNORE_GEMS_TEXT,
+      tooltip = L.IGNORE_GEMS_TOOLTIP,
+      get = function() return DB.Profile.IgnoreGems end,
+      set = function(value) DB.Profile.IgnoreGems = value end
+    })
 
-  -- Glyphs
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_GLYPHS_TEXT,
-    tooltip = L.IGNORE_GLYPHS_TOOLTIP,
-    get = function() return DB.Profile.IgnoreGlyphs end,
-    set = function(value) DB.Profile.IgnoreGlyphs = value end
-  })
+    -- Glyphs
+    Utils:CheckBox({
+      parent = parent,
+      label = L.IGNORE_GLYPHS_TEXT,
+      tooltip = L.IGNORE_GLYPHS_TOOLTIP,
+      get = function() return DB.Profile.IgnoreGlyphs end,
+      set = function(value) DB.Profile.IgnoreGlyphs = value end
+    })
+  end
 
   -- Item Enhancements
   Utils:CheckBox({
@@ -107,13 +111,15 @@ function Ignore:AddByType(parent)
   })
 
   -- Equipment Sets
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_EQUIPMENT_SETS_TEXT,
-    tooltip = L.IGNORE_EQUIPMENT_SETS_TOOLTIP,
-    get = function() return DB.Profile.IgnoreEquipmentSets end,
-    set = function(value) DB.Profile.IgnoreEquipmentSets = value end
-  })
+  if Addon.IS_RETAIL then
+    Utils:CheckBox({
+      parent = parent,
+      label = L.IGNORE_EQUIPMENT_SETS_TEXT,
+      tooltip = L.IGNORE_EQUIPMENT_SETS_TOOLTIP,
+      get = function() return DB.Profile.IgnoreEquipmentSets end,
+      set = function(value) DB.Profile.IgnoreEquipmentSets = value end
+    })
+  end
 
   -- Readable
   Utils:CheckBox({
@@ -134,11 +140,13 @@ function Ignore:AddByType(parent)
   })
 
   -- Tradeable
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_TRADEABLE_TEXT,
-    tooltip = L.IGNORE_TRADEABLE_TOOLTIP,
-    get = function() return DB.Profile.IgnoreTradeable end,
-    set = function(value) DB.Profile.IgnoreTradeable = value end
-  })
+  if Addon.IS_RETAIL then
+    Utils:CheckBox({
+      parent = parent,
+      label = L.IGNORE_TRADEABLE_TEXT,
+      tooltip = L.IGNORE_TRADEABLE_TOOLTIP,
+      get = function() return DB.Profile.IgnoreTradeable end,
+      set = function(value) DB.Profile.IgnoreTradeable = value end
+    })
+  end
 end

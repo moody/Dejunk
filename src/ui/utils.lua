@@ -67,6 +67,63 @@ function Utils:CheckBox(options)
 end
 
 --[[
+  Adds a SimpleGroup with a CheckBox and Slider to a parent widget and returns
+  it.
+
+  options = {
+    parent = widget,
+    checkBox = {
+      label = string,
+      tooltip = string,
+      get = function() -> boolean,
+      set = function(value)
+    },
+    slider = {
+      label = string,
+      value = number,
+      min = number,
+      max = number,
+      step = number,
+      onValueChanged = function
+    }
+  }
+]]
+function Utils:CheckBoxSlider(options)
+  local group = Utils:SimpleGroup({
+    parent = options.parent,
+    fullWidth = true
+  })
+
+  local slider = AceGUI:Create("Slider")
+  slider:SetSliderValues(
+    options.slider.min,
+    options.slider.max,
+    options.slider.step
+  )
+  slider:SetLabel(options.slider.label)
+  slider:SetValue(options.slider.value)
+  slider:SetDisabled(not options.checkBox.get())
+  slider:SetCallback("OnValueChanged", function(self, event, value)
+    options.slider.onValueChanged(self, event, value)
+    self.editbox:ClearFocus()
+  end)
+
+  Utils:CheckBox({
+    parent = group,
+    label = options.checkBox.label,
+    tooltip = options.checkBox.tooltip,
+    get = options.checkBox.get,
+    set = function(value)
+      options.checkBox.set(value)
+      slider:SetDisabled(not value)
+    end
+  })
+
+  group:AddChild(slider)
+  return group
+end
+
+--[[
   Adds a basic AceGUI Dropdown to a parent widget and returns it.
 
   options = {

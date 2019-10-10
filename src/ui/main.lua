@@ -1,7 +1,9 @@
 local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
+local Colors = Addon.Colors
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
+local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local L = Addon.Libs.L
@@ -72,9 +74,12 @@ function UI:Create()
   -- Heading
   Utils:Heading(
     frame,
-    ("%s: |cFF88D8B0%s|r"):format(
+    ("%s: %s"):format(
       L.VERSION_TEXT,
-      _G.GetAddOnMetadata(AddonName, "Version")
+      DCL:ColorString(
+        _G.GetAddOnMetadata(AddonName, "Version"),
+        Colors.Primary
+      )
     )
   )
 
@@ -86,6 +91,29 @@ function UI:Create()
     onClick = function() Destroyer:StartDestroying() end
   })
   self.widgetsToDisable[startDestroying] = true
+
+  -- Key Bindings button
+  local keyBindings = Utils:Button({
+    parent = frame,
+    text = _G.KEY_BINDINGS,
+    onClick = function()
+      UI:Hide()
+
+      _G.KeyBindingFrame_LoadUI()
+      _G.KeyBindingFrame:Show()
+
+      -- Navigate to "Dejunk" category
+      for _, button in ipairs(_G.KeyBindingFrame.categoryList.buttons) do
+        local name = button.element and button.element.name
+        -- `string.find` because the text contains color
+        if name and name:find(AddonName, 1, true) then
+          button:Click()
+          return
+        end
+      end
+    end
+  })
+  self.widgetsToDisable[keyBindings] = true
 
   -- Container for the TreeGroup
   local treeGroupContainer = Utils:SimpleGroup({

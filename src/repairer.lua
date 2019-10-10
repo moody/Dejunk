@@ -1,26 +1,21 @@
 -- Repairer: handles the process of repairing.
 
-local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
-
--- Upvalues
-local ITEM_REPAIR_SOUND_ID = SOUNDKIT.ITEM_REPAIR
-local ERR_GUILD_NOT_ENOUGH_MONEY = ERR_GUILD_NOT_ENOUGH_MONEY
-
-local CanGuildBankRepair, GetCoinTextureString, GetGuildBankWithdrawMoney =
-			CanGuildBankRepair, GetCoinTextureString, GetGuildBankWithdrawMoney
-
-local GetMoney, GetRepairAllCost, PlaySound, RepairAllItems, UIErrorsFrame =
-			GetMoney, GetRepairAllCost, PlaySound, RepairAllItems, UIErrorsFrame
-
--- Modules
-local Repairer = Addon.Repairer
-
+local _, Addon = ...
+local CanGuildBankRepair = _G.CanGuildBankRepair
 local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
+local ERR_GUILD_NOT_ENOUGH_MONEY = _G.ERR_GUILD_NOT_ENOUGH_MONEY
+local GetCoinTextureString = _G.GetCoinTextureString
+local GetGuildBankWithdrawMoney = _G.GetGuildBankWithdrawMoney
+local GetMoney = _G.GetMoney
+local GetRepairAllCost = _G.GetRepairAllCost
+local ITEM_REPAIR_SOUND_ID = _G.SOUNDKIT.ITEM_REPAIR
+local L = Addon.Libs.L
+local PlaySound = _G.PlaySound
+local RepairAllItems = _G.RepairAllItems
+local Repairer = Addon.Repairer
+local UIErrorsFrame = _G.UIErrorsFrame
 
 -- Variables
 local REPAIR_DELAY = 0.5
@@ -55,7 +50,11 @@ local function repairer_OnUpdate(self, elapsed)
 
 			if not canRepair then -- Guild repair should have been successful
 				PlaySound(ITEM_REPAIR_SOUND_ID)
-				Core:Print(L.REPAIRED_ALL_ITEMS_GUILD:format(GetCoinTextureString(totalRepairCost)))
+				Core:Print(
+          L.REPAIRED_ALL_ITEMS_GUILD:format(
+            GetCoinTextureString(totalRepairCost)
+          )
+        )
 				Repairer:StopRepairing()
 				return
 			end
@@ -66,10 +65,12 @@ local function repairer_OnUpdate(self, elapsed)
 		RepairAllItems(true) -- Use guild money
 		usedGuildRepair = true
 		return
-	elseif (GetMoney() >= totalRepairCost) then
-		RepairAllItems(false) -- Use player money
+	elseif GetMoney() >= totalRepairCost then
+		RepairAllItems()
 		PlaySound(ITEM_REPAIR_SOUND_ID)
-		Core:Print(L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(totalRepairCost)))
+		Core:Print(
+      L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(totalRepairCost))
+    )
 		Repairer:StopRepairing()
 		return
 	else -- Repairs probably impossible
@@ -87,14 +88,21 @@ local function start_OnUpdate(self, elapsed)
 	if (repairInterval >= REPAIR_DELAY) then
 		local repairCost, canRepair = GetRepairAllCost()
 
-		if ((not canRepair) or (repairCost <= 0)) then
+		if (not canRepair) or (repairCost <= 0) then
 			Repairer:StopRepairing()
-			return
-		end
+      return
+    end
 
-		local guildBankLimit = GetGuildBankWithdrawMoney()
-		canGuildRepair = DB.Profile.UseGuildRepair and
-      (CanGuildBankRepair() and ((guildBankLimit == -1) or (guildBankLimit >= repairCost)))
+    if Addon.IS_RETAIL then
+      local guildBankLimit = GetGuildBankWithdrawMoney()
+      canGuildRepair =
+        DB.Profile.UseGuildRepair and
+        CanGuildBankRepair() and
+        (
+          guildBankLimit == -1 or
+          guildBankLimit >= repairCost
+        )
+    end
 
 		totalRepairCost = repairCost
 		repairInterval = REPAIR_DELAY
@@ -113,10 +121,10 @@ function Repairer:OnEvent(event, ...)
 		if DB.Profile.AutoRepair then self:StartRepairing() end
 	elseif (event == "MERCHANT_CLOSED") then
 		if self:IsRepairing() then self:StopRepairing() end
-  elseif (event == "UI_ERROR_MESSAGE") then
+  elseif Addon.IS_RETAIL and event == "UI_ERROR_MESSAGE" then
     local _, msg = ...
 
-		if (isRepairing and (msg == ERR_GUILD_NOT_ENOUGH_MONEY)) then
+    if isRepairing and msg == ERR_GUILD_NOT_ENOUGH_MONEY then
       UIErrorsFrame:Clear()
       guildRepairError = true
 		end

@@ -19,6 +19,10 @@ local defaults = {
     SafeMode = true,
     AutoRepair = false,
     UseGuildRepair = true,
+    SellBelowPrice = {
+      Enabled = false,
+      Value = Consts.SELL_BELOW_PRICE_MIN
+    },
 
     -- Sell options
     SellPoor = true,
@@ -30,7 +34,7 @@ local defaults = {
     SellUnsuitable = false,
     SellBelowAverageILVL = {
       Enabled = false,
-      Value = Consts.BELOW_AVERAGE_ILVL_MIN
+      Value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
     },
 
     -- Ignore options
@@ -58,6 +62,10 @@ local defaults = {
     DestroyInclusions = false,
     DestroyPetsAlreadyCollected = false,
     DestroyToysAlreadyCollected = false,
+    DestroyExcessSoulShards = {
+      Enabled = false,
+      Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
+    },
     DestroyIgnoreExclusions = false,
     DestroyIgnoreReadable = false,
 
@@ -72,81 +80,66 @@ local defaults = {
 -- Database Functions
 -- ============================================================================
 
--- Converts the old version of the DB into the new one.
-local function reformat()
-  local globalProfile = _G.DEJUNK_ADDON_SV.Profiles.Global
-  local useGlobal = false -- for DejunkPerChar.UseGlobal
-
-  -- If DejunkGlobal has old values, move them to the global profile
-  if DejunkGlobal then
-    for k, v in pairs(DejunkGlobal) do
-      if (defaults.Global[k] ~= nil) then
-        DB.Global[k] = v -- Move the value to Global
-      elseif (defaults.Profile[k] ~= nil) then
-        globalProfile[k] = v -- Move the value to the Global profile
-      end
+local conversions = {
+  -- DestroyPriceThreshold -> DestroyBelowPrice
+  function(profile)
+    if type(profile.DestroyUsePriceThreshold) == "boolean" then
+      profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
     end
-    -- Delete table
-    DejunkGlobal = nil
-  end
 
-  -- Move DejunkPerChar values to the player profile
-  -- The profile will be for the current player if DejunkPerChar exists
-  if DejunkPerChar then
-    for k, v in pairs(DejunkPerChar) do
-      if (defaults.Profile[k] ~= nil) then
-        DB.Profile[k] = v -- Move the value to Profile
-      end
+    if type(profile.DestroyPriceThreshold) == "table" then
+      profile.DestroyBelowPrice.Value =
+        ((profile.DestroyPriceThreshold.Gold or 0) * 100 * 100) +
+        ((profile.DestroyPriceThreshold.Silver or 0) * 100) +
+        (profile.DestroyPriceThreshold.Copper or 0)
     end
-    -- Cache UseGlobal
-    useGlobal = DejunkPerChar.UseGlobal
-    -- Delete table
-    DejunkPerChar = nil
-  end
 
-  -- Iterate all profiles
-  for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
-    -- Clamp min-max values
-    profile.SellBelowAverageILVL.Value = Clamp(
-      profile.SellBelowAverageILVL.Value,
-      Consts.BELOW_AVERAGE_ILVL_MIN,
-      Consts.BELOW_AVERAGE_ILVL_MAX
+    profile.DestroyUsePriceThreshold = nil
+    profile.DestroyPriceThreshold = nil
+  end,
+
+  -- Clamp min-max values
+  function(profile)
+    profile.SellBelowPrice.Value = Clamp(
+      profile.SellBelowPrice.Value,
+      Consts.SELL_BELOW_PRICE_MIN,
+      Consts.SELL_BELOW_PRICE_MAX
     )
 
-    do -- DestroyPriceThreshold -> DestroyBelowPrice
-      if type(profile.DestroyUsePriceThreshold) == "boolean" then
-        profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
-      end
+    profile.SellBelowAverageILVL.Value = Clamp(
+      profile.SellBelowAverageILVL.Value,
+      Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
+      Consts.SELL_BELOW_AVERAGE_ILVL_MAX
+    )
 
-      if type(profile.DestroyPriceThreshold) == "table" then
-        profile.DestroyBelowPrice.Value =
-          ((profile.DestroyPriceThreshold.Gold or 0) * 100 * 100) +
-          ((profile.DestroyPriceThreshold.Silver or 0) * 100) +
-          (profile.DestroyPriceThreshold.Copper or 0)
-      end
+    profile.DestroyBelowPrice.Value = Clamp(
+      profile.DestroyBelowPrice.Value,
+      Consts.DESTROY_BELOW_PRICE_MIN,
+      Consts.DESTROY_BELOW_PRICE_MAX
+    )
 
-      -- Clamp min-max values
-      profile.DestroyBelowPrice.Value = Clamp(
-        profile.DestroyBelowPrice.Value,
-        Consts.DESTROY_BELOW_PRICE_MIN,
-        Consts.DESTROY_BELOW_PRICE_MAX
-      )
+    profile.DestroyExcessSoulShards.Value = Clamp(
+      profile.DestroyExcessSoulShards.Value,
+      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
+      Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
+    )
+  end,
+}
 
-      -- Wipe old values
-      profile.DestroyUsePriceThreshold = nil
-      profile.DestroyPriceThreshold = nil
+-- Converts the old version of the DB into the new one.
+local function reformat()
+  -- Perform conversions on all profiles
+  for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
+    for _, conversion in ipairs(conversions) do
+      conversion(profile)
     end
   end
-
-  -- Set profile to Global if DejunkerPerChar.UseGlobal was true
-  if useGlobal then DB:SetProfile("Global") end
 end
 
 -- Initializes the database.
 function DB:Initialize()
   self.Initialize = nil
   local db = Addon.DethsDBLib(AddonName, defaults)
-  setmetatable(self, {__index = db})
-  if not db:ProfileExists("Global") then db:CreateProfile("Global") end
+  setmetatable(self, { __index = db })
   reformat()
 end

@@ -80,12 +80,14 @@ function General:AddRepairing(parent)
     set = function(value) DB.Profile.AutoRepair = value end
   })
 
-  -- Use Guild
-  Utils:CheckBox({
-    parent = parent,
-    label = L.USE_GUILD_REPAIR_TEXT,
-    tooltip = L.USE_GUILD_REPAIR_TOOLTIP,
-    get = function() return DB.Profile.UseGuildRepair end,
-    set = function(value) DB.Profile.UseGuildRepair = value end
-  })
+  -- Use Guild Repair
+  if Addon.IS_RETAIL then
+    Utils:CheckBox({
+      parent = parent,
+      label = L.USE_GUILD_REPAIR_TEXT,
+      tooltip = L.USE_GUILD_REPAIR_TOOLTIP,
+      get = function() return DB.Profile.UseGuildRepair end,
+      set = function(value) DB.Profile.UseGuildRepair = value end
+    })
+  end
 end
