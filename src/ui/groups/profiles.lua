@@ -1,4 +1,4 @@
-local AddonName, Addon = ...
+local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local AceSerializer = _G.LibStub("AceSerializer-3.0")
 local Colors = Addon.Colors
@@ -8,6 +8,7 @@ local DCL = Addon.Libs.DCL
 local L = Addon.Libs.L
 local ListManager = Addon.ListManager
 local next = next
+local pcall = pcall
 local Profiles = Addon.UI.Groups.Profiles
 local strtrim = _G.strtrim
 local Tools = Addon.Tools
@@ -64,7 +65,8 @@ local function createProfile(key, importTable)
     )
     return false
   elseif DB:CreateProfile(key, importTable) then
-    return setProfile(key)
+    local success = pcall(function() DB:Reformat() end)
+    if success then return setProfile(key) else DB:DeleteProfile(key) end
   end
   return false
 end
@@ -269,10 +271,8 @@ function Profiles:Import(parent)
 
       -- Deserialize profile
       local status, profile = AceSerializer:Deserialize(editBox:GetText())
-      if status and profile then
-        if createProfile(key, profile) then
-          Profiles.tabGroup:SelectTab("Profiles")
-        end
+      if status and profile and createProfile(key, profile) then
+        Profiles.tabGroup:SelectTab("Profiles")
       else
         Core:Print(L.PROFILE_INVALID_IMPORT_TEXT)
       end

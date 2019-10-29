@@ -141,5 +141,6 @@ function DB:Initialize()
   self.Initialize = nil
   local db = Addon.DethsDBLib(AddonName, defaults)
   setmetatable(self, { __index = db })
+  self.Reformat = reformat
   reformat()
 end
