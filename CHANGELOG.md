@@ -1,3 +1,4 @@
-# 8.2.2
+# 8.2.3
 
-- Merged Classic and retail codebases
+- Fixed bug when importing profiles across retail and classic versions
+- Fixed bug with auto destroy attempting to start before the addon has fully initialized
