@@ -1,7 +1,7 @@
 local AddonName, Addon = ...
 
 -- Version flags
-Addon.IS_RETAIL = select(4, _G.GetBuildInfo()) >= 80000
+Addon.IS_RETAIL = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE
 Addon.IS_CLASSIC = not Addon.IS_RETAIL
 
 -- Libs
