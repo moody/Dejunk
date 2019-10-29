@@ -33,15 +33,14 @@ local itemsToDestroy = {}
 -- NOTE: We use this function as a listener for DBL: `self` cannot be used.
 function Destroyer:StartAutoDestroy()
   if
-    currentState ~= states.None or
-    not DB.Profile.AutoDestroy or
-    UI:IsShown()
+    DB.Profile and
+    DB.Profile.AutoDestroy and
+    currentState == states.None and
+    not UI:IsShown()
   then
-    return
+    Filters:GetItems(Destroyer, itemsToDestroy)
+    if (#itemsToDestroy > 0) then Destroyer:StartDestroying(true) end
   end
-
-  Filters:GetItems(Destroyer, itemsToDestroy)
-  if (#itemsToDestroy > 0) then Destroyer:StartDestroying(true) end
 end
 -- Register DBL listener
 DBL:AddListener(Destroyer.StartAutoDestroy)
