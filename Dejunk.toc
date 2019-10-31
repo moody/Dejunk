@@ -12,6 +12,7 @@
 ## SavedVariables: DEJUNK_ADDON_SV
 ## OptionalDeps: DethsAddonLib, DethsBagLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsTooltipLib
 ## X-Curse-Project-ID: 257636
+## X-WoWI-ID: 25313
 
 # Libraries
 libs\LibStub\LibStub.lua
