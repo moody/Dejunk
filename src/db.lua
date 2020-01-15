@@ -143,4 +143,5 @@ function DB:Initialize()
   setmetatable(self, { __index = db })
   self.Reformat = reformat
   reformat()
+  Addon.EventManager:Fire("DB_PROFILE_CHANGED")
 end

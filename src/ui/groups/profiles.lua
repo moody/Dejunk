@@ -26,6 +26,7 @@ local function setProfile(key)
     Core:Print(
       L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Green))
     )
+    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
     return true
   end
   return false
@@ -38,6 +39,7 @@ local function copyProfile(key)
     Core:Print(
       L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
+    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
     return true
   end
   return false

@@ -26,6 +26,7 @@ Addon.Colors = {
   Yellow = "E3E34FFF"
 }
 Addon.DB = {}
+Addon.EventManager = {}
 Addon.Filters = {}
 Addon.ListManager = {}
 Addon.Tools = {}
