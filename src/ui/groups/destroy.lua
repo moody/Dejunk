@@ -14,7 +14,8 @@ local GetCoinTextureString = _G.GetCoinTextureString
 function Destroy:Create(parent)
   Utils:Heading(parent, L.DESTROY_TEXT)
   self:AddGeneral(parent)
-  self:AddDestroy(parent)
+  self:AddByQuality(parent)
+  self:AddByType(parent)
   self:AddIgnore(parent)
 end
 
@@ -57,10 +58,10 @@ function Destroy:AddGeneral(parent)
   })
 end
 
-function Destroy:AddDestroy(parent)
+function Destroy:AddByQuality(parent)
   parent = Utils:InlineGroup({
     parent = parent,
-    title = L.DESTROY_TEXT,
+    title = L.BY_QUALITY_TEXT,
     fullWidth = true
   })
 
@@ -73,10 +74,54 @@ function Destroy:AddDestroy(parent)
     set = function(value) DB.Profile.DestroyPoor = value end
   })
 
+  -- Common
+  Utils:CheckBox({
+    parent = parent,
+    label = DCL:ColorString(L.COMMON_TEXT, DCL.Wow.Common),
+    tooltip = L.DESTROY_ALL_TOOLTIP,
+    get = function() return DB.Profile.DestroyCommon end,
+    set = function(value) DB.Profile.DestroyCommon = value end
+  })
+
+  -- Uncommon
+  Utils:CheckBox({
+    parent = parent,
+    label = DCL:ColorString(L.UNCOMMON_TEXT, DCL.Wow.Uncommon),
+    tooltip = L.DESTROY_ALL_TOOLTIP,
+    get = function() return DB.Profile.DestroyUncommon end,
+    set = function(value) DB.Profile.DestroyUncommon = value end
+  })
+
+  -- Rare
+  Utils:CheckBox({
+    parent = parent,
+    label = DCL:ColorString(L.RARE_TEXT, DCL.Wow.Rare),
+    tooltip = L.DESTROY_ALL_TOOLTIP,
+    get = function() return DB.Profile.DestroyRare end,
+    set = function(value) DB.Profile.DestroyRare = value end
+  })
+
+  -- Epic
+  Utils:CheckBox({
+    parent = parent,
+    label = DCL:ColorString(L.EPIC_TEXT, DCL.Wow.Epic),
+    tooltip = L.DESTROY_ALL_TOOLTIP,
+    get = function() return DB.Profile.DestroyEpic end,
+    set = function(value) DB.Profile.DestroyEpic = value end
+  })
+end
+
+function Destroy:AddByType(parent)
+  parent = Utils:InlineGroup({
+    parent = parent,
+    title = L.BY_TYPE_TEXT,
+    fullWidth = true
+  })
+
   -- Inclusions
   Utils:CheckBox({
     parent = parent,
-    label = L.INCLUSIONS_TEXT,
+    label = Inclusions.localeColored,
     tooltip = L.DESTROY_LIST_TOOLTIP:format(Inclusions.localeColored),
     get = function() return DB.Profile.DestroyInclusions end,
     set = function(value) DB.Profile.DestroyInclusions = value end
@@ -138,7 +183,7 @@ function Destroy:AddIgnore(parent)
   -- Exclusions
   Utils:CheckBox({
     parent = parent,
-    label = L.EXCLUSIONS_TEXT,
+    label = Exclusions.localeColored,
     tooltip = L.DESTROY_IGNORE_LIST_TOOLTIP:format(Exclusions.localeColored),
     get = function() return DB.Profile.DestroyIgnoreExclusions end,
     set = function(value) DB.Profile.DestroyIgnoreExclusions = value end

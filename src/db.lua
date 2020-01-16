@@ -59,6 +59,10 @@ local defaults = {
       Value = Consts.DESTROY_BELOW_PRICE_MIN
     },
     DestroyPoor = false,
+    DestroyCommon = false,
+    DestroyUncommon = false,
+    DestroyRare = false,
+    DestroyEpic = false,
     DestroyInclusions = false,
     DestroyPetsAlreadyCollected = false,
     DestroyToysAlreadyCollected = false,
