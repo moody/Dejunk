@@ -7,7 +7,7 @@ local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local ListHelper = Addon.ListHelper
 local pairs = pairs
 local Tools = Addon.Tools
 local UI = Addon.UI
@@ -43,7 +43,7 @@ function UI:OnUpdate(elapsed)
     (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
     (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
     (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
-    (ListManager:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
+    (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
     ""
   )
 

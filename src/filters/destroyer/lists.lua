@@ -2,23 +2,23 @@ local _, Addon = ...
 local DB = Addon.DB
 local Filter = {}
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local Lists = Addon.Lists
 
 function Filter:Run(item)
-  if ListManager:IsOnList("Destroyables", item.ItemID) then
+  if Lists.Destroyables:Has(item.ItemID) then
     return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.DESTROYABLES_TEXT)
   end
 
   if
     DB.Profile.DestroyInclusions and
-    ListManager:IsOnList("Inclusions", item.ItemID)
+    Lists.Inclusions:Has(item.ItemID)
   then
     return "JUNK", L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
   if
     DB.Profile.DestroyIgnoreExclusions and
-    ListManager:IsOnList("Exclusions", item.ItemID)
+    Lists.Exclusions:Has(item.ItemID)
   then
     return "NOT_JUNK", L.REASON_DESTROY_IGNORE_EXCLUSIONS_TEXT
   end

@@ -9,7 +9,7 @@ local GetContainerItemPurchaseInfo = _G.GetContainerItemPurchaseInfo
 local L = Addon.Libs.L
 local LE_ITEM_QUALITY_EPIC = _G.LE_ITEM_QUALITY_EPIC
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local ListManager = Addon.ListManager
+local Lists = Addon.Lists
 local StaticPopup_Show = _G.StaticPopup_Show
 local Tools = Addon.Tools
 
@@ -33,9 +33,9 @@ function Tools:GetDestroyablesString()
 end
 
 -- Returns the list name as a localized string in color.
--- @param listName - a list name key defined in ListManager
+-- @param listName - a list name key defined in Addon.Lists
 function Tools:GetColoredListName(listName)
-  assert(ListManager.Lists[listName])
+  assert(Lists[listName])
 
   if (listName == "Inclusions") then
     return self:GetInclusionsString()

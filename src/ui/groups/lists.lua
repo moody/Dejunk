@@ -1,9 +1,10 @@
-local AddonName, Addon = ...
+local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
+local Consts = Addon.Consts
 local DB = Addon.DB
 local GetCoinTextureString = _G.GetCoinTextureString
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local Lists = Addon.Lists
 local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
 
@@ -67,7 +68,7 @@ end
 
 local function getListFunc(listName)
   local listText = LIST_NAME_TO_TEXT[listName]
-  local removeAll = function() ListManager:DestroyList(listName) end
+  local removeAll = function() Lists[listName]:RemoveAll() end
 
   return function(list, parent)
     Utils:Heading(parent, listText)
@@ -94,7 +95,7 @@ local function getListFunc(listName)
       parent = parent,
       -- title = listText,
       listName = listName,
-      listData = ListManager.Lists[listName]
+      listData = Lists[listName].items
     })
 
     -- Remove all button
@@ -130,7 +131,16 @@ local function getImportFunc(listName)
       parent = parent,
       text = L.IMPORT_TEXT,
       onClick = function()
-        ListManager:ImportToList(listName, editBox:GetText())
+        local itemIDs = {}
+
+        for itemID in editBox:GetText():gmatch('([^;]+)') do
+          itemID = tonumber(itemID)
+          if itemID and (itemID > 0) and (itemID <= Consts.MAX_NUMBER) then
+            itemIDs[itemID] = true
+          end
+        end
+
+        Lists[listName]:Import(itemIDs)
         editBox:ClearFocus()
       end
     })
@@ -148,7 +158,6 @@ local function getExportFunc(listName)
 
     local editBox = Utils:MultiLineEditBox({
       parent = parent,
-      -- text = ListManager:ExportFromList(listName),
       fullWidth = true,
       numLines = 25
     })
@@ -157,7 +166,7 @@ local function getExportFunc(listName)
       parent = parent,
       text = L.EXPORT_TEXT,
       onClick = function()
-        editBox:SetText(ListManager:ExportFromList(listName))
+        editBox:SetText(Lists[listName]:Export())
         editBox:HighlightText(0)
         editBox:SetFocus()
       end

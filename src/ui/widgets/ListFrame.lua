@@ -16,7 +16,7 @@ local DressUpVisual, IsDressableItem = _G.DressUpVisual, _G.IsDressableItem
 local floor, max, unpack = math.floor, math.max, _G.unpack
 
 -- Modules
-local ListManager = Addon.ListManager
+local Lists = Addon.Lists
 
 -- Consts
 local PAD_X, PAD_Y = 4, 16
@@ -77,7 +77,7 @@ function frameMixins:AddCursorItem()
     local infoType, itemID = GetCursorInfo()
 
     if (infoType == "item") then
-      ListManager:AddToList(self.listName, itemID)
+      Lists[self.listName]:Add(itemID)
     end
 
     ClearCursor()
@@ -86,7 +86,7 @@ end
 
 function frameMixins:RemoveItem(itemID)
   if not self.disabled then
-    ListManager:RemoveFromList(self.listName, itemID)
+    Lists[self.listName]:Remove(itemID)
   end
 end
 

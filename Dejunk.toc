@@ -46,10 +46,11 @@ locales\zhTW.lua
 # General
 src\_init.lua
 src\event-manager.lua
+src\_lists.lua
 src\consts.lua
 src\db.lua
 src\item-tooltip.lua
-src\list-manager.lua
+src\list-helper.lua
 src\tools.lua
 src\confirmer.lua
 src\dejunker.lua

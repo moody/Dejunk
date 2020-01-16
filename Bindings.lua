@@ -6,7 +6,7 @@ local Colors = Addon.Colors
 local DCL = Addon.Libs.DCL
 local Destroyer = Addon.Destroyer
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local Lists = Addon.Lists
 local Tools = Addon.Tools
 local UI = Addon.UI
 
@@ -58,34 +58,34 @@ end
 -- Inclusions
 function DejunkBindings_AddToInclusions()
   if not currentItemID then return end
-  ListManager:AddToList("Inclusions", currentItemID)
+  Lists.Inclusions:Add(currentItemID)
 end
 
 function DejunkBindings_RemoveFromInclusions()
   if not currentItemID then return end
-  ListManager:RemoveFromList("Inclusions", currentItemID, true)
+  Lists.Inclusions:Remove(currentItemID, true)
 end
 
 -- Exclusions
 function DejunkBindings_AddToExclusions()
   if not currentItemID then return end
-  ListManager:AddToList("Exclusions", currentItemID)
+  Lists.Exclusions:Add(currentItemID)
 end
 
 function DejunkBindings_RemoveFromExclusions()
   if not currentItemID then return end
-  ListManager:RemoveFromList("Exclusions", currentItemID, true)
+  Lists.Exclusions:Remove(currentItemID, true)
 end
 
 -- Destroyables
 function DejunkBindings_AddToDestroyables()
   if not currentItemID then return end
-  ListManager:AddToList("Destroyables", currentItemID)
+  Lists.Destroyables:Add(currentItemID)
 end
 
 function DejunkBindings_RemoveFromDestroyables()
   if not currentItemID then return end
-  ListManager:RemoveFromList("Destroyables", currentItemID, true)
+  Lists.Destroyables:Remove(currentItemID, true)
 end
 
 -- ============================================================================

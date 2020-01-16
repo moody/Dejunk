@@ -43,6 +43,7 @@ local NUM_LE_ITEM_WEAPONS = _G.NUM_LE_ITEM_WEAPONS
 -- General Constants
 -- ============================================================================
 
+Consts.MAX_NUMBER = 2147483647 -- 32-bit signed
 Consts.SAFE_MODE_MAX = 12
 
 -- SellBelowPrice

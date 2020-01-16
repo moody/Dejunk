@@ -11,7 +11,7 @@ local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local GetNetStats = _G.GetNetStats
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local ListHelper = Addon.ListHelper
 local max = math.max
 local MerchantButton = Addon.MerchantButton
 local MinimapIcon = Addon.MinimapIcon
@@ -28,7 +28,6 @@ local UI = Addon.UI
 -- Initializes modules.
 function Core:OnInitialize()
   DB:Initialize()
-  ListManager:Initialize()
   Consts:Initialize()
   MerchantButton:Initialize()
   MinimapIcon:Initialize()
@@ -57,7 +56,7 @@ do -- OnUpdate()
       self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
     end
 
-    ListManager:OnUpdate(elapsed)
+    ListHelper:OnUpdate(elapsed)
     if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
     if Destroyer.OnUpdate then Destroyer:OnUpdate(elapsed) end
     if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
@@ -117,7 +116,7 @@ function Core:CanDejunk()
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListManager:IsParsing("Inclusions") or ListManager:IsParsing("Exclusions") then
+  if ListHelper:IsParsing("Inclusions") or ListHelper:IsParsing("Exclusions") then
     return
       false,
       L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING:format(
@@ -141,7 +140,7 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
-  if ListManager:IsParsing("Destroyables") then
+  if ListHelper:IsParsing("Destroyables") then
     return
       false,
       L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(
@@ -158,6 +157,6 @@ function Core:IsBusy()
   return
     Dejunker:IsDejunking() or
     Destroyer:IsDestroying() or
-    ListManager:IsParsing() or
+    ListHelper:IsParsing() or
     Confirmer:IsConfirming()
 end
