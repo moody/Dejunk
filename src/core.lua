@@ -8,8 +8,11 @@ local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
+local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local Exclusions = Addon.Lists.Exclusions
 local GetNetStats = _G.GetNetStats
+local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local max = math.max
@@ -116,7 +119,7 @@ function Core:CanDejunk()
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
-  if ListHelper:IsParsing("Inclusions") or ListHelper:IsParsing("Exclusions") then
+  if ListHelper:IsParsing(Inclusions) or ListHelper:IsParsing(Exclusions) then
     return
       false,
       L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING:format(
@@ -140,7 +143,7 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
-  if ListHelper:IsParsing("Destroyables") then
+  if ListHelper:IsParsing(Destroyables) then
     return
       false,
       L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(

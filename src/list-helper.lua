@@ -11,18 +11,17 @@ local Lists = Addon.Lists
 
 -- Returns true if the `ListHelper` is currently parsing either a specific list
 -- or in general.
--- @param {string} listName - [optional]
+-- @param {table} list - [optional]
 -- @return {boolean}
-function ListHelper:IsParsing(listName)
+function ListHelper:IsParsing(list)
   -- parsing specific list?
-  if listName then
-    local list = Lists[listName]
+  if list then
     return next(list.toAdd) ~= nil
   end
 
   -- parsing in general?
-  for _, list in pairs(Lists) do
-    if next(list.toAdd) then return true end
+  for _, li in pairs(Lists) do
+    if next(li.toAdd) then return true end
   end
 
   return false
