@@ -5,7 +5,6 @@ local DCL = Addon.Libs.DCL
 local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
-local tconcat = table.concat
 local Tools = Addon.Tools
 local tremove = table.remove
 local tsort = table.sort
@@ -28,7 +27,6 @@ local function finalizeAdd(list, item)
   EventManager:Fire("LIST_ITEM_ADDED", list, item)
 end
 
-
 -- Sort function for sorting items by quality.
 -- @param {table} a - item a
 -- @param {table} b - item b
@@ -46,13 +44,11 @@ end
 
 local List = {}
 
-
 -- Returns true if the item ID is on the list.
 function List:Has(itemID)
   itemID = tostring(itemID)
   return not not self._sv[itemID]
 end
-
 
 -- Queues an item to be added to the list.
 -- @param {string, number} itemID - the item ID to add
@@ -70,7 +66,6 @@ function List:Add(itemID)
   end
 end
 
-
 -- Called by `ListHelper` once a queued item has been parsed and is ready to be
 -- added. Override as necessary to validate items before they are added.
 -- @param {table} item - the item to add
@@ -79,7 +74,6 @@ function List:FinalizeAdd(item)
   finalizeAdd(self, item)
   return true
 end
-
 
 -- Removes an item from the list by ID.
 -- @param {string, number} itemID - the item ID to remove
@@ -106,7 +100,6 @@ function List:Remove(itemID, notify)
   end
 end
 
-
 -- Removes all items from the list.
 function List:RemoveAll()
   if next(self._sv) then
@@ -115,7 +108,6 @@ function List:RemoveAll()
     Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
   end
 end
-
 
 -- Sorts the underlying array of items.
 -- @param {string} method - "QUALITY" | "NAME" | "TYPE"
@@ -128,7 +120,6 @@ function List:Sort(method)
   tsort(self.items, sortByQuality)
 end
 
-
 -- Returns the index of the item if it exists in the list, and -1 otherwise.
 -- @param {string, number} itemID - the item ID to search for
 -- @return {number}
@@ -139,7 +130,6 @@ function List:GetIndex(itemID)
 
   return -1
 end
-
 
 -- Returns an array containing all item IDs in the list.
 -- @return {table}
@@ -209,7 +199,6 @@ function Lists.Inclusions:FinalizeAdd(item)
   return false
 end
 
-
 function Lists.Exclusions:FinalizeAdd(item)
   if Tools:ItemCanBeSold(item) then
     finalizeAdd(self, item)
@@ -219,7 +208,6 @@ function Lists.Exclusions:FinalizeAdd(item)
   Core:Print(L.ITEM_CANNOT_BE_SOLD:format(item.ItemLink))
   return false
 end
-
 
 function Lists.Destroyables:FinalizeAdd(item)
   if Tools:ItemCanBeDestroyed(item) then
@@ -244,7 +232,6 @@ EventManager:On("DB_PROFILE_CHANGED", function()
     for k in pairs(list._sv) do list.toAdd[k] = true end
   end
 end)
-
 
 EventManager:On("LIST_ITEM_ADDED", function(list, item)
   local itemID = item.ItemID
