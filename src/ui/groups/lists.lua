@@ -5,6 +5,7 @@ local DB = Addon.DB
 local GetCoinTextureString = _G.GetCoinTextureString
 local L = Addon.Libs.L
 local Lists = Addon.Lists
+local tconcat = table.concat
 local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
 
@@ -130,16 +131,13 @@ local function getImportFunc(listName)
       parent = parent,
       text = L.IMPORT_TEXT,
       onClick = function()
-        local itemIDs = {}
-
         for itemID in editBox:GetText():gmatch('([^;]+)') do
           itemID = tonumber(itemID)
           if itemID and (itemID > 0) and (itemID <= Consts.MAX_NUMBER) then
-            itemIDs[itemID] = true
+            Lists[listName]:Add(itemID)
           end
         end
 
-        Lists[listName]:Import(itemIDs)
         editBox:ClearFocus()
       end
     })
@@ -165,7 +163,8 @@ local function getExportFunc(listName)
       parent = parent,
       text = L.EXPORT_TEXT,
       onClick = function()
-        editBox:SetText(Lists[listName]:Export())
+        local itemIDs = Lists[listName]:GetItemIDs()
+        editBox:SetText(tconcat(itemIDs, ";"))
         editBox:HighlightText(0)
         editBox:SetFocus()
       end

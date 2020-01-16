@@ -117,22 +117,6 @@ function List:RemoveAll()
 end
 
 
--- Queues many items to be added to the list by ID.
--- @param {table} itemIDs - table of item IDs to add
-function List:Import(itemIDs)
-  for itemID in pairs(itemIDs) do self:Add(itemID) end
-end
-
-
--- Returns a comma-seperated string of all item IDs in the list.
--- @return {string}
-function List:Export()
-  local builder = {}
-  for k in pairs(self._sv) do builder[#builder+1] = k end
-  return tconcat(builder, ";")
-end
-
-
 -- Sorts the underlying array of items.
 -- @param {string} method - "QUALITY" | "NAME" | "TYPE"
 function List:Sort(method)
@@ -154,6 +138,15 @@ function List:GetIndex(itemID)
   end
 
   return -1
+end
+
+
+-- Returns an array containing all item IDs in the list.
+-- @return {table}
+function List:GetItemIDs()
+  local ids = {}
+  for k in pairs(self._sv) do ids[#ids+1] = k end
+  return ids
 end
 
 -- ============================================================================
