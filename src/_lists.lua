@@ -177,12 +177,12 @@ function Lists.Inclusions:FinalizeAdd(item)
 end
 
 function Lists.Exclusions:FinalizeAdd(item)
-  if Tools:ItemCanBeSold(item) then
+  if Tools:ItemCanBeSold(item) or Tools:ItemCanBeDestroyed(item) then
     finalizeAdd(self, item)
     return true
   end
 
-  Core:Print(L.ITEM_CANNOT_BE_SOLD:format(item.ItemLink))
+  Core:Print(L.ITEM_CANNOT_BE_SOLD_OR_DESTROYED:format(item.ItemLink))
   return false
 end
 
