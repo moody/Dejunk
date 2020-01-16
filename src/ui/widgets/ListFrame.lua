@@ -42,19 +42,7 @@ end
 -- Clear stuff
 function widgetMixins:OnRelease()
   self.frame.list = nil
-  self.frame.disabled = nil
   self.frame.scrollBar.list = nil
-  self.frame.scrollBar.disabled = nil
-end
-
-function widgetMixins:SetDisabled(disabled)
-  self.frame.disabled = disabled
-  self.frame.scrollBar.disabled = disabled
-  if disabled then
-    -- Disable stuff
-  else
-    -- Enable stuff
-  end
 end
 
 function widgetMixins:SetList(list)
@@ -72,7 +60,7 @@ end
 local frameMixins, frameScripts = {}, {}
 
 function frameMixins:AddCursorItem()
-  if not self.disabled and CursorHasItem() then
+  if CursorHasItem() then
     local infoType, itemID = GetCursorInfo()
 
     if (infoType == "item") then
@@ -84,9 +72,7 @@ function frameMixins:AddCursorItem()
 end
 
 function frameMixins:RemoveItem(itemID)
-  if not self.disabled then
-    self.list:Remove(itemID)
-  end
+  self.list:Remove(itemID)
 end
 
 function frameScripts:OnMouseUp()
@@ -130,7 +116,7 @@ end
 local scrollBarScripts = {}
 
 function scrollBarScripts:OnUpdate(elapsed)
-  if (self.disabled or #self.list.items <= NUM_LIST_BUTTONS) then
+  if #self.list.items <= NUM_LIST_BUTTONS then
     self.ScrollUpButton:Disable()
     self.ScrollDownButton:Disable()
   else
