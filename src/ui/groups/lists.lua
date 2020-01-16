@@ -2,25 +2,32 @@ local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Consts = Addon.Consts
 local DB = Addon.DB
+local Destroyables = Addon.Lists.Destroyables
+local Exclusions = Addon.Lists.Exclusions
 local GetCoinTextureString = _G.GetCoinTextureString
+local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
-local Lists = Addon.Lists
 local tconcat = table.concat
 local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
 
-local LIST_NAME_TO_TEXT = {
-  Inclusions = L.INCLUSIONS_TEXT,
-  Exclusions = L.EXCLUSIONS_TEXT,
-  Destroyables = L.DESTROYABLES_TEXT
-}
+-- ============================================================================
+-- Helper Functions
+-- ============================================================================
 
-local function getListHelpText(listName)
-  if listName == "Inclusions" then
+-- Returns a localized help string indicating the purpose of the list.
+-- @param {table} list
+-- @return {string}
+local function getListHelpText(list)
+  if list == Inclusions then
     return L.INCLUSIONS_HELP_TEXT
-  elseif listName == "Exclusions" then
+  end
+
+  if list == Exclusions then
     return L.EXCLUSIONS_HELP_TEXT
-  elseif listName == "Destroyables" then
+  end
+
+  if list == Destroyables then
     if DB.Profile.DestroyBelowPrice.Enabled then
       return L.DESTROYABLES_HELP_BELOW_PRICE_TEXT:format(
         GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value)
@@ -31,156 +38,160 @@ local function getListHelpText(listName)
   end
 end
 
-local function getCreateFunc(listName)
-  local listText = LIST_NAME_TO_TEXT[listName]
+-- ============================================================================
+-- Mixins
+-- ============================================================================
 
-  return function(list, parent)
-    local tabGroup = AceGUI:Create("TabGroup")
-    tabGroup:SetLayout("Fill")
-    tabGroup:SetTabs({
-      { text = listText, value = "List" },
-      { text = L.IMPORT_TEXT, value = "Import" },
-      { text = L.EXPORT_TEXT, value = "Export" }
-    })
+local Mixins = {}
 
-    tabGroup:SetCallback("OnGroupSelected", function(self, event, group)
-      self:ReleaseChildren()
+-- Creates the base UI for the list group, which consists of a TabGroup widget.
+-- @param {table} parent - the parent widget
+function Mixins:Create(parent)
+  local tabGroup = AceGUI:Create("TabGroup")
+  tabGroup:SetLayout("Fill")
+  tabGroup:SetTabs({
+    { text = self.list.locale, value = "List" },
+    { text = L.IMPORT_TEXT, value = "Import" },
+    { text = L.EXPORT_TEXT, value = "Export" }
+  })
 
-      local scrollFrame = AceGUI:Create("ScrollFrame")
-      scrollFrame:SetLayout("Flow")
-      scrollFrame:PauseLayout()
+  tabGroup:SetCallback("OnGroupSelected", function(_, event, group)
+    tabGroup:ReleaseChildren()
 
-      --[[
-        If `list` is UI.Groups.Inclusions, and `group` is "Import", the below
-        code is equivalent to calling: UI.Groups.Inclusions:Import(scrollFrame)
-      ]]
-      list[group](list, scrollFrame)
+    local scrollFrame = AceGUI:Create("ScrollFrame")
+    scrollFrame:SetLayout("Flow")
+    scrollFrame:PauseLayout()
 
-      scrollFrame:ResumeLayout()
-      scrollFrame:DoLayout()
+    --[[
+      If `self` is UI.Groups.Inclusions, and `group` is "Import", the below
+      code is equivalent to calling: UI.Groups.Inclusions:Import(scrollFrame)
+    ]]
+    self[group](self, scrollFrame)
 
-      self:AddChild(scrollFrame)
-    end)
+    scrollFrame:ResumeLayout()
+    scrollFrame:DoLayout()
 
-    tabGroup:SelectTab("List")
-    parent:AddChild(tabGroup)
-  end
+    tabGroup:AddChild(scrollFrame)
+  end)
+
+  tabGroup:SelectTab("List")
+  parent:AddChild(tabGroup)
 end
 
-local function getListFunc(listName)
-  local listText = LIST_NAME_TO_TEXT[listName]
-  local removeAll = function() Lists[listName]:RemoveAll() end
+-- Creates the UI for the list name tab, which displays a ListFrame widget.
+-- @param {table} parent - the parent widget
+function Mixins:List(parent)
+  Utils:Heading(parent, self.list.locale)
 
-  return function(list, parent)
-    Utils:Heading(parent, listText)
+  -- Help label
+  Utils:Label({
+    parent = parent,
+    text = getListHelpText(self.list),
+    fullWidth = true
+  })
 
-    -- Help label
-    Utils:Label({
-      parent = parent,
-      text = getListHelpText(listName),
-      fullWidth = true
-    })
+  -- Space
+  Utils:Label({ parent = parent, text = " ", fullWidth = true })
 
-    -- Space
-    Utils:Label({ parent = parent, text = " ", fullWidth = true })
+  -- Add/remove help label
+  Utils:Label({
+    parent = parent,
+    text = L.LIST_ADD_REMOVE_HELP_TEXT,
+    fullWidth = true
+  })
 
-    -- Add/remove help label
-    Utils:Label({
-      parent = parent,
-      text = L.LIST_ADD_REMOVE_HELP_TEXT,
-      fullWidth = true
-    })
+  -- ListFrame
+  Utils:ListFrame({
+    parent = parent,
+    -- title = listText,
+    list = self.list
+  })
 
-    -- ListFrame
-    Utils:ListFrame({
-      parent = parent,
-      -- title = listText,
-      list = Lists[listName]
-    })
-
-    -- Remove all button
-    Utils:Button({
-      parent = parent,
-      text = L.REMOVE_ALL_TEXT,
-      onClick = function()
-        Tools:YesNoPopup({
-          text = L.REMOVE_ALL_POPUP:format(Lists[listName].localeColored),
-          onAccept = removeAll
-        })
-      end
-    })
-  end
-end
-
-local function getImportFunc(listName)
-  return function(list, parent)
-    Utils:Heading(parent, L.IMPORT_TEXT)
-    Utils:Label({
-      parent = parent,
-      text = L.IMPORT_HELPER_TEXT,
-      fullWidth = true
-    })
-
-    local editBox = Utils:MultiLineEditBox({
-      parent = parent,
-      fullWidth = true,
-      numLines = 25
-    })
-
-    Utils:Button({
-      parent = parent,
-      text = L.IMPORT_TEXT,
-      onClick = function()
-        for itemID in editBox:GetText():gmatch('([^;]+)') do
-          itemID = tonumber(itemID)
-          if itemID and (itemID > 0) and (itemID <= Consts.MAX_NUMBER) then
-            Lists[listName]:Add(itemID)
-          end
+  -- Remove all button
+  Utils:Button({
+    parent = parent,
+    text = L.REMOVE_ALL_TEXT,
+    onClick = function()
+      Tools:YesNoPopup({
+        text = L.REMOVE_ALL_POPUP:format(self.list.localeColored),
+        onAccept = function()
+          self.list:RemoveAll()
         end
-
-        editBox:ClearFocus()
-      end
-    })
-  end
+      })
+    end
+  })
 end
 
-local function getExportFunc(listName)
-  return function(list, parent)
-    Utils:Heading(parent, L.EXPORT_TEXT)
-    Utils:Label({
-      parent = parent,
-      text = L.EXPORT_HELPER_TEXT,
-      fullWidth = true
-    })
+-- Creates the UI for the Import tab, which provides an EditBox for input.
+-- @param {table} parent - the parent widget
+function Mixins:Import(parent)
+  Utils:Heading(parent, L.IMPORT_TEXT)
+  Utils:Label({
+    parent = parent,
+    text = L.IMPORT_HELPER_TEXT,
+    fullWidth = true
+  })
 
-    local editBox = Utils:MultiLineEditBox({
-      parent = parent,
-      fullWidth = true,
-      numLines = 25
-    })
+  local editBox = Utils:MultiLineEditBox({
+    parent = parent,
+    fullWidth = true,
+    numLines = 25
+  })
 
-    Utils:Button({
-      parent = parent,
-      text = L.EXPORT_TEXT,
-      onClick = function()
-        local itemIDs = Lists[listName]:GetItemIDs()
-        editBox:SetText(tconcat(itemIDs, ";"))
-        editBox:HighlightText(0)
-        editBox:SetFocus()
+  Utils:Button({
+    parent = parent,
+    text = L.IMPORT_TEXT,
+    onClick = function()
+      for itemID in editBox:GetText():gmatch('([^;]+)') do
+        itemID = tonumber(itemID)
+        if itemID and (itemID > 0) and (itemID <= Consts.MAX_NUMBER) then
+          self.list:Add(itemID)
+        end
       end
-    })
-  end
+
+      editBox:ClearFocus()
+    end
+  })
 end
+
+-- Creates the UI for the Export tab, which provides an EditBox for output.
+-- @param {table} parent - the parent widget
+function Mixins:Export(parent)
+  Utils:Heading(parent, L.EXPORT_TEXT)
+  Utils:Label({
+    parent = parent,
+    text = L.EXPORT_HELPER_TEXT,
+    fullWidth = true
+  })
+
+  local editBox = Utils:MultiLineEditBox({
+    parent = parent,
+    fullWidth = true,
+    numLines = 25
+  })
+
+  Utils:Button({
+    parent = parent,
+    text = L.EXPORT_TEXT,
+    onClick = function()
+      local itemIDs = self.list:GetItemIDs()
+      editBox:SetText(tconcat(itemIDs, ";"))
+      editBox:HighlightText(0)
+      editBox:SetFocus()
+    end
+  })
+end
+
+-------------------------------------------------------------------------------
 
 -- Add list groups
-for listName in pairs(LIST_NAME_TO_TEXT) do
-  local list = Addon.UI.Groups[listName] or error("Unsupported group: " .. listName)
+for name, list in pairs(Addon.Lists) do
+  local group = Addon.UI.Groups[name] or error("Unsupported group: " .. name)
 
-  list.parent = "SimpleGroup"
-  list.layout = "Fill"
+  group.parent = "SimpleGroup"
+  group.layout = "Fill"
+  group.list = list
 
-  list.Create = getCreateFunc(listName)
-  list.List = getListFunc(listName)
-  list.Import = getImportFunc(listName)
-  list.Export = getExportFunc(listName)
+  -- Add mixins
+  for k, v in pairs(Mixins) do group[k] = v end
 end
