@@ -45,7 +45,6 @@ Addon.UI = {
   Groups = {
     General = {},
     Sell = {},
-    Ignore = {},
     Destroy = {},
     Inclusions = {},
     Exclusions = {},

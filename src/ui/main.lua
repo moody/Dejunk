@@ -133,7 +133,6 @@ function UI:Create()
   treeGroup:SetTree({
     { text = L.GENERAL_TEXT, value = "General" },
     { text = L.SELL_TEXT, value = "Sell" },
-    { text = L.IGNORE_TEXT, value = "Ignore" },
     { text = L.DESTROY_TEXT, value = "Destroy" },
     { text = "", value = "Space1", disabled = true },
     { text = Inclusions.localeColored, value = "Inclusions" },

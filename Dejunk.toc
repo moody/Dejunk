@@ -93,7 +93,6 @@ src\ui\main.lua
 
 src\ui\groups\general.lua
 src\ui\groups\sell.lua
-src\ui\groups\ignore.lua
 src\ui\groups\destroy.lua
 src\ui\groups\lists.lua
 src\ui\groups\profiles.lua
