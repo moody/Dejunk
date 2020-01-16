@@ -21,7 +21,6 @@ local MinimapIcon = Addon.MinimapIcon
 local print = print
 local Repairer = Addon.Repairer
 local select = select
-local Tools = Addon.Tools
 local UI = Addon.UI
 
 -- ============================================================================
@@ -123,8 +122,8 @@ function Core:CanDejunk()
     return
       false,
       L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING:format(
-        Tools:GetColoredListName("Inclusions"),
-        Tools:GetColoredListName("Exclusions")
+        Inclusions.localeColored,
+        Exclusions.localeColored
       )
   end
 
@@ -146,9 +145,7 @@ function Core:CanDestroy()
   if ListHelper:IsParsing(Destroyables) then
     return
       false,
-      L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(
-        Tools:GetColoredListName("Destroyables")
-      )
+      L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(Destroyables.localeColored)
   end
 
   return true

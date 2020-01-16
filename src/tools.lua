@@ -1,52 +1,12 @@
 -- Tools: a collection of helpful functions.
 
 local _, Addon = ...
-local assert = assert
-local Colors = Addon.Colors
 local Consts = Addon.Consts
-local DCL = Addon.Libs.DCL
 local GetContainerItemPurchaseInfo = _G.GetContainerItemPurchaseInfo
-local L = Addon.Libs.L
 local LE_ITEM_QUALITY_EPIC = _G.LE_ITEM_QUALITY_EPIC
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
-local Lists = Addon.Lists
 local StaticPopup_Show = _G.StaticPopup_Show
 local Tools = Addon.Tools
-
--- ============================================================================
--- List Name Functions
--- ============================================================================
-
--- Returns the localized Inclusions string in color.
-function Tools:GetInclusionsString()
-  return DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Red)
-end
-
--- Returns the localized Exclusions string in color.
-function Tools:GetExclusionsString()
-  return DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Green)
-end
-
--- Returns the localized Destroyables string in color.
-function Tools:GetDestroyablesString()
-  return DCL:ColorString(L.DESTROYABLES_TEXT, Colors.Yellow)
-end
-
--- Returns the list name as a localized string in color.
--- @param listName - a list name key defined in Addon.Lists
-function Tools:GetColoredListName(listName)
-  assert(Lists[listName])
-
-  if (listName == "Inclusions") then
-    return self:GetInclusionsString()
-  elseif (listName == "Exclusions") then
-    return self:GetExclusionsString()
-  elseif (listName == "Destroyables") then
-    return self:GetDestroyablesString()
-  else
-    error(("Unsupported list name: \"%s\""):format(listName))
-  end
-end
 
 -- ============================================================================
 -- Item Functions

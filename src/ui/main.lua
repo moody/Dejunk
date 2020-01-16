@@ -5,11 +5,13 @@ local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
+local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local Exclusions = Addon.Lists.Exclusions
+local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local pairs = pairs
-local Tools = Addon.Tools
 local UI = Addon.UI
 local Utils = Addon.UI.Utils
 
@@ -134,9 +136,9 @@ function UI:Create()
     { text = L.IGNORE_TEXT, value = "Ignore" },
     { text = L.DESTROY_TEXT, value = "Destroy" },
     { text = "", value = "Space1", disabled = true },
-    { text = Tools:GetInclusionsString(), value = "Inclusions" },
-    { text = Tools:GetExclusionsString(), value = "Exclusions" },
-    { text = Tools:GetDestroyablesString(), value = "Destroyables" },
+    { text = Inclusions.localeColored, value = "Inclusions" },
+    { text = Exclusions.localeColored, value = "Exclusions" },
+    { text = Destroyables.localeColored, value = "Destroyables" },
     { text = "", value = "Space2", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })

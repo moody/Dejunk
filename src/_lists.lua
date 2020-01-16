@@ -1,5 +1,7 @@
 local _, Addon = ...
+local Colors = Addon.Colors
 local Core = Addon.Core
+local DCL = Addon.Libs.DCL
 local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
@@ -19,12 +21,7 @@ local function finalizeAdd(list, item)
   -- Add to sv and print message if not loading from sv
   if not list._sv[item.ItemID] then
     list._sv[item.ItemID] = true
-    Core:Print(
-      L.ADDED_ITEM_TO_LIST:format(
-        item.ItemLink,
-        Tools:GetColoredListName(list.name)
-      )
-    )
+    Core:Print(L.ADDED_ITEM_TO_LIST:format(item.ItemLink, list.localeColored))
   end
   -- Add item
   list.items[#list.items+1] = item
@@ -66,12 +63,7 @@ function List:Add(itemID)
   if self._sv[itemID] then
     local itemLink = select(2, GetItemInfo(itemID))
     if itemLink then
-      Core:Print(
-        L.ITEM_ALREADY_ON_LIST:format(
-          itemLink,
-          Tools:GetColoredListName(self.name)
-        )
-      )
+      Core:Print(L.ITEM_ALREADY_ON_LIST:format(itemLink, self.localeColored))
     end
   else
     self.toAdd[itemID] = true
@@ -103,18 +95,13 @@ function List:Remove(itemID, notify)
     if index ~= -1 then
       local item = tremove(self.items, index)
       Core:Print(
-        L.REMOVED_ITEM_FROM_LIST:format(
-          item.ItemLink,
-          Tools:GetColoredListName(self.name)
-        )
+        L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.localeColored)
       )
     end
   elseif notify then
     local itemLink = select(2, GetItemInfo(itemID))
     if itemLink then
-      Core:Print(
-        L.ITEM_NOT_ON_LIST:format(itemLink, Tools:GetColoredListName(self.name))
-      )
+      Core:Print(L.ITEM_NOT_ON_LIST:format(itemLink, self.localeColored))
     end
   end
 end
@@ -125,9 +112,7 @@ function List:RemoveAll()
   if next(self._sv) then
     for k in pairs(self._sv) do self._sv[k] = nil end
     for k in pairs(self.items) do self.items[k] = nil end
-    Core:Print(
-      L.REMOVED_ALL_FROM_LIST:format(Tools:GetColoredListName(self.name))
-    )
+    Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
   end
 end
 
@@ -175,12 +160,26 @@ end
 -- Create the lists
 -- ============================================================================
 
--- Creates a new list.
--- @param {string} name - a name for the list
-local function create(name)
+--[[
+  Creates a new list.
+
+  @param {string} name - non-localized name of the list
+  @param {table} options = {
+    {string} locale - localized name of the list
+    {string} color - hex color of the list
+  }
+
+  @return {table}
+--]]
+local function create(name, options)
   local list = {
     -- _sv = table, set in "DB_PROFILE_CHANGED" event
+
     name = name,
+    color = options.color,
+    locale = options.locale,
+    localeColored = DCL:ColorString(options.locale, options.color),
+
     toAdd = {},
     items = {}
   }
@@ -192,13 +191,13 @@ local function create(name)
 end
 
 local Lists = {
-  Inclusions = true,
-  Exclusions = true,
-  Destroyables = true
+  Inclusions = { locale = L.INCLUSIONS_TEXT, color = Colors.Red },
+  Exclusions = { locale = L.EXCLUSIONS_TEXT, color = Colors.Green },
+  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Yellow }
 }
 
-for name in pairs(Lists) do
-  Lists[name] = create(name)
+for name, options in pairs(Lists) do
+  Lists[name] = create(name, options)
 end
 
 Addon.Lists = Lists

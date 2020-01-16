@@ -1,12 +1,12 @@
-local AddonName, Addon = ...
-local L = Addon.Libs.L
-local AceGUI = Addon.Libs.AceGUI
-local Utils = Addon.UI.Utils
-local Destroy = Addon.UI.Groups.Destroy
-local DCL = Addon.Libs.DCL
+local _, Addon = ...
 local Consts = Addon.Consts
 local DB = Addon.DB
-local Tools = Addon.Tools
+local DCL = Addon.Libs.DCL
+local Destroy = Addon.UI.Groups.Destroy
+local Exclusions = Addon.Lists.Exclusions
+local Inclusions = Addon.Lists.Inclusions
+local L = Addon.Libs.L
+local Utils = Addon.UI.Utils
 
 -- Upvalues
 local GetCoinTextureString = _G.GetCoinTextureString
@@ -77,7 +77,7 @@ function Destroy:AddDestroy(parent)
   Utils:CheckBox({
     parent = parent,
     label = L.INCLUSIONS_TEXT,
-    tooltip = L.DESTROY_LIST_TOOLTIP:format(Tools:GetInclusionsString()),
+    tooltip = L.DESTROY_LIST_TOOLTIP:format(Inclusions.localeColored),
     get = function() return DB.Profile.DestroyInclusions end,
     set = function(value) DB.Profile.DestroyInclusions = value end
   })
@@ -139,7 +139,7 @@ function Destroy:AddIgnore(parent)
   Utils:CheckBox({
     parent = parent,
     label = L.EXCLUSIONS_TEXT,
-    tooltip = L.DESTROY_IGNORE_LIST_TOOLTIP:format(Tools:GetExclusionsString()),
+    tooltip = L.DESTROY_IGNORE_LIST_TOOLTIP:format(Exclusions.localeColored),
     get = function() return DB.Profile.DestroyIgnoreExclusions end,
     set = function(value) DB.Profile.DestroyIgnoreExclusions = value end
   })

@@ -103,7 +103,7 @@ local function getListFunc(listName)
       text = L.REMOVE_ALL_TEXT,
       onClick = function()
         Tools:YesNoPopup({
-          text = L.REMOVE_ALL_POPUP:format(Tools:GetColoredListName(listName)),
+          text = L.REMOVE_ALL_POPUP:format(Lists[listName].localeColored),
           onAccept = removeAll
         })
       end
