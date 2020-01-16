@@ -94,8 +94,7 @@ local function getListFunc(listName)
     Utils:ListFrame({
       parent = parent,
       -- title = listText,
-      listName = listName,
-      listData = Lists[listName].items
+      list = Lists[listName]
     })
 
     -- Remove all button

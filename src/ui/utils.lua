@@ -263,8 +263,7 @@ end
   options = {
     parent = widget,
     title = string,
-    listName = string,
-    listData = table
+    list = table
   }
 ]]
 function Utils:ListFrame(options)
@@ -276,7 +275,7 @@ function Utils:ListFrame(options)
 
   local listFrame = AceGUI:Create("Dejunk_ListFrame")
   listFrame:SetFullWidth(true)
-  listFrame:SetListData(options.listName, options.listData)
+  listFrame:SetList(options.list)
   parent:AddChild(listFrame)
 
   return listFrame
