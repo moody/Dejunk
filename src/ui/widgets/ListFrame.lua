@@ -3,20 +3,21 @@ local Type, Version = "Dejunk_ListFrame", 1
 local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
--- Libs
-local DCL = Addon.Libs.DCL
-
 -- Upvalues
-local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
-local GameTooltip, GetMouseFocus = _G.GameTooltip, _G.GetMouseFocus
-local CursorHasItem, GetCursorInfo = _G.CursorHasItem, _G.GetCursorInfo
-local ClearCursor, IsControlKeyDown = _G.ClearCursor, _G.IsControlKeyDown
-local DressUpVisual, IsDressableItem = _G.DressUpVisual, _G.IsDressableItem
-
-local floor, max, unpack = math.floor, math.max, _G.unpack
-
--- Modules
-local Lists = Addon.Lists
+local ClearCursor = _G.ClearCursor
+local CreateFrame = _G.CreateFrame
+local CursorHasItem = _G.CursorHasItem
+local DCL = Addon.Libs.DCL
+local DressUpVisual = _G.DressUpVisual
+local floor = math.floor
+local GameTooltip = _G.GameTooltip
+local GetCursorInfo = _G.GetCursorInfo
+local GetMouseFocus = _G.GetMouseFocus
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsDressableItem = _G.IsDressableItem
+local max = math.max
+local UIParent = _G.UIParent
+local unpack = _G.unpack
 
 -- Consts
 local PAD_X, PAD_Y = 4, 16
