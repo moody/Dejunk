@@ -27,8 +27,6 @@ function ListHelper:IsParsing(list)
   return false
 end
 
------------------------------------------------------
-
 do -- OnUpdate(), called in Core:OnUpdate()
   local interval = 0
 
