@@ -7,6 +7,7 @@ local Exclusions = Addon.Lists.Exclusions
 local GetCoinTextureString = _G.GetCoinTextureString
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
+local ListHelper = Addon.ListHelper
 local tconcat = table.concat
 local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
@@ -118,6 +119,17 @@ function Mixins:List(parent)
           self.list:RemoveAll()
         end
       })
+    end
+  })
+
+  -- Sort button
+  Utils:Dropdown({
+    parent = parent,
+    label = L.SORT_BY_TEXT,
+    list = ListHelper:GetDropdownList(),
+    value = ListHelper:GetDropdownValue(),
+    onValueChanged = function(_, event, key)
+      ListHelper:SortBy(key)
     end
   })
 end

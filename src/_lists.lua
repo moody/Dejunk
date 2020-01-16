@@ -7,7 +7,6 @@ local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
 local Tools = Addon.Tools
 local tremove = table.remove
-local tsort = table.sort
 
 -- ============================================================================
 -- Helper Functions
@@ -25,17 +24,6 @@ local function finalizeAdd(list, item)
   -- Add item
   list.items[#list.items+1] = item
   EventManager:Fire("LIST_ITEM_ADDED", list, item)
-end
-
--- Sort function for sorting items by quality.
--- @param {table} a - item a
--- @param {table} b - item b
-local function sortByQuality(a, b)
-  if (a.Quality == b.Quality) then -- Sort by name
-    return (a.Name < b.Name)
-  else -- Sort by quality
-    return (a.Quality < b.Quality)
-  end
 end
 
 -- ============================================================================
@@ -107,17 +95,6 @@ function List:RemoveAll()
     for k in pairs(self.items) do self.items[k] = nil end
     Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
   end
-end
-
--- Sorts the underlying array of items.
--- @param {string} method - "QUALITY" | "NAME" | "TYPE"
-function List:Sort(method)
-  -- NOTE: I will update this in a future commit.
-
-  -- self._sortMethod = method or self._sortMethod or "QUALITY"
-  -- table.sort(self.items, sortMethods[self._sortMethod])
-
-  tsort(self.items, sortByQuality)
 end
 
 -- Returns the index of the item if it exists in the list, and -1 otherwise.

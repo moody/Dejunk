@@ -8,6 +8,90 @@ local GetItemInfoInstant = _G.GetItemInfoInstant
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local Lists = Addon.Lists
+local tsort = table.sort
+
+-- ============================================================================
+-- Sorting
+-- ============================================================================
+
+do
+  ListHelper._sortBy = "QUALITY"
+
+  local sorts = {
+    CLASS = {
+      locale = L.CLASS_TEXT,
+      func = function(a, b)
+        return (
+          a.Class == b.Class and
+          a.Name < b.Name or
+          a.Class < b.Class
+        )
+      end
+    },
+
+    NAME = {
+      locale = L.NAME_TEXT,
+      func = function(a, b)
+        return a.Name < b.Name
+      end
+    },
+
+    PRICE = {
+      locale = L.PRICE_TEXT,
+      func = function(a, b)
+        return (
+          a.Price == b.Price and
+          a.Name < b.Name or
+          a.Price < b.Price
+        )
+      end
+    },
+
+    QUALITY = {
+      locale = L.QUALITY_TEXT,
+      func = function(a, b)
+        return (
+          a.Quality == b.Quality and
+          a.Name < b.Name or
+          a.Quality < b.Quality
+        )
+      end
+    }
+  }
+
+  -- Returns a list of key-value pairs for a "Sort By" dropdown menu.
+  -- @return {table}
+  function ListHelper:GetDropdownList()
+    local list = {}
+    for k, v in pairs(sorts) do list[k] = v.locale end
+    return list
+  end
+
+  -- Returns the current "Sort By" dropdown value.
+  -- @return {string}
+  function ListHelper:GetDropdownValue()
+    return self._sortBy
+  end
+
+  -- Sets the sorting method to use and immediately sorts every list.
+  -- @param {string} by - a key in `sorts`
+  function ListHelper:SortBy(by)
+    self._sortBy = by
+    for _, list in pairs(Lists) do
+      tsort(list.items, sorts[by].func)
+    end
+  end
+
+  -- Sorts the specified list.
+  -- @param {table} list
+  function ListHelper:Sort(list)
+    tsort(list.items, sorts[self._sortBy].func)
+  end
+end
+
+-- ============================================================================
+-- Parsing
+-- ============================================================================
 
 -- Returns true if the `ListHelper` is currently parsing either a specific list
 -- or in general.
@@ -116,7 +200,7 @@ do -- ParseList()
 
     -- Sort the list once all items have been parsed
     if not next(list.toAdd) then
-      list:Sort()
+      self:Sort(list)
 
       -- Start auto destroy if the Destroyables list was updated
       if (list == Lists.Destroyables) then
