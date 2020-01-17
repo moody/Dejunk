@@ -153,7 +153,7 @@ end
 local Lists = {
   Inclusions = { locale = L.INCLUSIONS_TEXT, color = Colors.Red },
   Exclusions = { locale = L.EXCLUSIONS_TEXT, color = Colors.Green },
-  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Yellow },
+  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Red },
   Undestroyables = { locale = L.UNDESTROYABLES_TEXT, color = Colors.Green }
 }
 
