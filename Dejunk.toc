@@ -79,13 +79,13 @@ src\filters\dejunker\ignore-tradeable.lua
 src\filters\dejunker\ignore-equipment-sets.lua
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
-src\filters\dejunker\by-quality.lua
 
 src\filters\destroyer\ignore-quest-items.lua
 src\filters\destroyer\excess-soul-shards.lua
 src\filters\destroyer\pets-already-collected.lua
 src\filters\destroyer\toys-already-collected.lua
-src\filters\destroyer\by-quality.lua
+
+src\filters\shared\by-quality.lua
 
 # UI
 src\ui\merchant-button.lua
