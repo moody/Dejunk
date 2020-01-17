@@ -10,6 +10,7 @@ local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local tconcat = table.concat
 local Tools = Addon.Tools
+local Undestroyables = Addon.Lists.Undestroyables
 local Utils = Addon.UI.Utils
 
 -- ============================================================================
@@ -36,6 +37,10 @@ local function getListHelpText(list)
     end
 
     return L.DESTROYABLES_HELP_TEXT
+  end
+
+  if list == Undestroyables then
+    return L.UNDESTROYABLES_HELP_TEXT
   end
 end
 

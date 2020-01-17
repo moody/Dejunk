@@ -3,7 +3,6 @@ local Consts = Addon.Consts
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Destroy = Addon.UI.Groups.Destroy
-local Exclusions = Addon.Lists.Exclusions
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local Utils = Addon.UI.Utils
@@ -178,15 +177,6 @@ function Destroy:AddIgnore(parent)
     parent = parent,
     title = L.IGNORE_TEXT,
     fullWidth = true
-  })
-
-  -- Exclusions
-  Utils:CheckBox({
-    parent = parent,
-    label = Exclusions.localeColored,
-    tooltip = L.DESTROY_IGNORE_LIST_TOOLTIP:format(Exclusions.localeColored),
-    get = function() return DB.Profile.DestroyIgnoreExclusions end,
-    set = function(value) DB.Profile.DestroyIgnoreExclusions = value end
   })
 
   -- Readable

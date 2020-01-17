@@ -153,7 +153,8 @@ end
 local Lists = {
   Inclusions = { locale = L.INCLUSIONS_TEXT, color = Colors.Red },
   Exclusions = { locale = L.EXCLUSIONS_TEXT, color = Colors.Green },
-  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Yellow }
+  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Yellow },
+  Undestroyables = { locale = L.UNDESTROYABLES_TEXT, color = Colors.Green }
 }
 
 for name, options in pairs(Lists) do
@@ -175,16 +176,7 @@ function Lists.Inclusions:FinalizeAdd(item)
   Core:Print(L.ITEM_CANNOT_BE_SOLD:format(item.ItemLink))
   return false
 end
-
-function Lists.Exclusions:FinalizeAdd(item)
-  if Tools:ItemCanBeSold(item) or Tools:ItemCanBeDestroyed(item) then
-    finalizeAdd(self, item)
-    return true
-  end
-
-  Core:Print(L.ITEM_CANNOT_BE_SOLD_OR_DESTROYED:format(item.ItemLink))
-  return false
-end
+Lists.Exclusions.FinalizeAdd = Lists.Inclusions.FinalizeAdd
 
 function Lists.Destroyables:FinalizeAdd(item)
   if Tools:ItemCanBeDestroyed(item) then
@@ -195,6 +187,7 @@ function Lists.Destroyables:FinalizeAdd(item)
   Core:Print(L.ITEM_CANNOT_BE_DESTROYED:format(item.ItemLink))
   return false
 end
+Lists.Undestroyables.FinalizeAdd = Lists.Destroyables.FinalizeAdd
 
 -- ============================================================================
 -- Events
@@ -213,17 +206,11 @@ end)
 EventManager:On("LIST_ITEM_ADDED", function(list, item)
   local itemID = item.ItemID
 
-  -- Remove item from Exclusions when added to Inclusions
-  if list == Lists.Inclusions then
-    if Lists.Exclusions:Has(itemID) then
-      Lists.Exclusions:Remove(itemID)
-    end
-  end
+  -- Remove from Exclusions when added to Inclusions and vice versa
+  if list == Lists.Inclusions then Lists.Exclusions:Remove(itemID) end
+  if list == Lists.Exclusions then Lists.Inclusions:Remove(itemID) end
 
-  -- Remove item from Inclusions when added to Exclusions
-  if list == Lists.Exclusions then
-    if Lists.Inclusions:Has(itemID) then
-      Lists.Inclusions:Remove(itemID)
-    end
-  end
+  -- Remove from Undestroyables when added to Destroyables and vice versa
+  if list == Lists.Destroyables then Lists.Undestroyables:Remove(itemID) end
+  if list == Lists.Undestroyables then Lists.Destroyables:Remove(itemID) end
 end)

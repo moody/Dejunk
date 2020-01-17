@@ -22,6 +22,7 @@ local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
+local Undestroyables = Addon.Lists.Undestroyables
 
 -- ============================================================================
 -- DethsAddonLib Functions
@@ -142,10 +143,16 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
-  if ListHelper:IsParsing(Destroyables) then
+  if
+    ListHelper:IsParsing(Destroyables) or
+    ListHelper:IsParsing(Undestroyables)
+  then
     return
       false,
-      L.CANNOT_DESTROY_WHILE_LIST_UPDATING:format(Destroyables.localeColored)
+      L.CANNOT_DESTROY_WHILE_LISTS_UPDATING:format(
+        Destroyables.localeColored,
+        Undestroyables.localeColored
+      )
   end
 
   return true

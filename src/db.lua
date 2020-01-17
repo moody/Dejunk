@@ -70,13 +70,13 @@ local defaults = {
       Enabled = false,
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
-    DestroyIgnoreExclusions = false,
     DestroyIgnoreReadable = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},
     Exclusions = {},
-    Destroyables = {}
+    Destroyables = {},
+    Undestroyables = {}
   }
 }
 
@@ -128,6 +128,17 @@ local conversions = {
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
     )
   end,
+
+  -- Remove `DestroyIgnoreExclusions`
+  function(profile)
+    if profile.DestroyIgnoreExclusions then
+      for k in pairs(profile.Exclusions) do
+        profile.Undestroyables[k] = true
+      end
+    end
+
+    profile.DestroyIgnoreExclusions = nil
+  end
 }
 
 -- Converts the old version of the DB into the new one.

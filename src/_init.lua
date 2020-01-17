@@ -49,6 +49,7 @@ Addon.UI = {
     Inclusions = {},
     Exclusions = {},
     Destroyables = {},
+    Undestroyables = {},
     Profiles = {}
   }
 }

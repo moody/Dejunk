@@ -13,6 +13,7 @@ local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local pairs = pairs
 local UI = Addon.UI
+local Undestroyables = Addon.Lists.Undestroyables
 local Utils = Addon.UI.Utils
 
 function UI:IsShown()
@@ -137,8 +138,10 @@ function UI:Create()
     { text = "", value = "Space1", disabled = true },
     { text = Inclusions.localeColored, value = "Inclusions" },
     { text = Exclusions.localeColored, value = "Exclusions" },
-    { text = Destroyables.localeColored, value = "Destroyables" },
     { text = "", value = "Space2", disabled = true },
+    { text = Destroyables.localeColored, value = "Destroyables" },
+    { text = Undestroyables.localeColored, value = "Undestroyables" },
+    { text = "", value = "Space3", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })
 
