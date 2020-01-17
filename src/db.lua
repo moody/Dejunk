@@ -70,6 +70,7 @@ local defaults = {
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
     DestroyIgnoreReadable = false,
+    DestroyIgnoreQuestItems = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},

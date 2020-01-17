@@ -80,6 +80,7 @@ src\filters\dejunker\by-quality.lua
 
 src\filters\destroyer\lists.lua
 src\filters\destroyer\ignore-readable.lua
+src\filters\destroyer\ignore-quest-items.lua
 src\filters\destroyer\excess-soul-shards.lua
 src\filters\destroyer\pets-already-collected.lua
 src\filters\destroyer\toys-already-collected.lua

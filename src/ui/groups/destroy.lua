@@ -177,4 +177,13 @@ function Destroy:AddIgnore(parent)
     get = function() return DB.Profile.DestroyIgnoreReadable end,
     set = function(value) DB.Profile.DestroyIgnoreReadable = value end
   })
+
+  -- Quest Items
+  Utils:CheckBox({
+    parent = parent,
+    label = L.IGNORE_QUEST_ITEMS_TEXT,
+    tooltip = L.IGNORE_QUEST_ITEMS_TOOLTIP,
+    get = function() return DB.Profile.DestroyIgnoreQuestItems end,
+    set = function(value) DB.Profile.DestroyIgnoreQuestItems = value end
+  })
 end

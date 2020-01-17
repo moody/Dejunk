@@ -94,6 +94,7 @@ function Consts:Initialize()
   self.ITEM_ENHANCEMENT_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_ITEM_ENHANCEMENT)
   self.RECIPE_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_RECIPE)
   self.TRADEGOODS_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_TRADEGOODS)
+  self.QUESTITEM_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_QUESTITEM)
 
   if Addon.IS_RETAIL then
     self.BATTLEPET_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_BATTLEPET)
