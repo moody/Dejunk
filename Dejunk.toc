@@ -61,6 +61,10 @@ src\repairer.lua
 src\filters\filters.lua
 
 src\filters\dejunker\lists.lua
+src\filters\destroyer\lists.lua
+
+src\filters\shared\ignore-readable.lua
+
 src\filters\dejunker\ignore-battle-pets.lua
 src\filters\dejunker\ignore-consumables.lua
 src\filters\dejunker\ignore-gems.lua
@@ -69,7 +73,6 @@ src\filters\dejunker\ignore-item-enhancements.lua
 src\filters\dejunker\ignore-recipes.lua
 src\filters\dejunker\ignore-trade-goods.lua
 src\filters\dejunker\ignore-cosmetic.lua
-src\filters\dejunker\ignore-readable.lua
 src\filters\dejunker\ignore-binds-when-equipped.lua
 src\filters\dejunker\ignore-soulbound.lua
 src\filters\dejunker\ignore-tradeable.lua
@@ -78,8 +81,6 @@ src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
 src\filters\dejunker\by-quality.lua
 
-src\filters\destroyer\lists.lua
-src\filters\destroyer\ignore-readable.lua
 src\filters\destroyer\ignore-quest-items.lua
 src\filters\destroyer\excess-soul-shards.lua
 src\filters\destroyer\pets-already-collected.lua
