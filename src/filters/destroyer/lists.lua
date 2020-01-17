@@ -2,7 +2,6 @@ local _, Addon = ...
 local DB = Addon.DB
 local Destroyables = Addon.Lists.Destroyables
 local Filter = {}
-local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local Undestroyables = Addon.Lists.Undestroyables
 
@@ -13,10 +12,6 @@ function Filter:Run(item)
 
   if Destroyables:Has(item.ItemID) then
     return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.DESTROYABLES_TEXT)
-  end
-
-  if DB.Profile.DestroyInclusions and Inclusions:Has(item.ItemID) then
-    return "JUNK", L.REASON_DESTROY_INCLUSIONS_TEXT
   end
 
   return "PASS"

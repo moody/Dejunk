@@ -63,7 +63,6 @@ local defaults = {
     DestroyUncommon = false,
     DestroyRare = false,
     DestroyEpic = false,
-    DestroyInclusions = false,
     DestroyPetsAlreadyCollected = false,
     DestroyToysAlreadyCollected = false,
     DestroyExcessSoulShards = {
@@ -129,7 +128,7 @@ local conversions = {
     )
   end,
 
-  -- Remove `DestroyIgnoreExclusions`
+  -- Remove `DestroyIgnoreExclusions` & `DestroyInclusions`
   function(profile)
     if profile.DestroyIgnoreExclusions then
       for k in pairs(profile.Exclusions) do
@@ -137,7 +136,14 @@ local conversions = {
       end
     end
 
+    if profile.DestroyInclusions then
+      for k in pairs(profile.Inclusions) do
+        profile.Destroyables[k] = true
+      end
+    end
+
     profile.DestroyIgnoreExclusions = nil
+    profile.DestroyInclusions = nil
   end
 }
 

@@ -3,7 +3,6 @@ local Consts = Addon.Consts
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Destroy = Addon.UI.Groups.Destroy
-local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local Utils = Addon.UI.Utils
 
@@ -115,15 +114,6 @@ function Destroy:AddByType(parent)
     parent = parent,
     title = L.BY_TYPE_TEXT,
     fullWidth = true
-  })
-
-  -- Inclusions
-  Utils:CheckBox({
-    parent = parent,
-    label = Inclusions.localeColored,
-    tooltip = L.DESTROY_LIST_TOOLTIP:format(Inclusions.localeColored),
-    get = function() return DB.Profile.DestroyInclusions end,
-    set = function(value) DB.Profile.DestroyInclusions = value end
   })
 
   if Addon.IS_RETAIL then
