@@ -169,21 +169,29 @@ function Destroy:AddIgnore(parent)
     fullWidth = true
   })
 
-  -- Readable
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_READABLE_TEXT,
-    tooltip = L.IGNORE_READABLE_TOOLTIP,
-    get = function() return DB.Profile.DestroyIgnoreReadable end,
-    set = function(value) DB.Profile.DestroyIgnoreReadable = value end
-  })
+  do -- By Type
+    local byType = Utils:InlineGroup({
+      parent = parent,
+      title = L.BY_TYPE_TEXT,
+      fullWidth = true
+    })
 
-  -- Quest Items
-  Utils:CheckBox({
-    parent = parent,
-    label = L.IGNORE_QUEST_ITEMS_TEXT,
-    tooltip = L.IGNORE_QUEST_ITEMS_TOOLTIP,
-    get = function() return DB.Profile.DestroyIgnoreQuestItems end,
-    set = function(value) DB.Profile.DestroyIgnoreQuestItems = value end
-  })
+    -- Quest Items
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_QUEST_ITEMS_TEXT,
+      tooltip = L.IGNORE_QUEST_ITEMS_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreQuestItems end,
+      set = function(value) DB.Profile.DestroyIgnoreQuestItems = value end
+    })
+
+    -- Readable
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_READABLE_TEXT,
+      tooltip = L.IGNORE_READABLE_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreReadable end,
+      set = function(value) DB.Profile.DestroyIgnoreReadable = value end
+    })
+  end
 end
