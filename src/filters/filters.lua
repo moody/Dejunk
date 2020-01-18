@@ -138,30 +138,7 @@ function Filters:Run(t, item)
   -- Filters
   for _, filter in ipairs(self[t]) do
     local result, reason = filter:Run(item)
-
     if result and result ~= "PASS" then
-      -- Special handling for Sell/Destroy Below Price options
-      if
-        result == "JUNK" and
-        Tools:ItemCanBeSold(item) and
-        (
-          (t == Dejunker and DB.Profile.SellBelowPrice.Enabled) or
-          (t == Destroyer and DB.Profile.DestroyBelowPrice.Enabled)
-        )
-      then
-        local maxPrice =
-          t == Dejunker and
-          DB.Profile.SellBelowPrice.Value or
-          DB.Profile.DestroyBelowPrice.Value
-
-        if (item.Price * item.Quantity) >= maxPrice then
-          result = "NOT_JUNK"
-          reason = L.REASON_ITEM_PRICE_IS_NOT_BELOW_TEXT:format(
-            GetCoinTextureString(maxPrice)
-          )
-        end
-      end
-
       return result == "JUNK", reason
     end
   end

@@ -60,6 +60,8 @@ src\repairer.lua
 # Filters (order matters)
 src\filters\filters.lua
 
+src\filters\shared\below-price.lua
+
 src\filters\dejunker\lists.lua
 src\filters\destroyer\lists.lua
 
