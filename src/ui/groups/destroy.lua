@@ -233,6 +233,15 @@ function Destroy:AddIgnore(parent)
       get = function() return DB.Profile.DestroyIgnoreRecipes end,
       set = function(value) DB.Profile.DestroyIgnoreRecipes = value end
     })
+
+    -- Trade Goods
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_TRADE_GOODS_TEXT,
+      tooltip = L.IGNORE_TRADE_GOODS_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreTradeGoods end,
+      set = function(value) DB.Profile.DestroyIgnoreTradeGoods = value end
+    })
   end
 
   do -- By Type

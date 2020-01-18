@@ -74,8 +74,8 @@ src\filters\shared\ignore-gems.lua
 src\filters\shared\ignore-glyphs.lua
 src\filters\shared\ignore-item-enhancements.lua
 src\filters\shared\ignore-soulbound.lua
+src\filters\shared\ignore-trade-goods.lua
 
-src\filters\dejunker\ignore-trade-goods.lua
 src\filters\dejunker\ignore-tradeable.lua
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
