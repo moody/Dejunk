@@ -224,6 +224,15 @@ function Destroy:AddIgnore(parent)
       get = function() return DB.Profile.DestroyIgnoreItemEnhancements end,
       set = function(value) DB.Profile.DestroyIgnoreItemEnhancements = value end
     })
+
+    -- Recipes
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_RECIPES_TEXT,
+      tooltip = L.IGNORE_RECIPES_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreRecipes end,
+      set = function(value) DB.Profile.DestroyIgnoreRecipes = value end
+    })
   end
 
   do -- By Type

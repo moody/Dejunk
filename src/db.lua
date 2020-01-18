@@ -79,6 +79,7 @@ local defaults = {
     DestroyIgnoreGlyphs = false,
     DestroyIgnoreItemEnhancements = false,
     DestroyIgnoreReadable = false,
+    DestroyIgnoreRecipes = false,
     DestroyIgnoreQuestItems = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
