@@ -2,11 +2,30 @@
 
 local _, Addon = ...
 local Consts = Addon.Consts
+local DCL = Addon.Libs.DCL
 local GetContainerItemPurchaseInfo = _G.GetContainerItemPurchaseInfo
+local L = Addon.Libs.L
 local LE_ITEM_QUALITY_EPIC = _G.LE_ITEM_QUALITY_EPIC
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local StaticPopup_Show = _G.StaticPopup_Show
 local Tools = Addon.Tools
+
+-- ============================================================================
+-- String Functions
+-- ============================================================================
+
+-- Formats a tooltip string to indicate that the option does not apply to poor
+-- quality items.
+-- @param {string} tooltip - the tooltip to format
+-- @return {string}
+function Tools:DoesNotApplyToPoor(tooltip)
+  return ("%s|n|n%s"):format(
+    tooltip,
+    L.DOES_NOT_APPLY_TO_QUALITY:format(
+      DCL:ColorString(L.POOR_TEXT, DCL.Wow.Poor)
+    )
+  )
+end
 
 -- ============================================================================
 -- Item Functions

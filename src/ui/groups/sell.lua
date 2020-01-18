@@ -5,6 +5,7 @@ local DCL = Addon.Libs.DCL
 local GetCoinTextureString = _G.GetCoinTextureString
 local L = Addon.Libs.L
 local Sell = Addon.UI.Groups.Sell
+local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
 
 function Sell:Create(parent)
@@ -252,7 +253,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byType,
       label = L.IGNORE_BOE_TEXT,
-      tooltip = L.IGNORE_BOE_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_BOE_TOOLTIP),
       get = function() return DB.Profile.IgnoreBindsWhenEquipped end,
       set = function(value) DB.Profile.IgnoreBindsWhenEquipped = value end
     })
@@ -299,7 +300,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byType,
       label = L.IGNORE_SOULBOUND_TEXT,
-      tooltip = L.IGNORE_SOULBOUND_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_SOULBOUND_TOOLTIP),
       get = function() return DB.Profile.IgnoreSoulbound end,
       set = function(value) DB.Profile.IgnoreSoulbound = value end
     })

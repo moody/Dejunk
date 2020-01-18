@@ -4,6 +4,7 @@ local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Destroy = Addon.UI.Groups.Destroy
 local L = Addon.Libs.L
+local Tools = Addon.Tools
 local Utils = Addon.UI.Utils
 
 -- Upvalues
@@ -255,7 +256,7 @@ function Destroy:AddIgnore(parent)
     Utils:CheckBox({
       parent = byType,
       label = L.IGNORE_BOE_TEXT,
-      tooltip = L.IGNORE_BOE_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_BOE_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreBindsWhenEquipped end,
       set = function(value) DB.Profile.DestroyIgnoreBindsWhenEquipped = value end
     })
@@ -302,7 +303,7 @@ function Destroy:AddIgnore(parent)
     Utils:CheckBox({
       parent = byType,
       label = L.IGNORE_SOULBOUND_TEXT,
-      tooltip = L.IGNORE_SOULBOUND_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_SOULBOUND_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreSoulbound end,
       set = function(value) DB.Profile.DestroyIgnoreSoulbound = value end
     })
