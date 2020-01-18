@@ -186,6 +186,15 @@ function Destroy:AddIgnore(parent)
         set = function(value) DB.Profile.DestroyIgnoreBattlePets = value end
       })
     end
+
+    -- Consumables
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_CONSUMABLES_TEXT,
+      tooltip = L.IGNORE_CONSUMABLES_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreConsumables end,
+      set = function(value) DB.Profile.DestroyIgnoreConsumables = value end
+    })
   end
 
   do -- By Type

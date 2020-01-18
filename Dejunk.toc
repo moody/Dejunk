@@ -66,8 +66,8 @@ src\filters\destroyer\lists.lua
 src\filters\shared\ignore-battle-pets.lua
 src\filters\shared\ignore-readable.lua
 src\filters\shared\ignore-binds-when-equipped.lua
+src\filters\shared\ignore-consumables.lua
 
-src\filters\dejunker\ignore-consumables.lua
 src\filters\dejunker\ignore-gems.lua
 src\filters\dejunker\ignore-glyphs.lua
 src\filters\dejunker\ignore-item-enhancements.lua

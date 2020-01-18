@@ -72,6 +72,7 @@ local defaults = {
 
     DestroyIgnoreBattlePets = false,
     DestroyIgnoreBindsWhenEquipped = false,
+    DestroyIgnoreConsumables = false,
     DestroyIgnoreReadable = false,
     DestroyIgnoreQuestItems = false,
 
