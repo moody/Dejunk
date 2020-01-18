@@ -205,6 +205,15 @@ function Destroy:AddIgnore(parent)
         get = function() return DB.Profile.DestroyIgnoreGems end,
         set = function(value) DB.Profile.DestroyIgnoreGems = value end
       })
+
+      -- Glyphs
+      Utils:CheckBox({
+        parent = byCategory,
+        label = L.IGNORE_GLYPHS_TEXT,
+        tooltip = L.IGNORE_GLYPHS_TOOLTIP,
+        get = function() return DB.Profile.DestroyIgnoreGlyphs end,
+        set = function(value) DB.Profile.DestroyIgnoreGlyphs = value end
+      })
     end
   end
 

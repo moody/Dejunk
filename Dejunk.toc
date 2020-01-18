@@ -70,8 +70,8 @@ src\filters\shared\ignore-consumables.lua
 src\filters\shared\ignore-cosmetic.lua
 src\filters\shared\ignore-equipment-sets.lua
 src\filters\shared\ignore-gems.lua
+src\filters\shared\ignore-glyphs.lua
 
-src\filters\dejunker\ignore-glyphs.lua
 src\filters\dejunker\ignore-item-enhancements.lua
 src\filters\dejunker\ignore-recipes.lua
 src\filters\dejunker\ignore-trade-goods.lua
