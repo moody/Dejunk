@@ -81,6 +81,7 @@ local defaults = {
     DestroyIgnoreReadable = false,
     DestroyIgnoreRecipes = false,
     DestroyIgnoreQuestItems = false,
+    DestroyIgnoreSoulbound = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},

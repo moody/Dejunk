@@ -288,5 +288,14 @@ function Destroy:AddIgnore(parent)
       get = function() return DB.Profile.DestroyIgnoreReadable end,
       set = function(value) DB.Profile.DestroyIgnoreReadable = value end
     })
+
+    -- Soulbound
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_SOULBOUND_TEXT,
+      tooltip = L.IGNORE_SOULBOUND_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreSoulbound end,
+      set = function(value) DB.Profile.DestroyIgnoreSoulbound = value end
+    })
   end
 end
