@@ -1,8 +1,9 @@
 local _, Addon = ...
 local DB = Addon.DB
-local L = Addon.Libs.L
-local Tools = Addon.Tools
 local GetCoinTextureString = _G.GetCoinTextureString
+local L = Addon.Libs.L
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local Tools = Addon.Tools
 
 local function isBelowPrice(item, price)
   if (item.Price * item.Quantity) >= price then
@@ -17,7 +18,11 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    if DB.Profile.SellBelowPrice.Enabled and Tools:ItemCanBeSold(item) then
+    if
+      DB.Profile.SellBelowPrice.Enabled and
+      item.Quality ~= LE_ITEM_QUALITY_POOR and
+      Tools:ItemCanBeSold(item)
+    then
       return isBelowPrice(item, DB.Profile.SellBelowPrice.Value)
     end
 
