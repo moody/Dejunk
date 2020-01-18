@@ -46,7 +46,7 @@ function Sell:AddGeneral(parent)
     parent = parent,
     checkBox = {
       label = L.SELL_BELOW_PRICE_TEXT,
-      tooltip = L.SELL_BELOW_PRICE_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.SELL_BELOW_PRICE_TOOLTIP),
       get = function() return DB.Profile.SellBelowPrice.Enabled end,
       set = function(value) DB.Profile.SellBelowPrice.Enabled = value end
     },
@@ -189,7 +189,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byCategory,
       label = L.IGNORE_CONSUMABLES_TEXT,
-      tooltip = L.IGNORE_CONSUMABLES_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_CONSUMABLES_TOOLTIP),
       get = function() return DB.Profile.IgnoreConsumables end,
       set = function(value) DB.Profile.IgnoreConsumables = value end
     })
@@ -199,7 +199,7 @@ function Sell:AddIgnore(parent)
       Utils:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GEMS_TEXT,
-        tooltip = L.IGNORE_GEMS_TOOLTIP,
+        tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GEMS_TOOLTIP),
         get = function() return DB.Profile.IgnoreGems end,
         set = function(value) DB.Profile.IgnoreGems = value end
       })
@@ -208,7 +208,7 @@ function Sell:AddIgnore(parent)
       Utils:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GLYPHS_TEXT,
-        tooltip = L.IGNORE_GLYPHS_TOOLTIP,
+        tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GLYPHS_TOOLTIP),
         get = function() return DB.Profile.IgnoreGlyphs end,
         set = function(value) DB.Profile.IgnoreGlyphs = value end
       })
@@ -218,7 +218,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byCategory,
       label = L.IGNORE_ITEM_ENHANCEMENTS_TEXT,
-      tooltip = L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP),
       get = function() return DB.Profile.IgnoreItemEnhancements end,
       set = function(value) DB.Profile.IgnoreItemEnhancements = value end
     })
@@ -227,7 +227,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byCategory,
       label = L.IGNORE_RECIPES_TEXT,
-      tooltip = L.IGNORE_RECIPES_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_RECIPES_TOOLTIP),
       get = function() return DB.Profile.IgnoreRecipes end,
       set = function(value) DB.Profile.IgnoreRecipes = value end
     })
@@ -236,7 +236,7 @@ function Sell:AddIgnore(parent)
     Utils:CheckBox({
       parent = byCategory,
       label = L.IGNORE_TRADE_GOODS_TEXT,
-      tooltip = L.IGNORE_TRADE_GOODS_TOOLTIP,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_TRADE_GOODS_TOOLTIP),
       get = function() return DB.Profile.IgnoreTradeGoods end,
       set = function(value) DB.Profile.IgnoreTradeGoods = value end
     })
