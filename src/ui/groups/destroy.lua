@@ -222,6 +222,17 @@ function Destroy:AddIgnore(parent)
       set = function(value) DB.Profile.DestroyIgnoreCosmetic = value end
     })
 
+    -- Equipment Sets
+    if Addon.IS_RETAIL then
+      Utils:CheckBox({
+        parent = byType,
+        label = L.IGNORE_EQUIPMENT_SETS_TEXT,
+        tooltip = L.IGNORE_EQUIPMENT_SETS_TOOLTIP,
+        get = function() return DB.Profile.DestroyIgnoreEquipmentSets end,
+        set = function(value) DB.Profile.DestroyIgnoreEquipmentSets = value end
+      })
+    end
+
     -- Quest Items
     Utils:CheckBox({
       parent = byType,

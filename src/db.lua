@@ -74,6 +74,7 @@ local defaults = {
     DestroyIgnoreBindsWhenEquipped = false,
     DestroyIgnoreConsumables = false,
     DestroyIgnoreCosmetic = false,
+    DestroyIgnoreEquipmentSets = false,
     DestroyIgnoreReadable = false,
     DestroyIgnoreQuestItems = false,
 

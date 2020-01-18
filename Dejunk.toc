@@ -68,6 +68,7 @@ src\filters\shared\ignore-readable.lua
 src\filters\shared\ignore-binds-when-equipped.lua
 src\filters\shared\ignore-consumables.lua
 src\filters\shared\ignore-cosmetic.lua
+src\filters\shared\ignore-equipment-sets.lua
 
 src\filters\dejunker\ignore-gems.lua
 src\filters\dejunker\ignore-glyphs.lua
@@ -76,7 +77,6 @@ src\filters\dejunker\ignore-recipes.lua
 src\filters\dejunker\ignore-trade-goods.lua
 src\filters\dejunker\ignore-soulbound.lua
 src\filters\dejunker\ignore-tradeable.lua
-src\filters\dejunker\ignore-equipment-sets.lua
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
 
