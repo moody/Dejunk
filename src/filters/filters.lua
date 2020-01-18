@@ -1,12 +1,10 @@
 local _, Addon = ...
 local Core = Addon.Core
-local DB = Addon.DB
 local DBL = Addon.Libs.DBL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
 local Filters = Addon.Filters
-local GetCoinTextureString = _G.GetCoinTextureString
 local L = Addon.Libs.L
 local Tools = Addon.Tools
 
