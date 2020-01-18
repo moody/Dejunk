@@ -6,7 +6,6 @@ local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
 local next = next
 local pcall = pcall
 local Profiles = Addon.UI.Groups.Profiles
@@ -22,10 +21,10 @@ local Utils = Addon.UI.Utils
 -- @param {string} key - profile key
 local function setProfile(key)
   if DB:SetProfile(key) then
-    ListManager:Update()
     Core:Print(
       L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Green))
     )
+    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
     return true
   end
   return false
@@ -38,6 +37,7 @@ local function copyProfile(key)
     Core:Print(
       L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
+    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
     return true
   end
   return false
@@ -183,7 +183,7 @@ function Profiles:Profiles(parent)
     self.copyProfile = Utils:Dropdown({
       parent = group,
       onValueChanged = function(self, event, key)
-        if copyProfile(key) then ListManager:Update() end
+        copyProfile(key)
         self:SetValue()
       end
     })

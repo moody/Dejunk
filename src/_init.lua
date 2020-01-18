@@ -26,8 +26,9 @@ Addon.Colors = {
   Yellow = "E3E34FFF"
 }
 Addon.DB = {}
+Addon.EventManager = {}
 Addon.Filters = {}
-Addon.ListManager = {}
+Addon.ListHelper = {}
 Addon.Tools = {}
 
 Addon.Confirmer = {}
@@ -44,11 +45,11 @@ Addon.UI = {
   Groups = {
     General = {},
     Sell = {},
-    Ignore = {},
     Destroy = {},
     Inclusions = {},
     Exclusions = {},
     Destroyables = {},
+    Undestroyables = {},
     Profiles = {}
   }
 }

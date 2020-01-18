@@ -3,20 +3,21 @@ local Type, Version = "Dejunk_ListFrame", 1
 local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
--- Libs
-local DCL = Addon.Libs.DCL
-
 -- Upvalues
-local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
-local GameTooltip, GetMouseFocus = _G.GameTooltip, _G.GetMouseFocus
-local CursorHasItem, GetCursorInfo = _G.CursorHasItem, _G.GetCursorInfo
-local ClearCursor, IsControlKeyDown = _G.ClearCursor, _G.IsControlKeyDown
-local DressUpVisual, IsDressableItem = _G.DressUpVisual, _G.IsDressableItem
-
-local floor, max, unpack = math.floor, math.max, _G.unpack
-
--- Modules
-local ListManager = Addon.ListManager
+local ClearCursor = _G.ClearCursor
+local CreateFrame = _G.CreateFrame
+local CursorHasItem = _G.CursorHasItem
+local DCL = Addon.Libs.DCL
+local DressUpVisual = _G.DressUpVisual
+local floor = math.floor
+local GameTooltip = _G.GameTooltip
+local GetCursorInfo = _G.GetCursorInfo
+local GetMouseFocus = _G.GetMouseFocus
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsDressableItem = _G.IsDressableItem
+local max = math.max
+local UIParent = _G.UIParent
+local unpack = _G.unpack
 
 -- Consts
 local PAD_X, PAD_Y = 4, 16
@@ -41,28 +42,15 @@ end
 
 -- Clear stuff
 function widgetMixins:OnRelease()
-  self.frame.listData = nil
-  self.frame.disabled = nil
-  self.frame.scrollBar.listData = nil
-  self.frame.scrollBar.disabled = nil
+  self.frame.list = nil
+  self.frame.scrollBar.list = nil
 end
 
-function widgetMixins:SetDisabled(disabled)
-  self.frame.disabled = disabled
-  self.frame.scrollBar.disabled = disabled
-  if disabled then
-    -- Disable stuff
-  else
-    -- Enable stuff
-  end
-end
-
-function widgetMixins:SetListData(listName, listData)
+function widgetMixins:SetList(list)
   self.frame.offset = 0
-  self.frame.listName = listName
-  self.frame.listData = listData
-  self.frame.scrollBar.listData = listData
-  self.frame.scrollBar:SetMinMaxValues(0, max(#listData - NUM_LIST_BUTTONS, 0))
+  self.frame.list = list
+  self.frame.scrollBar.list = list
+  self.frame.scrollBar:SetMinMaxValues(0, max(#list.items - NUM_LIST_BUTTONS, 0))
   self.frame.scrollBar:SetValue(0)
 end
 
@@ -73,11 +61,11 @@ end
 local frameMixins, frameScripts = {}, {}
 
 function frameMixins:AddCursorItem()
-  if not self.disabled and CursorHasItem() then
+  if CursorHasItem() then
     local infoType, itemID = GetCursorInfo()
 
     if (infoType == "item") then
-      ListManager:AddToList(self.listName, itemID)
+      self.list:Add(itemID)
     end
 
     ClearCursor()
@@ -85,9 +73,7 @@ function frameMixins:AddCursorItem()
 end
 
 function frameMixins:RemoveItem(itemID)
-  if not self.disabled then
-    ListManager:RemoveFromList(self.listName, itemID)
-  end
+  self.list:Remove(itemID)
 end
 
 function frameScripts:OnMouseUp()
@@ -98,22 +84,22 @@ function frameScripts:OnUpdate(elapsed)
   -- Update buttons
   for i, button in ipairs(self.buttons) do
     local index = (i + self.offset)
-    local data = self.listData[index]
+    local item = self.list.items[index]
 
-    if data then
+    if item then
       button:Show()
-      button:SetData(data)
+      button:SetItem(item)
     else
       button:Hide()
     end
   end
 
   -- Update scroll bar values
-  local maxVal = max((#self.listData - #self.buttons), 0)
+  local maxVal = max((#self.list.items - #self.buttons), 0)
   self.scrollBar:SetMinMaxValues(0, maxVal)
 
   -- Update "No items." text
-  if #self.listData <= 0 then
+  if #self.list.items <= 0 then
     self.noItemsText:Show()
   else
     self.noItemsText:Hide()
@@ -131,12 +117,7 @@ end
 local scrollBarScripts = {}
 
 function scrollBarScripts:OnUpdate(elapsed)
-  if (
-      self.disabled or
-      not self.listData or
-      #self.listData <= NUM_LIST_BUTTONS
-    )
-  then
+  if #self.list.items <= NUM_LIST_BUTTONS then
     self.ScrollUpButton:Disable()
     self.ScrollDownButton:Disable()
   else
@@ -155,33 +136,33 @@ end
 
 local ButtonMixins, ButtonScripts = {}, {}
 
-function ButtonMixins:ShowTooltip()
-  GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetHyperlink(self.data.ItemLink)
-  GameTooltip:Show()
-end
-
-function ButtonMixins:SetData(data)
-  self.data = data
-  self.icon:SetTexture(data.Texture)
+function ButtonMixins:SetItem(item)
+  self.item = item
+  self.icon:SetTexture(item.Texture)
   self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  self.text:SetText(("[%s]"):format(data.Name))
-  self.text:SetTextColor(unpack(DCL:GetColorByQuality(data.Quality)))
+  self.text:SetText(("[%s]"):format(item.Name))
+  self.text:SetTextColor(unpack(DCL:GetColorByQuality(item.Quality)))
   if GetMouseFocus() == self then self:ShowTooltip() end
 end
 
 function ButtonScripts:OnClick(button)
   if (button == "LeftButton") then
     if IsControlKeyDown() then
-      if IsDressableItem(self.data.ItemID) then
-        DressUpVisual(self.data.ItemLink)
+      if IsDressableItem(self.item.ItemID) then
+        DressUpVisual(self.item.ItemLink)
       end
     else
       self:GetParent():AddCursorItem()
     end
   elseif (button == "RightButton") then
-    self:GetParent():RemoveItem(self.data.ItemID)
+    self:GetParent():RemoveItem(self.item.ItemID)
   end
+end
+
+function ButtonMixins:ShowTooltip()
+  GameTooltip:SetOwner(self, "ANCHOR_TOP")
+  GameTooltip:SetHyperlink(self.item.ItemLink)
+  GameTooltip:Show()
 end
 
 function ButtonScripts:OnEnter()

@@ -39,6 +39,9 @@ _G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
     destroyRightText = DCL:ColorString(reasonText, DCL.CSS.White)
   end
 
+  -- Exit early if no text to display
+  if not (sellLeftText or destroyLeftText) then return end
+
   -- Add lines
   self:AddLine(" ") -- blank line
   self:AddLine(DCL:ColorString(AddonName, Colors.Primary))

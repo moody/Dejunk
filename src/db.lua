@@ -39,18 +39,19 @@ local defaults = {
 
     -- Ignore options
     IgnoreBattlePets = false,
+    IgnoreBindsWhenEquipped = false,
     IgnoreConsumables = false,
+    IgnoreCosmetic = false,
+    IgnoreEquipmentSets = false,
     IgnoreGems = false,
     IgnoreGlyphs = false,
     IgnoreItemEnhancements = false,
-    IgnoreRecipes = false,
-    IgnoreTradeGoods = false,
-    IgnoreCosmetic = false,
-    IgnoreBindsWhenEquipped = false,
-    IgnoreSoulbound = false,
-    IgnoreEquipmentSets = false,
+    IgnoreQuestItems = false,
     IgnoreReadable = false,
+    IgnoreRecipes = false,
+    IgnoreSoulbound = false,
     IgnoreTradeable = false,
+    IgnoreTradeGoods = false,
 
     -- Destroy options
     AutoDestroy = false,
@@ -59,20 +60,37 @@ local defaults = {
       Value = Consts.DESTROY_BELOW_PRICE_MIN
     },
     DestroyPoor = false,
-    DestroyInclusions = false,
+    DestroyCommon = false,
+    DestroyUncommon = false,
+    DestroyRare = false,
+    DestroyEpic = false,
     DestroyPetsAlreadyCollected = false,
     DestroyToysAlreadyCollected = false,
     DestroyExcessSoulShards = {
       Enabled = false,
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
-    DestroyIgnoreExclusions = false,
+
+    DestroyIgnoreBattlePets = false,
+    DestroyIgnoreBindsWhenEquipped = false,
+    DestroyIgnoreConsumables = false,
+    DestroyIgnoreCosmetic = false,
+    DestroyIgnoreEquipmentSets = false,
+    DestroyIgnoreGems = false,
+    DestroyIgnoreGlyphs = false,
+    DestroyIgnoreItemEnhancements = false,
+    DestroyIgnoreQuestItems = false,
     DestroyIgnoreReadable = false,
+    DestroyIgnoreRecipes = false,
+    DestroyIgnoreSoulbound = false,
+    DestroyIgnoreTradeable = false,
+    DestroyIgnoreTradeGoods = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},
     Exclusions = {},
-    Destroyables = {}
+    Destroyables = {},
+    Undestroyables = {}
   }
 }
 
@@ -124,6 +142,25 @@ local conversions = {
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
     )
   end,
+
+  -- Remove `DestroyIgnoreExclusions` & `DestroyInclusions`
+  function(profile)
+    if profile.DestroyIgnoreExclusions then
+      for k in pairs(profile.Exclusions) do
+        profile.Destroyables[k] = nil
+        profile.Undestroyables[k] = true
+      end
+    end
+
+    if profile.DestroyInclusions then
+      for k in pairs(profile.Inclusions) do
+        profile.Destroyables[k] = true
+      end
+    end
+
+    profile.DestroyIgnoreExclusions = nil
+    profile.DestroyInclusions = nil
+  end
 }
 
 -- Converts the old version of the DB into the new one.
@@ -143,4 +180,5 @@ function DB:Initialize()
   setmetatable(self, { __index = db })
   self.Reformat = reformat
   reformat()
+  Addon.EventManager:Fire("DB_PROFILE_CHANGED")
 end
