@@ -60,11 +60,10 @@ src\repairer.lua
 # Filters (order matters)
 src\filters\filters.lua
 
-src\filters\shared\below-price.lua
-
 src\filters\dejunker\lists.lua
 src\filters\destroyer\lists.lua
 
+src\filters\shared\below-price.lua
 src\filters\shared\ignore-battle-pets.lua
 src\filters\shared\ignore-readable.lua
 src\filters\shared\ignore-recipes.lua

@@ -39,7 +39,6 @@ L["DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP"] = "Destroy pets of which you have al
 L["DESTROY_TEXT"] = "Destroy"
 L["DESTROY_TOYS_ALREADY_COLLECTED_TEXT"] = "Toys Already Collected"
 L["DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP"] = "Destroy toys which you have already collected.|n|nOnly applies to soulbound toys which cannot be sold."
-L["DESTROYABLES_HELP_BELOW_PRICE_TEXT"] = "Items on this list worth less than %s will be destroyed."
 L["DESTROYABLES_HELP_TEXT"] = "Items on this list will always be destroyed."
 L["DESTROYABLES_TEXT"] = "Destroyables"
 L["DESTROYED_ITEM_VERBOSE"] = "Destroyed: %s."

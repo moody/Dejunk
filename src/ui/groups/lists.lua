@@ -1,10 +1,8 @@
 local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Consts = Addon.Consts
-local DB = Addon.DB
 local Destroyables = Addon.Lists.Destroyables
 local Exclusions = Addon.Lists.Exclusions
-local GetCoinTextureString = _G.GetCoinTextureString
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
@@ -21,27 +19,10 @@ local Utils = Addon.UI.Utils
 -- @param {table} list
 -- @return {string}
 local function getListHelpText(list)
-  if list == Inclusions then
-    return L.INCLUSIONS_HELP_TEXT
-  end
-
-  if list == Exclusions then
-    return L.EXCLUSIONS_HELP_TEXT
-  end
-
-  if list == Destroyables then
-    if DB.Profile.DestroyBelowPrice.Enabled then
-      return L.DESTROYABLES_HELP_BELOW_PRICE_TEXT:format(
-        GetCoinTextureString(DB.Profile.DestroyBelowPrice.Value)
-      )
-    end
-
-    return L.DESTROYABLES_HELP_TEXT
-  end
-
-  if list == Undestroyables then
-    return L.UNDESTROYABLES_HELP_TEXT
-  end
+  if list == Inclusions then return L.INCLUSIONS_HELP_TEXT end
+  if list == Exclusions then return L.EXCLUSIONS_HELP_TEXT end
+  if list == Destroyables then return L.DESTROYABLES_HELP_TEXT end
+  if list == Undestroyables then return L.UNDESTROYABLES_HELP_TEXT end
 end
 
 -- ============================================================================
