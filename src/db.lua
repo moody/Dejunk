@@ -137,6 +137,7 @@ local conversions = {
   function(profile)
     if profile.DestroyIgnoreExclusions then
       for k in pairs(profile.Exclusions) do
+        profile.Destroyables[k] = nil
         profile.Undestroyables[k] = true
       end
     end
