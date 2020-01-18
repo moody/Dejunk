@@ -69,8 +69,8 @@ src\filters\shared\ignore-binds-when-equipped.lua
 src\filters\shared\ignore-consumables.lua
 src\filters\shared\ignore-cosmetic.lua
 src\filters\shared\ignore-equipment-sets.lua
+src\filters\shared\ignore-gems.lua
 
-src\filters\dejunker\ignore-gems.lua
 src\filters\dejunker\ignore-glyphs.lua
 src\filters\dejunker\ignore-item-enhancements.lua
 src\filters\dejunker\ignore-recipes.lua

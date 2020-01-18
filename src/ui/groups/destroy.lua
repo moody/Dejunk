@@ -195,6 +195,17 @@ function Destroy:AddIgnore(parent)
       get = function() return DB.Profile.DestroyIgnoreConsumables end,
       set = function(value) DB.Profile.DestroyIgnoreConsumables = value end
     })
+
+    if Addon.IS_RETAIL then
+      -- Gems
+      Utils:CheckBox({
+        parent = byCategory,
+        label = L.IGNORE_GEMS_TEXT,
+        tooltip = L.IGNORE_GEMS_TOOLTIP,
+        get = function() return DB.Profile.DestroyIgnoreGems end,
+        set = function(value) DB.Profile.DestroyIgnoreGems = value end
+      })
+    end
   end
 
   do -- By Type
