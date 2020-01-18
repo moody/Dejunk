@@ -82,6 +82,7 @@ local defaults = {
     DestroyIgnoreRecipes = false,
     DestroyIgnoreQuestItems = false,
     DestroyIgnoreSoulbound = false,
+    DestroyIgnoreTradeable = false,
     DestroyIgnoreTradeGoods = false,
 
     -- Lists, table of itemIDs: { ["itemID"] = true }

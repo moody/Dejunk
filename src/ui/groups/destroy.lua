@@ -306,5 +306,16 @@ function Destroy:AddIgnore(parent)
       get = function() return DB.Profile.DestroyIgnoreSoulbound end,
       set = function(value) DB.Profile.DestroyIgnoreSoulbound = value end
     })
+
+    -- Tradeable
+    if Addon.IS_RETAIL then
+      Utils:CheckBox({
+        parent = byType,
+        label = L.IGNORE_TRADEABLE_TEXT,
+        tooltip = L.IGNORE_TRADEABLE_TOOLTIP,
+        get = function() return DB.Profile.DestroyIgnoreTradeable end,
+        set = function(value) DB.Profile.DestroyIgnoreTradeable = value end
+      })
+    end
   end
 end
