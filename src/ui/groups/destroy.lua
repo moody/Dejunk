@@ -195,6 +195,15 @@ function Destroy:AddIgnore(parent)
       fullWidth = true
     })
 
+    -- Binds When Equipped
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_BOE_TEXT,
+      tooltip = L.IGNORE_BOE_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreBindsWhenEquipped end,
+      set = function(value) DB.Profile.DestroyIgnoreBindsWhenEquipped = value end
+    })
+
     -- Quest Items
     Utils:CheckBox({
       parent = byType,
