@@ -1,0 +1,6 @@
+<Ui>
+  <script file="src/_init.lua"/>
+  <script file="src/main.lua"/>
+  <script file="src/wow.lua"/>
+  <script file="src/css.lua"/>
+</Ui>
