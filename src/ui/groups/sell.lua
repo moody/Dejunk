@@ -277,6 +277,15 @@ function Sell:AddIgnore(parent)
       })
     end
 
+    -- Quest Items
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_QUEST_ITEMS_TEXT,
+      tooltip = L.IGNORE_QUEST_ITEMS_TOOLTIP,
+      get = function() return DB.Profile.IgnoreQuestItems end,
+      set = function(value) DB.Profile.IgnoreQuestItems = value end
+    })
+
     -- Readable
     Utils:CheckBox({
       parent = byType,

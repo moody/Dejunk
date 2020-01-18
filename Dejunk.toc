@@ -76,11 +76,11 @@ src\filters\shared\ignore-item-enhancements.lua
 src\filters\shared\ignore-soulbound.lua
 src\filters\shared\ignore-trade-goods.lua
 src\filters\shared\ignore-tradeable.lua
+src\filters\shared\ignore-quest-items.lua
 
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
 
-src\filters\destroyer\ignore-quest-items.lua
 src\filters\destroyer\excess-soul-shards.lua
 src\filters\destroyer\pets-already-collected.lua
 src\filters\destroyer\toys-already-collected.lua

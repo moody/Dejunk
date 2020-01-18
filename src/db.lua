@@ -46,6 +46,7 @@ local defaults = {
     IgnoreGems = false,
     IgnoreGlyphs = false,
     IgnoreItemEnhancements = false,
+    IgnoreQuestItems = false,
     IgnoreReadable = false,
     IgnoreRecipes = false,
     IgnoreSoulbound = false,
