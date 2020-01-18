@@ -215,6 +215,15 @@ function Destroy:AddIgnore(parent)
         set = function(value) DB.Profile.DestroyIgnoreGlyphs = value end
       })
     end
+
+    -- Item Enhancements
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_ITEM_ENHANCEMENTS_TEXT,
+      tooltip = L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreItemEnhancements end,
+      set = function(value) DB.Profile.DestroyIgnoreItemEnhancements = value end
+    })
   end
 
   do -- By Type

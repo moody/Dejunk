@@ -77,6 +77,7 @@ local defaults = {
     DestroyIgnoreEquipmentSets = false,
     DestroyIgnoreGems = false,
     DestroyIgnoreGlyphs = false,
+    DestroyIgnoreItemEnhancements = false,
     DestroyIgnoreReadable = false,
     DestroyIgnoreQuestItems = false,
 
