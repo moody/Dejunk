@@ -11,25 +11,33 @@
 
   <!-- Add/rem inclusions -->
   <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToInclusions()
+    DejunkBindings_AddToList("Inclusions")
   </Binding>
   <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromInclusions()
+    DejunkBindings_RemoveFromList("Inclusions")
   </Binding>
 
   <!-- Add/rem exclusions -->
   <Binding name="DEJUNK_ADD_EXCLUSIONS" header="DEJUNKBLANK2" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToExclusions()
+    DejunkBindings_AddToList("Exclusions")
   </Binding>
   <Binding name="DEJUNK_REM_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromExclusions()
+    DejunkBindings_RemoveFromList("Exclusions")
   </Binding>
 
   <!-- Add/rem destroyables -->
   <Binding name="DEJUNK_ADD_DESTROYABLES" header="DEJUNKBLANK3" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToDestroyables()
+    DejunkBindings_AddToList("Destroyables")
   </Binding>
   <Binding name="DEJUNK_REM_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromDestroyables()
+    DejunkBindings_RemoveFromList("Destroyables")
+  </Binding>
+
+  <!-- Add/rem undestroyables -->
+  <Binding name="DEJUNK_ADD_UNDESTROYABLES" header="DEJUNKBLANK4" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_AddToList("Undestroyables")
+  </Binding>
+  <Binding name="DEJUNK_REM_UNDESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_RemoveFromList("Undestroyables")
   </Binding>
 </Bindings>

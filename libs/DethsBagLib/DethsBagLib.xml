@@ -1,0 +1,6 @@
+<Ui>
+  <script file="src/_init.lua"/>
+  <script file="src/backend.lua"/>
+  <script file="src/item-mixins.lua"/>
+  <script file="src/main.lua"/>
+</Ui>

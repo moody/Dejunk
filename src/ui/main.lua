@@ -5,12 +5,15 @@ local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
+local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local Exclusions = Addon.Lists.Exclusions
+local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
-local ListManager = Addon.ListManager
+local ListHelper = Addon.ListHelper
 local pairs = pairs
-local Tools = Addon.Tools
 local UI = Addon.UI
+local Undestroyables = Addon.Lists.Undestroyables
 local Utils = Addon.UI.Utils
 
 function UI:IsShown()
@@ -43,7 +46,7 @@ function UI:OnUpdate(elapsed)
     (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
     (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
     (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
-    (ListManager:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
+    (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
     ""
   )
 
@@ -130,14 +133,15 @@ function UI:Create()
   treeGroup:EnableButtonTooltips(false)
   treeGroup:SetTree({
     { text = L.GENERAL_TEXT, value = "General" },
+    { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
-    { text = L.IGNORE_TEXT, value = "Ignore" },
+    { text = "  " .. Inclusions.localeColored, value = "Inclusions" },
+    { text = "  " .. Exclusions.localeColored, value = "Exclusions" },
+    { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
-    { text = "", value = "Space1", disabled = true },
-    { text = Tools:GetInclusionsString(), value = "Inclusions" },
-    { text = Tools:GetExclusionsString(), value = "Exclusions" },
-    { text = Tools:GetDestroyablesString(), value = "Destroyables" },
-    { text = "", value = "Space2", disabled = true },
+    { text = "  " .. Destroyables.localeColored, value = "Destroyables" },
+    { text = "  " .. Undestroyables.localeColored, value = "Undestroyables" },
+    { text = "", value = "SPACE_3", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })
 
