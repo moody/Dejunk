@@ -152,12 +152,6 @@ local conversions = {
       end
     end
 
-    if profile.DestroyInclusions then
-      for k in pairs(profile.Inclusions) do
-        profile.Destroyables[k] = true
-      end
-    end
-
     profile.DestroyIgnoreExclusions = nil
     profile.DestroyInclusions = nil
   end
