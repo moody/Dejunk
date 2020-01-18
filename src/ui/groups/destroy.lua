@@ -169,6 +169,25 @@ function Destroy:AddIgnore(parent)
     fullWidth = true
   })
 
+  do -- By Category
+    local byCategory = Utils:InlineGroup({
+      parent = parent,
+      title = L.BY_CATEGORY_TEXT,
+      fullWidth = true
+    })
+
+    -- Battle Pets
+    if Addon.IS_RETAIL then
+      Utils:CheckBox({
+        parent = byCategory,
+        label = L.IGNORE_BATTLEPETS_TEXT,
+        tooltip = L.IGNORE_BATTLEPETS_TOOLTIP,
+        get = function() return DB.Profile.DestroyIgnoreBattlePets end,
+        set = function(value) DB.Profile.DestroyIgnoreBattlePets = value end
+      })
+    end
+  end
+
   do -- By Type
     local byType = Utils:InlineGroup({
       parent = parent,

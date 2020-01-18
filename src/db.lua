@@ -69,6 +69,8 @@ local defaults = {
       Enabled = false,
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
+
+    DestroyIgnoreBattlePets = false,
     DestroyIgnoreReadable = false,
     DestroyIgnoreQuestItems = false,
 
