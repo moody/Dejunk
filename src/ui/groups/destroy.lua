@@ -213,6 +213,15 @@ function Destroy:AddIgnore(parent)
       set = function(value) DB.Profile.DestroyIgnoreBindsWhenEquipped = value end
     })
 
+    -- Cosmetic
+    Utils:CheckBox({
+      parent = byType,
+      label = L.IGNORE_COSMETIC_TEXT,
+      tooltip = L.IGNORE_COSMETIC_TOOLTIP,
+      get = function() return DB.Profile.DestroyIgnoreCosmetic end,
+      set = function(value) DB.Profile.DestroyIgnoreCosmetic = value end
+    })
+
     -- Quest Items
     Utils:CheckBox({
       parent = byType,
