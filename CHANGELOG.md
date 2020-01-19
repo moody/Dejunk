@@ -10,6 +10,7 @@
 - Added an **Undestroyables** list for items to never destroy
 - Added destroy options for Common, Uncommon, Rare, and Epic quality items
 - Added destroy options for ignoring items based on category and type
+- Added sell option for ignoring reagent items
 - Added ability to sort lists by Class, Name, Price, or Quality (default)
 
 ## Removals
