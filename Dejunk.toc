@@ -63,6 +63,8 @@ src\filters\filters.lua
 src\filters\dejunker\lists.lua
 src\filters\destroyer\lists.lua
 
+src\filters\destroyer\excess-soul-shards.lua
+
 src\filters\shared\below-price.lua
 src\filters\shared\ignore-battle-pets.lua
 src\filters\shared\ignore-readable.lua
@@ -82,7 +84,6 @@ src\filters\shared\ignore-quest-items.lua
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
 
-src\filters\destroyer\excess-soul-shards.lua
 src\filters\destroyer\pets-already-collected.lua
 src\filters\destroyer\toys-already-collected.lua
 
