@@ -62,31 +62,32 @@ src\filters\filters.lua
 
 src\filters\dejunker\lists.lua
 src\filters\destroyer\lists.lua
+src\filters\shared\below-price.lua
 
 src\filters\destroyer\excess-soul-shards.lua
+src\filters\destroyer\pets-already-collected.lua
+src\filters\destroyer\toys-already-collected.lua
 
-src\filters\shared\below-price.lua
 src\filters\shared\ignore-battle-pets.lua
-src\filters\shared\ignore-readable.lua
-src\filters\shared\ignore-recipes.lua
-src\filters\shared\ignore-binds-when-equipped.lua
 src\filters\shared\ignore-consumables.lua
 src\filters\shared\ignore-cosmetic.lua
-src\filters\shared\ignore-equipment-sets.lua
 src\filters\shared\ignore-gems.lua
 src\filters\shared\ignore-glyphs.lua
 src\filters\shared\ignore-item-enhancements.lua
-src\filters\shared\ignore-soulbound.lua
-src\filters\shared\ignore-trade-goods.lua
-src\filters\shared\ignore-tradeable.lua
 src\filters\shared\ignore-quest-items.lua
+src\filters\shared\ignore-readable.lua
 src\filters\shared\ignore-reagents.lua
+src\filters\shared\ignore-recipes.lua
+src\filters\shared\ignore-trade-goods.lua
+
+src\filters\shared\ignore-binds-when-equipped.lua
+src\filters\shared\ignore-equipment-sets.lua
+src\filters\shared\ignore-tradeable.lua
 
 src\filters\dejunker\unsuitable-equipment.lua
 src\filters\dejunker\below-average-item-level.lua
 
-src\filters\destroyer\pets-already-collected.lua
-src\filters\destroyer\toys-already-collected.lua
+src\filters\shared\ignore-soulbound.lua
 
 src\filters\shared\by-quality.lua
 
