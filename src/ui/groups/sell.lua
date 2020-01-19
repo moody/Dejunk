@@ -223,6 +223,15 @@ function Sell:AddIgnore(parent)
       set = function(value) DB.Profile.IgnoreItemEnhancements = value end
     })
 
+    -- Reagents
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_REAGENTS_TEXT,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_REAGENTS_TOOLTIP),
+      get = function() return DB.Profile.IgnoreReagents end,
+      set = function(value) DB.Profile.IgnoreReagents = value end
+    })
+
     -- Recipes
     Utils:CheckBox({
       parent = byCategory,

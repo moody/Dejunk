@@ -92,6 +92,7 @@ function Consts:Initialize()
   -- Item classes
   self.CONSUMABLE_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_CONSUMABLE)
   self.ITEM_ENHANCEMENT_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_ITEM_ENHANCEMENT)
+  self.REAGENT_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_REAGENT)
   self.RECIPE_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_RECIPE)
   self.TRADEGOODS_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_TRADEGOODS)
   self.QUESTITEM_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_QUESTITEM)
