@@ -223,6 +223,15 @@ function Sell:AddIgnore(parent)
       set = function(value) DB.Profile.IgnoreItemEnhancements = value end
     })
 
+    -- Miscellaneous
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_MISCELLANEOUS_TEXT,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_MISCELLANEOUS_TOOLTIP),
+      get = function() return DB.Profile.IgnoreMiscellaneous end,
+      set = function(value) DB.Profile.IgnoreMiscellaneous = value end
+    })
+
     -- Reagents
     Utils:CheckBox({
       parent = byCategory,

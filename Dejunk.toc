@@ -74,6 +74,7 @@ src\filters\shared\ignore-cosmetic.lua
 src\filters\shared\ignore-gems.lua
 src\filters\shared\ignore-glyphs.lua
 src\filters\shared\ignore-item-enhancements.lua
+src\filters\shared\ignore-miscellaneous.lua
 src\filters\shared\ignore-quest-items.lua
 src\filters\shared\ignore-readable.lua
 src\filters\shared\ignore-reagents.lua

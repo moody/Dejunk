@@ -226,6 +226,15 @@ function Destroy:AddIgnore(parent)
       set = function(value) DB.Profile.DestroyIgnoreItemEnhancements = value end
     })
 
+    -- Miscellaneous
+    Utils:CheckBox({
+      parent = byCategory,
+      label = L.IGNORE_MISCELLANEOUS_TEXT,
+      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_MISCELLANEOUS_TOOLTIP),
+      get = function() return DB.Profile.DestroyIgnoreMiscellaneous end,
+      set = function(value) DB.Profile.DestroyIgnoreMiscellaneous = value end
+    })
+
     -- Reagents
     Utils:CheckBox({
       parent = byCategory,
