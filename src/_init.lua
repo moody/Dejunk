@@ -18,6 +18,7 @@ Addon.Libs = {
 -- Initialize Dejunk tables
 Addon.Core = _G.DethsLibLoader("DethsAddonLib", "1.0"):Create(AddonName)
 
+Addon.BagHelper = {}
 Addon.Consts = {}
 Addon.Colors = {
   Primary = "4FAFE3FF",

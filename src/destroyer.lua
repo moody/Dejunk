@@ -2,11 +2,11 @@
 
 local _, Addon = ...
 local assert = assert
+local BagHelper = Addon.BagHelper
 local ClearCursor = _G.ClearCursor
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
-local DBL = Addon.Libs.DBL
 local DeleteCursorItem = _G.DeleteCursorItem
 local Destroyer = Addon.Destroyer
 local Filters = Addon.Filters
@@ -43,7 +43,7 @@ function Destroyer:StartAutoDestroy()
   end
 end
 -- Register DBL listener
-DBL:AddListener(Destroyer.StartAutoDestroy)
+-- DBL:AddListener(Destroyer.StartAutoDestroy)
 
 -- Starts the Destroying process.
 -- @param auto - if the process was started automatically
@@ -64,17 +64,19 @@ function Destroyer:StartDestroying(auto)
   if (#itemsToDestroy == 0) then
     if not auto then
       Core:Print(
-        DBL:IsUpToDate() and
+        itemsToDestroy.allCached and
         L.NO_DESTROYABLE_ITEMS or
         L.NO_CACHED_DESTROYABLE_ITEMS
       )
     end
-    self:StopDestroying()
-    return
+
+    return self:StopDestroying()
   end
 
-  -- If DBL isn't up to date, we'll only have items that are cached
-  if not DBL:IsUpToDate() then Core:Print(L.ONLY_DESTROYING_CACHED) end
+  -- If some items fail to be retrieved, we'll only have items that are cached
+  if not itemsToDestroy.allCached then
+    Core:Print(L.ONLY_DESTROYING_CACHED)
+  end
 
   self:StartDestroyingItems()
 end
@@ -119,7 +121,7 @@ do
       if not item then Destroyer:StopDestroyingItems() return end
       -- Otherwise, verify that the item in the bag slot has not been changed
       -- before destroying
-      if not DBL:StillInBags(item) or item:IsLocked() then return end
+      if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then return end
 
       -- Destroy item
       PickupContainerItem(item.Bag, item.Slot)

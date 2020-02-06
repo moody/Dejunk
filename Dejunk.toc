@@ -50,6 +50,7 @@ src\_lists.lua
 src\consts.lua
 src\db.lua
 src\item-tooltip.lua
+src\bag-helper.lua
 src\list-helper.lua
 src\tools.lua
 src\confirmer.lua

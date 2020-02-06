@@ -1,7 +1,7 @@
 local AddonName, Addon = ...
+local BagHelper = Addon.BagHelper
 local Colors = Addon.Colors
 local DB = Addon.DB
-local DBL = Addon.Libs.DBL
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
@@ -12,8 +12,8 @@ local Tools = Addon.Tools
 local item = {}
 
 _G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
-  if not DB.Global.ItemTooltip or DBL:IsEmpty(bag, slot) then return end
-  if not DBL:GetItem(bag, slot, item) then return end
+  if not DB.Global.ItemTooltip or BagHelper:IsEmpty(bag, slot) then return end
+  if not BagHelper:GetItem(bag, slot, item) then return end
   if Tools:ItemCanBeRefunded(item) then return end
 
   local sellLeftText, sellRightText

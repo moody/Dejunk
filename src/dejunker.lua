@@ -2,16 +2,15 @@
 
 local _, Addon = ...
 local assert = assert
+local BagHelper = Addon.BagHelper
 local Confirmer = Addon.Confirmer
 local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
-local DBL = Addon.Libs.DBL
 local Dejunker = Addon.Dejunker
 local ERR_INTERNAL_BAG_ERROR = _G.ERR_INTERNAL_BAG_ERROR
 local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
 local Filters = Addon.Filters
-local format = string.format
 local L = Addon.Libs.L
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
@@ -67,26 +66,35 @@ do
     currentState = states.Dejunking
 
     -- Get junk items
-    local maxItems = DB.Profile.SafeMode and Consts.SAFE_MODE_MAX
-    Filters:GetItems(self, itemsToSell, maxItems)
+    Filters:GetItems(self, itemsToSell)
 
     -- Stop if no items
     if (#itemsToSell == 0) then
       if not auto then
         Core:Print(
-          DBL:IsUpToDate() and L.NO_JUNK_ITEMS or L.NO_CACHED_JUNK_ITEMS
+          itemsToSell.allCached and
+          L.NO_JUNK_ITEMS or
+          L.NO_CACHED_JUNK_ITEMS
         )
       end
-      self:StopDejunking()
-      return
+
+      return self:StopDejunking()
     end
 
-    -- If DBL isn't up to date, we'll only have items that are cached
-    if not DBL:IsUpToDate() then Core:Print(L.ONLY_SELLING_CACHED) end
+    -- If some items fail to be retrieved, we'll only have items that are cached
+    if not itemsToSell.allCached then
+      Core:Print(L.ONLY_SELLING_CACHED)
+    end
 
-    -- Print safe mode message if necessary
-    if DB.Profile.SafeMode and (#itemsToSell == Consts.SAFE_MODE_MAX) then
-      Core:Print(format(L.SAFE_MODE_MESSAGE, Consts.SAFE_MODE_MAX))
+    -- SafeMode: remove items and print message as necessary
+    if DB.Profile.SafeMode then
+      while #itemsToSell > Consts.SAFE_MODE_MAX do
+        tremove(itemsToSell)
+      end
+
+      if #itemsToSell == Consts.SAFE_MODE_MAX then
+        Core:Print(L.SAFE_MODE_MESSAGE:format(Consts.SAFE_MODE_MAX))
+      end
     end
 
     self:StartSelling()
@@ -148,7 +156,7 @@ do
       if not item then Dejunker:StopSelling() return end
       -- Otherwise, verify that the item in the bag slot has not been changed
       -- before selling
-      if not DBL:StillInBags(item) or item:IsLocked() then return end
+      if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then return end
       -- Sell item
       UseContainerItem(item.Bag, item.Slot)
       -- Handle StaticPopup

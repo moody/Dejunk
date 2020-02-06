@@ -1,6 +1,6 @@
 local _, Addon = ...
+local BagHelper = Addon.BagHelper
 local Core = Addon.Core
-local DBL = Addon.Libs.DBL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
@@ -15,11 +15,7 @@ Filters[Destroyer] = {}
 -- DBL filter functions
 Filters.DBL = {
   [Dejunker] = function(item)
-    if -- Ignore item if it is locked, refundable, or not sellable
-      item:IsLocked() or
-      Tools:ItemCanBeRefunded(item) or
-      not Tools:ItemCanBeSold(item)
-    then
+    if Tools:ItemCanBeRefunded(item) or not Tools:ItemCanBeSold(item) then
       return false
     end
 
@@ -27,11 +23,7 @@ Filters.DBL = {
     return isJunk
   end,
   [Destroyer] = function(item)
-    if -- Ignore item if it is locked, refundable, or not destroyable
-      item:IsLocked() or
-      Tools:ItemCanBeRefunded(item) or
-      not Tools:ItemCanBeDestroyed(item)
-    then
+    if Tools:ItemCanBeRefunded(item) or not Tools:ItemCanBeDestroyed(item) then
       return false
     end
 
@@ -82,22 +74,32 @@ function Filters:Add(t, filter)
   filters[#filters+1] = filter
 end
 
--- Runs all filters for the specified table and stores the results in `items`.
--- @param {table} t - Dejunker, Destroyer
--- @param {table} items - array to fill with DBL items
--- @param {number} maxItems [optional]
-function Filters:GetItems(t, items, maxItems)
-  assert(self[t])
-  assert(type(items) == "table")
+-- Returns a table of items in the player's bags which match the specified
+-- filter type.
+-- @param {table} filterType - Addon.Dejunker | Addon.Destroyer
+-- @param {table} items
+-- @return {table} items
+function Filters:GetItems(filterType, items)
+  assert(self[filterType])
   self._incompleteTooltips = false
 
+  items = BagHelper:GetItems(items)
+  if #items == 0 then return items end
+
+  local filters = self[filterType]
+  local isJunk = self.DBL[filterType]
+
   -- Before
-  for _, filter in ipairs(self[t]) do
+  for _, filter in ipairs(filters) do
     if filter.Before then filter:Before() end
   end
 
-  -- Filter items via DBL
-  DBL:GetItemsByFilter(self.DBL[t], items, maxItems)
+  -- Filter items
+  for i = #items, 1, -1 do
+    if not isJunk(items[i]) then
+      table.remove(items, i)
+    end
+  end
 
   -- Print message if `IncompleteTooltipError()` was called
   if self._incompleteTooltips then
@@ -105,9 +107,11 @@ function Filters:GetItems(t, items, maxItems)
   end
 
   -- After
-  for _, filter in ipairs(self[t]) do
+  for _, filter in ipairs(filters) do
     if filter.After then filter:After(items) end
   end
+
+  return items
 end
 
 -- Provides return values for filters which rely on tooltip scanning if scanning
@@ -129,7 +133,7 @@ function Filters:Run(t, item)
   assert(self[t])
 
   -- Locked
-  if item:IsLocked() then
+  if BagHelper:IsLocked(item) then
     return false, L.REASON_ITEM_IS_LOCKED_TEXT
   end
 

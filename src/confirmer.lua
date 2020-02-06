@@ -1,19 +1,16 @@
 -- Confirmer: confirms that items have been either dejunked or destroyed and prints messages.
 
-local AddonName, Addon = ...
-
--- Libs
-local L = Addon.Libs.L
-local DBL = Addon.Libs.DBL
-
--- Upvalues
-local assert, format, pairs, tremove = assert, format, pairs, table.remove
-local GetCoinTextureString = GetCoinTextureString
-
--- Addon
+local _, Addon = ...
+local assert = assert
+local BagHelper = Addon.BagHelper
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
+local format = string.format
+local GetCoinTextureString = _G.GetCoinTextureString
+local L = Addon.Libs.L
+local pairs = pairs
+local tremove = table.remove
 
 -- Variables
 local MAX_ATTEMPTS = 50
@@ -34,11 +31,11 @@ do -- Dejunker module data
   module.CANNOT_CONFIRM = L.MAY_NOT_HAVE_SOLD_ITEM
   module.CONFIRM_ITEM_VERBOSE = L.SOLD_ITEM_VERBOSE
   module.CONFIRM_ITEMS_VERBOSE = L.SOLD_ITEMS_VERBOSE
-  
+
   function module:OnStart()
     self.profit = 0
   end
-  
+
   function module:OnConfirm(item)
     self.profit = self.profit + (item.Price * item.Quantity)
   end
@@ -140,7 +137,7 @@ function Confirmer:ConfirmNextItem(module)
   local item = tremove(module.Items, 1)
   if not item then return end
 
-  if DBL:StillInBags(item) then -- Give the item a chance to finish updating
+  if BagHelper:StillInBags(item) then -- Give the item a chance to finish updating
     local count = (confirmAttempts[item] or 0) + 1
     if (count >= MAX_ATTEMPTS) then -- Stop trying to confirm
       confirmAttempts[item] = nil
