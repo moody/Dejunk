@@ -1,5 +1,3 @@
--- Destroyer: handles the process of destroying items in the player's bags.
-
 local _, Addon = ...
 local assert = assert
 local BagHelper = Addon.BagHelper
@@ -9,6 +7,8 @@ local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local GetCursorInfo = _G.GetCursorInfo
 local L = Addon.Libs.L
@@ -16,38 +16,39 @@ local PickupContainerItem = _G.PickupContainerItem
 local tremove = table.remove
 local UI = Addon.UI
 
--- Variables
-local states = {
+local States = {
   None = 0,
   Destroying = 1
 }
-local currentState = states.None
 
-local itemsToDestroy = {}
+Destroyer.items = {}
+Destroyer.state = States.None
+Destroyer.timer = 0
 
--- ============================================================================
--- Destroying Functions
--- ============================================================================
 
--- Attempts to start the Destroying process if Auto Destroy is enabled.
--- NOTE: We use this function as a listener for DBL: `self` cannot be used.
+-- Start auto destroy whenever bags have updated.
+EventManager:On(E.Wow.BagUpdateDelayed, function()
+  Destroyer:StartAutoDestroy()
+end)
+
+
+-- Attempts to start the destroying process if "Auto Destroy" is enabled.
 function Destroyer:StartAutoDestroy()
   if
     DB.Profile and
     DB.Profile.AutoDestroy and
-    currentState == states.None and
+    self.state == States.None and
     not UI:IsShown()
   then
-    Filters:GetItems(Destroyer, itemsToDestroy)
-    if (#itemsToDestroy > 0) then Destroyer:StartDestroying(true) end
+    Filters:GetItems(self, self.items)
+    if #self.items > 0 then self:Start(true) end
   end
 end
--- Register DBL listener
--- DBL:AddListener(Destroyer.StartAutoDestroy)
 
--- Starts the Destroying process.
--- @param auto - if the process was started automatically
-function Destroyer:StartDestroying(auto)
+
+-- Starts the destroying process.
+-- @param {boolean} auto
+function Destroyer:Start(auto)
   local canDestroy, msg = Core:CanDestroy()
   if not canDestroy then
     if not auto then Core:Print(msg) end
@@ -55,95 +56,85 @@ function Destroyer:StartDestroying(auto)
   end
 
   Confirmer:Start("Destroyer")
-  currentState = states.Destroying
+  self.state = States.Destroying
+  self.timer = 0
 
   -- Get items if manually started
-  if not auto then Filters:GetItems(self, itemsToDestroy) end
+  if not auto then Filters:GetItems(self, self.items) end
 
   -- Stop if no items
-  if (#itemsToDestroy == 0) then
+  if #self.items == 0 then
     if not auto then
       Core:Print(
-        itemsToDestroy.allCached and
+        self.items.allCached and
         L.NO_DESTROYABLE_ITEMS or
         L.NO_CACHED_DESTROYABLE_ITEMS
       )
     end
 
-    return self:StopDestroying()
+    return self:Stop()
   end
 
   -- If some items fail to be retrieved, we'll only have items that are cached
-  if not itemsToDestroy.allCached then
+  if not self.items.allCached then
     Core:Print(L.ONLY_DESTROYING_CACHED)
   end
-
-  self:StartDestroyingItems()
 end
 
--- Cancels the Destroying process.
-function Destroyer:StopDestroying()
-  assert(currentState ~= states.None)
-  self.OnUpdate = nil
+
+-- Stops the destroying process.
+function Destroyer:Stop()
+  assert(self.state ~= States.None)
   Confirmer:Stop("Destroyer")
-  currentState = states.None
+  self.state = States.None
 end
 
--- Checks whether or not the Destroyer is active.
--- @return - boolean
+
+-- Returns true if the Destroyer is active.
+-- @return {boolean}
 function Destroyer:IsDestroying()
-  return currentState ~= states.None
+  return self.state ~= States.None
 end
+
 
 -- Returns true if the Destroyer is active or items are being confirmed.
 function Destroyer:IsBusy()
   return self:IsDestroying() or Confirmer:IsConfirming("Destroyer")
 end
 
--- ============================================================================
--- Destroy Item Functions
--- ============================================================================
 
-do
-  local interval = 0
+-- Game update function called via `Addon.Core:OnUpdate()`.
+-- @param {number} elapsed - time since last frame
+function Destroyer:OnUpdate(elapsed)
+  if self.state ~= States.Destroying then return end
 
-  -- Destroying update function
-  local function destroyItems_OnUpdate(self, elapsed)
-    interval = interval + elapsed
-    if (interval >= Core.MinDelay) then
-      interval = 0
+  self.timer = self.timer + elapsed
 
-      -- Don't run if the cursor has an item, spell, etc.
-      if GetCursorInfo() then return end
-      -- Get next item
-      local item = tremove(itemsToDestroy)
-      -- Stop if there are no more items
-      if not item then Destroyer:StopDestroyingItems() return end
-      -- Otherwise, verify that the item in the bag slot has not been changed
-      -- before destroying
-      if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then return end
+  if self.timer >= Core.MinDelay then
+    self.timer = 0
 
-      -- Destroy item
-      PickupContainerItem(item.Bag, item.Slot)
-      DeleteCursorItem()
-      ClearCursor() -- Clear cursor in case any issues occurred
+    -- Don't run if the cursor has an item, spell, etc.
+    if GetCursorInfo() then return end
 
-      -- Notify confirmer
-      Confirmer:Queue("Destroyer", item)
+    -- Get next item
+    local item = tremove(self.items)
+
+    -- Stop if there are no more items
+    if not item then
+      return self:Stop()
     end
-  end
 
-  -- Starts the destroying items process.
-  function Destroyer:StartDestroyingItems()
-    assert(currentState == states.Destroying)
-    interval = 0
-    self.OnUpdate = destroyItems_OnUpdate
-  end
+    -- Otherwise, verify that the item in the bag slot has not been changed
+    if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then
+      return
+    end
 
-  -- Cancels the destroying items process.
-  function Destroyer:StopDestroyingItems()
-    assert(currentState == states.Destroying)
-    self.OnUpdate = nil
-    self:StopDestroying()
+    -- Destroy item
+    PickupContainerItem(item.Bag, item.Slot)
+    DeleteCursorItem()
+    ClearCursor() -- Clear cursor in case any issues occurred
+
+    -- Notify confirmer
+    Confirmer:Queue("Destroyer", item)
   end
 end

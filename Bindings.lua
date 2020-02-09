@@ -51,7 +51,7 @@ function DejunkBindings_ToggleOptions()
 end
 
 function DejunkBindings_StartDestroying()
-  Destroyer:StartDestroying()
+  Destroyer:Start()
 end
 
 function DejunkBindings_AddToList(listName)

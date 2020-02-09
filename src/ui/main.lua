@@ -69,7 +69,7 @@ function UI:Create()
   frame:SetHeight(660)
   frame.frame:SetMinResize(600, 500)
   frame:SetLayout("Flow")
-  frame:SetCallback("OnClose", Destroyer.StartAutoDestroy)
+  frame:SetCallback("OnClose", function() Destroyer:StartAutoDestroy() end)
   self.frame = frame
   self.widgetsToDisable = {}
   self.disabled = false
@@ -91,7 +91,7 @@ function UI:Create()
     parent = frame,
     text = L.START_DESTROYING_BUTTON_TEXT,
     width = 175,
-    onClick = function() Destroyer:StartDestroying() end
+    onClick = function() Destroyer:Start() end
   })
   self.widgetsToDisable[startDestroying] = true
 

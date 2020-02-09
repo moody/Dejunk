@@ -177,7 +177,10 @@ end
 EventManager:Once(E.Wow.PlayerLogin, function()
   local db = Addon.DethsDBLib(AddonName, defaults)
   setmetatable(DB, { __index = db })
+
   DB.Reformat = reformat
   reformat()
+
+  EventManager:Fire(E.DatabaseReady)
   EventManager:Fire(E.ProfileChanged)
 end)

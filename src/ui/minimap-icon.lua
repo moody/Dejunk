@@ -13,8 +13,8 @@ local UI = Addon.UI
 
 local OBJECT_NAME = AddonName .. "MinimapIcon"
 
--- Initialize on player login.
-EventManager:Once(E.Wow.PlayerLogin, function()
+-- Initialize once the DB becomes available.
+EventManager:Once(E.DatabaseReady, function()
   local object = LDB:NewDataObject(OBJECT_NAME, {
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
@@ -22,7 +22,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
       if (button == "LeftButton") then
         UI:Toggle()
       elseif (button == "RightButton") then
-        Destroyer:StartDestroying()
+        Destroyer:Start()
       end
     end,
 
