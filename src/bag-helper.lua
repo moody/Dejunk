@@ -54,7 +54,7 @@ function BagHelper:GetItem(bag, slot, item)
     itemID =
     GetContainerItemInfo(bag, slot)
 
-  if texture == nil then return nil end
+  if texture == nil or itemID == nil then return nil end
 
   -- GetItemInfo
   local
@@ -77,7 +77,7 @@ function BagHelper:GetItem(bag, slot, item)
     isCraftingReagent =
     GetItemInfo(itemLink)
 
-  if name == nil then
+  if name == nil or isCraftingReagent == nil then
     name,
     _, -- itemLink
     _, -- quality
@@ -97,7 +97,7 @@ function BagHelper:GetItem(bag, slot, item)
     isCraftingReagent =
     GetItemInfo(itemID)
 
-    if name == nil then return nil end
+    if name == nil or isCraftingReagent == nil then return nil end
   end
 
   -- Build item
