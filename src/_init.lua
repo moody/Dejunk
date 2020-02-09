@@ -10,7 +10,6 @@ Addon.Libs = {
   L = _G.LibStub("AceLocale-3.0"):GetLocale(AddonName),
   LDB = _G.LibStub("LibDataBroker-1.1"),
   LDBIcon = _G.LibStub("LibDBIcon-1.0"),
-  DBL = Addon.DethsBagLib,
   DCL = Addon.DethsColorLib,
   DTL = _G.DethsLibLoader("DethsTooltipLib", "1.0")
 }

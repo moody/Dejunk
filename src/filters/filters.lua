@@ -37,13 +37,13 @@ Filters.DBL = {
 -- @param {table} filter
 function Filters:Add(t, filter)
   --[[ Filter spec:
-  -- Called before retrieving filtered items via DBL.
+  -- Called before filtering items.
   function Filter:Before()
     ...
   end
 
-  -- Called while filtering items via DBL.
-  -- @param {table} item - the DBL item to be tested
+  -- Called while filtering items.
+  -- @param {table} item - the item to be tested
   -- @return {string} result - "JUNK", "NOT_JUNK", or "PASS"
   -- @return {string | nil} reason - string indicating why the item is
   -- considered to be junk or not, and nil if `result` is "PASS"
@@ -51,8 +51,8 @@ function Filters:Add(t, filter)
     return result, reason
   end
 
-  -- Called after retrieving filtered items via DBL.
-  -- @param {table} items - array of DBL items which were determined to be junk
+  -- Called after filtering items.
+  -- @param {table} items - array of items which were determined to be junk
   function Filter:After(items)
     ...
   end
@@ -128,7 +128,7 @@ end
 -- Runs the item through the specified table's filters, and returns a boolean
 -- and string indicating if and why the item will be sold or destroyed.
 -- @param {table} t - Dejunker, Destroyer
--- @param {table} item - a DBL item
+-- @param {table} item
 function Filters:Run(t, item)
   assert(self[t])
 

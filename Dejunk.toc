@@ -10,7 +10,7 @@
 ## Notes: Customizable junk selling and destroying.
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV
-## OptionalDeps: DethsAddonLib, DethsBagLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsTooltipLib
+## OptionalDeps: DethsAddonLib, DethsCmdLib, DethsColorLib, DethsDBLib, DethsTooltipLib
 ## X-Curse-Project-ID: 257636
 ## X-WoWI-ID: 25313
 
@@ -24,7 +24,6 @@ libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
 libs\AceGUI-3.0\AceGUI-3.0.xml
 libs\DethsLibLoader\DethsLibLoader.lua
 libs\DethsAddonLib\DethsAddonLib.lua
-libs\DethsBagLib\DethsBagLib.xml
 libs\DethsCmdLib\DethsCmdLib.lua
 libs\DethsColorLib\DethsColorLib.xml
 libs\DethsDBLib\DethsDBLib.xml
