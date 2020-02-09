@@ -53,7 +53,7 @@ do -- OnUpdate()
     end
 
     ListHelper:OnUpdate(elapsed)
-    if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
+    Dejunker:OnUpdate(elapsed)
     Destroyer:OnUpdate(elapsed)
     if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
     Confirmer:OnUpdate(elapsed)

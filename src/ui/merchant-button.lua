@@ -45,7 +45,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
   button:HookScript("OnClick", function(self, mouseButton)
     if (mouseButton == "LeftButton") then
-      Dejunker:StartDejunking()
+      Dejunker:Start()
     elseif (mouseButton == "RightButton") then
       UI:Toggle()
     end
