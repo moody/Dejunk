@@ -7,36 +7,35 @@ local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local Filters = Addon.Filters
 local L = Addon.Libs.L
-local Tools = Addon.Tools
 
 local item = {}
 
 _G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
   if not DB.Global.ItemTooltip or BagHelper:IsEmpty(bag, slot) then return end
   if not BagHelper:GetItem(bag, slot, item) then return end
-  if Tools:ItemCanBeRefunded(item) then return end
 
-  local sellLeftText, sellRightText
-  local destroyLeftText, destroyRightText
+  local sellLeftText, sellRightText do
+    local isJunk, reason = Filters:Run(Dejunker, item)
+    if reason then
+      sellLeftText =
+        isJunk and
+        DCL:ColorString(L.ITEM_WILL_BE_SOLD, Colors.Red) or
+        DCL:ColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Green)
 
-  -- Sell text
-  if Tools:ItemCanBeSold(item) then
-    local isJunkItem, reasonText = Filters:Run(Dejunker, item)
-    sellLeftText =
-      isJunkItem and
-      DCL:ColorString(L.ITEM_WILL_BE_SOLD, Colors.Red) or
-      DCL:ColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Green)
-    sellRightText = DCL:ColorString(reasonText, DCL.CSS.White)
+      sellRightText = DCL:ColorString(reason, DCL.CSS.White)
+    end
   end
 
-  -- Destroy text
-  if Tools:ItemCanBeDestroyed(item) then
-    local isDestroyableItem, reasonText = Filters:Run(Destroyer, item)
-    destroyLeftText =
-      isDestroyableItem and
-      DCL:ColorString(L.ITEM_WILL_BE_DESTROYED, Colors.Red) or
-      DCL:ColorString(L.ITEM_WILL_NOT_BE_DESTROYED, Colors.Green)
-    destroyRightText = DCL:ColorString(reasonText, DCL.CSS.White)
+  local destroyLeftText, destroyRightText do
+    local isJunk, reason = Filters:Run(Destroyer, item)
+    if reason then
+      destroyLeftText =
+        isJunk and
+        DCL:ColorString(L.ITEM_WILL_BE_DESTROYED, Colors.Red) or
+        DCL:ColorString(L.ITEM_WILL_NOT_BE_DESTROYED, Colors.Green)
+
+      destroyRightText = DCL:ColorString(reason, DCL.CSS.White)
+    end
   end
 
   -- Exit early if no text to display
@@ -48,12 +47,12 @@ _G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
 
   if sellLeftText then
     self:AddLine("  " .. sellLeftText)
-    if sellRightText then self:AddLine("    " .. sellRightText) end
+    self:AddLine("    " .. sellRightText)
   end
 
   if destroyLeftText then
     self:AddLine("  " .. destroyLeftText)
-    if destroyRightText then self:AddLine("    " .. destroyRightText) end
+    self:AddLine("    " .. destroyRightText)
   end
 
   self:Show()
