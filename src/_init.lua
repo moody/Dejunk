@@ -28,6 +28,7 @@ Addon.Colors = {
 }
 Addon.DB = {}
 Addon.EventManager = {}
+Addon.Events = {}
 Addon.Filters = {}
 Addon.ListHelper = {}
 Addon.Tools = {}

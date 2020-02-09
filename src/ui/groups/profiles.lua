@@ -5,6 +5,8 @@ local Colors = Addon.Colors
 local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local L = Addon.Libs.L
 local next = next
 local pcall = pcall
@@ -24,7 +26,7 @@ local function setProfile(key)
     Core:Print(
       L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Green))
     )
-    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
+    EventManager:Fire(E.ProfileChanged)
     return true
   end
   return false
@@ -37,7 +39,7 @@ local function copyProfile(key)
     Core:Print(
       L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
-    Addon.EventManager:Fire("DB_PROFILE_CHANGED")
+    EventManager:Fire(E.ProfileChanged)
     return true
   end
   return false

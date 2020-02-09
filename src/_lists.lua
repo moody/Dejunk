@@ -2,6 +2,7 @@ local _, Addon = ...
 local Colors = Addon.Colors
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
+local E = Addon.Events
 local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
@@ -23,7 +24,7 @@ local function finalizeAdd(list, item)
   end
   -- Add item
   list.items[#list.items+1] = item
-  EventManager:Fire("LIST_ITEM_ADDED", list, item)
+  EventManager:Fire(E.ListItemAdded, list, item)
 end
 
 -- ============================================================================
@@ -193,7 +194,7 @@ Lists.Undestroyables.FinalizeAdd = Lists.Destroyables.FinalizeAdd
 -- Events
 -- ============================================================================
 
-EventManager:On("DB_PROFILE_CHANGED", function()
+EventManager:On(E.ProfileChanged, function()
   for name, list in pairs(Lists) do
     -- Update variables
     list._sv = Addon.DB.Profile[name] or error("Unsupported list name: "..name)
@@ -203,7 +204,7 @@ EventManager:On("DB_PROFILE_CHANGED", function()
   end
 end)
 
-EventManager:On("LIST_ITEM_ADDED", function(list, item)
+EventManager:On(E.ListItemAdded, function(list, item)
   local itemID = item.ItemID
 
   -- Remove from Exclusions when added to Inclusions and vice versa

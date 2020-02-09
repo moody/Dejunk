@@ -4,6 +4,8 @@ local AddonName, Addon = ...
 local Clamp = _G.Clamp
 local Consts = Addon.Consts
 local DB = Addon.DB
+local E = Addon.Events
+local EventManager = Addon.EventManager
 
 -- Default database values
 local defaults = {
@@ -178,5 +180,5 @@ function DB:Initialize()
   setmetatable(self, { __index = db })
   self.Reformat = reformat
   reformat()
-  Addon.EventManager:Fire("DB_PROFILE_CHANGED")
+  EventManager:Fire(E.ProfileChanged)
 end

@@ -46,6 +46,7 @@ locales\zhTW.lua
 # General
 src\_init.lua
 src\event-manager.lua
+src\events.lua
 src\_lists.lua
 src\consts.lua
 src\db.lua
