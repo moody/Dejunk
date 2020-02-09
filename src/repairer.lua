@@ -5,7 +5,9 @@ local CanGuildBankRepair = _G.CanGuildBankRepair
 local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
+local E = Addon.Events
 local ERR_GUILD_NOT_ENOUGH_MONEY = _G.ERR_GUILD_NOT_ENOUGH_MONEY
+local EventManager = Addon.EventManager
 local GetCoinTextureString = _G.GetCoinTextureString
 local GetGuildBankWithdrawMoney = _G.GetGuildBankWithdrawMoney
 local GetMoney = _G.GetMoney
@@ -27,6 +29,29 @@ local totalRepairCost = 0
 local canGuildRepair = false
 local guildRepairError = false
 local usedGuildRepair = false
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+EventManager:On(E.Wow.MerchantShow, function()
+	if DB.Profile.AutoRepair then Repairer:StartRepairing() end
+end)
+
+EventManager:On(E.Wow.MerchantClosed, function()
+	if isRepairing then Repairer:StopRepairing() end
+end)
+
+if Addon.IS_RETAIL then
+	EventManager:On(E.Wow.UIErrorMessage, function(...)
+		local _, msg = ...
+
+		if isRepairing and msg == ERR_GUILD_NOT_ENOUGH_MONEY then
+			UIErrorsFrame:Clear()
+			guildRepairError = true
+		end
+	end)
+end
 
 -- ============================================================================
 -- OnUpdate Scripts
@@ -114,22 +139,6 @@ end
 -- ============================================================================
 -- General Functions
 -- ============================================================================
-
--- Event handler.
-function Repairer:OnEvent(event, ...)
-	if (event == "MERCHANT_SHOW") then
-		if DB.Profile.AutoRepair then self:StartRepairing() end
-	elseif (event == "MERCHANT_CLOSED") then
-		if self:IsRepairing() then self:StopRepairing() end
-  elseif Addon.IS_RETAIL and event == "UI_ERROR_MESSAGE" then
-    local _, msg = ...
-
-    if isRepairing and msg == ERR_GUILD_NOT_ENOUGH_MONEY then
-      UIErrorsFrame:Clear()
-      guildRepairError = true
-		end
-  end
-end
 
 -- Starts the repairing process.
 function Repairer:StartRepairing()

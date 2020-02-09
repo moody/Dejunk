@@ -39,7 +39,6 @@ Addon.Destroyer = {}
 Addon.Repairer = {}
 
 -- /UI/
-Addon.MerchantButton = {} -- TODO: add to Addon.UI
 Addon.MinimapIcon = {} -- TODO: add to Addon.UI
 
 Addon.UI = {

@@ -1,4 +1,4 @@
-local ADDON_NAME, Addon = ...
+local AddonName, Addon = ...
 local E = Addon.Events
 
 -- ============================================================================
@@ -15,7 +15,7 @@ local events = {
 
 for _, event in pairs(events) do
   assert(E[event] == nil)
-  E[event] = ("%s_%s"):format(ADDON_NAME, event)
+  E[event] = ("%s_%s"):format(AddonName, event)
 end
 
 -- ============================================================================

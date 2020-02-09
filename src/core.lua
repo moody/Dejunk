@@ -3,45 +3,38 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
 local Confirmer = Addon.Confirmer
-local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local Exclusions = Addon.Lists.Exclusions
 local GetNetStats = _G.GetNetStats
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local max = math.max
-local MerchantButton = Addon.MerchantButton
-local MinimapIcon = Addon.MinimapIcon
 local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
 
--- ============================================================================
--- DethsAddonLib Functions
--- ============================================================================
-
--- Initializes modules.
-function Core:OnInitialize()
-  DB:Initialize()
-  Consts:Initialize()
-  MerchantButton:Initialize()
-  MinimapIcon:Initialize()
-
-  -- Setup slash command
+-- Initialize slash command on player login.
+EventManager:Once(E.Wow.PlayerLogin, function()
   _G.DethsLibLoader("DethsCmdLib", "1.0"):Create(
     AddonName,
     function() UI:Toggle() end,
     "dj"
   )
-end
+end)
+
+-- ============================================================================
+-- DethsAddonLib Functions
+-- ============================================================================
 
 do -- OnUpdate()
   local DELAY = 10 -- seconds
@@ -66,14 +59,6 @@ do -- OnUpdate()
     Confirmer:OnUpdate(elapsed)
   end
 end
-
-function Core:OnEvent(event, ...)
-  Dejunker:OnEvent(event, ...)
-  Repairer:OnEvent(event, ...)
-end
-Core:RegisterEvent("MERCHANT_SHOW")
-Core:RegisterEvent("MERCHANT_CLOSED")
-Core:RegisterEvent("UI_ERROR_MESSAGE")
 
 -- ============================================================================
 -- General Functions

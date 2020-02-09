@@ -173,12 +173,11 @@ local function reformat()
   end
 end
 
--- Initializes the database.
-function DB:Initialize()
-  self.Initialize = nil
+-- Initialize the database on player login.
+EventManager:Once(E.Wow.PlayerLogin, function()
   local db = Addon.DethsDBLib(AddonName, defaults)
-  setmetatable(self, { __index = db })
-  self.Reformat = reformat
+  setmetatable(DB, { __index = db })
+  DB.Reformat = reformat
   reformat()
   EventManager:Fire(E.ProfileChanged)
-end
+end)

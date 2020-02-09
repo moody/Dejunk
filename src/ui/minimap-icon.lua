@@ -1,26 +1,21 @@
--- MinimapIcon: provides a minimap button for Dejunk.
-
 local AddonName, Addon = ...
 local Colors = Addon.Colors
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local L = Addon.Libs.L
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
 local UI = Addon.UI
 
--- Variables
-local OBJECT_NAME = AddonName.."MinimapIcon"
+local OBJECT_NAME = AddonName .. "MinimapIcon"
 
--- ============================================================================
--- General Functions
--- ============================================================================
-
--- Initializes the minimap icon.
-function MinimapIcon:Initialize()
-  self.LDB = LDB:NewDataObject(OBJECT_NAME, {
+-- Initialize on player login.
+EventManager:Once(E.Wow.PlayerLogin, function()
+  local object = LDB:NewDataObject(OBJECT_NAME, {
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
@@ -39,10 +34,12 @@ function MinimapIcon:Initialize()
 		end,
   })
 
-  LDBIcon:Register(OBJECT_NAME, self.LDB, DB.Global.Minimap)
+  LDBIcon:Register(OBJECT_NAME, object, DB.Global.Minimap)
+end)
 
-  self.Initialize = nil
-end
+-- ============================================================================
+-- General Functions
+-- ============================================================================
 
 -- Displays the minimap icon.
 function MinimapIcon:Show()

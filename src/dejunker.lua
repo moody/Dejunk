@@ -8,8 +8,10 @@ local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
+local E = Addon.Events
 local ERR_INTERNAL_BAG_ERROR = _G.ERR_INTERNAL_BAG_ERROR
 local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
+local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local L = Addon.Libs.L
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
@@ -27,26 +29,31 @@ local currentState = states.None
 
 local itemsToSell = {}
 
--- Event handler.
-function Dejunker:OnEvent(event, ...)
-  if (event == "MERCHANT_SHOW") then
-    if DB.Profile.AutoSell then self:StartDejunking(true) end
-  elseif (event == "MERCHANT_CLOSED") then
-    if self:IsSelling() then self:StopSelling() end
-  elseif (event == "UI_ERROR_MESSAGE") then
-    local _, msg = ...
+-- ============================================================================
+-- Events
+-- ============================================================================
 
-    if self:IsDejunking() then
-      if (msg == ERR_INTERNAL_BAG_ERROR) then
-        UIErrorsFrame:Clear()
-      elseif (msg == ERR_VENDOR_DOESNT_BUY) then
-        UIErrorsFrame:Clear()
-        Core:Print(L.VENDOR_DOESNT_BUY)
-        self:StopDejunking()
-      end
+EventManager:On(E.Wow.MerchantShow, function()
+  if DB.Profile.AutoSell then Dejunker:StartDejunking(true) end
+end)
+
+EventManager:On(E.Wow.MerchantClosed, function()
+  if Dejunker:IsSelling() then Dejunker:StopSelling() end
+end)
+
+EventManager:On(E.Wow.UIErrorMessage, function(...)
+  local _, msg = ...
+
+  if Dejunker:IsDejunking() then
+    if (msg == ERR_INTERNAL_BAG_ERROR) then
+      UIErrorsFrame:Clear()
+    elseif (msg == ERR_VENDOR_DOESNT_BUY) then
+      UIErrorsFrame:Clear()
+      Core:Print(L.VENDOR_DOESNT_BUY)
+      Dejunker:StopDejunking()
     end
   end
-end
+end)
 
 -- ============================================================================
 -- Dejunking Functions
