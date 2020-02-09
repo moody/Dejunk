@@ -1,27 +1,66 @@
 local _, Addon = ...
 local EventManager = Addon.EventManager
-EventManager.events = {}
 
--- Sets up a function to be called when the specified event is fired.
--- @param event {string} - e.g. "PROFILE_CHANGED"
--- @param func {function} - event handler
-function EventManager:On(event, func)
-  if not self.events[event] then self.events[event] = {} end
-  self.events[event][func] = true
+local handlers = {
+  -- ["EVENT_KEY"] = {
+  --  [func] = "ON" | "ONCE",
+  --  ...
+  -- },
+  -- ...
+}
+
+-- Helper function to validate and register an event handler.
+-- @param event {string}
+-- @param func {function}
+-- @param eventType {string} - "ON" | "ONCE"
+local function register(event, func, eventType)
+  assert(type(event) == "string")
+  assert(type(func) == "function")
+  assert(eventType == "ON" or eventType == "ONCE")
+  if not handlers[event] then handlers[event] = {} end
+  handlers[event][func] = eventType
 end
 
--- Removes a function from being called when the specified event is fired.
--- @param event {string} - e.g. "PROFILE_CHANGED"
--- @param func {function} - event handler
-function EventManager:Remove(event, func)
-  if not self.events[event] then return end
-  self.events[event][func] = nil
+-- Sets up a function to be called when the specified event is fired.
+-- @param event {string}
+-- @param func {function}
+function EventManager:On(event, func)
+  register(event, func, "ON")
+end
+
+-- Sets up a function to be called and removed the next time the specified event
+-- is fired.
+-- @param event {string}
+-- @param func {function}
+function EventManager:Once(event, func)
+  register(event, func, "ONCE")
 end
 
 -- Calls all registered handlers for a specified event.
--- @param event {string} - e.g. "PROFILE_CHANGED"
--- @param ... {any} - variable argument, passed to each event handler
+-- @param event {string}
+-- @param ... {vararg} - event handler arguments
 function EventManager:Fire(event, ...)
-  if not self.events[event] then return end
-  for func in pairs(self.events[event]) do func(...) end
+  assert(type(event) == "string")
+  if not handlers[event] then return end
+  for func, eventType in pairs(handlers[event]) do
+    func(...)
+
+    if eventType == "ONCE" then
+      handlers[event][func] = nil
+    end
+  end
+end
+
+-- ============================================================================
+-- Event Frame
+-- ============================================================================
+
+local frame = _G.CreateFrame("Frame")
+
+frame:SetScript("OnEvent", function(self, event, ...)
+  EventManager:Fire(event, ...)
+end)
+
+for _, event in pairs(Addon.Events.Wow) do
+  frame:RegisterEvent(event)
 end

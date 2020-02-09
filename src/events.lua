@@ -1,6 +1,10 @@
 local ADDON_NAME, Addon = ...
 local E = Addon.Events
 
+-- ============================================================================
+-- Addon Events
+-- ============================================================================
+
 local events = {
   -- DB
   "ProfileChanged",
@@ -9,7 +13,18 @@ local events = {
   "ListItemAdded"
 }
 
-for i, event in pairs(events) do
+for _, event in pairs(events) do
   assert(E[event] == nil)
-  E[event] = ("%s_EVENT_%s"):format(ADDON_NAME, i)
+  E[event] = ("%s_%s"):format(ADDON_NAME, event)
 end
+
+-- ============================================================================
+-- WoW Events
+-- ============================================================================
+
+E.Wow = {
+  PlayerLogin = "PLAYER_LOGIN",
+  MerchantShow = "MERCHANT_SHOW",
+  MerchantClosed = "MERCHANT_CLOSED",
+  UIErrorMessage = "UI_ERROR_MESSAGE"
+}
