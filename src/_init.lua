@@ -15,7 +15,7 @@ Addon.Libs = {
 }
 
 -- Initialize Dejunk tables
-Addon.BagHelper = {}
+Addon.Bags = {}
 
 Addon.Colors = {
   Primary = "4FAFE3FF",

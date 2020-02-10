@@ -1,6 +1,6 @@
 local _, Addon = ...
 local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER
-local BagHelper = Addon.BagHelper
+local Bags = Addon.Bags
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
@@ -39,7 +39,7 @@ end
 -- @param {number} slot
 -- @param {table} item [optional]
 -- @return {table | nil}
-function BagHelper:GetItem(bag, slot, item)
+function Bags:GetItem(bag, slot, item)
   -- GetContainerItemInfo
   local
     texture,
@@ -145,7 +145,7 @@ end
 -- Returns an array of items in the player's bags.
 -- @param {table} items
 -- @return {table} items
-function BagHelper:GetItems(items)
+function Bags:GetItems(items)
   if type(items) ~= "table" then
     items = {}
   else
@@ -173,7 +173,7 @@ end
 -- @param {number} bag
 -- @param {number} slot
 -- @return {boolean}
-function BagHelper:IsEmpty(bag, slot)
+function Bags:IsEmpty(bag, slot)
   return GetContainerItemID(bag, slot) == nil
 end
 
@@ -181,7 +181,7 @@ end
 -- Returns true if the specified item is still in the player's bags.
 -- @param {table} item
 -- @return {boolean}
-function BagHelper:StillInBags(item)
+function Bags:StillInBags(item)
   local _, quantity, _, _, _, _, _, _, _, itemID =
     GetContainerItemInfo(item.Bag, item.Slot)
   return item.ItemID == itemID and item.Quantity == quantity
@@ -191,7 +191,7 @@ end
 -- Returns true if the specified item is locked.
 -- @param {table} item
 -- @return {boolean}
-function BagHelper:IsLocked(item)
+function Bags:IsLocked(item)
   local locked = select(3, GetContainerItemInfo(item.Bag, item.Slot))
   return locked
 end

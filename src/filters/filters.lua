@@ -1,5 +1,5 @@
 local _, Addon = ...
-local BagHelper = Addon.BagHelper
+local Bags = Addon.Bags
 local Core = Addon.Core
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
@@ -76,7 +76,7 @@ function Filters:Run(filterType, item)
   end
 
   -- Locked
-  if BagHelper:IsLocked(item) then
+  if Bags:IsLocked(item) then
     return false, L.REASON_ITEM_IS_LOCKED_TEXT
   end
 
@@ -102,7 +102,7 @@ function Filters:GetItems(filterType, items)
   assert(self[filterType])
   self._incompleteTooltips = false
 
-  items = BagHelper:GetItems(items)
+  items = Bags:GetItems(items)
   if #items == 0 then return items end
 
   local filters = self[filterType]

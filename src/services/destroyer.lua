@@ -1,6 +1,6 @@
 local _, Addon = ...
 local assert = assert
-local BagHelper = Addon.BagHelper
+local Bags = Addon.Bags
 local ClearCursor = _G.ClearCursor
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
@@ -125,7 +125,7 @@ function Destroyer:OnUpdate(elapsed)
     end
 
     -- Otherwise, verify that the item in the bag slot has not been changed
-    if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then
+    if not Bags:StillInBags(item) or Bags:IsLocked(item) then
       return
     end
 

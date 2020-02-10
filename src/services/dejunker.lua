@@ -1,6 +1,6 @@
 local _, Addon = ...
 local assert = assert
-local BagHelper = Addon.BagHelper
+local Bags = Addon.Bags
 local Confirmer = Addon.Confirmer
 local Consts = Addon.Consts
 local Core = Addon.Core
@@ -159,7 +159,7 @@ function Dejunker:OnUpdate(elapsed)
     if not item then return Dejunker:Stop() end
 
     -- Otherwise, verify that the item in the bag slot has not been changed
-    if not BagHelper:StillInBags(item) or BagHelper:IsLocked(item) then
+    if not Bags:StillInBags(item) or Bags:IsLocked(item) then
       return
     end
 

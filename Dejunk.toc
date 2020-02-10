@@ -56,12 +56,10 @@ src\lists\lists.lua
 src\lists\list-helper.lua
 
 # General
+src\bags.lua
 src\consts.lua
 src\db.lua
 src\utils.lua
-
-# Bags
-src\bags\bag-helper.lua
 
 # Services
 src\services\confirmer.lua

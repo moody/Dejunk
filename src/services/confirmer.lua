@@ -2,7 +2,7 @@
 
 local _, Addon = ...
 local assert = assert
-local BagHelper = Addon.BagHelper
+local Bags = Addon.Bags
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
@@ -137,7 +137,7 @@ function Confirmer:ConfirmNextItem(module)
   local item = tremove(module.Items, 1)
   if not item then return end
 
-  if BagHelper:StillInBags(item) then -- Give the item a chance to finish updating
+  if Bags:StillInBags(item) then -- Give the item a chance to finish updating
     local count = (confirmAttempts[item] or 0) + 1
     if (count >= MAX_ATTEMPTS) then -- Stop trying to confirm
       confirmAttempts[item] = nil
