@@ -11,7 +11,11 @@ local events = {
   "ProfileChanged",
 
   -- Lists
-  "ListItemAdded"
+  "ListItemAdded",
+  "ListItemsUpdated",
+
+  -- UI
+  "MainUIClosed",
 }
 
 for _, event in pairs(events) do

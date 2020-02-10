@@ -7,6 +7,8 @@ local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local Exclusions = Addon.Lists.Exclusions
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
@@ -69,7 +71,7 @@ function UI:Create()
   frame:SetHeight(660)
   frame.frame:SetMinResize(600, 500)
   frame:SetLayout("Flow")
-  frame:SetCallback("OnClose", function() Destroyer:StartAutoDestroy() end)
+  frame:SetCallback("OnClose", function() EventManager:Fire(E.MainUIClosed) end)
   self.frame = frame
   self.widgetsToDisable = {}
   self.disabled = false

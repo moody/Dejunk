@@ -25,26 +25,34 @@ Destroyer.items = {}
 Destroyer.state = States.None
 Destroyer.timer = 0
 
-
--- Start auto destroy whenever bags have updated.
-EventManager:On(E.Wow.BagUpdateDelayed, function()
-  Destroyer:StartAutoDestroy()
-end)
-
+-- ============================================================================
+-- Events
+-- ============================================================================
 
 -- Attempts to start the destroying process if "Auto Destroy" is enabled.
-function Destroyer:StartAutoDestroy()
+local function startAutoDestroy()
   if
     DB.Profile and
     DB.Profile.AutoDestroy and
-    self.state == States.None and
+    Destroyer.state == States.None and
     not UI:IsShown()
   then
-    Filters:GetItems(self, self.items)
-    if #self.items > 0 then self:Start(true) end
+    Filters:GetItems(Destroyer, Destroyer.items)
+    if #Destroyer.items > 0 then Destroyer:Start(true) end
   end
 end
 
+EventManager:On(E.Wow.BagUpdateDelayed, startAutoDestroy)
+
+EventManager:On(E.MainUIClosed, startAutoDestroy)
+
+EventManager:On(E.ListItemsUpdated, function(list)
+  if list == Addon.Lists.Destroyables then startAutoDestroy() end
+end)
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 -- Starts the destroying process.
 -- @param {boolean} auto
