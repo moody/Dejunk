@@ -1,7 +1,6 @@
-local AddonName, Addon = ...
+local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local GameTooltip = _G.GameTooltip
-local NewTicker = _G.C_Timer.NewTicker
 local Utils = Addon.UI.Utils
 
 --[[
@@ -279,19 +278,4 @@ function Utils:ListFrame(options)
   parent:AddChild(listFrame)
 
   return listFrame
-end
-
---[[
-  Sets up a ticker function for an AceGUI widget, which is cancelled during the
-  `OnRelease` callback.
-
-  Use this to dynamically update parts of the UI, such as text.
-
-  Do not overwrite the `OnRelease` callback, or the ticker will never stop!
-]]
-function Utils:SetTicker(widget, func, delay)
-  local ticker = NewTicker(delay or 1, function()
-    if widget:IsVisible() then func(widget) end
-  end)
-  widget:SetCallback("OnRelease", function() ticker:Cancel() end)
 end
