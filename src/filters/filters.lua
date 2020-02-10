@@ -6,7 +6,7 @@ local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
 local Filters = Addon.Filters
 local L = Addon.Libs.L
-local Tools = Addon.Tools
+local Utils = Addon.Utils
 
 -- Filter arrays
 Filters[Dejunker] = {}
@@ -68,9 +68,9 @@ function Filters:Run(filterType, item)
 
   -- Ignore items that are refundable, unsellable, or undestroyable
   if
-    Tools:ItemCanBeRefunded(item) or
-    (filterType == Dejunker and not Tools:ItemCanBeSold(item)) or
-    (filterType == Destroyer and not Tools:ItemCanBeDestroyed(item))
+    Utils:ItemCanBeRefunded(item) or
+    (filterType == Dejunker and not Utils:ItemCanBeSold(item)) or
+    (filterType == Destroyer and not Utils:ItemCanBeDestroyed(item))
   then
     return false
   end

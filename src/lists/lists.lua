@@ -6,8 +6,8 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
-local Tools = Addon.Tools
 local tremove = table.remove
+local Utils = Addon.Utils
 
 -- ============================================================================
 -- Helper Functions
@@ -169,7 +169,7 @@ Addon.Lists = Lists
 -- ============================================================================
 
 function Lists.Inclusions:FinalizeAdd(item)
-  if Tools:ItemCanBeSold(item) then
+  if Utils:ItemCanBeSold(item) then
     finalizeAdd(self, item)
     return true
   end
@@ -180,7 +180,7 @@ end
 Lists.Exclusions.FinalizeAdd = Lists.Inclusions.FinalizeAdd
 
 function Lists.Destroyables:FinalizeAdd(item)
-  if Tools:ItemCanBeDestroyed(item) then
+  if Utils:ItemCanBeDestroyed(item) then
     finalizeAdd(self, item)
     return true
   end

@@ -12,7 +12,7 @@ local next = next
 local pcall = pcall
 local Profiles = Addon.UI.Groups.Profiles
 local strtrim = _G.strtrim
-local Tools = Addon.Tools
+local Utils = Addon.Utils
 local Widgets = Addon.UI.Widgets
 
 -- ============================================================================
@@ -207,7 +207,7 @@ function Profiles:Profiles(parent)
     self.deleteProfile = Widgets:Dropdown({
       parent = group,
       onValueChanged = function(self, event, key)
-        Tools:YesNoPopup({
+        Utils:YesNoPopup({
           text = L.DELETE_PROFILE_POPUP:format(
             DCL:ColorString(key, Colors.Yellow)
           ),

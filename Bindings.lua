@@ -1,5 +1,4 @@
 local AddonName, Addon = ...
-local _G = _G
 local Colors = Addon.Colors
 local DCL = Addon.Libs.DCL
 local Destroyables = Addon.Lists.Destroyables
@@ -7,10 +6,10 @@ local Destroyer = Addon.Destroyer
 local Exclusions = Addon.Lists.Exclusions
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
-local Tools = Addon.Tools
+local Lists = Addon.Lists
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
-local Lists = Addon.Lists
+local Utils = Addon.Utils
 
 -- Variables
 local currentItemID = nil
@@ -69,7 +68,7 @@ end
 -- ============================================================================
 
 local function OnTooltipSetItem(self, ...)
-  currentItemID = Tools:GetItemIDFromLink(select(2, self:GetItem()))
+  currentItemID = Utils:GetItemIDFromLink(select(2, self:GetItem()))
 end
 
 local function OnTooltipCleared(self, ...)

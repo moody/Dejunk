@@ -7,8 +7,8 @@ local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local tconcat = table.concat
-local Tools = Addon.Tools
 local Undestroyables = Addon.Lists.Undestroyables
+local Utils = Addon.Utils
 local Widgets = Addon.UI.Widgets
 
 -- ============================================================================
@@ -99,7 +99,7 @@ function Mixins:List(parent)
     parent = parent,
     text = L.REMOVE_ALL_TEXT,
     onClick = function()
-      Tools:YesNoPopup({
+      Utils:YesNoPopup({
         text = L.REMOVE_ALL_POPUP:format(self.list.localeColored),
         onAccept = function()
           self.list:RemoveAll()

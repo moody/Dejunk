@@ -4,7 +4,7 @@ local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Destroy = Addon.UI.Groups.Destroy
 local L = Addon.Libs.L
-local Tools = Addon.Tools
+local Utils = Addon.Utils
 local Widgets = Addon.UI.Widgets
 
 -- Upvalues
@@ -192,7 +192,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_CONSUMABLES_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_CONSUMABLES_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_CONSUMABLES_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreConsumables end,
       set = function(value) DB.Profile.DestroyIgnoreConsumables = value end
     })
@@ -202,7 +202,7 @@ function Destroy:AddIgnore(parent)
       Widgets:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GEMS_TEXT,
-        tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GEMS_TOOLTIP),
+        tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_GEMS_TOOLTIP),
         get = function() return DB.Profile.DestroyIgnoreGems end,
         set = function(value) DB.Profile.DestroyIgnoreGems = value end
       })
@@ -211,7 +211,7 @@ function Destroy:AddIgnore(parent)
       Widgets:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GLYPHS_TEXT,
-        tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GLYPHS_TOOLTIP),
+        tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_GLYPHS_TOOLTIP),
         get = function() return DB.Profile.DestroyIgnoreGlyphs end,
         set = function(value) DB.Profile.DestroyIgnoreGlyphs = value end
       })
@@ -221,7 +221,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_ITEM_ENHANCEMENTS_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreItemEnhancements end,
       set = function(value) DB.Profile.DestroyIgnoreItemEnhancements = value end
     })
@@ -230,7 +230,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_MISCELLANEOUS_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_MISCELLANEOUS_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_MISCELLANEOUS_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreMiscellaneous end,
       set = function(value) DB.Profile.DestroyIgnoreMiscellaneous = value end
     })
@@ -239,7 +239,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_REAGENTS_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_REAGENTS_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_REAGENTS_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreReagents end,
       set = function(value) DB.Profile.DestroyIgnoreReagents = value end
     })
@@ -248,7 +248,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_RECIPES_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_RECIPES_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_RECIPES_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreRecipes end,
       set = function(value) DB.Profile.DestroyIgnoreRecipes = value end
     })
@@ -257,7 +257,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_TRADE_GOODS_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_TRADE_GOODS_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_TRADE_GOODS_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreTradeGoods end,
       set = function(value) DB.Profile.DestroyIgnoreTradeGoods = value end
     })
@@ -274,7 +274,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_BOE_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_BOE_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_BOE_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreBindsWhenEquipped end,
       set = function(value) DB.Profile.DestroyIgnoreBindsWhenEquipped = value end
     })
@@ -321,7 +321,7 @@ function Destroy:AddIgnore(parent)
     Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_SOULBOUND_TEXT,
-      tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_SOULBOUND_TOOLTIP),
+      tooltip = Utils:DoesNotApplyToPoor(L.IGNORE_SOULBOUND_TOOLTIP),
       get = function() return DB.Profile.DestroyIgnoreSoulbound end,
       set = function(value) DB.Profile.DestroyIgnoreSoulbound = value end
     })

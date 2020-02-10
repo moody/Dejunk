@@ -35,7 +35,7 @@ Addon.Events = {}
 Addon.Filters = {}
 Addon.ListHelper = {}
 Addon.Repairer = {}
-Addon.Tools = {}
+Addon.Utils = {}
 
 -- /UI/
 Addon.MinimapIcon = {} -- TODO: add to Addon.UI
