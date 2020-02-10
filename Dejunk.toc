@@ -14,6 +14,7 @@
 ## X-Curse-Project-ID: 257636
 ## X-WoWI-ID: 25313
 
+
 # Libraries
 libs\LibStub\LibStub.lua
 libs\AceLocale-3.0\AceLocale-3.0.lua
@@ -29,6 +30,7 @@ libs\DethsColorLib\DethsColorLib.xml
 libs\DethsDBLib\DethsDBLib.xml
 libs\DethsTooltipLib\DethsTooltipLib.lua
 
+
 # Locales
 locales\enUS.lua
 locales\deDE.lua
@@ -42,21 +44,31 @@ locales\ruRU.lua
 locales\zhCN.lua
 locales\zhTW.lua
 
-# General
+
+# Init
 src\_init.lua
-src\events.lua
-src\event-manager.lua
-src\_lists.lua
+
+# Events
+src\events\events.lua
+src\events\event-manager.lua
+
+# Lists
+src\lists\lists.lua
+src\lists\list-helper.lua
+
+# General
 src\consts.lua
 src\db.lua
-src\item-tooltip.lua
-src\bag-helper.lua
-src\list-helper.lua
 src\tools.lua
-src\confirmer.lua
-src\dejunker.lua
-src\destroyer.lua
-src\repairer.lua
+
+# Bags
+src\bags\bag-helper.lua
+
+# Services
+src\services\confirmer.lua
+src\services\dejunker.lua
+src\services\destroyer.lua
+src\services\repairer.lua
 
 # Filters (order matters)
 src\filters\filters.lua
@@ -94,6 +106,7 @@ src\filters\shared\ignore-soulbound.lua
 src\filters\shared\by-quality.lua
 
 # UI
+src\ui\item-tooltip.lua
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
 src\ui\utils.lua
