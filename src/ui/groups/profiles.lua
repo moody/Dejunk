@@ -13,7 +13,7 @@ local pcall = pcall
 local Profiles = Addon.UI.Groups.Profiles
 local strtrim = _G.strtrim
 local Tools = Addon.Tools
-local Utils = Addon.UI.Utils
+local Widgets = Addon.UI.Widgets
 
 -- ============================================================================
 -- Helpers
@@ -126,23 +126,23 @@ function Profiles:Create(parent)
 end
 
 function Profiles:Profiles(parent)
-  Utils:Heading(parent, L.PROFILES_TEXT)
+  Widgets:Heading(parent, L.PROFILES_TEXT)
 
   do -- Create or switch
-    local group = Utils:InlineGroup({
+    local group = Widgets:InlineGroup({
       parent = parent,
       title = L.PROFILE_CREATE_OR_SWITCH_TEXT,
       fullWidth = true
     })
 
-    Utils:Label({
+    Widgets:Label({
       parent = group,
       text = L.PROFILE_CREATE_OR_SWITCH_HELP_TEXT,
       fullWidth = true
     })
 
     -- Create Profile
-    Utils:EditBox({
+    Widgets:EditBox({
       parent = group,
       label = L.PROFILE_NEW_TEXT,
       onEnterPressed = function(self, event, key)
@@ -159,7 +159,7 @@ function Profiles:Profiles(parent)
     })
 
     -- Existing Profiles
-    self.existingProfiles = Utils:Dropdown({
+    self.existingProfiles = Widgets:Dropdown({
       parent = group,
       label = L.PROFILE_EXISTING_PROFILES_TEXT,
       onValueChanged = function(self, event, key)
@@ -170,19 +170,19 @@ function Profiles:Profiles(parent)
   end
 
   do -- Copy
-    local group = Utils:InlineGroup({
+    local group = Widgets:InlineGroup({
       parent = parent,
       title = L.COPY_TEXT,
       fullWidth = true
     })
 
-    Utils:Label({
+    Widgets:Label({
       parent = group,
       text = L.PROFILE_COPY_HELP_TEXT,
       fullWidth = true
     })
 
-    self.copyProfile = Utils:Dropdown({
+    self.copyProfile = Widgets:Dropdown({
       parent = group,
       onValueChanged = function(self, event, key)
         copyProfile(key)
@@ -192,19 +192,19 @@ function Profiles:Profiles(parent)
   end
 
   do -- Delete
-    local group = Utils:InlineGroup({
+    local group = Widgets:InlineGroup({
       parent = parent,
       title = L.DELETE_TEXT,
       fullWidth = true
     })
 
-    Utils:Label({
+    Widgets:Label({
       parent = group,
       text = L.PROFILE_DELETE_HELP_TEXT,
       fullWidth = true
     })
 
-    self.deleteProfile = Utils:Dropdown({
+    self.deleteProfile = Widgets:Dropdown({
       parent = group,
       onValueChanged = function(self, event, key)
         Tools:YesNoPopup({
@@ -238,26 +238,26 @@ function Profiles:UpdateDropdowns()
 end
 
 function Profiles:Import(parent)
-  Utils:Heading(parent, L.IMPORT_PROFILE_TEXT)
-  Utils:Label({
+  Widgets:Heading(parent, L.IMPORT_PROFILE_TEXT)
+  Widgets:Label({
     parent = parent,
     text = L.IMPORT_PROFILE_HELPER_TEXT,
     fullWidth = true
   })
 
-  local editBox = Utils:MultiLineEditBox({
+  local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     fullWidth = true,
     numLines = 25
   })
 
-  local profileName = Utils:EditBox({
+  local profileName = Widgets:EditBox({
     parent = parent,
     label = L.PROFILE_NAME_TEXT,
     disableButton = true
   })
 
-  Utils:Button({
+  Widgets:Button({
     parent = parent,
     text = L.IMPORT_TEXT,
     onClick = function()
@@ -283,21 +283,21 @@ function Profiles:Import(parent)
 end
 
 function Profiles:Export(parent)
-  Utils:Heading(parent, L.EXPORT_PROFILE_TEXT)
-  Utils:Label({
+  Widgets:Heading(parent, L.EXPORT_PROFILE_TEXT)
+  Widgets:Label({
     parent = parent,
     text = L.EXPORT_HELPER_TEXT,
     fullWidth = true
   })
 
-  local editBox = Utils:MultiLineEditBox({
+  local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     -- text = AceSerializer:Serialize(DB.Profile),
     fullWidth = true,
     numLines = 25
   })
 
-  Utils:Button({
+  Widgets:Button({
     parent = parent,
     text = L.EXPORT_TEXT,
     onClick = function()

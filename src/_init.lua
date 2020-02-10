@@ -41,7 +41,7 @@ Addon.Tools = {}
 Addon.MinimapIcon = {} -- TODO: add to Addon.UI
 
 Addon.UI = {
-  Utils = {},
+  Widgets = {},
   Groups = {
     General = {},
     Sell = {},

@@ -5,13 +5,13 @@ local DCL = Addon.Libs.DCL
 local Destroy = Addon.UI.Groups.Destroy
 local L = Addon.Libs.L
 local Tools = Addon.Tools
-local Utils = Addon.UI.Utils
+local Widgets = Addon.UI.Widgets
 
 -- Upvalues
 local GetCoinTextureString = _G.GetCoinTextureString
 
 function Destroy:Create(parent)
-  Utils:Heading(parent, L.DESTROY_TEXT)
+  Widgets:Heading(parent, L.DESTROY_TEXT)
   self:AddGeneral(parent)
   self:AddByQuality(parent)
   self:AddByType(parent)
@@ -19,14 +19,14 @@ function Destroy:Create(parent)
 end
 
 function Destroy:AddGeneral(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.GENERAL_TEXT,
     fullWidth = true
   })
 
   -- Auto Destroy
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.AUTO_DESTROY_TEXT,
     tooltip = L.AUTO_DESTROY_TOOLTIP,
@@ -35,7 +35,7 @@ function Destroy:AddGeneral(parent)
   })
 
   -- Below Price
-  Utils:CheckBoxSlider({
+  Widgets:CheckBoxSlider({
     parent = parent,
     checkBox = {
       label = L.DESTROY_BELOW_PRICE_TEXT,
@@ -58,14 +58,14 @@ function Destroy:AddGeneral(parent)
 end
 
 function Destroy:AddByQuality(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.BY_QUALITY_TEXT,
     fullWidth = true
   })
 
   -- Poor
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = DCL:ColorString(L.POOR_TEXT, DCL.Wow.Poor),
     tooltip = L.DESTROY_ALL_TOOLTIP,
@@ -74,7 +74,7 @@ function Destroy:AddByQuality(parent)
   })
 
   -- Common
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = DCL:ColorString(L.COMMON_TEXT, DCL.Wow.Common),
     tooltip = L.DESTROY_ALL_TOOLTIP,
@@ -83,7 +83,7 @@ function Destroy:AddByQuality(parent)
   })
 
   -- Uncommon
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = DCL:ColorString(L.UNCOMMON_TEXT, DCL.Wow.Uncommon),
     tooltip = L.DESTROY_ALL_TOOLTIP,
@@ -92,7 +92,7 @@ function Destroy:AddByQuality(parent)
   })
 
   -- Rare
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = DCL:ColorString(L.RARE_TEXT, DCL.Wow.Rare),
     tooltip = L.DESTROY_ALL_TOOLTIP,
@@ -101,7 +101,7 @@ function Destroy:AddByQuality(parent)
   })
 
   -- Epic
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = DCL:ColorString(L.EPIC_TEXT, DCL.Wow.Epic),
     tooltip = L.DESTROY_ALL_TOOLTIP,
@@ -111,7 +111,7 @@ function Destroy:AddByQuality(parent)
 end
 
 function Destroy:AddByType(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.BY_TYPE_TEXT,
     fullWidth = true
@@ -119,7 +119,7 @@ function Destroy:AddByType(parent)
 
   if Addon.IS_RETAIL then
     -- Pets already collected
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = parent,
       label = L.DESTROY_PETS_ALREADY_COLLECTED_TEXT,
       tooltip = L.DESTROY_PETS_ALREADY_COLLECTED_TOOLTIP,
@@ -128,7 +128,7 @@ function Destroy:AddByType(parent)
     })
 
     -- Toys already collected
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = parent,
       label = L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT,
       tooltip = L.DESTROY_TOYS_ALREADY_COLLECTED_TOOLTIP,
@@ -139,7 +139,7 @@ function Destroy:AddByType(parent)
 
   -- Excess Soul Shards
   if Addon.IS_CLASSIC then
-    Utils:CheckBoxSlider({
+    Widgets:CheckBoxSlider({
       parent = parent,
       checkBox = {
         label = L.DESTROY_EXCESS_SOUL_SHARDS_TEXT,
@@ -164,14 +164,14 @@ function Destroy:AddByType(parent)
 end
 
 function Destroy:AddIgnore(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.IGNORE_TEXT,
     fullWidth = true
   })
 
   do -- By Category
-    local byCategory = Utils:InlineGroup({
+    local byCategory = Widgets:InlineGroup({
       parent = parent,
       title = L.BY_CATEGORY_TEXT,
       fullWidth = true
@@ -179,7 +179,7 @@ function Destroy:AddIgnore(parent)
 
     -- Battle Pets
     if Addon.IS_RETAIL then
-      Utils:CheckBox({
+      Widgets:CheckBox({
         parent = byCategory,
         label = L.IGNORE_BATTLEPETS_TEXT,
         tooltip = L.IGNORE_BATTLEPETS_TOOLTIP,
@@ -189,7 +189,7 @@ function Destroy:AddIgnore(parent)
     end
 
     -- Consumables
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_CONSUMABLES_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_CONSUMABLES_TOOLTIP),
@@ -199,7 +199,7 @@ function Destroy:AddIgnore(parent)
 
     if Addon.IS_RETAIL then
       -- Gems
-      Utils:CheckBox({
+      Widgets:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GEMS_TEXT,
         tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GEMS_TOOLTIP),
@@ -208,7 +208,7 @@ function Destroy:AddIgnore(parent)
       })
 
       -- Glyphs
-      Utils:CheckBox({
+      Widgets:CheckBox({
         parent = byCategory,
         label = L.IGNORE_GLYPHS_TEXT,
         tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_GLYPHS_TOOLTIP),
@@ -218,7 +218,7 @@ function Destroy:AddIgnore(parent)
     end
 
     -- Item Enhancements
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_ITEM_ENHANCEMENTS_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_ITEM_ENHANCEMENTS_TOOLTIP),
@@ -227,7 +227,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Miscellaneous
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_MISCELLANEOUS_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_MISCELLANEOUS_TOOLTIP),
@@ -236,7 +236,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Reagents
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_REAGENTS_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_REAGENTS_TOOLTIP),
@@ -245,7 +245,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Recipes
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_RECIPES_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_RECIPES_TOOLTIP),
@@ -254,7 +254,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Trade Goods
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byCategory,
       label = L.IGNORE_TRADE_GOODS_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_TRADE_GOODS_TOOLTIP),
@@ -264,14 +264,14 @@ function Destroy:AddIgnore(parent)
   end
 
   do -- By Type
-    local byType = Utils:InlineGroup({
+    local byType = Widgets:InlineGroup({
       parent = parent,
       title = L.BY_TYPE_TEXT,
       fullWidth = true
     })
 
     -- Binds When Equipped
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_BOE_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_BOE_TOOLTIP),
@@ -280,7 +280,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Cosmetic
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_COSMETIC_TEXT,
       tooltip = L.IGNORE_COSMETIC_TOOLTIP,
@@ -290,7 +290,7 @@ function Destroy:AddIgnore(parent)
 
     -- Equipment Sets
     if Addon.IS_RETAIL then
-      Utils:CheckBox({
+      Widgets:CheckBox({
         parent = byType,
         label = L.IGNORE_EQUIPMENT_SETS_TEXT,
         tooltip = L.IGNORE_EQUIPMENT_SETS_TOOLTIP,
@@ -300,7 +300,7 @@ function Destroy:AddIgnore(parent)
     end
 
     -- Quest Items
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_QUEST_ITEMS_TEXT,
       tooltip = L.IGNORE_QUEST_ITEMS_TOOLTIP,
@@ -309,7 +309,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Readable
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_READABLE_TEXT,
       tooltip = L.IGNORE_READABLE_TOOLTIP,
@@ -318,7 +318,7 @@ function Destroy:AddIgnore(parent)
     })
 
     -- Soulbound
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = byType,
       label = L.IGNORE_SOULBOUND_TEXT,
       tooltip = Tools:DoesNotApplyToPoor(L.IGNORE_SOULBOUND_TOOLTIP),
@@ -328,7 +328,7 @@ function Destroy:AddIgnore(parent)
 
     -- Tradeable
     if Addon.IS_RETAIL then
-      Utils:CheckBox({
+      Widgets:CheckBox({
         parent = byType,
         label = L.IGNORE_TRADEABLE_TEXT,
         tooltip = L.IGNORE_TRADEABLE_TOOLTIP,

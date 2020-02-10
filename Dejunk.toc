@@ -108,7 +108,6 @@ src\filters\shared\by-quality.lua
 src\ui\item-tooltip.lua
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
-src\ui\utils.lua
 src\ui\main.lua
 
 src\ui\groups\general.lua
@@ -117,6 +116,7 @@ src\ui\groups\destroy.lua
 src\ui\groups\lists.lua
 src\ui\groups\profiles.lua
 
+src\ui\widgets\widgets.lua
 src\ui\widgets\ListFrame.lua
 
 # Bindings

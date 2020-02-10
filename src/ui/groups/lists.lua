@@ -9,7 +9,7 @@ local ListHelper = Addon.ListHelper
 local tconcat = table.concat
 local Tools = Addon.Tools
 local Undestroyables = Addon.Lists.Undestroyables
-local Utils = Addon.UI.Utils
+local Widgets = Addon.UI.Widgets
 
 -- ============================================================================
 -- Helper Functions
@@ -68,34 +68,34 @@ end
 -- Creates the UI for the list name tab, which displays a ListFrame widget.
 -- @param {table} parent - the parent widget
 function Mixins:List(parent)
-  Utils:Heading(parent, self.list.locale)
+  Widgets:Heading(parent, self.list.locale)
 
   -- Help label
-  Utils:Label({
+  Widgets:Label({
     parent = parent,
     text = getListHelpText(self.list),
     fullWidth = true
   })
 
   -- Space
-  Utils:Label({ parent = parent, text = " ", fullWidth = true })
+  Widgets:Label({ parent = parent, text = " ", fullWidth = true })
 
   -- Add/remove help label
-  Utils:Label({
+  Widgets:Label({
     parent = parent,
     text = L.LIST_ADD_REMOVE_HELP_TEXT,
     fullWidth = true
   })
 
   -- ListFrame
-  Utils:ListFrame({
+  Widgets:ListFrame({
     parent = parent,
     -- title = listText,
     list = self.list
   })
 
   -- Remove all button
-  Utils:Button({
+  Widgets:Button({
     parent = parent,
     text = L.REMOVE_ALL_TEXT,
     onClick = function()
@@ -109,7 +109,7 @@ function Mixins:List(parent)
   })
 
   -- Sort button
-  Utils:Dropdown({
+  Widgets:Dropdown({
     parent = parent,
     label = L.SORT_BY_TEXT,
     list = ListHelper:GetDropdownList(),
@@ -123,20 +123,20 @@ end
 -- Creates the UI for the Import tab, which provides an EditBox for input.
 -- @param {table} parent - the parent widget
 function Mixins:Import(parent)
-  Utils:Heading(parent, L.IMPORT_TEXT)
-  Utils:Label({
+  Widgets:Heading(parent, L.IMPORT_TEXT)
+  Widgets:Label({
     parent = parent,
     text = L.IMPORT_HELPER_TEXT,
     fullWidth = true
   })
 
-  local editBox = Utils:MultiLineEditBox({
+  local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     fullWidth = true,
     numLines = 25
   })
 
-  Utils:Button({
+  Widgets:Button({
     parent = parent,
     text = L.IMPORT_TEXT,
     onClick = function()
@@ -155,20 +155,20 @@ end
 -- Creates the UI for the Export tab, which provides an EditBox for output.
 -- @param {table} parent - the parent widget
 function Mixins:Export(parent)
-  Utils:Heading(parent, L.EXPORT_TEXT)
-  Utils:Label({
+  Widgets:Heading(parent, L.EXPORT_TEXT)
+  Widgets:Label({
     parent = parent,
     text = L.EXPORT_HELPER_TEXT,
     fullWidth = true
   })
 
-  local editBox = Utils:MultiLineEditBox({
+  local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     fullWidth = true,
     numLines = 25
   })
 
-  Utils:Button({
+  Widgets:Button({
     parent = parent,
     text = L.EXPORT_TEXT,
     onClick = function()

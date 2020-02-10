@@ -14,7 +14,7 @@ local ListHelper = Addon.ListHelper
 local pairs = pairs
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
-local Utils = Addon.UI.Utils
+local Widgets = Addon.UI.Widgets
 
 function UI:IsShown()
   return self.frame and self.frame:IsShown()
@@ -75,7 +75,7 @@ function UI:Create()
   self.disabled = false
 
   -- Heading
-  Utils:Heading(
+  Widgets:Heading(
     frame,
     ("%s: %s"):format(
       L.VERSION_TEXT,
@@ -87,7 +87,7 @@ function UI:Create()
   )
 
   -- Start Destroying button
-  local startDestroying = Utils:Button({
+  local startDestroying = Widgets:Button({
     parent = frame,
     text = L.START_DESTROYING_BUTTON_TEXT,
     width = 175,
@@ -96,7 +96,7 @@ function UI:Create()
   self.widgetsToDisable[startDestroying] = true
 
   -- Key Bindings button
-  local keyBindings = Utils:Button({
+  local keyBindings = Widgets:Button({
     parent = frame,
     text = _G.KEY_BINDINGS,
     onClick = function()
@@ -119,7 +119,7 @@ function UI:Create()
   self.widgetsToDisable[keyBindings] = true
 
   -- Container for the TreeGroup
-  local treeGroupContainer = Utils:SimpleGroup({
+  local treeGroupContainer = Widgets:SimpleGroup({
     parent = frame,
     fullWidth = true,
     fullHeight = true,

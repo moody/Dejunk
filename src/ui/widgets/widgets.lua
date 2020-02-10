@@ -1,7 +1,7 @@
 local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local GameTooltip = _G.GameTooltip
-local Utils = Addon.UI.Utils
+local Widgets = Addon.UI.Widgets
 
 --[[
   Adds a basic AceGUI Button to a parent widget and returns it.
@@ -16,7 +16,7 @@ local Utils = Addon.UI.Utils
     onLeave = function
   }
 ]]
-function Utils:Button(options)
+function Widgets:Button(options)
   local button = AceGUI:Create("Button")
   button:SetText(options.text)
   button:SetFullWidth(options.fullWidth)
@@ -39,7 +39,7 @@ end
     set = function(value)
   }
 ]]
-function Utils:CheckBox(options)
+function Widgets:CheckBox(options)
   local checkBox = AceGUI:Create("CheckBox")
   checkBox:SetValue(options.get())
   checkBox:SetLabel(options.label)
@@ -87,8 +87,8 @@ end
     }
   }
 ]]
-function Utils:CheckBoxSlider(options)
-  local group = Utils:SimpleGroup({
+function Widgets:CheckBoxSlider(options)
+  local group = self:SimpleGroup({
     parent = options.parent,
     fullWidth = true
   })
@@ -107,7 +107,7 @@ function Utils:CheckBoxSlider(options)
     self.editbox:ClearFocus()
   end)
 
-  Utils:CheckBox({
+  self:CheckBox({
     parent = group,
     label = options.checkBox.label,
     tooltip = options.checkBox.tooltip,
@@ -133,7 +133,7 @@ end
     onValueChanged = function
   }
 ]]
-function Utils:Dropdown(options)
+function Widgets:Dropdown(options)
   local dropdown = AceGUI:Create("Dropdown")
   dropdown:SetLabel(options.label)
   dropdown:SetList(options.list)
@@ -154,7 +154,7 @@ end
     onEnterPressed = function
   }
 ]]
-function Utils:EditBox(options)
+function Widgets:EditBox(options)
   local editBox = AceGUI:Create("EditBox")
   editBox:SetLabel(options.label)
   editBox:SetFullWidth(options.fullWidth)
@@ -165,7 +165,7 @@ function Utils:EditBox(options)
 end
 
 -- Adds an AceGUI Heading to a parent widget and returns it.
-function Utils:Heading(parent, text)
+function Widgets:Heading(parent, text)
   local heading = AceGUI:Create("Heading")
   heading:SetText(text)
   heading:SetFullWidth(true)
@@ -183,7 +183,7 @@ end
     color = table
   }
 ]]
-function Utils:Label(options)
+function Widgets:Label(options)
   local label = AceGUI:Create("Label")
   label:SetText(options.text)
   label:SetFullWidth(options.fullWidth)
@@ -207,7 +207,7 @@ end
     numLines = number
   }
 ]]
-function Utils:MultiLineEditBox(options)
+function Widgets:MultiLineEditBox(options)
   local editBox = AceGUI:Create("MultiLineEditBox")
   editBox:SetLabel(options.label)
   editBox:SetText(options.text or "")
@@ -228,7 +228,7 @@ end
     layout = "Flow", -- "Flow" | "Fill" | "List"
   }
 --]]
-function Utils:InlineGroup(options)
+function Widgets:InlineGroup(options)
   local inlineGroup = AceGUI:Create("InlineGroup")
   inlineGroup:SetTitle(options.title)
   inlineGroup:SetFullWidth(options.fullWidth)
@@ -247,7 +247,7 @@ end
     layout = "Flow", -- "Flow" | "Fill" | "List"
   }
 --]]
-function Utils:SimpleGroup(options)
+function Widgets:SimpleGroup(options)
   local simpleGroup = AceGUI:Create("SimpleGroup")
   simpleGroup:SetFullWidth(options.fullWidth)
   simpleGroup:SetFullHeight(options.fullHeight)
@@ -265,7 +265,7 @@ end
     list = table
   }
 ]]
-function Utils:ListFrame(options)
+function Widgets:ListFrame(options)
   local parent = self:InlineGroup({
     parent = options.parent,
     -- title = options.title,
