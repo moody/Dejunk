@@ -15,27 +15,27 @@ Addon.Libs = {
 }
 
 -- Initialize Dejunk tables
-Addon.Core = _G.DethsLibLoader("DethsAddonLib", "1.0"):Create(AddonName)
-
 Addon.BagHelper = {}
-Addon.Consts = {}
+
 Addon.Colors = {
   Primary = "4FAFE3FF",
   Red = "E34F4FFF",
   Green = "4FE34FFF",
   Yellow = "E3E34FFF"
 }
+
+Addon.Confirmer = {}
+Addon.Consts = {}
+Addon.Core = {}
 Addon.DB = {}
+Addon.Dejunker = {}
+Addon.Destroyer = {}
 Addon.EventManager = {}
 Addon.Events = {}
 Addon.Filters = {}
 Addon.ListHelper = {}
-Addon.Tools = {}
-
-Addon.Confirmer = {}
-Addon.Dejunker = {}
-Addon.Destroyer = {}
 Addon.Repairer = {}
+Addon.Tools = {}
 
 -- /UI/
 Addon.MinimapIcon = {} -- TODO: add to Addon.UI

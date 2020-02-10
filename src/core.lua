@@ -33,34 +33,6 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 end)
 
 -- ============================================================================
--- DethsAddonLib Functions
--- ============================================================================
-
-do -- OnUpdate()
-  local DELAY = 10 -- seconds
-  local interval = DELAY
-  local home, world, latency
-
-  function Core:OnUpdate(elapsed)
-    UI:OnUpdate(elapsed)
-
-    interval = interval + elapsed
-    if (interval >= DELAY) then -- Update latency
-      interval = 0
-      home, world = select(3, GetNetStats())
-      latency = max(home, world) * 0.001 -- convert to seconds
-      self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
-    end
-
-    ListHelper:OnUpdate(elapsed)
-    Dejunker:OnUpdate(elapsed)
-    Destroyer:OnUpdate(elapsed)
-    if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
-    Confirmer:OnUpdate(elapsed)
-  end
-end
-
--- ============================================================================
 -- General Functions
 -- ============================================================================
 
@@ -151,4 +123,36 @@ function Core:IsBusy()
     Destroyer:IsDestroying() or
     ListHelper:IsParsing() or
     Confirmer:IsConfirming()
+end
+
+-- ============================================================================
+-- Game Update
+-- ============================================================================
+
+-- Frame
+_G.CreateFrame("Frame"):SetScript("OnUpdate", function(_, elapsed)
+  Core:OnUpdate(elapsed)
+end)
+
+local DELAY = 10 -- seconds
+local interval = DELAY
+local home, world, latency
+
+function Core:OnUpdate(elapsed)
+  interval = interval + elapsed
+  if (interval >= DELAY) then -- Update latency
+    interval = 0
+    home, world = select(3, GetNetStats())
+    latency = max(home, world) * 0.001 -- convert to seconds
+    self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
+  end
+
+  ListHelper:OnUpdate(elapsed)
+
+  Dejunker:OnUpdate(elapsed)
+  Destroyer:OnUpdate(elapsed)
+  if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
+  Confirmer:OnUpdate(elapsed)
+
+  UI:OnUpdate(elapsed)
 end
