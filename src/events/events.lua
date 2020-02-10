@@ -6,6 +6,9 @@ local E = Addon.Events
 -- ============================================================================
 
 local events = {
+  -- Bags
+  "BagUpdateDelayedSafe",
+
   -- DB
   "DatabaseReady",
   "ProfileChanged",
@@ -28,6 +31,7 @@ end
 -- ============================================================================
 
 E.Wow = {
+  BagUpdate = "BAG_UPDATE",
   BagUpdateDelayed = "BAG_UPDATE_DELAYED",
   PlayerLogin = "PLAYER_LOGIN",
   MerchantShow = "MERCHANT_SHOW",

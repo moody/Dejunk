@@ -12,6 +12,7 @@ local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local GetCursorInfo = _G.GetCursorInfo
 local L = Addon.Libs.L
+local Lists = Addon.Lists
 local PickupContainerItem = _G.PickupContainerItem
 local tremove = table.remove
 local UI = Addon.UI
@@ -31,23 +32,22 @@ Destroyer.timer = 0
 
 -- Attempts to start the destroying process if "Auto Destroy" is enabled.
 local function startAutoDestroy()
-  if
-    DB.Profile and
-    DB.Profile.AutoDestroy and
-    Destroyer.state == States.None and
-    not UI:IsShown()
-  then
-    Filters:GetItems(Destroyer, Destroyer.items)
-    if #Destroyer.items > 0 then Destroyer:Start(true) end
+  if DB.Profile and DB.Profile.AutoDestroy and not UI:IsShown() then
+    Destroyer:Start(true)
   end
 end
 
-EventManager:On(E.Wow.BagUpdateDelayed, startAutoDestroy)
+EventManager:On(E.BagUpdateDelayedSafe, startAutoDestroy)
 
 EventManager:On(E.MainUIClosed, startAutoDestroy)
 
 EventManager:On(E.ListItemsUpdated, function(list)
-  if list == Addon.Lists.Destroyables then startAutoDestroy() end
+  if
+    list == Lists.Destroyables or
+    list == Lists.Undestroyables
+  then
+    startAutoDestroy()
+  end
 end)
 
 -- ============================================================================
@@ -67,8 +67,8 @@ function Destroyer:Start(auto)
   self.state = States.Destroying
   self.timer = 0
 
-  -- Get items if manually started
-  if not auto then Filters:GetItems(self, self.items) end
+  -- Get items
+  Filters:GetItems(self, self.items)
 
   -- Stop if no items
   if #self.items == 0 then
