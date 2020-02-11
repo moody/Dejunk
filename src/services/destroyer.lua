@@ -33,23 +33,46 @@ Destroyer.timer = 0
 -- Events
 -- ============================================================================
 
--- Attempts to start the destroying process if "Auto Destroy" is enabled.
-local function startAutoDestroy()
-  if DB.Profile and DB.Profile.AutoDestroy and not UI:IsShown() then
-    Destroyer:Start(true)
+local queueAutoDestroy do
+  local function start()
+    if DB.Profile and DB.Profile.AutoDestroy and not UI:IsShown() then
+      Destroyer:Start(true)
+      return true
+    end
+
+    return false
+  end
+
+  local frame = _G.CreateFrame("Frame")
+  frame.timer = 0
+
+  frame:SetScript("OnUpdate", function(self, elapsed)
+    if not self.dirty then return end
+
+    self.timer = self.timer + elapsed
+
+    if self.timer >= 1 then
+      self.timer = 0
+      self.dirty = not start()
+    end
+  end)
+
+  queueAutoDestroy = function()
+    frame.timer = 0
+    frame.dirty = true
   end
 end
 
-EventManager:On(E.BagUpdateDelayedSafe, startAutoDestroy)
+EventManager:On(E.Wow.BagUpdateDelayed, queueAutoDestroy)
 
-EventManager:On(E.MainUIClosed, startAutoDestroy)
+EventManager:On(E.MainUIClosed, queueAutoDestroy)
 
 EventManager:On(E.ListItemsUpdated, function(list)
   if
     list == Lists.Destroyables or
     list == Lists.Undestroyables
   then
-    startAutoDestroy()
+    queueAutoDestroy()
   end
 end)
 

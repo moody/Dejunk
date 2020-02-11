@@ -1,40 +1,12 @@
 local _, Addon = ...
 local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER
 local Bags = Addon.Bags
-local E = Addon.Events
-local EventManager = Addon.EventManager
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetItemInfo = _G.GetItemInfo
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS
-
-
-do -- BagUpdateDelayedSafe event
-  local frame = _G.CreateFrame("Frame")
-  frame.timer = 0
-
-  frame:SetScript("OnUpdate", function(self, elapsed)
-    if not self.dirty then return end
-
-    self.timer = self.timer + elapsed
-
-    if self.timer >= 1 then
-      self.timer = 0
-      self.dirty = false
-      EventManager:Fire(E.BagUpdateDelayedSafe)
-    end
-  end)
-
-  local function reset()
-    frame.timer = 0
-    frame.dirty = true
-  end
-
-  EventManager:On(E.Wow.BagUpdate, reset)
-  EventManager:On(E.Wow.BagUpdateDelayed, reset)
-end
 
 
 -- Bag iterator function.
