@@ -1,6 +1,7 @@
 local _, Addon = ...
 local assert = assert
 local Bags = Addon.Bags
+local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
 local ClearCursor = _G.ClearCursor
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
@@ -13,8 +14,10 @@ local Filters = Addon.Filters
 local GetCursorInfo = _G.GetCursorInfo
 local L = Addon.Libs.L
 local Lists = Addon.Lists
+local max = math.max
 local PickupContainerItem = _G.PickupContainerItem
 local tremove = table.remove
+local tsort = table.sort
 local UI = Addon.UI
 
 local States = {
@@ -81,6 +84,23 @@ function Destroyer:Start(auto)
     end
 
     return self:Stop()
+  end
+
+  -- Save Space
+  if auto and DB.Profile.DestroySaveSpace.Enabled then
+    -- Calculate number of items to destroy
+    local freeSpace = CalculateTotalNumberOfFreeBagSlots()
+    local maxToDestroy = DB.Profile.DestroySaveSpace.Value - freeSpace
+    if maxToDestroy <= 0 then return self:Stop() end
+
+    -- Sort by price
+    tsort(self.items, function(a, b)
+      return (a.Price * a.Quantity) < (b.Price * b.Quantity)
+    end)
+
+    -- Remove extraneous entries (most expensive first)
+    local numToRemove = max(#self.items - maxToDestroy, 0)
+    for _=1, numToRemove do tremove(self.items) end
   end
 
   -- If some items fail to be retrieved, we'll only have items that are cached

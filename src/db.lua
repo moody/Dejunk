@@ -74,6 +74,10 @@ local defaults = {
       Enabled = false,
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
+    DestroySaveSpace = {
+      Enabled = false,
+      Value = Consts.DESTROY_SAVE_SPACE_MIN
+    },
 
     DestroyIgnoreBattlePets = false,
     DestroyIgnoreBindsWhenEquipped = false,
@@ -146,6 +150,12 @@ local conversions = {
       profile.DestroyExcessSoulShards.Value,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
+    )
+
+    profile.DestroySaveSpace.Value = Clamp(
+      profile.DestroySaveSpace.Value,
+      Consts.DESTROY_SAVE_SPACE_MIN,
+      Consts.DESTROY_SAVE_SPACE_MAX
     )
   end,
 

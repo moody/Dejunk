@@ -34,6 +34,27 @@ function Destroy:AddGeneral(parent)
     set = function(value) DB.Profile.AutoDestroy = value end
   })
 
+  -- Save Space
+  Widgets:CheckBoxSlider({
+    parent = parent,
+    checkBox = {
+      label = L.DESTROY_SAVE_SPACE_TEXT,
+      tooltip = L.DESTROY_SAVE_SPACE_TOOLTIP,
+      get = function() return DB.Profile.DestroySaveSpace.Enabled end,
+      set = function(value) DB.Profile.DestroySaveSpace.Enabled = value end
+    },
+    slider = {
+      label = L.DESTROY_SAVE_SPACE_SLIDER,
+      value = DB.Profile.DestroySaveSpace.Value,
+      min = Consts.DESTROY_SAVE_SPACE_MIN,
+      max = Consts.DESTROY_SAVE_SPACE_MAX,
+      step = Consts.DESTROY_SAVE_SPACE_STEP,
+      onValueChanged = function(self, event, value)
+        DB.Profile.DestroySaveSpace.Value = value
+      end
+    }
+  })
+
   -- Below Price
   Widgets:CheckBoxSlider({
     parent = parent,

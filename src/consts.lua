@@ -81,6 +81,11 @@ Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX = 28
 Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP = 1
 Consts.SOUL_SHARD_ITEM_ID = 6265
 
+-- DestroySaveSpace
+Consts.DESTROY_SAVE_SPACE_MIN = 1
+Consts.DESTROY_SAVE_SPACE_MAX = 16
+Consts.DESTROY_SAVE_SPACE_STEP = 1
+
 -- ============================================================================
 -- Consts Functions
 -- ============================================================================
