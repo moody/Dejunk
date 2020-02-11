@@ -80,6 +80,7 @@ function List:Remove(itemID, notify)
       Core:Print(
         L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.localeColored)
       )
+      EventManager:Fire(E.ListItemRemoved, self, item)
     end
   elseif notify then
     local itemLink = select(2, GetItemInfo(itemID))
@@ -95,6 +96,7 @@ function List:RemoveAll()
     for k in pairs(self._sv) do self._sv[k] = nil end
     for k in pairs(self.items) do self.items[k] = nil end
     Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
+    EventManager:Fire(E.ListRemovedAll, self)
   end
 end
 

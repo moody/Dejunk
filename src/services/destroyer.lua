@@ -64,17 +64,19 @@ local queueAutoDestroy do
 end
 
 EventManager:On(E.Wow.BagUpdateDelayed, queueAutoDestroy)
-
 EventManager:On(E.MainUIClosed, queueAutoDestroy)
 
-EventManager:On(E.ListItemsUpdated, function(list)
-  if
-    list == Lists.Destroyables or
-    list == Lists.Undestroyables
-  then
-    queueAutoDestroy()
+do -- List events
+  local function func(list)
+    if list == Lists.Destroyables or list == Lists.Undestroyables then
+      queueAutoDestroy()
+    end
   end
-end)
+
+  EventManager:On(E.ListItemAdded, func)
+  EventManager:On(E.ListItemRemoved, func)
+  EventManager:On(E.ListRemovedAll, func)
+end
 
 -- ============================================================================
 -- Functions

@@ -201,9 +201,6 @@ do -- ParseList()
     end
 
     -- Sort the list once all items have been parsed
-    if not next(list.toAdd) then
-      self:Sort(list)
-      EventManager:Fire(E.ListItemsUpdated, list)
-    end
+    if not next(list.toAdd) then self:Sort(list) end
   end
 end

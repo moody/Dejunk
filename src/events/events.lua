@@ -12,7 +12,8 @@ local events = {
 
   -- Lists
   "ListItemAdded",
-  "ListItemsUpdated",
+  "ListItemRemoved",
+  "ListRemovedAll",
 
   -- UI
   "MainUIClosed",
