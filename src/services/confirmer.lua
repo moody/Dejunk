@@ -109,16 +109,20 @@ function Confirmer:_RemoveUnlockedSold(bag, slot)
 end
 
 
-function Confirmer:_OnConfirmSold(item)
-  self.soldTotal = self.soldTotal + (item.Price * item.Quantity)
+function Confirmer:_ConfirmSoldItems(bag)
+  for item in pairs(self.soldItems) do
+    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+      self.soldTotal = self.soldTotal + (item.Price * item.Quantity)
 
-  Core:PrintVerbose(
-    item.Quantity == 1 and
-    L.SOLD_ITEM_VERBOSE:format(item.ItemLink) or
-    L.SOLD_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
-  )
+      Core:PrintVerbose(
+        item.Quantity == 1 and
+        L.SOLD_ITEM_VERBOSE:format(item.ItemLink) or
+        L.SOLD_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
+      )
 
-  self:_RemoveSold(item)
+      self:_RemoveSold(item)
+    end
+  end
 end
 
 
@@ -156,16 +160,20 @@ function Confirmer:_RemoveUnlockedDestroyed(bag, slot)
 end
 
 
-function Confirmer:_OnConfirmDestroyed(item)
-  self.destroyCount = self.destroyCount + 1
+function Confirmer:_ConfirmDestroyedItems(bag)
+  for item in pairs(self.destroyedItems) do
+    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+      self.destroyCount = self.destroyCount + 1
 
-  Core:PrintVerbose(
-    item.Quantity == 1 and
-    L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
-    L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
-  )
+      Core:PrintVerbose(
+        item.Quantity == 1 and
+        L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
+        L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
+      )
 
-  self:_RemoveDestroyed(item)
+      self:_RemoveDestroyed(item)
+    end
+  end
 end
 
 -- ============================================================================
@@ -217,17 +225,6 @@ end)
 
 -- Whenever bags update, check if any Confirmer items were sold or destroyed.
 EventManager:On(E.Wow.BagUpdate, function(bag)
-  -- Confirm sold items
-  for item in pairs(Confirmer.soldItems) do
-    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
-      Confirmer:_OnConfirmSold(item)
-    end
-  end
-
-  -- Confirm destroyed items
-  for item in pairs(Confirmer.destroyedItems) do
-    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
-      Confirmer:_OnConfirmDestroyed(item)
-    end
-  end
+  Confirmer:_ConfirmSoldItems(bag)
+  Confirmer:_ConfirmDestroyedItems(bag)
 end)
