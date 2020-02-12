@@ -27,7 +27,11 @@ EventManager:Once(E.DatabaseReady, function()
     end,
 
     OnTooltipShow = function(tooltip)
-			tooltip:AddLine(DCL:ColorString(AddonName, Colors.Primary))
+      tooltip:AddDoubleLine(
+        DCL:ColorString(AddonName, Colors.Primary),
+        Addon.VERSION
+      )
+      tooltip:AddLine(" ")
 			tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_1, DCL.CSS.White))
       tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_2, DCL.CSS.White))
 		end,
