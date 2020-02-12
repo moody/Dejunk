@@ -1,163 +1,161 @@
--- Confirmer: confirms that items have been either dejunked or destroyed and prints messages.
-
 local _, Addon = ...
-local assert = assert
 local Bags = Addon.Bags
+local C_Timer = _G.C_Timer
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
-local format = string.format
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local GetCoinTextureString = _G.GetCoinTextureString
 local L = Addon.Libs.L
 local pairs = pairs
-local tremove = table.remove
 
--- Variables
-local MAX_ATTEMPTS = 50
-local confirmAttempts = {
-  -- [item] = count
-}
+local TIMEOUT_DELAY = 5 -- seconds
 
--- Data for modules which use Confirmer
-local Modules = {
-  Dejunker = { Items = {} },
-  Destroyer = { Items = {} }
-}
+Confirmer.destroyedItems = {}
+Confirmer.destroyCount = 0
 
-do -- Dejunker module data
-  local module = Modules.Dejunker
-
-  -- Locale strings
-  module.CANNOT_CONFIRM = L.MAY_NOT_HAVE_SOLD_ITEM
-  module.CONFIRM_ITEM_VERBOSE = L.SOLD_ITEM_VERBOSE
-  module.CONFIRM_ITEMS_VERBOSE = L.SOLD_ITEMS_VERBOSE
-
-  function module:OnStart()
-    self.profit = 0
-  end
-
-  function module:OnConfirm(item)
-    self.profit = self.profit + (item.Price * item.Quantity)
-  end
-
-  function module:PrintFinalMessage()
-    if (self.profit > 0) then
-      Core:Print(format(L.SOLD_YOUR_JUNK, GetCoinTextureString(self.profit)))
-    end
-  end
-end
-
-do -- Destroyer module data
-  local module = Modules.Destroyer
-
-  -- Locale strings
-  module.CANNOT_CONFIRM = L.MAY_NOT_HAVE_DESTROYED_ITEM
-  module.CONFIRM_ITEM_VERBOSE = L.DESTROYED_ITEM_VERBOSE
-  module.CONFIRM_ITEMS_VERBOSE = L.DESTROYED_ITEMS_VERBOSE
-
-  function module:OnStart()
-    self.count = 0
-    -- self.loss = 0
-  end
-
-  function module:OnConfirm(item)
-    self.count = self.count + item.Quantity
-    -- self.loss = self.loss + (item.Price * item.Quantity)
-  end
-
-  function module:PrintFinalMessage()
-    -- Show basic message if not printing verbose
-    if not DB.Profile.VerboseMode and (self.count > 0) then
-      if (self.count == 1) then
-        Core:Print(L.DESTROYED_ITEM)
-      else
-        Core:Print(format(L.DESTROYED_ITEMS, self.count))
-      end
-    end
-  end
-end
+Confirmer.soldItems = {}
+Confirmer.soldTotal = 0
 
 -- ============================================================================
--- Confirmer Functions
+-- General
 -- ============================================================================
-
-do -- OnUpdate(), called in Core:OnUpdate()
-  local interval = 0
-
-  function Confirmer:OnUpdate(elapsed)
-    interval = interval + elapsed
-    if (interval >= Core.MinDelay) then
-      interval = 0
-
-      -- Confirm module items
-      for _, module in pairs(Modules) do
-        if (#module.Items > 0) then
-          for i=1, #module.Items do Confirmer:ConfirmNextItem(module) end
-        elseif module.finalMessageQueued then
-          module:PrintFinalMessage()
-          module.finalMessageQueued = nil
-        end
-      end
-    end
-  end
-end
 
 function Confirmer:IsConfirming(moduleName)
-  if moduleName then
-    assert(Modules[moduleName])
-    local module = Modules[moduleName]
-    return (#module.Items > 0) or module.finalMessageQueued
-  else
-    for _, module in pairs(Modules) do
-      if (#module.Items > 0) or module.finalMessageQueued then return true end
+  if moduleName == "Dejunker" then
+    return next(self.soldItems) ~= nil
+  end
+
+  if moduleName == "Destroyer" then
+    return next(self.destroyedItems) ~= nil
+  end
+
+  return (
+    next(self.soldItems) ~= nil or
+    next(self.destroyedItems) ~= nil
+  )
+end
+
+-- ============================================================================
+-- Dejunker Events
+-- ============================================================================
+
+EventManager:On(E.DejunkerStart, function()
+  for k in pairs(Confirmer.soldItems) do
+    Confirmer.soldItems[k] = nil
+  end
+
+  Confirmer.soldTotal = 0
+end)
+
+
+EventManager:On(E.DejunkerAttemptToSell, function(item)
+  Confirmer.soldItems[item] = true
+
+  C_Timer.After(TIMEOUT_DELAY, function()
+    if Confirmer.soldItems[item] then
+      Confirmer.soldItems[item] = nil
+      Core:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item))
+    end
+  end)
+end)
+
+-- ============================================================================
+-- Destroyer Events
+-- ============================================================================
+
+EventManager:On(E.DestroyerStart, function()
+  for k in pairs(Confirmer.destroyedItems) do
+    Confirmer.destroyedItems[k] = nil
+  end
+
+  Confirmer.destroyCount = 0
+end)
+
+
+EventManager:On(E.DestroyerAttemptToDestroy, function(item)
+  Confirmer.destroyedItems[item] = true
+
+  -- Fail if the item hasn't been confirmed after a short delay
+  _G.C_Timer.After(TIMEOUT_DELAY, function()
+    if Confirmer.destroyedItems[item] then
+      Confirmer.destroyedItems[item] = nil
+      Core:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item))
+    end
+  end)
+end)
+
+-- ============================================================================
+-- Shared Events
+-- ============================================================================
+
+-- If an item becomes unlocked, then it could not be sold or destroyed.
+EventManager:On(E.Wow.ItemUnlocked, function(bag, slot)
+  -- Remove unsold items
+  for item in pairs(Confirmer.soldItems) do
+    if item.Bag == bag and item.Slot == slot then
+      Confirmer.soldItems[item] = nil
+      -- TODO: print a "%s could not be sold." message?
     end
   end
-end
 
-function Confirmer:Start(moduleName)
-  assert(Modules[moduleName])
-  local module = Modules[moduleName]
-  module:OnStart()
-end
-
-function Confirmer:Queue(moduleName, item)
-  assert(Modules[moduleName])
-  local module = Modules[moduleName]
-  module.Items[#module.Items+1] = item
-end
-
-function Confirmer:Stop(moduleName)
-  assert(Modules[moduleName])
-  local module = Modules[moduleName]
-  module.finalMessageQueued = true
-end
-
--- Main confirmation function
-function Confirmer:ConfirmNextItem(module)
-  local item = tremove(module.Items, 1)
-  if not item then return end
-
-  if Bags:StillInBags(item) then -- Give the item a chance to finish updating
-    local count = (confirmAttempts[item] or 0) + 1
-    if (count >= MAX_ATTEMPTS) then -- Stop trying to confirm
-      confirmAttempts[item] = nil
-      Core:Print(format(module.CANNOT_CONFIRM, item.ItemLink))
-    else -- Try again later
-      -- Core:Debug("Confirmer", format("[%s, %s, %s] = %s", item.Bag, item.Slot, item.ItemID, count))
-      confirmAttempts[item] = count
-      module.Items[#module.Items+1] = item
+  -- Remove undestroyed items
+  for item in pairs(Confirmer.destroyedItems) do
+    if item.Bag == bag and item.Slot == slot then
+      Confirmer.destroyedItems[item] = nil
+      -- TODO: print a "%s could not be destroyed." message?
     end
+  end
+end)
 
-    return
+
+-- Whenever bags update, check if any Confirmer items were sold or destroyed.
+EventManager:On(E.Wow.BagUpdate, function(bag)
+  -- Confirm sold items
+  for item in pairs(Confirmer.soldItems) do
+    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+      Confirmer.soldItems[item] = nil
+      Confirmer.soldTotal = Confirmer.soldTotal + (item.Price * item.Quantity)
+
+      Core:PrintVerbose(
+        item.Quantity == 1 and
+        L.SOLD_ITEM_VERBOSE:format(item.ItemLink) or
+        L.SOLD_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
+      )
+
+      if not next(Confirmer.soldItems) then
+        Core:Print(
+          L.SOLD_YOUR_JUNK:format(GetCoinTextureString(Confirmer.soldTotal))
+        )
+      end
+    end
   end
 
-  -- Bag and slot is empty, so the item should have been sold or destroyed
-  if (item.Quantity == 1) then
-    Core:PrintVerbose(format(module.CONFIRM_ITEM_VERBOSE, item.ItemLink))
-  else
-    Core:PrintVerbose(format(module.CONFIRM_ITEMS_VERBOSE, item.ItemLink, item.Quantity))
-  end
+  -- Confirm destroyed items
+  for item in pairs(Confirmer.destroyedItems) do
+    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+      Confirmer.destroyedItems[item] = nil
+      Confirmer.destroyCount = Confirmer.destroyCount + 1
 
-  confirmAttempts[item] = nil
-  module:OnConfirm(item)
-end
+      Core:PrintVerbose(
+        item.Quantity == 1 and
+        L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
+        L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
+      )
+
+      -- Show basic message if not printing verbose
+      if
+        not next(Confirmer.destroyedItems) and
+        not DB.Profile.VerboseMode and
+        Confirmer.destroyCount > 0
+      then
+        Core:Print(
+          Confirmer.destroyCount == 1 and
+          L.DESTROYED_ITEM or
+          L.DESTROYED_ITEMS:format(Confirmer.destroyCount)
+        )
+      end
+    end
+  end
+end)

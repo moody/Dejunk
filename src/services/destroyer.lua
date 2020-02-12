@@ -133,15 +133,15 @@ function Destroyer:Start(auto)
   -- Start
   self.state = States.Destroying
   self.timer = 0
-  Confirmer:Start("Destroyer")
+  EventManager:Fire(E.DestroyerStart)
 end
 
 
 -- Stops the destroying process.
 function Destroyer:Stop()
   assert(self.state ~= States.None)
-  Confirmer:Stop("Destroyer")
   self.state = States.None
+  EventManager:Fire(E.DestroyerStop)
 end
 
 
@@ -189,7 +189,7 @@ function Destroyer:OnUpdate(elapsed)
     DeleteCursorItem()
     ClearCursor() -- Clear cursor in case any issues occurred
 
-    -- Notify confirmer
-    Confirmer:Queue("Destroyer", item)
+    -- Fire event
+    EventManager:Fire(E.DestroyerAttemptToDestroy, item)
   end
 end

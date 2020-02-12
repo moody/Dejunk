@@ -15,6 +15,15 @@ local events = {
   "ListItemRemoved",
   "ListRemovedAll",
 
+  -- Services
+  "DejunkerStart",
+  "DejunkerStop",
+  "DejunkerAttemptToSell",
+
+  "DestroyerStart",
+  "DestroyerStop",
+  "DestroyerAttemptToDestroy",
+
   -- UI
   "MainUIClosed",
 }
@@ -29,9 +38,11 @@ end
 -- ============================================================================
 
 E.Wow = {
+  BagUpdate = "BAG_UPDATE",
   BagUpdateDelayed = "BAG_UPDATE_DELAYED",
-  PlayerLogin = "PLAYER_LOGIN",
-  MerchantShow = "MERCHANT_SHOW",
+  ItemUnlocked = "ITEM_UNLOCKED",
   MerchantClosed = "MERCHANT_CLOSED",
+  MerchantShow = "MERCHANT_SHOW",
+  PlayerLogin = "PLAYER_LOGIN",
   UIErrorMessage = "UI_ERROR_MESSAGE"
 }

@@ -100,15 +100,15 @@ function Dejunker:Start(auto)
   -- Start
   self.state = States.Dejunking
   self.timer = 0
-  Confirmer:Start("Dejunker")
+  EventManager:Fire(E.DejunkerStart)
 end
 
 
 -- Stops the dejunking process.
 function Dejunker:Stop()
   assert(self.state ~= States.None)
-  Confirmer:Stop("Dejunker")
   self.state = States.None
+  EventManager:Fire(E.DejunkerStop)
 end
 
 
@@ -172,7 +172,7 @@ function Dejunker:OnUpdate(elapsed)
     -- Handle StaticPopup
     if Addon.IS_RETAIL then handleStaticPopup() end
 
-    -- Notify confirmer
-    Confirmer:Queue("Dejunker", item)
+    -- Fire event
+    EventManager:Fire(E.DejunkerAttemptToSell, item)
   end
 end

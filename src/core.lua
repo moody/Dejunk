@@ -152,7 +152,6 @@ function Core:OnUpdate(elapsed)
   Dejunker:OnUpdate(elapsed)
   Destroyer:OnUpdate(elapsed)
   if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
-  Confirmer:OnUpdate(elapsed)
 
   UI:OnUpdate(elapsed)
 end
