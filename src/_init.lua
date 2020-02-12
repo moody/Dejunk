@@ -1,6 +1,7 @@
 local AddonName, Addon = ...
+Addon.VERSION = _G.GetAddOnMetadata(AddonName, "Version")
 
--- Version flags
+-- Game version flags
 Addon.IS_RETAIL = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE
 Addon.IS_CLASSIC = not Addon.IS_RETAIL
 

@@ -81,10 +81,7 @@ function UI:Create()
     frame,
     ("%s: %s"):format(
       L.VERSION_TEXT,
-      DCL:ColorString(
-        _G.GetAddOnMetadata(AddonName, "Version"),
-        Colors.Primary
-      )
+      DCL:ColorString(Addon.VERSION, Colors.Primary)
     )
   )
 
