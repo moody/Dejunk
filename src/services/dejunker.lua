@@ -65,10 +65,6 @@ function Dejunker:Start(auto)
     return
   end
 
-  Confirmer:Start("Dejunker")
-  self.state = States.Dejunking
-  self.timer = 0
-
   -- Get junk items
   Filters:GetItems(self, self.items)
 
@@ -82,7 +78,7 @@ function Dejunker:Start(auto)
       )
     end
 
-    return self:Stop()
+    return
   end
 
   -- If some items fail to be retrieved, we'll only have items that are cached
@@ -100,6 +96,11 @@ function Dejunker:Start(auto)
       Core:Print(L.SAFE_MODE_MESSAGE:format(Consts.SAFE_MODE_MAX))
     end
   end
+
+  -- Start
+  self.state = States.Dejunking
+  self.timer = 0
+  Confirmer:Start("Dejunker")
 end
 
 
@@ -156,7 +157,9 @@ function Dejunker:OnUpdate(elapsed)
     local item = tremove(self.items)
 
     -- Stop if there are no more items
-    if not item then return Dejunker:Stop() end
+    if not item then
+      return self:Stop()
+    end
 
     -- Otherwise, verify that the item in the bag slot has not been changed
     if not Bags:StillInBags(item) or Bags:IsLocked(item) then

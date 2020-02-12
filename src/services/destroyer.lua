@@ -91,10 +91,6 @@ function Destroyer:Start(auto)
     return
   end
 
-  Confirmer:Start("Destroyer")
-  self.state = States.Destroying
-  self.timer = 0
-
   -- Get items
   Filters:GetItems(self, self.items)
 
@@ -108,7 +104,7 @@ function Destroyer:Start(auto)
       )
     end
 
-    return self:Stop()
+    return
   end
 
   -- Save Space
@@ -116,7 +112,8 @@ function Destroyer:Start(auto)
     -- Calculate number of items to destroy
     local freeSpace = CalculateTotalNumberOfFreeBagSlots()
     local maxToDestroy = DB.Profile.DestroySaveSpace.Value - freeSpace
-    if maxToDestroy <= 0 then return self:Stop() end
+    -- Stop if destroying is not necessary
+    if maxToDestroy <= 0 then return end
 
     -- Sort by price
     tsort(self.items, function(a, b)
@@ -132,6 +129,11 @@ function Destroyer:Start(auto)
   if not self.items.allCached then
     Core:Print(L.ONLY_DESTROYING_CACHED)
   end
+
+  -- Start
+  self.state = States.Destroying
+  self.timer = 0
+  Confirmer:Start("Destroyer")
 end
 
 
