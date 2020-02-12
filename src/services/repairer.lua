@@ -2,6 +2,7 @@
 
 local _, Addon = ...
 local CanGuildBankRepair = _G.CanGuildBankRepair
+local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
@@ -99,7 +100,9 @@ local function repairer_OnUpdate(self, elapsed)
 		Repairer:StopRepairing()
 		return
 	else -- Repairs probably impossible
-    if Dejunker:IsBusy() then return end -- Wait until junk has been sold
+		if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
+			return -- Wait until junk has been sold
+		end
 		Core:Print(L.REPAIRED_NO_ITEMS)
 		Repairer:StopRepairing()
 		return

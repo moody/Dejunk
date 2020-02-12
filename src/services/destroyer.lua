@@ -3,7 +3,6 @@ local assert = assert
 local Bags = Addon.Bags
 local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
 local ClearCursor = _G.ClearCursor
-local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
@@ -149,12 +148,6 @@ end
 -- @return {boolean}
 function Destroyer:IsDestroying()
   return self.state ~= States.None
-end
-
-
--- Returns true if the Destroyer is active or items are being confirmed.
-function Destroyer:IsBusy()
-  return self:IsDestroying() or Confirmer:IsConfirming("Destroyer")
 end
 
 

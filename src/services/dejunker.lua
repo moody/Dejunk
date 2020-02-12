@@ -1,7 +1,6 @@
 local _, Addon = ...
 local assert = assert
 local Bags = Addon.Bags
-local Confirmer = Addon.Confirmer
 local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
@@ -116,12 +115,6 @@ end
 -- @return {boolean}
 function Dejunker:IsDejunking()
   return self.state ~= States.None
-end
-
-
--- Returns true if the Dejunker is active or items are being confirmed.
-function Dejunker:IsBusy()
-  return self:IsDejunking() or Confirmer:IsConfirming("Dejunker")
 end
 
 

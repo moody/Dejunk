@@ -68,11 +68,11 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if Dejunker:IsBusy() then
+  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.DEJUNKING_IN_PROGRESS
   end
 
-  if Destroyer:IsBusy() then
+  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
@@ -92,11 +92,11 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDestroy()
-  if Destroyer:IsBusy() then
+  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
     return false, L.DESTROYING_IN_PROGRESS
   end
 
-  if Dejunker:IsBusy() then
+  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
