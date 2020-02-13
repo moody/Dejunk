@@ -4,6 +4,8 @@ local AddonName, Addon = ...
 local Clamp = _G.Clamp
 local Consts = Addon.Consts
 local DB = Addon.DB
+local E = Addon.Events
+local EventManager = Addon.EventManager
 
 -- Default database values
 local defaults = {
@@ -46,6 +48,7 @@ local defaults = {
     IgnoreGems = false,
     IgnoreGlyphs = false,
     IgnoreItemEnhancements = false,
+    IgnoreMiscellaneous = false,
     IgnoreQuestItems = false,
     IgnoreReadable = false,
     IgnoreReagents = false,
@@ -71,6 +74,10 @@ local defaults = {
       Enabled = false,
       Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
     },
+    DestroySaveSpace = {
+      Enabled = false,
+      Value = Consts.DESTROY_SAVE_SPACE_MIN
+    },
 
     DestroyIgnoreBattlePets = false,
     DestroyIgnoreBindsWhenEquipped = false,
@@ -80,6 +87,7 @@ local defaults = {
     DestroyIgnoreGems = false,
     DestroyIgnoreGlyphs = false,
     DestroyIgnoreItemEnhancements = false,
+    DestroyIgnoreMiscellaneous = false,
     DestroyIgnoreQuestItems = false,
     DestroyIgnoreReadable = false,
     DestroyIgnoreReagents = false,
@@ -143,6 +151,12 @@ local conversions = {
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
     )
+
+    profile.DestroySaveSpace.Value = Clamp(
+      profile.DestroySaveSpace.Value,
+      Consts.DESTROY_SAVE_SPACE_MIN,
+      Consts.DESTROY_SAVE_SPACE_MAX
+    )
   end,
 
   -- Remove `DestroyIgnoreExclusions` & `DestroyInclusions`
@@ -169,12 +183,14 @@ local function reformat()
   end
 end
 
--- Initializes the database.
-function DB:Initialize()
-  self.Initialize = nil
+-- Initialize the database on player login.
+EventManager:Once(E.Wow.PlayerLogin, function()
   local db = Addon.DethsDBLib(AddonName, defaults)
-  setmetatable(self, { __index = db })
-  self.Reformat = reformat
+  setmetatable(DB, { __index = db })
+
+  DB.Reformat = reformat
   reformat()
-  Addon.EventManager:Fire("DB_PROFILE_CHANGED")
-end
+
+  EventManager:Fire(E.DatabaseReady)
+  EventManager:Fire(E.ProfileChanged)
+end)

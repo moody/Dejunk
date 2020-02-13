@@ -3,6 +3,8 @@ local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local GetItemInfoInstant = _G.GetItemInfoInstant
 local L = Addon.Libs.L
@@ -199,13 +201,6 @@ do -- ParseList()
     end
 
     -- Sort the list once all items have been parsed
-    if not next(list.toAdd) then
-      self:Sort(list)
-
-      -- Start auto destroy if the Destroyables list was updated
-      if (list == Lists.Destroyables) then
-        Destroyer:StartAutoDestroy()
-      end
-    end
+    if not next(list.toAdd) then self:Sort(list) end
   end
 end

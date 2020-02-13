@@ -2,11 +2,12 @@ local _, Addon = ...
 local Colors = Addon.Colors
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
+local E = Addon.Events
 local EventManager = Addon.EventManager
 local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
-local Tools = Addon.Tools
 local tremove = table.remove
+local Utils = Addon.Utils
 
 -- ============================================================================
 -- Helper Functions
@@ -23,7 +24,7 @@ local function finalizeAdd(list, item)
   end
   -- Add item
   list.items[#list.items+1] = item
-  EventManager:Fire("LIST_ITEM_ADDED", list, item)
+  EventManager:Fire(E.ListItemAdded, list, item)
 end
 
 -- ============================================================================
@@ -79,6 +80,7 @@ function List:Remove(itemID, notify)
       Core:Print(
         L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.localeColored)
       )
+      EventManager:Fire(E.ListItemRemoved, self, item)
     end
   elseif notify then
     local itemLink = select(2, GetItemInfo(itemID))
@@ -94,6 +96,7 @@ function List:RemoveAll()
     for k in pairs(self._sv) do self._sv[k] = nil end
     for k in pairs(self.items) do self.items[k] = nil end
     Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
+    EventManager:Fire(E.ListRemovedAll, self)
   end
 end
 
@@ -168,7 +171,7 @@ Addon.Lists = Lists
 -- ============================================================================
 
 function Lists.Inclusions:FinalizeAdd(item)
-  if Tools:ItemCanBeSold(item) then
+  if Utils:ItemCanBeSold(item) then
     finalizeAdd(self, item)
     return true
   end
@@ -179,7 +182,7 @@ end
 Lists.Exclusions.FinalizeAdd = Lists.Inclusions.FinalizeAdd
 
 function Lists.Destroyables:FinalizeAdd(item)
-  if Tools:ItemCanBeDestroyed(item) then
+  if Utils:ItemCanBeDestroyed(item) then
     finalizeAdd(self, item)
     return true
   end
@@ -193,7 +196,7 @@ Lists.Undestroyables.FinalizeAdd = Lists.Destroyables.FinalizeAdd
 -- Events
 -- ============================================================================
 
-EventManager:On("DB_PROFILE_CHANGED", function()
+EventManager:On(E.ProfileChanged, function()
   for name, list in pairs(Lists) do
     -- Update variables
     list._sv = Addon.DB.Profile[name] or error("Unsupported list name: "..name)
@@ -203,7 +206,7 @@ EventManager:On("DB_PROFILE_CHANGED", function()
   end
 end)
 
-EventManager:On("LIST_ITEM_ADDED", function(list, item)
+EventManager:On(E.ListItemAdded, function(list, item)
   local itemID = item.ItemID
 
   -- Remove from Exclusions when added to Inclusions and vice versa

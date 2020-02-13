@@ -2,6 +2,8 @@
 
 local _, Addon = ...
 local Consts = Addon.Consts
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local GetItemClassInfo = _G.GetItemClassInfo
 local GetItemSubClassInfo = _G.GetItemSubClassInfo
 local LE_ITEM_ARMOR_CLOTH = _G.LE_ITEM_ARMOR_CLOTH
@@ -79,19 +81,30 @@ Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX = 28
 Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP = 1
 Consts.SOUL_SHARD_ITEM_ID = 6265
 
+-- DestroySaveSpace
+Consts.DESTROY_SAVE_SPACE_MIN = 1
+Consts.DESTROY_SAVE_SPACE_MAX = 16
+Consts.DESTROY_SAVE_SPACE_STEP = 1
+
 -- ============================================================================
 -- Consts Functions
 -- ============================================================================
 
--- Called from Core during the PLAYER_ENTERING_WORLD event.
+-- Set up event to initialize Consts
+EventManager:Once(E.Wow.PlayerLogin, function()
+  Consts:Initialize()
+end)
+
+-- Initializes constants which may be unavailable until the PLAYER_LOGIN event.
 function Consts:Initialize()
   -- Player class
   self.PLAYER_CLASS = select(2, _G.UnitClass("PLAYER"))
-  self:BuildSuitables()
+  self:BuildSuitables(self.PLAYER_CLASS)
 
   -- Item classes
   self.CONSUMABLE_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_CONSUMABLE)
   self.ITEM_ENHANCEMENT_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_ITEM_ENHANCEMENT)
+  self.MISCELLANEOUS_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_MISCELLANEOUS)
   self.REAGENT_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_REAGENT)
   self.RECIPE_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_RECIPE)
   self.TRADEGOODS_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_TRADEGOODS)
@@ -126,8 +139,7 @@ function Consts:Initialize()
 end
 
 -- Builds the SUITABLE_ARMOR and SUITABLE_WEAPONS Consts tables based on player class.
-function Consts:BuildSuitables()
-  local class = self.PLAYER_CLASS
+function Consts:BuildSuitables(class)
   self.SUITABLE_ARMOR = {}
   self.SUITABLE_WEAPONS = {}
 

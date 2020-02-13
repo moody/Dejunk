@@ -1,5 +1,3 @@
--- Tools: a collection of helpful functions.
-
 local _, Addon = ...
 local Consts = Addon.Consts
 local DCL = Addon.Libs.DCL
@@ -8,7 +6,7 @@ local L = Addon.Libs.L
 local LE_ITEM_QUALITY_EPIC = _G.LE_ITEM_QUALITY_EPIC
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local StaticPopup_Show = _G.StaticPopup_Show
-local Tools = Addon.Tools
+local Utils = Addon.Utils
 
 -- ============================================================================
 -- String Functions
@@ -18,7 +16,7 @@ local Tools = Addon.Tools
 -- quality items.
 -- @param {string} tooltip - the tooltip to format
 -- @return {string}
-function Tools:DoesNotApplyToPoor(tooltip)
+function Utils:DoesNotApplyToPoor(tooltip)
   return ("%s|n|n%s"):format(
     tooltip,
     L.DOES_NOT_APPLY_TO_QUALITY:format(
@@ -33,13 +31,13 @@ end
 
 -- Gets the item id from a specified item link.
 -- @return - the item id, or nil
-function Tools:GetItemIDFromLink(itemLink)
+function Utils:GetItemIDFromLink(itemLink)
   return (itemLink and itemLink:match("item:(%d+)")) or nil
 end
 
 -- Returns true if the specified item can be sold.
 -- @param item - the item
-function Tools:ItemCanBeSold(item)
+function Utils:ItemCanBeSold(item)
   return (
     not item.NoValue and
     item.Price > 0 and
@@ -50,7 +48,7 @@ end
 
 -- Returns true if the specified item can be destroyed.
 -- @param item - the item
-function Tools:ItemCanBeDestroyed(item)
+function Utils:ItemCanBeDestroyed(item)
   -- Disallow destruction of Pet Cages
   if Addon.IS_RETAIL and item.Class == Consts.BATTLEPET_CLASS then
     return false
@@ -64,7 +62,7 @@ end
 
 -- Returns true if the specified item can be refunded.
 -- @param item - the item
-function Tools:ItemCanBeRefunded(item)
+function Utils:ItemCanBeRefunded(item)
   local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.Bag, item.Slot))
   return refundTimeRemaining and (refundTimeRemaining > 0)
 end
@@ -96,7 +94,7 @@ do -- DEJUNK_YES_NO_POPUP
       onHide = function
     }
   ]]
-  function Tools:YesNoPopup(options)
+  function Utils:YesNoPopup(options)
     DEJUNK_YES_NO_POPUP.text = options.text
     DEJUNK_YES_NO_POPUP.OnAccept = options.onAccept
     DEJUNK_YES_NO_POPUP.OnCancel = options.onCancel

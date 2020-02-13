@@ -3,77 +3,34 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
 local Confirmer = Addon.Confirmer
-local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local Exclusions = Addon.Lists.Exclusions
 local GetNetStats = _G.GetNetStats
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local max = math.max
-local MerchantButton = Addon.MerchantButton
-local MinimapIcon = Addon.MinimapIcon
 local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
 
--- ============================================================================
--- DethsAddonLib Functions
--- ============================================================================
-
--- Initializes modules.
-function Core:OnInitialize()
-  DB:Initialize()
-  Consts:Initialize()
-  MerchantButton:Initialize()
-  MinimapIcon:Initialize()
-
-  -- Setup slash command
+-- Initialize slash command on player login.
+EventManager:Once(E.Wow.PlayerLogin, function()
   _G.DethsLibLoader("DethsCmdLib", "1.0"):Create(
     AddonName,
     function() UI:Toggle() end,
     "dj"
   )
-end
-
-do -- OnUpdate()
-  local DELAY = 10 -- seconds
-  local interval = DELAY
-  local home, world, latency
-
-  function Core:OnUpdate(elapsed)
-    UI:OnUpdate(elapsed)
-
-    interval = interval + elapsed
-    if (interval >= DELAY) then -- Update latency
-      interval = 0
-      home, world = select(3, GetNetStats())
-      latency = max(home, world) * 0.001 -- convert to seconds
-      self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
-    end
-
-    ListHelper:OnUpdate(elapsed)
-    if Dejunker.OnUpdate then Dejunker:OnUpdate(elapsed) end
-    if Destroyer.OnUpdate then Destroyer:OnUpdate(elapsed) end
-    if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
-    Confirmer:OnUpdate(elapsed)
-  end
-end
-
-function Core:OnEvent(event, ...)
-  Dejunker:OnEvent(event, ...)
-  Repairer:OnEvent(event, ...)
-end
-Core:RegisterEvent("MERCHANT_SHOW")
-Core:RegisterEvent("MERCHANT_CLOSED")
-Core:RegisterEvent("UI_ERROR_MESSAGE")
+end)
 
 -- ============================================================================
 -- General Functions
@@ -111,11 +68,11 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if Dejunker:IsBusy() then
+  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.DEJUNKING_IN_PROGRESS
   end
 
-  if Destroyer:IsBusy() then
+  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
     return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
   end
 
@@ -135,11 +92,11 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDestroy()
-  if Destroyer:IsBusy() then
+  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
     return false, L.DESTROYING_IN_PROGRESS
   end
 
-  if Dejunker:IsBusy() then
+  if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
   end
 
@@ -166,4 +123,36 @@ function Core:IsBusy()
     Destroyer:IsDestroying() or
     ListHelper:IsParsing() or
     Confirmer:IsConfirming()
+end
+
+-- ============================================================================
+-- Game Update
+-- ============================================================================
+
+-- Frame
+_G.CreateFrame("Frame"):SetScript("OnUpdate", function(_, elapsed)
+  Core:OnUpdate(elapsed)
+end)
+
+local DELAY = 10 -- seconds
+local interval = DELAY
+local home, world, latency
+
+function Core:OnUpdate(elapsed)
+  interval = interval + elapsed
+  if (interval >= DELAY) then -- Update latency
+    interval = 0
+    home, world = select(3, GetNetStats())
+    latency = max(home, world) * 0.001 -- convert to seconds
+    self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
+  end
+
+  ListHelper:OnUpdate(elapsed)
+
+  Dejunker:OnUpdate(elapsed)
+  Destroyer:OnUpdate(elapsed)
+  if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
+  Confirmer:OnUpdate(elapsed)
+
+  UI:OnUpdate(elapsed)
 end

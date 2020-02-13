@@ -1,26 +1,25 @@
-local AddonName, Addon = ...
-local L = Addon.Libs.L
-local Utils = Addon.UI.Utils
-local General = Addon.UI.Groups.General
+local _, Addon = ...
 local DB = Addon.DB
+local General = Addon.UI.Groups.General
+local L = Addon.Libs.L
+local Widgets = Addon.UI.Widgets
 
 function General:Create(parent)
-  Utils:Heading(parent, L.GENERAL_TEXT)
-
+  Widgets:Heading(parent, L.GENERAL_TEXT)
   self:AddGlobal(parent)
   self:AddChat(parent)
   self:AddRepairing(parent)
 end
 
 function General:AddGlobal(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.GLOBAL_TEXT,
     fullWidth = true
   })
 
   -- Item Tooltip
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.ITEM_TOOLTIP_TEXT,
     tooltip = L.ITEM_TOOLTIP_TOOLTIP,
@@ -29,7 +28,7 @@ function General:AddGlobal(parent)
   })
 
   -- Minimap Button
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.MINIMAP_CHECKBUTTON_TEXT,
     tooltip = L.MINIMAP_CHECKBUTTON_TOOLTIP,
@@ -39,14 +38,14 @@ function General:AddGlobal(parent)
 end
 
 function General:AddChat(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.CHAT_TEXT,
     fullWidth = true
   })
 
   -- Silent Mode
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.SILENT_MODE_TEXT,
     tooltip = L.SILENT_MODE_TOOLTIP,
@@ -55,7 +54,7 @@ function General:AddChat(parent)
   })
 
   -- Verbose Mode
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.VERBOSE_MODE_TEXT,
     tooltip = L.VERBOSE_MODE_TOOLTIP,
@@ -65,14 +64,14 @@ function General:AddChat(parent)
 end
 
 function General:AddRepairing(parent)
-  parent = Utils:InlineGroup({
+  parent = Widgets:InlineGroup({
     parent = parent,
     title = L.REPAIRING_TEXT,
     fullWidth = true
   })
 
   -- Auto Repair
-  Utils:CheckBox({
+  Widgets:CheckBox({
     parent = parent,
     label = L.AUTO_REPAIR_TEXT,
     tooltip = L.AUTO_REPAIR_TOOLTIP,
@@ -82,7 +81,7 @@ function General:AddRepairing(parent)
 
   -- Use Guild Repair
   if Addon.IS_RETAIL then
-    Utils:CheckBox({
+    Widgets:CheckBox({
       parent = parent,
       label = L.USE_GUILD_REPAIR_TEXT,
       tooltip = L.USE_GUILD_REPAIR_TOOLTIP,
