@@ -101,7 +101,7 @@ end
 function Confirmer:_RemoveUnlockedSold(bag, slot)
   for item in pairs(self.soldItems) do
     if item.Bag == bag and item.Slot == slot then
-      self._RemoveSold(item)
+      self:_RemoveSold(item)
       -- TODO: print a "%s could not be sold." message?
       return
     end
@@ -152,7 +152,7 @@ end
 function Confirmer:_RemoveUnlockedDestroyed(bag, slot)
   for item in pairs(self.destroyedItems) do
     if item.Bag == bag and item.Slot == slot then
-      self._RemoveDestroyed(item)
+      self:_RemoveDestroyed(item)
       -- TODO: print a "%s could not be destroyed." message?
       return
     end
