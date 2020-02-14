@@ -84,7 +84,7 @@ function Confirmer:_AddSold(item)
   C_Timer.After(TIMEOUT_DELAY, function()
     if self.soldItems[item] then
       self:_RemoveSold(item)
-      Core:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item))
+      Core:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item.ItemLink))
     end
   end)
 end
@@ -135,7 +135,7 @@ function Confirmer:_AddDestroyed(item)
   _G.C_Timer.After(TIMEOUT_DELAY, function()
     if self.destroyedItems[item] then
       self:_RemoveDestroyed(item)
-      Core:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item))
+      Core:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item.ItemLink))
     end
   end)
 end
