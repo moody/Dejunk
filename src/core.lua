@@ -1,5 +1,3 @@
--- Core: initializes Dejunk.
-
 local AddonName, Addon = ...
 local Colors = Addon.Colors
 local Confirmer = Addon.Confirmer
@@ -23,17 +21,19 @@ local select = select
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
 
--- Initialize slash command on player login.
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+-- Initialize slash commands on player login.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  _G.DethsLibLoader("DethsCmdLib", "1.0"):Create(
-    AddonName,
-    function() UI:Toggle() end,
-    "dj"
-  )
+  _G.SLASH_DEJUNK1 = "/dejunk"
+  _G.SLASH_DEJUNK2 = "/dj"
+  _G.SlashCmdList.DEJUNK = function() UI:Toggle() end
 end)
 
 -- ============================================================================
--- General Functions
+-- Functions
 -- ============================================================================
 
 -- Prints a formatted message ("[Dejunk] msg").
