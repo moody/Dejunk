@@ -37,7 +37,6 @@ end)
 
 EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
   if Dejunker:IsDejunking() and msg == ERR_VENDOR_DOESNT_BUY then
-    Core:Print(L.VENDOR_DOESNT_BUY)
     Dejunker:Stop()
   end
 end)
