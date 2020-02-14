@@ -6,14 +6,12 @@ local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
 local E = Addon.Events
-local ERR_INTERNAL_BAG_ERROR = _G.ERR_INTERNAL_BAG_ERROR
 local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
 local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local L = Addon.Libs.L
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
-local UIErrorsFrame = _G.UIErrorsFrame
 local UseContainerItem = _G.UseContainerItem
 
 local States = {
@@ -37,17 +35,10 @@ EventManager:On(E.Wow.MerchantClosed, function()
   if Dejunker:IsDejunking() then Dejunker:Stop() end
 end)
 
-EventManager:On(E.Wow.UIErrorMessage, function(...)
-  local _, msg = ...
-
-  if Dejunker:IsDejunking() then
-    if (msg == ERR_INTERNAL_BAG_ERROR) then
-      UIErrorsFrame:Clear()
-    elseif (msg == ERR_VENDOR_DOESNT_BUY) then
-      UIErrorsFrame:Clear()
-      Core:Print(L.VENDOR_DOESNT_BUY)
-      Dejunker:Stop()
-    end
+EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
+  if Dejunker:IsDejunking() and msg == ERR_VENDOR_DOESNT_BUY then
+    Core:Print(L.VENDOR_DOESNT_BUY)
+    Dejunker:Stop()
   end
 end)
 
