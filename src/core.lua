@@ -69,17 +69,17 @@ end
 -- @return bool, string or nil
 function Core:CanDejunk()
   if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
-    return false, L.DEJUNKING_IN_PROGRESS
+    return false, L.SELLING_IN_PROGRESS
   end
 
   if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
-    return false, L.CANNOT_DEJUNK_WHILE_DESTROYING
+    return false, L.CANNOT_SELL_WHILE_DESTROYING
   end
 
   if ListHelper:IsParsing(Inclusions) or ListHelper:IsParsing(Exclusions) then
     return
       false,
-      L.CANNOT_DEJUNK_WHILE_LISTS_UPDATING:format(
+      L.CANNOT_SELL_WHILE_LISTS_UPDATING:format(
         Inclusions.localeColored,
         Exclusions.localeColored
       )
@@ -97,7 +97,7 @@ function Core:CanDestroy()
   end
 
   if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
-    return false, L.CANNOT_DESTROY_WHILE_DEJUNKING
+    return false, L.CANNOT_DESTROY_WHILE_SELLING
   end
 
   if
