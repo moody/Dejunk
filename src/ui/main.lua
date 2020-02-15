@@ -134,12 +134,12 @@ function UI:Create()
     { text = L.GENERAL_TEXT, value = "General" },
     { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
-    { text = "  " .. Inclusions.localeColored, value = "Inclusions" },
-    { text = "  " .. Exclusions.localeColored, value = "Exclusions" },
+    { text = Inclusions.localeColored, value = "Inclusions" },
+    { text = Exclusions.localeColored, value = "Exclusions" },
     { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
-    { text = "  " .. Destroyables.localeColored, value = "Destroyables" },
-    { text = "  " .. Undestroyables.localeColored, value = "Undestroyables" },
+    { text = Destroyables.localeColored, value = "Destroyables" },
+    { text = Undestroyables.localeColored, value = "Undestroyables" },
     { text = "", value = "SPACE_3", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })
