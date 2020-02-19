@@ -1,3 +1,7 @@
+# 8.3.2
+
+- Localization updates
+
 # 8.3.1
 
 ## Changes
