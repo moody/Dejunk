@@ -3,7 +3,7 @@ import requests
 
 
 PROJECT_ID = "257636"
-API_KEY = os.getenv("INPUT_CF_API_KEY")
+API_KEY = os.getenv("CF_API_KEY")
 
 assert API_KEY
 
