@@ -1,0 +1,20 @@
+name: Localization
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - run: pip install requests
+
+      - name: Upload
+        run: python locales/_upload.py
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
