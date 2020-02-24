@@ -4,6 +4,11 @@
     DejunkBindings_ToggleOptions()
   </Binding>
 
+  <!-- Start selling -->
+  <Binding name="DEJUNK_START_SELLING" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_StartSelling()
+  </Binding>
+
   <!-- Start destroying -->
   <Binding name="DEJUNK_START_DESTROYING" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_StartDestroying()

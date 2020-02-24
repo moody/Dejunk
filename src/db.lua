@@ -11,7 +11,8 @@ local EventManager = Addon.EventManager
 local defaults = {
   Global = {
     Minimap = { hide = false },
-    ItemTooltip = true
+    ItemTooltip = true,
+    MerchantButton = true
   },
   Profile = {
     -- General options
