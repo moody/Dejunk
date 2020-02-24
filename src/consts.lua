@@ -204,6 +204,7 @@ function Consts:BuildSuitables(class)
     self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_UNARMED] = true
 
     if Addon.IS_CLASSIC then
+      self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_DAGGER] = true
       self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_SWORD1H] = true
       self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_SWORD2H] = true
       self.SUITABLE_WEAPONS[LE_ITEM_WEAPON_THROWN] = true
