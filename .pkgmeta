@@ -10,3 +10,4 @@ ignore:
   - Dejunk.png
   - KeyBindings.png
   - README.md
+  - locales/_upload.py
