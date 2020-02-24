@@ -15,7 +15,6 @@ local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local max = math.max
-local MerchantFrame = _G.MerchantFrame
 local print = print
 local Repairer = Addon.Repairer
 local select = select
@@ -31,6 +30,14 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   _G.SLASH_DEJUNK1 = "/dejunk"
   _G.SLASH_DEJUNK2 = "/dj"
   _G.SlashCmdList.DEJUNK = function() UI:Toggle() end
+end)
+
+EventManager:On(E.Wow.MerchantShow, function()
+  Core.IsMerchantShown = true
+end)
+
+EventManager:On(E.Wow.MerchantClosed, function()
+  Core.IsMerchantShown = false
 end)
 
 -- ============================================================================
@@ -69,7 +76,7 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if not MerchantFrame:IsShown() then
+  if not self.IsMerchantShown then
     return false, L.CANNOT_SELL_WITHOUT_MERCHANT
   end
 
