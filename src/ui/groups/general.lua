@@ -2,6 +2,8 @@ local _, Addon = ...
 local DB = Addon.DB
 local General = Addon.UI.Groups.General
 local L = Addon.Libs.L
+local MerchantButton = Addon.UI.MerchantButton
+local MinimapIcon = Addon.MinimapIcon
 local Widgets = Addon.UI.Widgets
 
 function General:Create(parent)
@@ -27,13 +29,25 @@ function General:AddGlobal(parent)
     set = function(value) DB.Global.ItemTooltip = value end
   })
 
+  -- Merchant Button
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.MERCHANT_CHECKBUTTON_TEXT,
+    tooltip = L.MERCHANT_CHECKBUTTON_TOOLTIP,
+    get = function() return DB.Global.MerchantButton end,
+    set = function(value)
+      DB.Global.MerchantButton = value
+      MerchantButton:Update()
+    end
+  })
+
   -- Minimap Button
   Widgets:CheckBox({
     parent = parent,
     label = L.MINIMAP_CHECKBUTTON_TEXT,
     tooltip = L.MINIMAP_CHECKBUTTON_TOOLTIP,
     get = function() return not DB.Global.Minimap.hide end,
-    set = function() Addon.MinimapIcon:Toggle() end
+    set = function() MinimapIcon:Toggle() end
   })
 end
 

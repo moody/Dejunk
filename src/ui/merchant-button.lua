@@ -1,13 +1,19 @@
 local AddonName, Addon = ...
 local Core = Addon.Core
+local DB = Addon.DB
 local Dejunker = Addon.Dejunker
 local DTL = Addon.Libs.DTL
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Libs.L
+local MerchantButton = Addon.UI.MerchantButton
 local UI = Addon.UI
 
-EventManager:Once(E.Wow.PlayerLogin, function()
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+EventManager:Once(E.DatabaseReady, function()
   local button = _G.CreateFrame(
     "Button",
     AddonName .. "MerchantButton",
@@ -63,4 +69,20 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   button:HookScript("OnLeave", function()
     DTL:HideTooltip()
   end)
+
+  -- Add to MerchantButton + update
+  MerchantButton.button = button
+  MerchantButton:Update()
 end)
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
+
+function MerchantButton:Update()
+  if DB.Global.MerchantButton then
+    self.button:Show()
+  else
+    self.button:Hide()
+  end
+end

@@ -52,5 +52,6 @@ Addon.UI = {
     Destroyables = {},
     Undestroyables = {},
     Profiles = {}
-  }
+  },
+  MerchantButton = {}
 }
