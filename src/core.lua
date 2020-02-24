@@ -15,6 +15,7 @@ local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local max = math.max
+local MerchantFrame = _G.MerchantFrame
 local print = print
 local Repairer = Addon.Repairer
 local select = select
@@ -68,6 +69,10 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
+  if not MerchantFrame:IsShown() then
+    return false, L.CANNOT_SELL_WITHOUT_MERCHANT
+  end
+
   if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.SELLING_IN_PROGRESS
   end
