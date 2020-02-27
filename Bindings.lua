@@ -1,5 +1,6 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
+local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyables = Addon.Lists.Destroyables
@@ -8,6 +9,7 @@ local Exclusions = Addon.Lists.Exclusions
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local Lists = Addon.Lists
+local MerchantFrame = _G.MerchantFrame
 local UI = Addon.UI
 local Undestroyables = Addon.Lists.Undestroyables
 local Utils = Addon.Utils
@@ -52,7 +54,11 @@ function DejunkBindings_ToggleOptions()
 end
 
 function DejunkBindings_StartSelling()
-  Dejunker:Start()
+  if MerchantFrame:IsShown() then
+    Dejunker:Start()
+  else
+    Core:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
 end
 
 function DejunkBindings_StartDestroying()

@@ -32,14 +32,6 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   _G.SlashCmdList.DEJUNK = function() UI:Toggle() end
 end)
 
-EventManager:On(E.Wow.MerchantShow, function()
-  Core.IsMerchantShown = true
-end)
-
-EventManager:On(E.Wow.MerchantClosed, function()
-  Core.IsMerchantShown = false
-end)
-
 -- ============================================================================
 -- Functions
 -- ============================================================================
@@ -76,10 +68,6 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if not self.IsMerchantShown then
-    return false, L.CANNOT_SELL_WITHOUT_MERCHANT
-  end
-
   if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.SELLING_IN_PROGRESS
   end
