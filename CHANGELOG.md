@@ -1,3 +1,9 @@
+# 8.3.4
+
+## Fixes
+
+- Fixed a bug which sometimes caused `Auto Sell` to not start
+
 # 8.3.3
 
 ## Additions
