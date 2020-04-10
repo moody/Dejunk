@@ -25,6 +25,7 @@ Addon.Colors = {
   Yellow = "E3E34FFF"
 }
 
+Addon.Commands = {}
 Addon.Confirmer = {}
 Addon.Consts = {}
 Addon.Core = {}

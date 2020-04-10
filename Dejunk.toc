@@ -56,6 +56,7 @@ src\lists\list-helper.lua
 
 # General
 src\bags.lua
+src\commands.lua
 src\consts.lua
 src\db.lua
 src\utils.lua
