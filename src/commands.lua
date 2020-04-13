@@ -49,7 +49,9 @@ function Commands.destroy()
   Destroyer:Start()
 end
 
-do -- Commands.open()
+-- Opens all lootable items in the player's bags.
+  -- `/dejunk open`
+Commands.open = (function()
   local frames = {
     "BankFrame",
     "MerchantFrame",
@@ -66,9 +68,7 @@ do -- Commands.open()
     "VoidStorageFrame"
   }
 
-  -- Opens all lootable items in the player's bags.
-  -- `/dejunk open`
-  function Commands.open()
+  return function()
     -- Stop if a frame is open which modifies the behavior of `UseContainerItem`
     for i in pairs(frames) do
       local frame = _G[frames[i]]
@@ -105,4 +105,4 @@ do -- Commands.open()
       Core:Print(L.NO_ITEMS_TO_OPEN)
     end
   end
-end
+end)()
