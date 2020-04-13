@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Bags = Addon.Bags
-local BankFrame = _G.BankFrame
 local Commands = Addon.Commands
 local Core = Addon.Core
 local Destroyer = Addon.Destroyer
@@ -9,9 +8,7 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Libs.L
 local LOCKED = _G.LOCKED
-local MerchantFrame = _G.MerchantFrame
 local strlower = _G.strlower
-local TradeFrame = _G.TradeFrame
 local UI = Addon.UI
 local UseContainerItem = _G.UseContainerItem
 
@@ -52,43 +49,60 @@ function Commands.destroy()
   Destroyer:Start()
 end
 
--- Opens all lootable items in the player's bags.
--- `/dejunk open`
-function Commands.open()
-  if (
-    MerchantFrame:IsShown() or
-    TradeFrame:IsShown() or
-    BankFrame:IsShown() or
-    (_G.AuctionFrame and _G.AuctionFrame:IsShown())
-  ) then
-    Core:Print(L.CANNOT_OPEN_ITEMS)
-    return
-  end
+do -- Commands.open()
+  local frames = {
+    "BankFrame",
+    "MerchantFrame",
+    "TradeFrame",
 
-  local items = Bags:GetItems()
-  local hasLootables = false
-  local incompleteTooltips = false
+    -- Classic
+    "AuctionFrame",
 
-  for _, item in ipairs(items) do
-    if item.Lootable then
-      hasLootables = true
-      if DTL:ScanBagSlot(item.Bag, item.Slot) then
-        if not DTL:Find(false, LOCKED) then
-          Core:Print(L.OPENING_ITEM:format(item.ItemLink))
-          UseContainerItem(item.Bag, item.Slot)
+    -- Retail
+    "AuctionHouseFrame",
+    "AzeriteRespecFrame",
+    "GuildBankFrame",
+    "ScrappingMachineFrame",
+    "VoidStorageFrame"
+  }
+
+  -- Opens all lootable items in the player's bags.
+  -- `/dejunk open`
+  function Commands.open()
+    -- Stop if a frame is open which modifies the behavior of `UseContainerItem`
+    for i in pairs(frames) do
+      local frame = _G[frames[i]]
+      if frame and frame:IsShown() then
+        Core:Print(L.CANNOT_OPEN_ITEMS)
+        return
+      end
+    end
+
+    local items = Bags:GetItems()
+    local hasLootables = false
+    local incompleteTooltips = false
+
+    for _, item in ipairs(items) do
+      if item.Lootable then
+        hasLootables = true
+        if DTL:ScanBagSlot(item.Bag, item.Slot) then
+          if not DTL:Find(false, LOCKED) then
+            Core:Print(L.OPENING_ITEM:format(item.ItemLink))
+            UseContainerItem(item.Bag, item.Slot)
+          else
+            Core:Print(L.IGNORING_ITEM_LOCKED:format(item.ItemLink, LOCKED))
+          end
         else
-          Core:Print(L.IGNORING_ITEM_LOCKED:format(item.ItemLink, LOCKED))
-        end
-      else
-        if not incompleteTooltips then
-          incompleteTooltips = true
-          Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+          if not incompleteTooltips then
+            incompleteTooltips = true
+            Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+          end
         end
       end
     end
-  end
 
-  if not hasLootables then
-    Core:Print(L.NO_ITEMS_TO_OPEN)
+    if not hasLootables then
+      Core:Print(L.NO_ITEMS_TO_OPEN)
+    end
   end
 end
