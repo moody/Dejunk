@@ -1,10 +1,10 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
+local Commands = Addon.Commands
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyables = Addon.Lists.Destroyables
-local Destroyer = Addon.Destroyer
 local Exclusions = Addon.Lists.Exclusions
 local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
@@ -28,6 +28,7 @@ _G.BINDING_CATEGORY_DEJUNK = DCL:ColorString(AddonName, Colors.Primary)
 _G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS = L.BINDINGS_TOGGLE_OPTIONS_TEXT
 _G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING_BUTTON_TEXT
+_G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
 
 -- Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS = L.BINDINGS_ADD_TO_LIST_TEXT:format(Inclusions.localeColored)
@@ -61,9 +62,8 @@ function DejunkBindings_StartSelling()
   end
 end
 
-function DejunkBindings_StartDestroying()
-  Destroyer:Start()
-end
+DejunkBindings_StartDestroying = Commands.destroy
+DejunkBindings_OpenLootables = Commands.open
 
 function DejunkBindings_AddToList(listName)
   if not currentItemID then return end

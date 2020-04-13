@@ -14,6 +14,11 @@
     DejunkBindings_StartDestroying()
   </Binding>
 
+  <!-- Open lootables -->
+  <Binding name="DEJUNK_OPEN_LOOTABLES" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_OpenLootables()
+  </Binding>
+
   <!-- Add/rem inclusions -->
   <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNKBLANK1" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("Inclusions")
