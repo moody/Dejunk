@@ -50,18 +50,8 @@ _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES = L.BINDINGS_REMOVE_FROM_LIST_TEXT:for
 -- Binding Functions
 -- ============================================================================
 
-function DejunkBindings_ToggleOptions()
-  UI:Toggle()
-end
-
-function DejunkBindings_StartSelling()
-  if MerchantFrame:IsShown() then
-    Dejunker:Start()
-  else
-    Core:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-  end
-end
-
+DejunkBindings_ToggleOptions = Commands.toggle
+DejunkBindings_StartSelling = Commands.sell
 DejunkBindings_StartDestroying = Commands.destroy
 DejunkBindings_OpenLootables = Commands.open
 

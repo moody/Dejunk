@@ -2,6 +2,7 @@ local _, Addon = ...
 local Bags = Addon.Bags
 local Commands = Addon.Commands
 local Core = Addon.Core
+local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local DTL = Addon.Libs.DTL
 local E = Addon.Events
@@ -28,20 +29,36 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
     -- First arg is command name
     local cmd = table.remove(args, 1)
+
+    -- Get command, default to `toggle`
     local func = cmd and Commands[cmd] or nil
+    if type(func) ~= "function" then func = Commands.toggle end
 
     -- Execute command
-    if type(func) == "function" then
-      func(args)
-    else
-      UI:Toggle()
-    end
+    func(args)
   end
 end)
 
 -- ============================================================================
 -- Functions
 -- ============================================================================
+
+-- Toggles the user interface.
+-- `/dejunk toggle`
+function Commands.toggle()
+  UI:Toggle()
+end
+
+-- Starts the dejunking process.
+-- `/dejunk sell`
+function Commands.sell()
+  local frame = _G.MerchantFrame
+  if frame and frame:IsShown() then
+    Dejunker:Start()
+  else
+    Core:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
+end
 
 -- Starts the destroying process.
 -- `/dejunk destroy`
