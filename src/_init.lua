@@ -52,6 +52,7 @@ Addon.UI = {
     Exclusions = {},
     Destroyables = {},
     Undestroyables = {},
+    Commands = {},
     Profiles = {}
   },
   MerchantButton = {}

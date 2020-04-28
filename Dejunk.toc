@@ -112,6 +112,7 @@ src\ui\groups\general.lua
 src\ui\groups\sell.lua
 src\ui\groups\destroy.lua
 src\ui\groups\lists.lua
+src\ui\groups\commands.lua
 src\ui\groups\profiles.lua
 
 src\ui\widgets\widgets.lua
