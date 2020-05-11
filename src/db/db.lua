@@ -1,7 +1,6 @@
 -- DB: provides addon modules easy access to saved variables.
 
 local AddonName, Addon = ...
-local Clamp = _G.Clamp
 local Consts = Addon.Consts
 local DB = Addon.DB
 local E = Addon.Events
@@ -106,91 +105,15 @@ local defaults = {
 }
 
 -- ============================================================================
--- Database Functions
+-- Events
 -- ============================================================================
-
-local conversions = {
-  -- DestroyPriceThreshold -> DestroyBelowPrice
-  function(profile)
-    if type(profile.DestroyUsePriceThreshold) == "boolean" then
-      profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
-    end
-
-    if type(profile.DestroyPriceThreshold) == "table" then
-      profile.DestroyBelowPrice.Value =
-        ((profile.DestroyPriceThreshold.Gold or 0) * 100 * 100) +
-        ((profile.DestroyPriceThreshold.Silver or 0) * 100) +
-        (profile.DestroyPriceThreshold.Copper or 0)
-    end
-
-    profile.DestroyUsePriceThreshold = nil
-    profile.DestroyPriceThreshold = nil
-  end,
-
-  -- Clamp min-max values
-  function(profile)
-    profile.SellBelowPrice.Value = Clamp(
-      profile.SellBelowPrice.Value,
-      Consts.SELL_BELOW_PRICE_MIN,
-      Consts.SELL_BELOW_PRICE_MAX
-    )
-
-    profile.SellBelowAverageILVL.Value = Clamp(
-      profile.SellBelowAverageILVL.Value,
-      Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
-      Consts.SELL_BELOW_AVERAGE_ILVL_MAX
-    )
-
-    profile.DestroyBelowPrice.Value = Clamp(
-      profile.DestroyBelowPrice.Value,
-      Consts.DESTROY_BELOW_PRICE_MIN,
-      Consts.DESTROY_BELOW_PRICE_MAX
-    )
-
-    profile.DestroyExcessSoulShards.Value = Clamp(
-      profile.DestroyExcessSoulShards.Value,
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
-    )
-
-    profile.DestroySaveSpace.Value = Clamp(
-      profile.DestroySaveSpace.Value,
-      Consts.DESTROY_SAVE_SPACE_MIN,
-      Consts.DESTROY_SAVE_SPACE_MAX
-    )
-  end,
-
-  -- Remove `DestroyIgnoreExclusions` & `DestroyInclusions`
-  function(profile)
-    if profile.DestroyIgnoreExclusions then
-      for k in pairs(profile.Exclusions) do
-        profile.Destroyables[k] = nil
-        profile.Undestroyables[k] = true
-      end
-    end
-
-    profile.DestroyIgnoreExclusions = nil
-    profile.DestroyInclusions = nil
-  end
-}
-
--- Converts the old version of the DB into the new one.
-local function reformat()
-  -- Perform conversions on all profiles
-  for _, profile in pairs(_G.DEJUNK_ADDON_SV.Profiles) do
-    for _, conversion in ipairs(conversions) do
-      conversion(profile)
-    end
-  end
-end
 
 -- Initialize the database on player login.
 EventManager:Once(E.Wow.PlayerLogin, function()
   local db = Addon.DethsDBLib(AddonName, defaults)
   setmetatable(DB, { __index = db })
 
-  DB.Reformat = reformat
-  reformat()
+  Addon:ReformatDB()
 
   EventManager:Fire(E.DatabaseReady)
   EventManager:Fire(E.ProfileChanged)
