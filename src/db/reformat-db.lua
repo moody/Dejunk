@@ -29,26 +29,26 @@ end
 -- Global Conversions
 -- ============================================================================
 
--- -- 8.3.4 -> 8.3.5
--- conversions.global[#conversions.global+1] = function(global)
---   -- Minimap -> minimap
---   if type(global.Minimap) ~= "nil" then
---     global.minimap = global.Minimap
---     global.Minimap = nil
---   end
+-- 8.3.4 -> 8.3.5
+conversions.global[#conversions.global+1] = function(global)
+  -- Minimap -> minimapIcon
+  if type(global.Minimap) ~= "nil" then
+    global.minimapIcon = global.Minimap
+    global.Minimap = nil
+  end
 
---   -- ItemTooltip -> showItemTooltip
---   if type(global.ItemTooltip) ~= "nil" then
---     global.showItemTooltip = global.ItemTooltip
---     global.ItemTooltip = nil
---   end
+  -- ItemTooltip -> showItemTooltip
+  if type(global.ItemTooltip) ~= "nil" then
+    global.showItemTooltip = global.ItemTooltip
+    global.ItemTooltip = nil
+  end
 
---   -- MerchantButton -> showMerchantButton
---   if type(global.MerchantButton) ~= "nil" then
---     global.showMerchantButton = global.MerchantButton
---     global.MerchantButton = nil
---   end
--- end
+  -- MerchantButton -> showMerchantButton
+  if type(global.MerchantButton) ~= "nil" then
+    global.showMerchantButton = global.MerchantButton
+    global.MerchantButton = nil
+  end
+end
 
 -- ============================================================================
 -- Profile Conversions

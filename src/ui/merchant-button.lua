@@ -80,7 +80,7 @@ end)
 -- ============================================================================
 
 function MerchantButton:Update()
-  if DB.Global.MerchantButton then
+  if DB.Global.showMerchantButton then
     self.button:Show()
   else
     self.button:Hide()

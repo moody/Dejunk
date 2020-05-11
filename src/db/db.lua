@@ -9,9 +9,9 @@ local EventManager = Addon.EventManager
 -- Default database values
 local defaults = {
   Global = {
-    Minimap = { hide = false },
-    ItemTooltip = true,
-    MerchantButton = true
+    minimapIcon = { hide = false },
+    showItemTooltip = true,
+    showMerchantButton = true
   },
   Profile = {
     -- General options

@@ -25,8 +25,8 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.ITEM_TOOLTIP_TEXT,
     tooltip = L.ITEM_TOOLTIP_TOOLTIP,
-    get = function() return DB.Global.ItemTooltip end,
-    set = function(value) DB.Global.ItemTooltip = value end
+    get = function() return DB.Global.showItemTooltip end,
+    set = function(value) DB.Global.showItemTooltip = value end
   })
 
   -- Merchant Button
@@ -34,9 +34,9 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.MERCHANT_CHECKBUTTON_TEXT,
     tooltip = L.MERCHANT_CHECKBUTTON_TOOLTIP,
-    get = function() return DB.Global.MerchantButton end,
+    get = function() return DB.Global.showMerchantButton end,
     set = function(value)
-      DB.Global.MerchantButton = value
+      DB.Global.showMerchantButton = value
       MerchantButton:Update()
     end
   })
@@ -46,7 +46,7 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.MINIMAP_CHECKBUTTON_TEXT,
     tooltip = L.MINIMAP_CHECKBUTTON_TOOLTIP,
-    get = function() return not DB.Global.Minimap.hide end,
+    get = function() return not DB.Global.minimapIcon.hide end,
     set = function() MinimapIcon:Toggle() end
   })
 end
