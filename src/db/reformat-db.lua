@@ -70,22 +70,15 @@ conversions.profile[#conversions.profile+1] = {
 
 conversions[#conversions+1] = {
   global = function(global)
-    -- Minimap -> minimapIcon
-    if global.Minimap ~= nil then
-      global.minimapIcon = global.Minimap
-      global.Minimap = nil
-    end
-
-    -- ItemTooltip -> showItemTooltip
-    if global.ItemTooltip ~= nil then
-      global.showItemTooltip = global.ItemTooltip
-      global.ItemTooltip = nil
-    end
-
-    -- MerchantButton -> showMerchantButton
-    if global.MerchantButton ~= nil then
-      global.showMerchantButton = global.MerchantButton
-      global.MerchantButton = nil
+    for oldKey, newKey in pairs({
+      Minimap = "minimapIcon",
+      ItemTooltip = "showItemTooltip",
+      MerchantButton = "showMerchantButton"
+    }) do
+      if global[oldKey] ~= nil then
+        global[newKey] = global[oldKey]
+        global[oldKey] = nil
+      end
     end
   end,
 
