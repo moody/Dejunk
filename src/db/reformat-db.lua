@@ -261,7 +261,6 @@ conversions[#conversions+1] = (function()
         -- By type
         moveKeys(profile, profile.destroy.byType, keys.destroy.byType)
 
-
         if type(profile.DestroyExcessSoulShards) == "table" then
           moveKeys(
             profile.DestroyExcessSoulShards,
