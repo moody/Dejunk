@@ -7,19 +7,41 @@ local conversions = {}
 
 -- Updates and constrains database values.
 function Addon:ReformatDB()
-  assert(DB.Global and DB.Profiles, "SavedVariables not loaded")
+  assert(DB._svar, "SavedVariables not loaded")
 
   for _, conversion in ipairs(conversions) do
     -- Convert global data
     if type(conversion.global) == "function" then
-      conversion.global(DB.Global)
+      conversion.global(DB._svar.Global)
     end
 
     -- Convert profile data
     if type(conversion.profile) == "function" then
-      for _, profile in pairs(DB.Profiles) do
+      for _, profile in pairs(DB._svar.Profiles) do
         conversion.profile(profile)
       end
+    end
+  end
+end
+
+-- ============================================================================
+-- Helper Functions
+-- ============================================================================
+
+--[[
+  Moves kv-pairs from one table to another.
+
+  @param {table} from
+  @param {table} to
+  @param {table} keyMap = {
+    ["fromKey"] = "toKey"
+  }
+--]]
+local function moveKeys(from, to, keyMap)
+  for fromKey, toKey in pairs(keyMap) do
+    if from[fromKey] ~= nil then
+      to[toKey] = from[fromKey]
+      from[fromKey] = nil
     end
   end
 end
@@ -28,7 +50,7 @@ end
 -- DestroyPriceThreshold -> destroy.belowPrice
 -- ============================================================================
 
-conversions.profile[#conversions.profile+1] = {
+conversions[#conversions+1] = {
   profile = function(profile)
     if type(profile.DestroyUsePriceThreshold) == "boolean" then
       profile.destroy.belowPrice.enabled = profile.DestroyUsePriceThreshold
@@ -50,7 +72,7 @@ conversions.profile[#conversions.profile+1] = {
 -- Remove `DestroyIgnoreExclusions` & `DestroyInclusions`
 -- ============================================================================
 
-conversions.profile[#conversions.profile+1] = {
+conversions[#conversions+1] = {
   profile = function(profile)
     if profile.DestroyIgnoreExclusions then
       for k in pairs(profile.Exclusions) do
@@ -68,82 +90,47 @@ conversions.profile[#conversions.profile+1] = {
 -- 8.3.4 -> 8.3.5
 -- ============================================================================
 
-conversions[#conversions+1] = {
-  global = function(global)
-    for oldKey, newKey in pairs({
+conversions[#conversions+1] = (function()
+  local keys = {
+    sliderTable = {
+      Enabled = "enabled",
+      Value = "value",
+    },
+
+    global = {
       Minimap = "minimapIcon",
       ItemTooltip = "showItemTooltip",
       MerchantButton = "showMerchantButton"
-    }) do
-      if global[oldKey] ~= nil then
-        global[newKey] = global[oldKey]
-        global[oldKey] = nil
-      end
-    end
-  end,
+    },
 
-  profile = function(profile)
-    do -- General
-      for oldKey, newKey in pairs({
-        SilentMode = "silentMode",
-        VerboseMode = "verboseMode",
-        AutoRepair = "autoRepair",
-        UseGuildRepair = "useGuildRepair",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.general[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
-    end
+    general = {
+      SilentMode = "silentMode",
+      VerboseMode = "verboseMode",
+      AutoRepair = "autoRepair",
+      UseGuildRepair = "useGuildRepair"
+    },
 
-    do -- Sell
-      for oldKey, newKey in pairs({
+    sell = {
+      general = {
         AutoSell = "auto",
         SafeMode = "safeMode",
         -- Inclusions = "inclusions",
         -- Exclusions = "exclusions",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.sell[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
+      },
 
-      if profile.SellBelowPrice ~= nil then
-        profile.sell.belowPrice.enabled = profile.SellBelowPrice.Enabled
-        profile.sell.belowPrice.value = profile.SellBelowPrice.Value
-        profile.SellBelowPrice = nil
-      end
-
-      -- By quality
-      for oldKey, newKey in pairs({
+      byQuality = {
         SellPoor = "poor",
         SellCommon = "common",
         SellUncommon = "uncommon",
         SellRare = "rare",
         SellEpic = "epic",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.sell.byQuality[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
+      },
 
-      -- By type
-      if profile.SellUnsuitable ~= nil then
-        profile.sell.byType.unsuitable = profile.SellUnsuitable
-        profile.SellUnsuitable = nil
-      end
+      byType = {
+        SellUnsuitable = "unsuitable"
+      },
 
-      if profile.SellBelowAverageILVL ~= nil then
-        profile.sell.byType.belowAverageItemLevel.enabled = profile.SellBelowAverageILVL.Enabled
-        profile.sell.byType.belowAverageItemLevel.value = profile.SellBelowAverageILVL.Value
-        profile.SellBelowAverageILVL = nil
-      end
-
-      -- Ignore
-      for oldKey, newKey in pairs({
+      ignore = {
         IgnoreBattlePets = "battlePets",
         IgnoreBindsWhenEquipped = "bindsWhenEquipped",
         IgnoreConsumables = "consumables",
@@ -160,71 +147,30 @@ conversions[#conversions+1] = {
         IgnoreSoulbound = "soulbound",
         IgnoreTradeable = "tradeable",
         IgnoreTradeGoods = "tradeGoods"
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.sell.ignore[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
-    end
+      }
+    },
 
-    do -- Destroy
-      for oldKey, newKey in pairs({
+    destroy = {
+      general = {
         AutoDestroy = "auto",
         -- Destroyables = "inclusions",
         -- Undestroyables = "exclusions",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.destroy[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
+      },
 
-      if profile.DestroyBelowPrice ~= nil then
-        profile.destroy.belowPrice.enabled = profile.DestroyBelowPrice.Enabled
-        profile.destroy.belowPrice.value = profile.DestroyBelowPrice.Value
-        profile.DestroyBelowPrice = nil
-      end
-
-      if profile.DestroySaveSpace ~= nil then
-        profile.destroy.saveSpace.enabled = profile.DestroySaveSpace.Enabled
-        profile.destroy.saveSpace.value = profile.DestroySaveSpace.Value
-        profile.DestroySaveSpace = nil
-      end
-
-      -- By quality
-      for oldKey, newKey in pairs({
+      byQuality = {
         DestroyPoor = "poor",
         DestroyCommon = "common",
         DestroyUncommon = "uncommon",
         DestroyRare = "rare",
         DestroyEpic = "epic",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.destroy.byQuality[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
+      },
 
-      -- By type
-      for oldKey, newKey in pairs({
+      byType = {
         DestroyPetsAlreadyCollected = "petsAlreadyCollected",
         DestroyToysAlreadyCollected = "toysAlreadyCollected",
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.destroy.byType[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
-      end
+      },
 
-      if profile.DestroyExcessSoulShards ~= nil then
-        profile.destroy.byType.excessSoulShards.enabled = profile.DestroyExcessSoulShards.Enabled
-        profile.destroy.byType.excessSoulShards.value = profile.DestroyExcessSoulShards.Value
-        profile.DestroyExcessSoulShards = nil
-      end
-
-      -- Ignore
-      for oldKey, newKey in pairs({
+      ignore = {
         DestroyIgnoreBattlePets = "battlePets",
         DestroyIgnoreBindsWhenEquipped = "bindsWhenEquipped",
         DestroyIgnoreConsumables = "consumables",
@@ -241,21 +187,108 @@ conversions[#conversions+1] = {
         DestroyIgnoreSoulbound = "soulbound",
         DestroyIgnoreTradeable = "tradeable",
         DestroyIgnoreTradeGoods = "tradeGoods"
-      }) do
-        if profile[oldKey] ~= nil then
-          profile.destroy.ignore[newKey] = profile[oldKey]
-          profile[oldKey] = nil
-        end
+      }
+    },
+  }
+
+  return {
+    global = function(global)
+      moveKeys(global, global, keys.global)
+    end,
+
+    profile = (function()
+      local function general(profile)
+        moveKeys(profile, profile.general, keys.general)
       end
-    end
-  end,
-}
+
+      local function sell(profile)
+        -- General
+        moveKeys(profile, profile.sell, keys.sell.general)
+
+        if type(profile.SellBelowPrice) == "table" then
+          moveKeys(
+            profile.SellBelowPrice,
+            profile.sell.belowPrice,
+            keys.sliderTable
+          )
+          profile.SellBelowPrice = nil
+        end
+
+        -- By quality
+        moveKeys(profile, profile.sell.byQuality, keys.sell.byQuality)
+
+        -- By type
+        moveKeys(profile, profile.sell.byType, keys.sell.byType)
+
+        if type(profile.SellBelowAverageILVL) == "table" then
+          moveKeys(
+            profile.SellBelowAverageILVL,
+            profile.sell.byType.belowAverageItemLevel,
+            keys.sliderTable
+          )
+          profile.SellBelowAverageILVL = nil
+        end
+
+        -- Ignore
+        moveKeys(profile, profile.sell.ignore, keys.sell.ignore)
+      end
+
+      local function destroy(profile)
+        -- General
+        moveKeys(profile, profile.destroy, keys.destroy.general)
+
+        if type(profile.DestroyBelowPrice) == "table" then
+          moveKeys(
+            profile.DestroyBelowPrice,
+            profile.destroy.belowPrice,
+            keys.sliderTable
+          )
+          profile.DestroyBelowPrice = nil
+        end
+
+        if type(profile.DestroySaveSpace) == "table" then
+          moveKeys(
+            profile.DestroySaveSpace,
+            profile.destroy.saveSpace,
+            keys.sliderTable
+          )
+          profile.DestroySaveSpace = nil
+        end
+
+        -- By quality
+        moveKeys(profile, profile.destroy.byQuality, keys.destroy.byQuality)
+
+        -- By type
+        moveKeys(profile, profile.destroy.byType, keys.destroy.byType)
+
+
+        if type(profile.DestroyExcessSoulShards) == "table" then
+          moveKeys(
+            profile.DestroyExcessSoulShards,
+            profile.destroy.byType.excessSoulShards,
+            keys.sliderTable
+          )
+          profile.DestroyExcessSoulShards = nil
+        end
+
+        -- Ignore
+        moveKeys(profile, profile.destroy.ignore, keys.destroy.ignore)
+      end
+
+      return function(profile)
+        general(profile)
+        sell(profile)
+        destroy(profile)
+      end
+    end)(),
+  }
+end)()
 
 -- ============================================================================
 -- Clamp min-max values
 -- ============================================================================
 
-conversions.profile[#conversions.profile+1] = {
+conversions[#conversions+1] = {
   profile = function(profile)
     profile.sell.belowPrice.value = Clamp(
       profile.sell.belowPrice.value,
