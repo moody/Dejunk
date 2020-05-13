@@ -89,8 +89,21 @@ conversions[#conversions+1] = {
     end
   end,
 
-  -- profile = function(profile)
-  -- end,
+  profile = function(profile)
+    do -- General
+      for oldKey, newKey in pairs({
+        SilentMode = "silentMode",
+        VerboseMode = "verboseMode",
+        AutoRepair = "autoRepair",
+        UseGuildRepair = "useGuildRepair",
+      }) do
+        if type(profile[oldKey]) ~= "nil" then
+          profile.general[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+    end
+  end,
 }
 
 -- ============================================================================

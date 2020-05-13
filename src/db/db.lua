@@ -14,13 +14,15 @@ local defaults = {
     showMerchantButton = true
   },
   Profile = {
-    -- General options
-    SilentMode = false,
-    VerboseMode = true,
+    general = {
+      silentMode = false,
+      verboseMode = true,
+      autoRepair = false,
+      useGuildRepair = true,
+    },
+
     AutoSell = false,
     SafeMode = true,
-    AutoRepair = false,
-    UseGuildRepair = true,
     SellBelowPrice = {
       Enabled = false,
       Value = Consts.SELL_BELOW_PRICE_MIN

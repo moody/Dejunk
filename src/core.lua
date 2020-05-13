@@ -39,14 +39,14 @@ end)
 -- Prints a formatted message ("[Dejunk] msg").
 -- @param ... - the messages to print
 function Core:Print(...)
-  if DB.Profile.SilentMode then return end
+  if DB.Profile.general.silentMode then return end
   print(DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary), ...)
 end
 
 -- Attempts to print a message if verbose mode is enabled.
 -- @param ... - the messages to print
 function Core:PrintVerbose(...)
-  if DB.Profile.VerboseMode then self:Print(...) end
+  if DB.Profile.general.verboseMode then self:Print(...) end
 end
 
 --[[
