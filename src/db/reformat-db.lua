@@ -25,17 +25,17 @@ function Addon:ReformatDB()
 end
 
 -- ============================================================================
--- DestroyPriceThreshold -> DestroyBelowPrice
+-- DestroyPriceThreshold -> destroy.belowPrice
 -- ============================================================================
 
 conversions.profile[#conversions.profile+1] = {
   profile = function(profile)
     if type(profile.DestroyUsePriceThreshold) == "boolean" then
-      profile.DestroyBelowPrice.Enabled = profile.DestroyUsePriceThreshold
+      profile.destroy.belowPrice.enabled = profile.DestroyUsePriceThreshold
     end
 
     if type(profile.DestroyPriceThreshold) == "table" then
-      profile.DestroyBelowPrice.Value =
+      profile.destroy.belowPrice.value =
         ((profile.DestroyPriceThreshold.Gold or 0) * 100 * 100) +
         ((profile.DestroyPriceThreshold.Silver or 0) * 100) +
         (profile.DestroyPriceThreshold.Copper or 0)
@@ -174,6 +174,87 @@ conversions[#conversions+1] = {
         end
       end
     end
+
+    do -- Destroy
+      for oldKey, newKey in pairs({
+        AutoDestroy = "auto",
+        -- Destroyables = "inclusions",
+        -- Undestroyables = "exclusions",
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.destroy[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+
+      if profile.DestroyBelowPrice ~= nil then
+        profile.destroy.belowPrice.enabled = profile.DestroyBelowPrice.Enabled
+        profile.destroy.belowPrice.value = profile.DestroyBelowPrice.Value
+        profile.DestroyBelowPrice = nil
+      end
+
+      if profile.DestroySaveSpace ~= nil then
+        profile.destroy.saveSpace.enabled = profile.DestroySaveSpace.Enabled
+        profile.destroy.saveSpace.value = profile.DestroySaveSpace.Value
+        profile.DestroySaveSpace = nil
+      end
+
+      -- By quality
+      for oldKey, newKey in pairs({
+        DestroyPoor = "poor",
+        DestroyCommon = "common",
+        DestroyUncommon = "uncommon",
+        DestroyRare = "rare",
+        DestroyEpic = "epic",
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.destroy.byQuality[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+
+      -- By type
+      for oldKey, newKey in pairs({
+        DestroyPetsAlreadyCollected = "petsAlreadyCollected",
+        DestroyToysAlreadyCollected = "toysAlreadyCollected",
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.destroy.byType[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+
+      if profile.DestroyExcessSoulShards ~= nil then
+        profile.destroy.byType.excessSoulShards.enabled = profile.DestroyExcessSoulShards.Enabled
+        profile.destroy.byType.excessSoulShards.value = profile.DestroyExcessSoulShards.Value
+        profile.DestroyExcessSoulShards = nil
+      end
+
+      -- Ignore
+      for oldKey, newKey in pairs({
+        DestroyIgnoreBattlePets = "battlePets",
+        DestroyIgnoreBindsWhenEquipped = "bindsWhenEquipped",
+        DestroyIgnoreConsumables = "consumables",
+        DestroyIgnoreCosmetic = "cosmetic",
+        DestroyIgnoreEquipmentSets = "equipmentSets",
+        DestroyIgnoreGems = "gems",
+        DestroyIgnoreGlyphs = "glyphs",
+        DestroyIgnoreItemEnhancements = "itemEnhancements",
+        DestroyIgnoreMiscellaneous = "miscellaneous",
+        DestroyIgnoreQuestItems = "questItems",
+        DestroyIgnoreReadable = "readable",
+        DestroyIgnoreReagents = "reagents",
+        DestroyIgnoreRecipes = "recipes",
+        DestroyIgnoreSoulbound = "soulbound",
+        DestroyIgnoreTradeable = "tradeable",
+        DestroyIgnoreTradeGoods = "tradeGoods"
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.destroy.ignore[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+    end
   end,
 }
 
@@ -195,20 +276,20 @@ conversions.profile[#conversions.profile+1] = {
       Consts.SELL_BELOW_AVERAGE_ILVL_MAX
     )
 
-    profile.DestroyBelowPrice.Value = Clamp(
-      profile.DestroyBelowPrice.Value,
+    profile.destroy.belowPrice.value = Clamp(
+      profile.destroy.belowPrice.value,
       Consts.DESTROY_BELOW_PRICE_MIN,
       Consts.DESTROY_BELOW_PRICE_MAX
     )
 
-    profile.DestroyExcessSoulShards.Value = Clamp(
-      profile.DestroyExcessSoulShards.Value,
+    profile.destroy.byType.excessSoulShards.value = Clamp(
+      profile.destroy.byType.excessSoulShards.value,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
     )
 
-    profile.DestroySaveSpace.Value = Clamp(
-      profile.DestroySaveSpace.Value,
+    profile.destroy.saveSpace.value = Clamp(
+      profile.destroy.saveSpace.value,
       Consts.DESTROY_SAVE_SPACE_MIN,
       Consts.DESTROY_SAVE_SPACE_MAX
     )

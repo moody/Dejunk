@@ -28,11 +28,11 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      (item.Quality == LE_ITEM_QUALITY_POOR and DB.Profile.DestroyPoor) or
-      (item.Quality == LE_ITEM_QUALITY_COMMON and DB.Profile.DestroyCommon) or
-      (item.Quality == LE_ITEM_QUALITY_UNCOMMON and DB.Profile.DestroyUncommon) or
-      (item.Quality == LE_ITEM_QUALITY_RARE and DB.Profile.DestroyRare) or
-      (item.Quality == LE_ITEM_QUALITY_EPIC and DB.Profile.DestroyEpic)
+      (item.Quality == LE_ITEM_QUALITY_POOR and DB.Profile.destroy.byQuality.poor) or
+      (item.Quality == LE_ITEM_QUALITY_COMMON and DB.Profile.destroy.byQuality.common) or
+      (item.Quality == LE_ITEM_QUALITY_UNCOMMON and DB.Profile.destroy.byQuality.uncommon) or
+      (item.Quality == LE_ITEM_QUALITY_RARE and DB.Profile.destroy.byQuality.rare) or
+      (item.Quality == LE_ITEM_QUALITY_EPIC and DB.Profile.destroy.byQuality.epic)
     then
       return "JUNK", L.REASON_DESTROY_BY_QUALITY_TEXT
     end

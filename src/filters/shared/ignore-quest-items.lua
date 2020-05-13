@@ -21,7 +21,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreQuestItems and
+      DB.Profile.destroy.ignore.questItems and
       item.Class == Consts.QUESTITEM_CLASS
     then
       return "NOT_JUNK", L.REASON_IGNORE_QUEST_ITEMS_TEXT

@@ -36,7 +36,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreBindsWhenEquipped and
+      DB.Profile.destroy.ignore.bindsWhenEquipped and
       item.Class ~= Consts.RECIPE_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

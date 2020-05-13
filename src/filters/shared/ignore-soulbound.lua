@@ -34,7 +34,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreSoulbound and
+      DB.Profile.destroy.ignore.soulbound and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then
       return isSoulbound(item)

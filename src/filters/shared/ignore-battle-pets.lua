@@ -26,7 +26,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreBattlePets and
+      DB.Profile.destroy.ignore.battlePets and
       (
         item.Class == Consts.BATTLEPET_CLASS or
         item.SubClass == Consts.COMPANION_SUBCLASS

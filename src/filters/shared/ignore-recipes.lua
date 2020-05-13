@@ -23,7 +23,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreRecipes and
+      DB.Profile.destroy.ignore.recipes and
       item.Class == Consts.RECIPE_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

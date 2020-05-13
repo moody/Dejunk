@@ -25,7 +25,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreGlyphs and
+      DB.Profile.destroy.ignore.glyphs and
       item.Class == Consts.GLYPH_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

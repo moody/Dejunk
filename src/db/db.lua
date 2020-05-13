@@ -65,44 +65,53 @@ local defaults = {
       },
     },
 
-    -- Destroy options
-    AutoDestroy = false,
-    DestroyBelowPrice = {
-      Enabled = false,
-      Value = Consts.DESTROY_BELOW_PRICE_MIN
-    },
-    DestroyPoor = false,
-    DestroyCommon = false,
-    DestroyUncommon = false,
-    DestroyRare = false,
-    DestroyEpic = false,
-    DestroyPetsAlreadyCollected = false,
-    DestroyToysAlreadyCollected = false,
-    DestroyExcessSoulShards = {
-      Enabled = false,
-      Value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
-    },
-    DestroySaveSpace = {
-      Enabled = false,
-      Value = Consts.DESTROY_SAVE_SPACE_MIN
-    },
+    destroy = {
+      auto = false,
+      belowPrice = {
+        enabled = false,
+        value = Consts.DESTROY_BELOW_PRICE_MIN
+      },
+      saveSpace = {
+        enabled = false,
+        value = Consts.DESTROY_SAVE_SPACE_MIN
+      },
 
-    DestroyIgnoreBattlePets = false,
-    DestroyIgnoreBindsWhenEquipped = false,
-    DestroyIgnoreConsumables = false,
-    DestroyIgnoreCosmetic = false,
-    DestroyIgnoreEquipmentSets = false,
-    DestroyIgnoreGems = false,
-    DestroyIgnoreGlyphs = false,
-    DestroyIgnoreItemEnhancements = false,
-    DestroyIgnoreMiscellaneous = false,
-    DestroyIgnoreQuestItems = false,
-    DestroyIgnoreReadable = false,
-    DestroyIgnoreReagents = false,
-    DestroyIgnoreRecipes = false,
-    DestroyIgnoreSoulbound = false,
-    DestroyIgnoreTradeable = false,
-    DestroyIgnoreTradeGoods = false,
+      byQuality = {
+        poor = false,
+        common = false,
+        uncommon = false,
+        rare = false,
+        epic = false,
+      },
+
+      byType = {
+        petsAlreadyCollected = false,
+        toysAlreadyCollected = false,
+        excessSoulShards = {
+          enabled = false,
+          value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
+        },
+      },
+
+      ignore = {
+        battlePets = false,
+        bindsWhenEquipped = false,
+        consumables = false,
+        cosmetic = false,
+        equipmentSets = false,
+        gems = false,
+        glyphs = false,
+        itemEnhancements = false,
+        miscellaneous = false,
+        questItems = false,
+        readable = false,
+        reagents = false,
+        recipes = false,
+        soulbound = false,
+        tradeable = false,
+        tradeGoods = false,
+      },
+    },
 
     -- Lists, table of itemIDs: { ["itemID"] = true }
     Inclusions = {},

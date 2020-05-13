@@ -23,7 +23,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreItemEnhancements and
+      DB.Profile.destroy.ignore.itemEnhancements and
       item.Class == Consts.ITEM_ENHANCEMENT_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

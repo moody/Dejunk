@@ -34,7 +34,7 @@ Destroyer.timer = 0
 
 local queueAutoDestroy do
   local function start()
-    if DB.Profile and DB.Profile.AutoDestroy and not UI:IsShown() then
+    if DB.Profile and DB.Profile.destroy.auto and not UI:IsShown() then
       Destroyer:Start(true)
       return true
     end
@@ -107,10 +107,10 @@ function Destroyer:Start(auto)
   end
 
   -- Save Space
-  if auto and DB.Profile.DestroySaveSpace.Enabled then
+  if auto and DB.Profile.destroy.saveSpace.enabled then
     -- Calculate number of items to destroy
     local freeSpace = CalculateTotalNumberOfFreeBagSlots()
-    local maxToDestroy = DB.Profile.DestroySaveSpace.Value - freeSpace
+    local maxToDestroy = DB.Profile.destroy.saveSpace.value - freeSpace
     -- Stop if destroying is not necessary
     if maxToDestroy <= 0 then return end
 

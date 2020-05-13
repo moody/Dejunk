@@ -31,7 +31,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 -- Destroyer
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
-    if DB.Profile.DestroyIgnoreTradeable then
+    if DB.Profile.destroy.ignore.tradeable then
       return isTradeable(item)
     end
 

@@ -24,7 +24,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreMiscellaneous and
+      DB.Profile.destroy.ignore.miscellaneous and
       item.Class == Consts.MISCELLANEOUS_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

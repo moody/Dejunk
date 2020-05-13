@@ -33,8 +33,8 @@ Addon.Filters:Add(Addon.Dejunker, {
 -- Destroyer
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
-    if DB.Profile.DestroyBelowPrice.Enabled and Utils:ItemCanBeSold(item) then
-      return isBelowPrice(item, DB.Profile.DestroyBelowPrice.Value)
+    if DB.Profile.destroy.belowPrice.enabled and Utils:ItemCanBeSold(item) then
+      return isBelowPrice(item, DB.Profile.destroy.belowPrice.value)
     end
 
     return "PASS"
