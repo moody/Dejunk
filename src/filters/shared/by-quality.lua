@@ -11,11 +11,11 @@ local LE_ITEM_QUALITY_UNCOMMON = _G.LE_ITEM_QUALITY_UNCOMMON
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      (item.Quality == LE_ITEM_QUALITY_POOR and DB.Profile.SellPoor) or
-      (item.Quality == LE_ITEM_QUALITY_COMMON and DB.Profile.SellCommon) or
-      (item.Quality == LE_ITEM_QUALITY_UNCOMMON and DB.Profile.SellUncommon) or
-      (item.Quality == LE_ITEM_QUALITY_RARE and DB.Profile.SellRare) or
-      (item.Quality == LE_ITEM_QUALITY_EPIC and DB.Profile.SellEpic)
+      (item.Quality == LE_ITEM_QUALITY_POOR and DB.Profile.sell.byQuality.poor) or
+      (item.Quality == LE_ITEM_QUALITY_COMMON and DB.Profile.sell.byQuality.common) or
+      (item.Quality == LE_ITEM_QUALITY_UNCOMMON and DB.Profile.sell.byQuality.uncommon) or
+      (item.Quality == LE_ITEM_QUALITY_RARE and DB.Profile.sell.byQuality.rare) or
+      (item.Quality == LE_ITEM_QUALITY_EPIC and DB.Profile.sell.byQuality.epic)
     then
       return "JUNK", L.REASON_SELL_BY_QUALITY_TEXT
     end

@@ -20,7 +20,7 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    if DB.Profile.IgnoreTradeable then
+    if DB.Profile.sell.ignore.tradeable then
       return isTradeable(item)
     end
 

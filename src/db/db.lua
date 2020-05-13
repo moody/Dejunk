@@ -21,43 +21,49 @@ local defaults = {
       useGuildRepair = true,
     },
 
-    AutoSell = false,
-    SafeMode = true,
-    SellBelowPrice = {
-      Enabled = false,
-      Value = Consts.SELL_BELOW_PRICE_MIN
+    sell = {
+      auto = false,
+      safeMode = true,
+      belowPrice = {
+        enabled = false,
+        value = Consts.SELL_BELOW_PRICE_MIN
+      },
+
+      byQuality = {
+        poor = true,
+        common = false,
+        uncommon = false,
+        rare = false,
+        epic = false,
+      },
+
+      byType = {
+        unsuitable = false,
+        belowAverageItemLevel = {
+          enabled = false,
+          value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
+        },
+      },
+
+      ignore = {
+        battlePets = false,
+        bindsWhenEquipped = false,
+        consumables = false,
+        cosmetic = false,
+        equipmentSets = false,
+        gems = false,
+        glyphs = false,
+        itemEnhancements = false,
+        miscellaneous = false,
+        questItems = false,
+        readable = false,
+        reagents = false,
+        recipes = false,
+        soulbound = false,
+        tradeable = false,
+        tradeGoods = false,
+      },
     },
-
-    -- Sell options
-    SellPoor = true,
-    SellCommon = false,
-    SellUncommon = false,
-    SellRare = false,
-    SellEpic = false,
-
-    SellUnsuitable = false,
-    SellBelowAverageILVL = {
-      Enabled = false,
-      Value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
-    },
-
-    -- Ignore options
-    IgnoreBattlePets = false,
-    IgnoreBindsWhenEquipped = false,
-    IgnoreConsumables = false,
-    IgnoreCosmetic = false,
-    IgnoreEquipmentSets = false,
-    IgnoreGems = false,
-    IgnoreGlyphs = false,
-    IgnoreItemEnhancements = false,
-    IgnoreMiscellaneous = false,
-    IgnoreQuestItems = false,
-    IgnoreReadable = false,
-    IgnoreReagents = false,
-    IgnoreRecipes = false,
-    IgnoreSoulbound = false,
-    IgnoreTradeable = false,
-    IgnoreTradeGoods = false,
 
     -- Destroy options
     AutoDestroy = false,

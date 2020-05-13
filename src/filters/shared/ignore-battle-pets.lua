@@ -9,7 +9,7 @@ local L = Addon.Libs.L
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      DB.Profile.IgnoreBattlePets and
+      DB.Profile.sell.ignore.battlePets and
       (
         item.Class == Consts.BATTLEPET_CLASS or
         item.SubClass == Consts.COMPANION_SUBCLASS

@@ -20,7 +20,7 @@ end
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      DB.Profile.IgnoreSoulbound and
+      DB.Profile.sell.ignore.soulbound and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then
       return isSoulbound(item)

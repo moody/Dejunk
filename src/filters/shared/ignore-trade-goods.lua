@@ -8,7 +8,7 @@ local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      DB.Profile.IgnoreTradeGoods and
+      DB.Profile.sell.ignore.tradeGoods and
       item.Class == Consts.TRADEGOODS_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

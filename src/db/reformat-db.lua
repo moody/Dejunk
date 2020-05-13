@@ -71,19 +71,19 @@ conversions.profile[#conversions.profile+1] = {
 conversions[#conversions+1] = {
   global = function(global)
     -- Minimap -> minimapIcon
-    if type(global.Minimap) ~= "nil" then
+    if global.Minimap ~= nil then
       global.minimapIcon = global.Minimap
       global.Minimap = nil
     end
 
     -- ItemTooltip -> showItemTooltip
-    if type(global.ItemTooltip) ~= "nil" then
+    if global.ItemTooltip ~= nil then
       global.showItemTooltip = global.ItemTooltip
       global.ItemTooltip = nil
     end
 
     -- MerchantButton -> showMerchantButton
-    if type(global.MerchantButton) ~= "nil" then
+    if global.MerchantButton ~= nil then
       global.showMerchantButton = global.MerchantButton
       global.MerchantButton = nil
     end
@@ -97,8 +97,79 @@ conversions[#conversions+1] = {
         AutoRepair = "autoRepair",
         UseGuildRepair = "useGuildRepair",
       }) do
-        if type(profile[oldKey]) ~= "nil" then
+        if profile[oldKey] ~= nil then
           profile.general[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+    end
+
+    do -- Sell
+      for oldKey, newKey in pairs({
+        AutoSell = "auto",
+        SafeMode = "safeMode",
+        -- Inclusions = "inclusions",
+        -- Exclusions = "exclusions",
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.sell[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+
+      if profile.SellBelowPrice ~= nil then
+        profile.sell.belowPrice.enabled = profile.SellBelowPrice.Enabled
+        profile.sell.belowPrice.value = profile.SellBelowPrice.Value
+        profile.SellBelowPrice = nil
+      end
+
+      -- By quality
+      for oldKey, newKey in pairs({
+        SellPoor = "poor",
+        SellCommon = "common",
+        SellUncommon = "uncommon",
+        SellRare = "rare",
+        SellEpic = "epic",
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.sell.byQuality[newKey] = profile[oldKey]
+          profile[oldKey] = nil
+        end
+      end
+
+      -- By type
+      if profile.SellUnsuitable ~= nil then
+        profile.sell.byType.unsuitable = profile.SellUnsuitable
+        profile.SellUnsuitable = nil
+      end
+
+      if profile.SellBelowAverageILVL ~= nil then
+        profile.sell.byType.belowAverageItemLevel.enabled = profile.SellBelowAverageILVL.Enabled
+        profile.sell.byType.belowAverageItemLevel.value = profile.SellBelowAverageILVL.Value
+        profile.SellBelowAverageILVL = nil
+      end
+
+      -- Ignore
+      for oldKey, newKey in pairs({
+        IgnoreBattlePets = "battlePets",
+        IgnoreBindsWhenEquipped = "bindsWhenEquipped",
+        IgnoreConsumables = "consumables",
+        IgnoreCosmetic = "cosmetic",
+        IgnoreEquipmentSets = "equipmentSets",
+        IgnoreGems = "gems",
+        IgnoreGlyphs = "glyphs",
+        IgnoreItemEnhancements = "itemEnhancements",
+        IgnoreMiscellaneous = "miscellaneous",
+        IgnoreQuestItems = "questItems",
+        IgnoreReadable = "readable",
+        IgnoreReagents = "reagents",
+        IgnoreRecipes = "recipes",
+        IgnoreSoulbound = "soulbound",
+        IgnoreTradeable = "tradeable",
+        IgnoreTradeGoods = "tradeGoods"
+      }) do
+        if profile[oldKey] ~= nil then
+          profile.sell.ignore[newKey] = profile[oldKey]
           profile[oldKey] = nil
         end
       end
@@ -112,14 +183,14 @@ conversions[#conversions+1] = {
 
 conversions.profile[#conversions.profile+1] = {
   profile = function(profile)
-    profile.SellBelowPrice.Value = Clamp(
-      profile.SellBelowPrice.Value,
+    profile.sell.belowPrice.value = Clamp(
+      profile.sell.belowPrice.value,
       Consts.SELL_BELOW_PRICE_MIN,
       Consts.SELL_BELOW_PRICE_MAX
     )
 
-    profile.SellBelowAverageILVL.Value = Clamp(
-      profile.SellBelowAverageILVL.Value,
+    profile.sell.byType.belowAverageItemLevel.value = Clamp(
+      profile.sell.byType.belowAverageItemLevel.value,
       Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
       Consts.SELL_BELOW_AVERAGE_ILVL_MAX
     )
