@@ -12,7 +12,7 @@ local ITEM_PET_KNOWN_CAPTURE = _G.ITEM_PET_KNOWN:gsub("%%d/%%d", ".*")
 
 function Filter:Run(item)
   if
-    DB.Profile.DestroyPetsAlreadyCollected and
+    DB.Profile.destroy.byType.petsAlreadyCollected and
     item.SubClass == Consts.COMPANION_SUBCLASS and
     item.NoValue
   then

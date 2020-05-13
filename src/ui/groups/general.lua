@@ -25,8 +25,8 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.ITEM_TOOLTIP_TEXT,
     tooltip = L.ITEM_TOOLTIP_TOOLTIP,
-    get = function() return DB.Global.ItemTooltip end,
-    set = function(value) DB.Global.ItemTooltip = value end
+    get = function() return DB.Global.showItemTooltip end,
+    set = function(value) DB.Global.showItemTooltip = value end
   })
 
   -- Merchant Button
@@ -34,9 +34,9 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.MERCHANT_CHECKBUTTON_TEXT,
     tooltip = L.MERCHANT_CHECKBUTTON_TOOLTIP,
-    get = function() return DB.Global.MerchantButton end,
+    get = function() return DB.Global.showMerchantButton end,
     set = function(value)
-      DB.Global.MerchantButton = value
+      DB.Global.showMerchantButton = value
       MerchantButton:Update()
     end
   })
@@ -46,7 +46,7 @@ function General:AddGlobal(parent)
     parent = parent,
     label = L.MINIMAP_CHECKBUTTON_TEXT,
     tooltip = L.MINIMAP_CHECKBUTTON_TOOLTIP,
-    get = function() return not DB.Global.Minimap.hide end,
+    get = function() return not DB.Global.minimapIcon.hide end,
     set = function() MinimapIcon:Toggle() end
   })
 end
@@ -63,8 +63,8 @@ function General:AddChat(parent)
     parent = parent,
     label = L.SILENT_MODE_TEXT,
     tooltip = L.SILENT_MODE_TOOLTIP,
-    get = function() return DB.Profile.SilentMode end,
-    set = function(value) DB.Profile.SilentMode = value end
+    get = function() return DB.Profile.general.silentMode end,
+    set = function(value) DB.Profile.general.silentMode = value end
   })
 
   -- Verbose Mode
@@ -72,8 +72,8 @@ function General:AddChat(parent)
     parent = parent,
     label = L.VERBOSE_MODE_TEXT,
     tooltip = L.VERBOSE_MODE_TOOLTIP,
-    get = function() return DB.Profile.VerboseMode end,
-    set = function(value) DB.Profile.VerboseMode = value end
+    get = function() return DB.Profile.general.verboseMode end,
+    set = function(value) DB.Profile.general.verboseMode = value end
   })
 end
 
@@ -89,8 +89,8 @@ function General:AddRepairing(parent)
     parent = parent,
     label = L.AUTO_REPAIR_TEXT,
     tooltip = L.AUTO_REPAIR_TOOLTIP,
-    get = function() return DB.Profile.AutoRepair end,
-    set = function(value) DB.Profile.AutoRepair = value end
+    get = function() return DB.Profile.general.autoRepair end,
+    set = function(value) DB.Profile.general.autoRepair = value end
   })
 
   -- Use Guild Repair
@@ -99,8 +99,8 @@ function General:AddRepairing(parent)
       parent = parent,
       label = L.USE_GUILD_REPAIR_TEXT,
       tooltip = L.USE_GUILD_REPAIR_TOOLTIP,
-      get = function() return DB.Profile.UseGuildRepair end,
-      set = function(value) DB.Profile.UseGuildRepair = value end
+      get = function() return DB.Profile.general.useGuildRepair end,
+      set = function(value) DB.Profile.general.useGuildRepair = value end
     })
   end
 end

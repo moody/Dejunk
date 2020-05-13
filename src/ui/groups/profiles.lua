@@ -67,7 +67,7 @@ local function createProfile(key, importTable)
     )
     return false
   elseif DB:CreateProfile(key, importTable) then
-    local success = pcall(function() DB:Reformat() end)
+    local success = pcall(function() Addon:ReformatDB() end)
     if success then return setProfile(key) else DB:DeleteProfile(key) end
   end
   return false

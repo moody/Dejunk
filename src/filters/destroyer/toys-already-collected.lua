@@ -8,7 +8,7 @@ local L = Addon.Libs.L
 local PlayerHasToy = _G.PlayerHasToy
 
 function Filter:Run(item)
-  if DB.Profile.DestroyToysAlreadyCollected and item.NoValue then
+  if DB.Profile.destroy.byType.toysAlreadyCollected and item.NoValue then
     if not DTL:ScanBagSlot(item.Bag, item.Slot) then
       return Addon.Filters:IncompleteTooltipError()
     else -- Tooltip can be scanned

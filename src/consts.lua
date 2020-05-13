@@ -48,7 +48,7 @@ local NUM_LE_ITEM_WEAPONS = _G.NUM_LE_ITEM_WEAPONS
 Consts.MAX_NUMBER = 2147483647 -- 32-bit signed
 Consts.SAFE_MODE_MAX = 12
 
--- SellBelowPrice
+-- sell.belowPrice
 if Addon.IS_RETAIL then
   Consts.SELL_BELOW_PRICE_MIN = 100 -- 1 silver
   Consts.SELL_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
@@ -59,12 +59,12 @@ else
   Consts.SELL_BELOW_PRICE_STEP = 1 -- 1 copper
 end
 
--- SellBelowAverageILVL
+-- sell.byType.belowAverageItemLevel
 Consts.SELL_BELOW_AVERAGE_ILVL_MIN = 10
 Consts.SELL_BELOW_AVERAGE_ILVL_MAX = 100
 Consts.SELL_BELOW_AVERAGE_ILVL_STEP = 1
 
--- DestroyBelowPrice
+-- destroy.belowPrice
 if Addon.IS_RETAIL then
   Consts.DESTROY_BELOW_PRICE_MIN = 100 -- 1 silver
   Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
@@ -75,13 +75,13 @@ else
   Consts.DESTROY_BELOW_PRICE_STEP = 1 -- 1 copper
 end
 
--- DestroyExcessSoulShards
+-- destroy.byType.excessSoulShards
 Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN = 3
 Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX = 28
 Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP = 1
 Consts.SOUL_SHARD_ITEM_ID = 6265
 
--- DestroySaveSpace
+-- destroy.saveSpace
 Consts.DESTROY_SAVE_SPACE_MIN = 1
 Consts.DESTROY_SAVE_SPACE_MAX = 16
 Consts.DESTROY_SAVE_SPACE_STEP = 1

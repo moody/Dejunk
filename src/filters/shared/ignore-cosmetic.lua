@@ -27,7 +27,7 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    if DB.Profile.IgnoreCosmetic and isCosmetic(item) then
+    if DB.Profile.sell.ignore.cosmetic and isCosmetic(item) then
       return "NOT_JUNK", L.REASON_IGNORE_COSMETIC_TEXT
     end
 
@@ -38,7 +38,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 -- Destroyer
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
-    if DB.Profile.DestroyIgnoreCosmetic and isCosmetic(item) then
+    if DB.Profile.destroy.ignore.cosmetic and isCosmetic(item) then
       return "NOT_JUNK", L.REASON_IGNORE_COSMETIC_TEXT
     end
 

@@ -57,8 +57,11 @@ src\lists\list-helper.lua
 # General
 src\bags.lua
 src\consts.lua
-src\db.lua
 src\utils.lua
+
+# DB
+src\db\db.lua
+src\db\reformat-db.lua
 
 # Services
 src\services\confirmer.lua

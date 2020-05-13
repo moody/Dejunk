@@ -8,7 +8,7 @@ local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      DB.Profile.IgnoreReagents and
+      DB.Profile.sell.ignore.reagents and
       item.Class == Consts.REAGENT_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then
@@ -23,7 +23,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreReagents and
+      DB.Profile.destroy.ignore.reagents and
       item.Class == Consts.REAGENT_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then
