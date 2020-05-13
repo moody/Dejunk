@@ -5,7 +5,7 @@ local Filter = {}
 local L = Addon.Libs.L
 
 function Filter:Run(item)
-  if DB.Profile.SellUnsuitable then
+  if DB.Profile.sell.byType.unsuitable then
     local suitable = true
 
     if item.Class == Consts.ARMOR_CLASS then

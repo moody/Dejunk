@@ -21,7 +21,7 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    if DB.Profile.IgnoreEquipmentSets then
+    if DB.Profile.sell.ignore.equipmentSets then
       return isEquipmentSet(item)
     end
 
@@ -32,7 +32,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 -- Destroyer
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
-    if DB.Profile.DestroyIgnoreEquipmentSets then
+    if DB.Profile.destroy.ignore.equipmentSets then
       return isEquipmentSet(item)
     end
 

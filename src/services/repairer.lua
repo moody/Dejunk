@@ -33,7 +33,7 @@ local usedGuildRepair = false
 -- ============================================================================
 
 EventManager:On(E.Wow.MerchantShow, function()
-	if DB.Profile.AutoRepair then Repairer:StartRepairing() end
+	if DB.Profile.general.autoRepair then Repairer:StartRepairing() end
 end)
 
 EventManager:On(E.Wow.MerchantClosed, function()
@@ -116,7 +116,7 @@ local function start_OnUpdate(self, elapsed)
     if Addon.IS_RETAIL then
       local guildBankLimit = GetGuildBankWithdrawMoney()
       canGuildRepair =
-        DB.Profile.UseGuildRepair and
+        DB.Profile.general.useGuildRepair and
         CanGuildBankRepair() and
         (
           guildBankLimit == -1 or

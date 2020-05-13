@@ -37,7 +37,7 @@ EventManager:Once(E.DatabaseReady, function()
 		end,
   })
 
-  LDBIcon:Register(OBJECT_NAME, object, DB.Global.Minimap)
+  LDBIcon:Register(OBJECT_NAME, object, DB.Global.minimapIcon)
 end)
 
 -- ============================================================================
@@ -46,19 +46,19 @@ end)
 
 -- Displays the minimap icon.
 function MinimapIcon:Show()
-  DB.Global.Minimap.hide = false
+  DB.Global.minimapIcon.hide = false
   LDBIcon:Show(OBJECT_NAME)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
-  DB.Global.Minimap.hide = true
+  DB.Global.minimapIcon.hide = true
   LDBIcon:Hide(OBJECT_NAME)
 end
 
 -- Toggles the minimap icon.
 function MinimapIcon:Toggle()
-  if DB.Global.Minimap.hide then
+  if DB.Global.minimapIcon.hide then
     self:Show()
   else
     self:Hide()

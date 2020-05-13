@@ -28,7 +28,7 @@ Dejunker.timer = 0
 -- ============================================================================
 
 EventManager:On(E.Wow.MerchantShow, function()
-  if DB.Profile.AutoSell then Dejunker:Start(true) end
+  if DB.Profile.sell.auto then Dejunker:Start(true) end
 end)
 
 EventManager:On(E.Wow.MerchantClosed, function()
@@ -75,8 +75,8 @@ function Dejunker:Start(auto)
     Core:Print(L.ONLY_SELLING_CACHED)
   end
 
-  -- SafeMode: remove items and print message as necessary
-  if DB.Profile.SafeMode then
+  -- Safe Mode: remove items and print message as necessary
+  if DB.Profile.sell.safeMode then
     while #self.items > Consts.SAFE_MODE_MAX do
       tremove(self.items)
     end

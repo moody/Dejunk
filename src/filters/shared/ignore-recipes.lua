@@ -8,7 +8,7 @@ local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
-      DB.Profile.IgnoreRecipes and
+      DB.Profile.sell.ignore.recipes and
       item.Class == Consts.RECIPE_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then
@@ -23,7 +23,7 @@ Addon.Filters:Add(Addon.Dejunker, {
 Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
-      DB.Profile.DestroyIgnoreRecipes and
+      DB.Profile.destroy.ignore.recipes and
       item.Class == Consts.RECIPE_CLASS and
       item.Quality ~= LE_ITEM_QUALITY_POOR
     then

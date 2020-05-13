@@ -11,7 +11,7 @@ local L = Addon.Libs.L
 local item = {}
 
 _G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
-  if not DB.Global.ItemTooltip or Bags:IsEmpty(bag, slot) then return end
+  if not DB.Global.showItemTooltip or Bags:IsEmpty(bag, slot) then return end
   if not Bags:GetItem(bag, slot, item) then return end
 
   local sellLeftText, sellRightText do

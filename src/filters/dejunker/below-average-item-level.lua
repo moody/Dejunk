@@ -45,9 +45,9 @@ local function isEquipmentItem(item)
 end
 
 function Filter:Run(item)
-  if DB.Profile.SellBelowAverageILVL.Enabled and isEquipmentItem(item) then
+  if DB.Profile.sell.byType.belowAverageItemLevel.enabled and isEquipmentItem(item) then
     local average = floor(GetAverageItemLevel())
-    local diff = max(average - DB.Profile.SellBelowAverageILVL.Value, 0)
+    local diff = max(average - DB.Profile.sell.byType.belowAverageItemLevel.value, 0)
 
     if (item.ItemLevel <= diff) then -- Sell
       return "JUNK", L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT:format(diff)
