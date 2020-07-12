@@ -5,17 +5,14 @@ local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
-local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local Exclusions = Addon.Lists.Exclusions
-local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
+local Lists = Addon.Lists
 local pairs = pairs
 local UI = Addon.UI
-local Undestroyables = Addon.Lists.Undestroyables
 local Widgets = Addon.UI.Widgets
 
 function UI:IsShown()
@@ -134,12 +131,24 @@ function UI:Create()
     { text = L.GENERAL_TEXT, value = "General" },
     { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
-    { text = Inclusions.localeColored, value = "Inclusions" },
-    { text = Exclusions.localeColored, value = "Exclusions" },
+    {
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Lists.sell.inclusions.color),
+      value = "SellInclusions"
+    },
+    {
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Lists.sell.exclusions.color),
+      value = "SellExclusions"
+    },
     { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
-    { text = Destroyables.localeColored, value = "Destroyables" },
-    { text = Undestroyables.localeColored, value = "Undestroyables" },
+    {
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Lists.destroy.inclusions.color),
+      value = "DestroyInclusions"
+    },
+    {
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Lists.destroy.exclusions.color),
+      value = "DestroyExclusions"
+    },
     { text = "", value = "SPACE_3", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })

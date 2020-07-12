@@ -63,6 +63,9 @@ local defaults = {
         tradeable = false,
         tradeGoods = false,
       },
+
+      inclusions = {},
+      exclusions = {}
     },
 
     destroy = {
@@ -111,13 +114,10 @@ local defaults = {
         tradeable = false,
         tradeGoods = false,
       },
-    },
 
-    -- Lists, table of itemIDs: { ["itemID"] = true }
-    Inclusions = {},
-    Exclusions = {},
-    Destroyables = {},
-    Undestroyables = {}
+      inclusions = {},
+      exclusions = {}
+    }
   }
 }
 

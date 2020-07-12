@@ -1,20 +1,22 @@
 local _, Addon = ...
-local DB = Addon.DB
-local Destroyables = Addon.Lists.Destroyables
-local Filter = {}
+local Filters = Addon.Filters
 local L = Addon.Libs.L
-local Undestroyables = Addon.Lists.Undestroyables
+local Lists = Addon.Lists
 
-function Filter:Run(item)
-  if Undestroyables:Has(item.ItemID) then
-    return "NOT_JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.UNDESTROYABLES_TEXT)
+Filters:Add(Addon.Destroyer, {
+  Run = function(_, item)
+    if Lists.destroy.exclusions:Has(item.ItemID) then
+      return "NOT_JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
+        Lists.destroy.exclusions.locale
+      )
+    end
+
+    if Lists.destroy.inclusions:Has(item.ItemID) then
+      return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
+        Lists.destroy.inclusions.locale
+      )
+    end
+
+    return "PASS"
   end
-
-  if Destroyables:Has(item.ItemID) then
-    return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.DESTROYABLES_TEXT)
-  end
-
-  return "PASS"
-end
-
-Addon.Filters:Add(Addon.Destroyer, Filter)
+})

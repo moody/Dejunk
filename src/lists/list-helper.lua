@@ -77,7 +77,7 @@ do
   -- @param {string} by - a key in `sorts`
   function ListHelper:SortBy(by)
     self._sortBy = by
-    for _, list in pairs(Lists) do
+    for list in Lists.iterate() do
       tsort(list.items, sorts[by].func)
     end
   end
@@ -104,7 +104,7 @@ function ListHelper:IsParsing(list)
   end
 
   -- parsing in general?
-  for _, li in pairs(Lists) do
+  for li in Lists.iterate() do
     if next(li.toAdd) then return true end
   end
 
@@ -121,7 +121,7 @@ do -- OnUpdate(), called in Core:OnUpdate()
     interval = interval + elapsed
     if (interval >= Core.MinDelay) then
       interval = 0
-      for _, list in pairs(Lists) do
+      for list in Lists.iterate() do
         self:ParseList(list)
       end
     end

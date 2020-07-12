@@ -35,6 +35,8 @@ Addon.EventManager = {}
 Addon.Events = {}
 Addon.Filters = {}
 Addon.ListHelper = {}
+Addon.ListMixins = {}
+Addon.Lists = {}
 Addon.Repairer = {}
 Addon.Utils = {}
 
@@ -45,12 +47,15 @@ Addon.UI = {
   Widgets = {},
   Groups = {
     General = {},
+
     Sell = {},
+    SellInclusions = {},
+    SellExclusions = {},
+
     Destroy = {},
-    Inclusions = {},
-    Exclusions = {},
-    Destroyables = {},
-    Undestroyables = {},
+    DestroyInclusions = {},
+    DestroyExclusions = {},
+
     Profiles = {}
   },
   MerchantButton = {}
