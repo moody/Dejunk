@@ -132,21 +132,21 @@ function UI:Create()
     { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
     {
-      text = DCL:ColorString(L.INCLUSIONS_TEXT, Lists.sell.inclusions.color),
+      text = Lists.sell.inclusions.localeShort,
       value = "SellInclusions"
     },
     {
-      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Lists.sell.exclusions.color),
+      text = Lists.sell.exclusions.localeShort,
       value = "SellExclusions"
     },
     { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
     {
-      text = DCL:ColorString(L.INCLUSIONS_TEXT, Lists.destroy.inclusions.color),
+      text = Lists.destroy.inclusions.localeShort,
       value = "DestroyInclusions"
     },
     {
-      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Lists.destroy.exclusions.color),
+      text = Lists.destroy.exclusions.localeShort,
       value = "DestroyExclusions"
     },
     { text = "", value = "SPACE_3", disabled = true },

@@ -80,7 +80,7 @@ function Mixins:List(parent)
     text = L.REMOVE_ALL_TEXT,
     onClick = function()
       Utils:YesNoPopup({
-        text = L.REMOVE_ALL_POPUP:format(self.list.localeColored),
+        text = L.REMOVE_ALL_POPUP:format(self.list.locale),
         onAccept = function()
           self.list:RemoveAll()
         end

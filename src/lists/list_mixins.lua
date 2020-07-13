@@ -26,7 +26,7 @@ function ListMixins:Add(itemID)
   if self._sv[itemID] then
     local itemLink = select(2, GetItemInfo(itemID))
     if itemLink then
-      Core:Print(L.ITEM_ALREADY_ON_LIST:format(itemLink, self.localeColored))
+      Core:Print(L.ITEM_ALREADY_ON_LIST:format(itemLink, self.locale))
     end
   else
     self.toAdd[itemID] = true
@@ -44,7 +44,7 @@ function ListMixins:FinalizeAdd(item)
     -- Add to sv and print message if not loading from sv
     if not self._sv[item.ItemID] then
       self._sv[item.ItemID] = true
-      Core:Print(L.ADDED_ITEM_TO_LIST:format(item.ItemLink, self.localeColored))
+      Core:Print(L.ADDED_ITEM_TO_LIST:format(item.ItemLink, self.locale))
     end
 
     -- Add item
@@ -75,14 +75,14 @@ function ListMixins:Remove(itemID, notify)
     if index ~= -1 then
       local item = tremove(self.items, index)
       Core:Print(
-        L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.localeColored)
+        L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.locale)
       )
       EventManager:Fire(E.ListItemRemoved, self, item)
     end
   elseif notify then
     local itemLink = select(2, GetItemInfo(itemID))
     if itemLink then
-      Core:Print(L.ITEM_NOT_ON_LIST:format(itemLink, self.localeColored))
+      Core:Print(L.ITEM_NOT_ON_LIST:format(itemLink, self.locale))
     end
   end
 end
@@ -92,7 +92,7 @@ function ListMixins:RemoveAll()
   if next(self._sv) then
     for k in pairs(self._sv) do self._sv[k] = nil end
     for k in pairs(self.items) do self.items[k] = nil end
-    Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
+    Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.locale))
     EventManager:Fire(E.ListRemovedAll, self)
   end
 end

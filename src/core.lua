@@ -80,8 +80,8 @@ function Core:CanDejunk()
     return
       false,
       L.CANNOT_SELL_WHILE_LISTS_UPDATING:format(
-        Lists.sell.inclusions.localeColored,
-        Lists.sell.exclusions.localeColored
+        Lists.sell.inclusions.locale,
+        Lists.sell.exclusions.locale
       )
   end
 
@@ -107,8 +107,8 @@ function Core:CanDestroy()
     return
       false,
       L.CANNOT_DESTROY_WHILE_LISTS_UPDATING:format(
-        Lists.destroy.inclusions.localeColored,
-        Lists.destroy.exclusions.localeColored
+        Lists.destroy.inclusions.locale,
+        Lists.destroy.exclusions.locale
       )
   end
 

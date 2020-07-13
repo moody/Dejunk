@@ -56,14 +56,18 @@ local function create(group)
   group.inclusions.sibling = group.exclusions
   group.exclusions.sibling = group.inclusions
 
-  group.inclusions.locale = ("%s (%s)"):format(L.INCLUSIONS_TEXT, group.locale)
-  group.exclusions.locale = ("%s (%s)"):format(L.EXCLUSIONS_TEXT, group.locale)
+  group.inclusions.locale = L.OPTION_GROUP_INCLUSIONS:format(group.locale)
+  group.inclusions.localeShort = L.INCLUSIONS_TEXT
+
+  group.exclusions.locale = L.OPTION_GROUP_EXCLUSIONS:format(group.locale)
+  group.exclusions.localeShort = L.EXCLUSIONS_TEXT
 
   -- Mixins/values
   for _, list in pairs({ group.inclusions, group.exclusions }) do
     for k, v in pairs(ListMixins) do list[k] = v end
     list.ItemCanBeAdded = group.itemCanBeAdded
-    list.localeColored = DCL:ColorString(list.locale, list.color)
+    list.locale = DCL:ColorString(list.locale, list.color)
+    list.localeShort = DCL:ColorString(list.localeShort, list.color)
     list.toAdd = {}
     list.items = {}
   end

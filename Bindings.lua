@@ -20,34 +20,39 @@ local currentItemID = nil
 -- Category
 _G.BINDING_CATEGORY_DEJUNK = DCL:ColorString(AddonName, Colors.Primary)
 
+-- Headers
+_G.BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL_TEXT
+_G.BINDING_HEADER_DEJUNK_HEADER_SELL = L.SELL_TEXT
+_G.BINDING_HEADER_DEJUNK_HEADER_DESTROY = L.DESTROY_TEXT
+
 -- General
 _G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS = L.BINDINGS_TOGGLE_OPTIONS_TEXT
 _G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING_BUTTON_TEXT
 
 -- Sell Inclusions
-_G.BINDING_NAME_DEJUNK_ADD_SELL_INCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.localeColored)
-_G.BINDING_NAME_DEJUNK_REM_SELL_INCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.inclusions.localeColored)
+_G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
+_G.BINDING_NAME_DEJUNK_REM_INCLUSIONS =
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
 
 -- Sell Exclusions
-_G.BINDING_NAME_DEJUNK_ADD_SELL_EXCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.localeColored)
-_G.BINDING_NAME_DEJUNK_REM_SELL_EXCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeColored)
+_G.BINDING_NAME_DEJUNK_ADD_EXCLUSIONS =
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
+_G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
 
 -- Destroy Inclusions
-_G.BINDING_NAME_DEJUNK_ADD_DESTROY_INCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeColored)
-_G.BINDING_NAME_DEJUNK_REM_DESTROY_INCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.inclusions.localeColored)
+_G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
+_G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
 
 -- Destroy Exclusions
-_G.BINDING_NAME_DEJUNK_ADD_DESTROY_EXCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.exclusions.localeColored)
-_G.BINDING_NAME_DEJUNK_REM_DESTROY_EXCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.exclusions.localeColored)
+_G.BINDING_NAME_DEJUNK_ADD_UNDESTROYABLES =
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.exclusions.localeShort)
+_G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.exclusions.localeShort)
 
 -- ============================================================================
 -- Binding Functions
