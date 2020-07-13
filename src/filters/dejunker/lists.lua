@@ -11,12 +11,16 @@ Filters:Add(Addon.Dejunker, {
       return "JUNK", L.REASON_SELL_ITEM_TO_BE_DESTROYED
     end
 
-    if Lists.Exclusions:Has(item.ItemID) then
-      return "NOT_JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.EXCLUSIONS_TEXT)
+    if Lists.sell.exclusions:Has(item.ItemID) then
+      return "NOT_JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
+        Lists.sell.exclusions.locale
+      )
     end
 
-    if Lists.Inclusions:Has(item.ItemID) then
-      return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(L.INCLUSIONS_TEXT)
+    if Lists.sell.inclusions:Has(item.ItemID) then
+      return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
+        Lists.sell.inclusions.locale
+      )
     end
 
     return "PASS"

@@ -51,6 +51,7 @@ src\events\events.lua
 src\events\event-manager.lua
 
 # Lists
+src\lists\list_mixins.lua
 src\lists\lists.lua
 src\lists\list-helper.lua
 

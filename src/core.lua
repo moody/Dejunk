@@ -5,19 +5,16 @@ local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
-local Destroyables = Addon.Lists.Destroyables
 local Destroyer = Addon.Destroyer
-local Exclusions = Addon.Lists.Exclusions
 local GetNetStats = _G.GetNetStats
-local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
+local Lists = Addon.Lists
 local max = math.max
 local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
-local Undestroyables = Addon.Lists.Undestroyables
 
 -- ============================================================================
 -- Functions
@@ -63,12 +60,15 @@ function Core:CanDejunk()
     return false, L.CANNOT_SELL_WHILE_DESTROYING
   end
 
-  if ListHelper:IsParsing(Inclusions) or ListHelper:IsParsing(Exclusions) then
+  if
+    ListHelper:IsParsing(Lists.sell.inclusions) or
+    ListHelper:IsParsing(Lists.sell.exclusions)
+  then
     return
       false,
       L.CANNOT_SELL_WHILE_LISTS_UPDATING:format(
-        Inclusions.localeColored,
-        Exclusions.localeColored
+        Lists.sell.inclusions.locale,
+        Lists.sell.exclusions.locale
       )
   end
 
@@ -88,14 +88,14 @@ function Core:CanDestroy()
   end
 
   if
-    ListHelper:IsParsing(Destroyables) or
-    ListHelper:IsParsing(Undestroyables)
+    ListHelper:IsParsing(Lists.destroy.inclusions) or
+    ListHelper:IsParsing(Lists.destroy.exclusions)
   then
     return
       false,
       L.CANNOT_DESTROY_WHILE_LISTS_UPDATING:format(
-        Destroyables.localeColored,
-        Undestroyables.localeColored
+        Lists.destroy.inclusions.locale,
+        Lists.destroy.exclusions.locale
       )
   end
 

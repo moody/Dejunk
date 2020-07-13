@@ -1,219 +1,159 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local Core = Addon.Core
+local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local GetItemInfo = _G.GetItemInfo
 local L = Addon.Libs.L
-local tremove = table.remove
+local ListMixins = Addon.ListMixins
+local Lists = Addon.Lists
 local Utils = Addon.Utils
-
--- ============================================================================
--- Helper Functions
--- ============================================================================
-
--- Adds an item to the specified list and prints a message if necessary.
--- @param {table} list - the target list
--- @param {table} item - the item to add
-local function finalizeAdd(list, item)
-  -- Add to sv and print message if not loading from sv
-  if not list._sv[item.ItemID] then
-    list._sv[item.ItemID] = true
-    Core:Print(L.ADDED_ITEM_TO_LIST:format(item.ItemLink, list.localeColored))
-  end
-  -- Add item
-  list.items[#list.items+1] = item
-  EventManager:Fire(E.ListItemAdded, list, item)
-end
-
--- ============================================================================
--- List
--- ============================================================================
-
-local List = {}
-
--- Returns true if the item ID is on the list.
-function List:Has(itemID)
-  itemID = tostring(itemID)
-  return not not self._sv[itemID]
-end
-
--- Queues an item to be added to the list.
--- @param {string, number} itemID - the item ID to add
-function List:Add(itemID)
-  itemID = tostring(itemID)
-
-  -- Don't add if already on list
-  if self._sv[itemID] then
-    local itemLink = select(2, GetItemInfo(itemID))
-    if itemLink then
-      Core:Print(L.ITEM_ALREADY_ON_LIST:format(itemLink, self.localeColored))
-    end
-  else
-    self.toAdd[itemID] = true
-  end
-end
-
--- Called by `ListHelper` once a queued item has been parsed and is ready to be
--- added. Override as necessary to validate items before they are added.
--- @param {table} item - the item to add
--- @return {boolean} - true if the item was added, false otherwise
-function List:FinalizeAdd(item)
-  finalizeAdd(self, item)
-  return true
-end
-
--- Removes an item from the list by ID.
--- @param {string, number} itemID - the item ID to remove
--- @param {boolean} notify - prints a message if the item is not on the list
-function List:Remove(itemID, notify)
-  itemID = tostring(itemID)
-
-  if self._sv[itemID] then
-    -- Remove from SVs
-    self._sv[itemID] = nil
-    -- Remove from sorted array
-    local index = self:GetIndex(itemID)
-    if index ~= -1 then
-      local item = tremove(self.items, index)
-      Core:Print(
-        L.REMOVED_ITEM_FROM_LIST:format(item.ItemLink, self.localeColored)
-      )
-      EventManager:Fire(E.ListItemRemoved, self, item)
-    end
-  elseif notify then
-    local itemLink = select(2, GetItemInfo(itemID))
-    if itemLink then
-      Core:Print(L.ITEM_NOT_ON_LIST:format(itemLink, self.localeColored))
-    end
-  end
-end
-
--- Removes all items from the list.
-function List:RemoveAll()
-  if next(self._sv) then
-    for k in pairs(self._sv) do self._sv[k] = nil end
-    for k in pairs(self.items) do self.items[k] = nil end
-    Core:Print(L.REMOVED_ALL_FROM_LIST:format(self.localeColored))
-    EventManager:Fire(E.ListRemovedAll, self)
-  end
-end
-
--- Returns the index of the item if it exists in the list, and -1 otherwise.
--- @param {string, number} itemID - the item ID to search for
--- @return {number}
-function List:GetIndex(itemID)
-  for i, item in ipairs(self.items) do
-    if item.ItemID == itemID then return i end
-  end
-
-  return -1
-end
-
--- Returns an array containing all item IDs in the list.
--- @return {table}
-function List:GetItemIDs()
-  local ids = {}
-  for k in pairs(self._sv) do ids[#ids+1] = k end
-  return ids
-end
-
--- ============================================================================
--- Create the lists
--- ============================================================================
-
---[[
-  Creates a new list.
-
-  @param {string} name - non-localized name of the list
-  @param {table} options = {
-    {string} locale - localized name of the list
-    {string} color - hex color of the list
-  }
-
-  @return {table}
---]]
-local function create(name, options)
-  local list = {
-    -- _sv = table, set in "DB_PROFILE_CHANGED" event
-
-    name = name,
-    color = options.color,
-    locale = options.locale,
-    localeColored = DCL:ColorString(options.locale, options.color),
-
-    toAdd = {},
-    items = {}
-  }
-
-  -- Add mixins
-  for k, v in pairs(List) do list[k] = v end
-
-  return list
-end
-
-local Lists = {
-  Inclusions = { locale = L.INCLUSIONS_TEXT, color = Colors.Red },
-  Exclusions = { locale = L.EXCLUSIONS_TEXT, color = Colors.Green },
-  Destroyables = { locale = L.DESTROYABLES_TEXT, color = Colors.Red },
-  Undestroyables = { locale = L.UNDESTROYABLES_TEXT, color = Colors.Green }
-}
-
-for name, options in pairs(Lists) do
-  Lists[name] = create(name, options)
-end
-
-Addon.Lists = Lists
-
--- ============================================================================
--- List:FinalizeAdd() Overrides
--- ============================================================================
-
-function Lists.Inclusions:FinalizeAdd(item)
-  if Utils:ItemCanBeSold(item) then
-    finalizeAdd(self, item)
-    return true
-  end
-
-  Core:Print(L.ITEM_CANNOT_BE_SOLD:format(item.ItemLink))
-  return false
-end
-Lists.Exclusions.FinalizeAdd = Lists.Inclusions.FinalizeAdd
-
-function Lists.Destroyables:FinalizeAdd(item)
-  if Utils:ItemCanBeDestroyed(item) then
-    finalizeAdd(self, item)
-    return true
-  end
-
-  Core:Print(L.ITEM_CANNOT_BE_DESTROYED:format(item.ItemLink))
-  return false
-end
-Lists.Undestroyables.FinalizeAdd = Lists.Destroyables.FinalizeAdd
+local UI = Addon.UI
 
 -- ============================================================================
 -- Events
 -- ============================================================================
 
 EventManager:On(E.ProfileChanged, function()
-  for name, list in pairs(Lists) do
-    -- Update variables
-    list._sv = Addon.DB.Profile[name] or error("Unsupported list name: "..name)
+  for list in Lists.iterate() do
+    -- Update sv reference
+    list._sv = list.getSvar()
+    -- Clear items
     for k in pairs(list.items) do list.items[k] = nil end
     -- Queue items to add directly from sv
     for k in pairs(list._sv) do list.toAdd[k] = true end
   end
 end)
 
-EventManager:On(E.ListItemAdded, function(list, item)
-  local itemID = item.ItemID
 
-  -- Remove from Exclusions when added to Inclusions and vice versa
-  if list == Lists.Inclusions then Lists.Exclusions:Remove(itemID) end
-  if list == Lists.Exclusions then Lists.Inclusions:Remove(itemID) end
+-- ============================================================================
+-- Create Function
+-- ============================================================================
 
-  -- Remove from Undestroyables when added to Destroyables and vice versa
-  if list == Lists.Destroyables then Lists.Undestroyables:Remove(itemID) end
-  if list == Lists.Undestroyables then Lists.Destroyables:Remove(itemID) end
-end)
+--[[
+  Creates a new list group and adds it to `Addon.List`.
+
+  @param {table} group = {
+    {string} key,
+    {string} name,
+    {function} itemCanBeAdded,
+
+    {table} inclusions = {
+      {string} helpText,
+      {function} getSvar
+    },
+
+    {table} exclusions = {
+      {string} helpText,
+      {function} getSvar
+    }
+  }
+--]]
+local function create(group)
+  group.inclusions.color = Colors.Red
+  group.exclusions.color = Colors.Green
+
+  group.inclusions.sibling = group.exclusions
+  group.exclusions.sibling = group.inclusions
+
+  group.inclusions.locale = L.OPTION_GROUP_INCLUSIONS:format(group.locale)
+  group.inclusions.localeShort = L.INCLUSIONS_TEXT
+
+  group.exclusions.locale = L.OPTION_GROUP_EXCLUSIONS:format(group.locale)
+  group.exclusions.localeShort = L.EXCLUSIONS_TEXT
+
+  -- Mixins/values
+  for _, list in pairs({ group.inclusions, group.exclusions }) do
+    for k, v in pairs(ListMixins) do list[k] = v end
+    list.ItemCanBeAdded = group.itemCanBeAdded
+    list.locale = DCL:ColorString(list.locale, list.color)
+    list.localeShort = DCL:ColorString(list.localeShort, list.color)
+    list.toAdd = {}
+    list.items = {}
+  end
+
+  return group
+end
+
+-- ============================================================================
+-- Sell
+-- ============================================================================
+
+Lists.sell = create({
+  locale = L.SELL_TEXT,
+
+  itemCanBeAdded = function(self, item)
+    if not Utils:ItemCanBeSold(item) then
+      return false, L.ITEM_CANNOT_BE_SOLD:format(item.ItemLink)
+    end
+    return true
+  end,
+
+  inclusions = {
+    uiGroup = UI.Groups.SellInclusions,
+    helpText = L.SELL_INCLUSIONS_HELP_TEXT,
+    getSvar = function()
+      return DB.Profile.sell.inclusions
+    end
+  },
+
+  exclusions = {
+    uiGroup = UI.Groups.SellExclusions,
+    helpText = L.SELL_EXCLUSIONS_HELP_TEXT,
+    getSvar = function()
+      return DB.Profile.sell.exclusions
+    end
+  }
+})
+
+-- ============================================================================
+-- Destroy
+-- ============================================================================
+
+Lists.destroy = create({
+  locale = L.DESTROY_TEXT,
+
+  itemCanBeAdded = function(self, item)
+    if not Utils:ItemCanBeDestroyed(item) then
+      return false, L.ITEM_CANNOT_BE_DESTROYED:format(item.ItemLink)
+    end
+    return true
+  end,
+
+  inclusions = {
+    uiGroup = UI.Groups.DestroyInclusions,
+    helpText = L.DESTROY_INCLUSIONS_HELP_TEXT,
+    getSvar = function()
+      return DB.Profile.destroy.inclusions
+    end
+  },
+
+  exclusions = {
+    uiGroup = UI.Groups.DestroyExclusions,
+    helpText = L.DESTROY_EXCLUSIONS_HELP_TEXT,
+    getSvar = function()
+      return DB.Profile.destroy.exclusions
+    end
+  }
+})
+
+-- ============================================================================
+-- Iterator
+-- ============================================================================
+
+local _lists = {}
+
+-- Populate `_lists`
+for _, group in pairs(Lists) do
+  _lists[group.inclusions] = true
+  _lists[group.exclusions] = true
+end
+
+--[[ Usage:
+  for list in Lists.iterate() do
+    -- ...
+  end
+--]]
+function Lists.iterate()
+  return next, _lists
+end
