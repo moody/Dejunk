@@ -1,29 +1,11 @@
 local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Consts = Addon.Consts
-local Destroyables = Addon.Lists.Destroyables
-local Exclusions = Addon.Lists.Exclusions
-local Inclusions = Addon.Lists.Inclusions
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local tconcat = table.concat
-local Undestroyables = Addon.Lists.Undestroyables
 local Utils = Addon.Utils
 local Widgets = Addon.UI.Widgets
-
--- ============================================================================
--- Helper Functions
--- ============================================================================
-
--- Returns a localized help string indicating the purpose of the list.
--- @param {table} list
--- @return {string}
-local function getListHelpText(list)
-  if list == Inclusions then return L.INCLUSIONS_HELP_TEXT end
-  if list == Exclusions then return L.EXCLUSIONS_HELP_TEXT end
-  if list == Destroyables then return L.DESTROYABLES_HELP_TEXT end
-  if list == Undestroyables then return L.UNDESTROYABLES_HELP_TEXT end
-end
 
 -- ============================================================================
 -- Mixins
@@ -49,10 +31,8 @@ function Mixins:Create(parent)
     scrollFrame:SetLayout("Flow")
     scrollFrame:PauseLayout()
 
-    --[[
-      If `self` is UI.Groups.Inclusions, and `group` is "Import", the below
-      code is equivalent to calling: UI.Groups.Inclusions:Import(scrollFrame)
-    ]]
+    -- If `self` is UI.Groups.SellInclusions, and `group` is "Import", the below
+    -- code is equivalent to: UI.Groups.SellInclusions:Import(scrollFrame)
     self[group](self, scrollFrame)
 
     scrollFrame:ResumeLayout()
@@ -73,7 +53,7 @@ function Mixins:List(parent)
   -- Help label
   Widgets:Label({
     parent = parent,
-    text = getListHelpText(self.list),
+    text = self.list.helpText,
     fullWidth = true
   })
 
@@ -100,7 +80,7 @@ function Mixins:List(parent)
     text = L.REMOVE_ALL_TEXT,
     onClick = function()
       Utils:YesNoPopup({
-        text = L.REMOVE_ALL_POPUP:format(self.list.localeColored),
+        text = L.REMOVE_ALL_POPUP:format(self.list.locale),
         onAccept = function()
           self.list:RemoveAll()
         end
@@ -183,8 +163,8 @@ end
 -------------------------------------------------------------------------------
 
 -- Add list groups
-for name, list in pairs(Addon.Lists) do
-  local group = Addon.UI.Groups[name] or error("Unsupported group: " .. name)
+for list in Addon.Lists.iterate() do
+  local group = list.uiGroup
 
   group.parent = "SimpleGroup"
   group.layout = "Fill"

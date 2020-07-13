@@ -67,7 +67,10 @@ EventManager:On(E.MainUIClosed, queueAutoDestroy)
 
 do -- List events
   local function func(list)
-    if list == Lists.Destroyables or list == Lists.Undestroyables then
+    if
+      list == Lists.destroy.inclusions or
+      list == Lists.destroy.exclusions
+    then
       queueAutoDestroy()
     end
   end

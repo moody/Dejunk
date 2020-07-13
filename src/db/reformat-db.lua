@@ -114,8 +114,8 @@ conversions[#conversions+1] = (function()
       general = {
         AutoSell = "auto",
         SafeMode = "safeMode",
-        -- Inclusions = "inclusions",
-        -- Exclusions = "exclusions",
+        Inclusions = "inclusions",
+        Exclusions = "exclusions",
       },
 
       byQuality = {
@@ -153,8 +153,8 @@ conversions[#conversions+1] = (function()
     destroy = {
       general = {
         AutoDestroy = "auto",
-        -- Destroyables = "inclusions",
-        -- Undestroyables = "exclusions",
+        Destroyables = "inclusions",
+        Undestroyables = "exclusions",
       },
 
       byQuality = {
