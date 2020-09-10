@@ -5,24 +5,25 @@ if DCL.__loaded then return end
 local GetClassInfo = _G.GetClassInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetNumClasses = _G.GetNumClasses
+local ItemQuality = _G.Enum.ItemQuality
+local pairs = pairs
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local select = select
-local pairs = pairs
 
 -- ============================================================================
 -- Wow Colors, DCL:GetColorByQuality(), DCL:GetColorByClassID()
 -- ============================================================================
 
 DCL.Wow = {
-  Poor = _G.LE_ITEM_QUALITY_POOR,
-  Common = _G.LE_ITEM_QUALITY_COMMON,
-  Uncommon = _G.LE_ITEM_QUALITY_UNCOMMON,
-  Rare = _G.LE_ITEM_QUALITY_RARE,
-  Epic = _G.LE_ITEM_QUALITY_EPIC,
-  Legendary = _G.LE_ITEM_QUALITY_LEGENDARY,
-  Artifact = _G.LE_ITEM_QUALITY_ARTIFACT,
-  Heirloom = _G.LE_ITEM_QUALITY_HEIRLOOM,
-  WowToken = _G.LE_ITEM_QUALITY_WOW_TOKEN
+  Poor = ItemQuality.Poor,
+  Common = ItemQuality.Common,
+  Uncommon = ItemQuality.Uncommon,
+  Rare = ItemQuality.Rare,
+  Epic = ItemQuality.Epic,
+  Legendary = ItemQuality.Legendary,
+  Artifact = ItemQuality.Artifact,
+  Heirloom = ItemQuality.Heirloom,
+  WowToken = ItemQuality.WoWToken
 }
 
 -- Add quality colors
@@ -39,19 +40,19 @@ DCL:HexTableToRGBA(DCL.Wow)
 
 do -- GetColorByQuality()
   local colorByQuality = {
-    [_G.LE_ITEM_QUALITY_POOR] = DCL.Wow.Poor,
-    [_G.LE_ITEM_QUALITY_COMMON] = DCL.Wow.Common,
-    [_G.LE_ITEM_QUALITY_UNCOMMON] = DCL.Wow.Uncommon,
-    [_G.LE_ITEM_QUALITY_RARE] = DCL.Wow.Rare,
-    [_G.LE_ITEM_QUALITY_EPIC] = DCL.Wow.Epic,
-    [_G.LE_ITEM_QUALITY_LEGENDARY] = DCL.Wow.Legendary,
-    [_G.LE_ITEM_QUALITY_ARTIFACT] = DCL.Wow.Artifact,
-    [_G.LE_ITEM_QUALITY_HEIRLOOM] = DCL.Wow.Heirloom,
-    [_G.LE_ITEM_QUALITY_WOW_TOKEN] = DCL.Wow.WowToken
+    [ItemQuality.Poor] = DCL.Wow.Poor,
+    [ItemQuality.Common] = DCL.Wow.Common,
+    [ItemQuality.Uncommon] = DCL.Wow.Uncommon,
+    [ItemQuality.Rare] = DCL.Wow.Rare,
+    [ItemQuality.Epic] = DCL.Wow.Epic,
+    [ItemQuality.Legendary] = DCL.Wow.Legendary,
+    [ItemQuality.Artifact] = DCL.Wow.Artifact,
+    [ItemQuality.Heirloom] = DCL.Wow.Heirloom,
+    [ItemQuality.WoWToken] = DCL.Wow.WowToken
   }
 
   -- Returns an rgba table specified by item quality.
-  -- @param quality - a numeric value between LE_ITEM_QUALITY_POOR and LE_ITEM_QUALITY_WOW_TOKEN
+  -- @param quality - a numeric value between ItemQuality.Poor and ItemQuality.WoWToken
   function DCL:GetColorByQuality(quality)
     return colorByQuality[quality] or error("invalid item quality: "..tostring(quality))
   end

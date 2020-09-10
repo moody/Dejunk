@@ -4,7 +4,7 @@ if not Addon.IS_RETAIL then return end
 local Consts = Addon.Consts
 local DB = Addon.DB
 local L = Addon.Libs.L
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local ItemQuality = _G.Enum.ItemQuality
 
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
@@ -12,7 +12,7 @@ Addon.Filters:Add(Addon.Dejunker, {
     if
       DB.Profile.sell.ignore.gems and
       item.Class == Consts.GEM_CLASS and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return "NOT_JUNK", L.REASON_IGNORE_GEMS_TEXT
     end
@@ -27,7 +27,7 @@ Addon.Filters:Add(Addon.Destroyer, {
     if
       DB.Profile.destroy.ignore.gems and
       item.Class == Consts.GEM_CLASS and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return "NOT_JUNK", L.REASON_IGNORE_GEMS_TEXT
     end

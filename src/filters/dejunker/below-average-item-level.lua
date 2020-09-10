@@ -6,10 +6,10 @@ local DB = Addon.DB
 local Filter = {}
 local floor = math.floor
 local GetAverageItemLevel = _G.GetAverageItemLevel
+local ItemQuality = _G.Enum.ItemQuality
 local L = Addon.Libs.L
 local LE_ITEM_ARMOR_COSMETIC = _G.LE_ITEM_ARMOR_COSMETIC
 local LE_ITEM_ARMOR_GENERIC = _G.LE_ITEM_ARMOR_GENERIC
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local LE_ITEM_WEAPON_FISHINGPOLE = _G.LE_ITEM_WEAPON_FISHINGPOLE
 local LE_ITEM_WEAPON_GENERIC = _G.LE_ITEM_WEAPON_GENERIC
 local max = math.max
@@ -52,7 +52,7 @@ function Filter:Run(item)
     if (item.ItemLevel <= diff) then -- Sell
       return "JUNK", L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT:format(diff)
     else  -- Ignore, unless poor quality
-      if (item.Quality ~= LE_ITEM_QUALITY_POOR) then
+      if (item.Quality ~= ItemQuality.Poor) then
         return "NOT_JUNK", L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT:format(diff)
       end
     end
