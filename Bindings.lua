@@ -1,13 +1,9 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
-local Core = Addon.Core
+local Commands = Addon.Commands
 local DCL = Addon.Libs.DCL
-local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
 local L = Addon.Libs.L
 local Lists = Addon.Lists
-local MerchantFrame = _G.MerchantFrame
-local UI = Addon.UI
 local Utils = Addon.Utils
 
 -- Variables
@@ -29,6 +25,7 @@ _G.BINDING_HEADER_DEJUNK_HEADER_DESTROY = L.DESTROY_TEXT
 _G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS = L.BINDINGS_TOGGLE_OPTIONS_TEXT
 _G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING_BUTTON_TEXT
+_G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
 
 -- Sell Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
@@ -58,21 +55,10 @@ _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
 -- Binding Functions
 -- ============================================================================
 
-function DejunkBindings_ToggleOptions()
-  UI:Toggle()
-end
-
-function DejunkBindings_StartSelling()
-  if MerchantFrame:IsShown() then
-    Dejunker:Start()
-  else
-    Core:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-  end
-end
-
-function DejunkBindings_StartDestroying()
-  Destroyer:Start()
-end
+DejunkBindings_ToggleOptions = Commands.toggle
+DejunkBindings_StartSelling = Commands.sell
+DejunkBindings_StartDestroying = Commands.destroy
+DejunkBindings_OpenLootables = Commands.open
 
 function DejunkBindings_AddToList(groupName, listName)
   if not currentItemID then return end

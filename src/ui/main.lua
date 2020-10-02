@@ -150,6 +150,8 @@ function UI:Create()
       value = "DestroyExclusions"
     },
     { text = "", value = "SPACE_3", disabled = true },
+    { text = L.COMMANDS_TEXT, value = "Commands" },
+    { text = "", value = "SPACE_4", disabled = true },
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })
 

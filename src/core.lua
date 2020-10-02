@@ -6,8 +6,6 @@ local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
-local E = Addon.Events
-local EventManager = Addon.EventManager
 local GetNetStats = _G.GetNetStats
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
@@ -17,17 +15,6 @@ local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
-
--- ============================================================================
--- Events
--- ============================================================================
-
--- Initialize slash commands on player login.
-EventManager:Once(E.Wow.PlayerLogin, function()
-  _G.SLASH_DEJUNK1 = "/dejunk"
-  _G.SLASH_DEJUNK2 = "/dj"
-  _G.SlashCmdList.DEJUNK = function() UI:Toggle() end
-end)
 
 -- ============================================================================
 -- Functions
