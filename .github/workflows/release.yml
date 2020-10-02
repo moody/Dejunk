@@ -13,15 +13,11 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Classic
-        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.3
+        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.5
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
 
       - name: Retail
         run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash
         env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
-          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
           GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
