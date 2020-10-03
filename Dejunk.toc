@@ -2,7 +2,7 @@
 ## Interface: 90002
 #@end-retail@
 #@non-retail@
-# ## Interface: 11303
+# ## Interface: 11305
 #@end-non-retail@
 ## Title: Dejunk
 ## Author: Dethanyel
@@ -11,8 +11,6 @@
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV
 ## OptionalDeps: DethsColorLib, DethsDBLib, DethsTooltipLib
-## X-Curse-Project-ID: 257636
-## X-WoWI-ID: 25313
 
 
 # Libraries
@@ -57,6 +55,7 @@ src\lists\list-helper.lua
 
 # General
 src\bags.lua
+src\commands.lua
 src\consts.lua
 src\utils.lua
 
@@ -115,6 +114,7 @@ src\ui\groups\general.lua
 src\ui\groups\sell.lua
 src\ui\groups\destroy.lua
 src\ui\groups\lists.lua
+src\ui\groups\commands.lua
 src\ui\groups\profiles.lua
 
 src\ui\widgets\widgets.lua
