@@ -2,9 +2,8 @@ local _, Addon = ...
 local Consts = Addon.Consts
 local DCL = Addon.Libs.DCL
 local GetContainerItemPurchaseInfo = _G.GetContainerItemPurchaseInfo
+local ItemQuality = Addon.ItemQuality
 local L = Addon.Libs.L
-local LE_ITEM_QUALITY_EPIC = _G.LE_ITEM_QUALITY_EPIC
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local StaticPopup_Show = _G.StaticPopup_Show
 local Utils = Addon.Utils
 
@@ -41,8 +40,8 @@ function Utils:ItemCanBeSold(item)
   return (
     not item.NoValue and
     item.Price > 0 and
-    item.Quality >= LE_ITEM_QUALITY_POOR and
-    item.Quality <= LE_ITEM_QUALITY_EPIC
+    item.Quality >= ItemQuality.Poor and
+    item.Quality <= ItemQuality.Epic
   )
 end
 
@@ -55,8 +54,8 @@ function Utils:ItemCanBeDestroyed(item)
   end
 
   return (
-    item.Quality >= LE_ITEM_QUALITY_POOR and
-    item.Quality <= LE_ITEM_QUALITY_EPIC
+    item.Quality >= ItemQuality.Poor and
+    item.Quality <= ItemQuality.Epic
   )
 end
 

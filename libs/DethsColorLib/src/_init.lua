@@ -4,7 +4,7 @@ local _, Addon = ...
 
 local metadata = {
   name = "DethsColorLib",
-  version = "2.0",
+  version = "2.1",
   description = "Addon library for working with colors.",
   author = "Dethanyel"
 }

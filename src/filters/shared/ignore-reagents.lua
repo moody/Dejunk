@@ -2,7 +2,7 @@ local _, Addon = ...
 local Consts = Addon.Consts
 local DB = Addon.DB
 local L = Addon.Libs.L
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local ItemQuality = Addon.ItemQuality
 
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
@@ -10,7 +10,7 @@ Addon.Filters:Add(Addon.Dejunker, {
     if
       DB.Profile.sell.ignore.reagents and
       item.Class == Consts.REAGENT_CLASS and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return "NOT_JUNK", L.REASON_IGNORE_REAGENTS_TEXT
     end
@@ -25,7 +25,7 @@ Addon.Filters:Add(Addon.Destroyer, {
     if
       DB.Profile.destroy.ignore.reagents and
       item.Class == Consts.REAGENT_CLASS and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return "NOT_JUNK", L.REASON_IGNORE_REAGENTS_TEXT
     end

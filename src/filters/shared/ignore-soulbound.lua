@@ -2,7 +2,7 @@ local _, Addon = ...
 local DB = Addon.DB
 local DTL = Addon.Libs.DTL
 local L = Addon.Libs.L
-local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local ItemQuality = Addon.ItemQuality
 
 local function isSoulbound(item)
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then
@@ -21,7 +21,7 @@ Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     if
       DB.Profile.sell.ignore.soulbound and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return isSoulbound(item)
     end
@@ -35,7 +35,7 @@ Addon.Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
     if
       DB.Profile.destroy.ignore.soulbound and
-      item.Quality ~= LE_ITEM_QUALITY_POOR
+      item.Quality ~= ItemQuality.Poor
     then
       return isSoulbound(item)
     end
