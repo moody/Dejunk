@@ -5,10 +5,24 @@ if DCL.__loaded then return end
 local GetClassInfo = _G.GetClassInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetNumClasses = _G.GetNumClasses
-local ItemQuality = _G.Enum.ItemQuality
 local pairs = pairs
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local select = select
+
+local ItemQuality do
+  local q = _G.Enum.ItemQuality
+  ItemQuality = {
+    Poor = _G.LE_ITEM_QUALITY_POOR or q.Poor,
+    Common = _G.LE_ITEM_QUALITY_COMMON or q.Common,
+    Uncommon = _G.LE_ITEM_QUALITY_UNCOMMON or q.Uncommon,
+    Rare = _G.LE_ITEM_QUALITY_RARE or q.Rare,
+    Epic = _G.LE_ITEM_QUALITY_EPIC or q.Epic,
+    Legendary = _G.LE_ITEM_QUALITY_LEGENDARY or q.Legendary,
+    Artifact = _G.LE_ITEM_QUALITY_ARTIFACT or q.Artifact,
+    Heirloom = _G.LE_ITEM_QUALITY_HEIRLOOM or q.Heirloom,
+    WoWToken = _G.LE_ITEM_QUALITY_WOW_TOKEN or q.WoWToken
+  }
+end
 
 -- ============================================================================
 -- Wow Colors, DCL:GetColorByQuality(), DCL:GetColorByClassID()

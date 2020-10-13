@@ -3,7 +3,7 @@ local Consts = Addon.Consts
 local DB = Addon.DB
 local DTL = Addon.Libs.DTL
 local L = Addon.Libs.L
-local ItemQuality = _G.Enum.ItemQuality
+local ItemQuality = Addon.ItemQuality
 
 local function isBindsWhenEquipped(item)
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then

@@ -3,7 +3,7 @@ local _, Addon = ...
 local Consts = Addon.Consts
 local DB = Addon.DB
 local L = Addon.Libs.L
-local ItemQuality = _G.Enum.ItemQuality
+local ItemQuality = Addon.ItemQuality
 
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {

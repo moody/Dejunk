@@ -1,7 +1,7 @@
 local _, Addon = ...
 local DB = Addon.DB
 local GetCoinTextureString = _G.GetCoinTextureString
-local ItemQuality = _G.Enum.ItemQuality
+local ItemQuality = Addon.ItemQuality
 local L = Addon.Libs.L
 local Utils = Addon.Utils
 
