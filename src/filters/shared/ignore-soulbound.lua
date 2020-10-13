@@ -2,7 +2,7 @@ local _, Addon = ...
 local DB = Addon.DB
 local DTL = Addon.Libs.DTL
 local L = Addon.Libs.L
-local ItemQuality = _G.Enum.ItemQuality
+local ItemQuality = Addon.ItemQuality
 
 local function isSoulbound(item)
   if not DTL:ScanBagSlot(item.Bag, item.Slot) then
