@@ -8,33 +8,60 @@ Dejunk is a customizable junk selling and destroying addon.
 
 ### Selling
 
-- Option to automatically sell and repair items
+- Customize a list of items to include or exclude when selling
 - Optional safe mode (only sell up to 12 items at a time)
-- Customize a list of items to always sell (Inclusions)
-- Customize a list of items to never sell (Exclusions)
-- Sell all items of a specific quality (from Poor to Epic)
-- Ignore items by type (Consumable, Trade Goods, BoE, Soulbound, etc.)
+- Options to sell all items of a specific quality (from Poor to Epic)
 - And more...
 
 ### Destroying
 
-- Option to automatically destroy junk items
-- Customize a list of items to always destroy (Destroyables)
-- Customize a list of items to never destroy (Undestroyables)
-- Destroy all items of a specific quality (from Poor to Epic)
-- Ignore items by type (Consumable, Trade Goods, BoE, Soulbound, etc.)
+- Customize a list of items to include or exclude when destroying
+- Optional space saving mode (auto destroy items as bag space depletes)
+- Options to destroy all items of a specific quality (from Poor to Epic)
 - And more...
 
 ### Key Bindings
 
-- Bind a key to toggle the options frame
-- Bind a key to start destroying items
-- Bind keys to quickly add and remove items to and from lists
+You can bind keys to:
 
-## Chat Command
+- Toggle the options frame
+- Start selling
+- Start destroying
+- Open lootables
+- Manage lists
+
+## Chat Commands
+
+### Toggle
+
+Toggles the user interface.
 
 ```text
-/dejunk
+/dejunk [toggle]
+```
+
+### Sell
+
+Starts selling items.
+
+```text
+/dejunk sell
+```
+
+### Destroy
+
+Starts destroying items.
+
+```text
+/dejunk destroy
+```
+
+### Open
+
+Starts opening lootable items.
+
+```text
+/dejunk open
 ```
 
 ## Credits
@@ -50,3 +77,41 @@ Dejunk is a customizable junk selling and destroying addon.
 - [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
 - [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 - [LibStub](https://www.wowace.com/projects/libstub)
+
+### Translators
+
+#### deDE (German)
+
+- Bullseiify
+- Mondeulchen
+
+#### esES (Spanish)
+
+- Nmyler
+
+#### esMX (Latin American Spanish)
+
+- cesarcpcn
+- cesarcpcnwf
+
+#### frFR (French)
+
+- \_ForgeUser277927
+- yapa38
+
+#### ptBR (Brazilian Portuguese)
+
+- \_ForgeUser7363429
+
+#### ruRU (Russian)
+
+- Hubbotu
+
+#### zhCN (Simplified Chinese)
+
+- nukmii
+
+#### zhTW (Traditional Chinese)
+
+- BNS333
+- kib85614

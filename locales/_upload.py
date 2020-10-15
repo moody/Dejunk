@@ -8,7 +8,7 @@ API_KEY = os.getenv("CF_API_KEY")
 assert API_KEY
 
 LOCALE_ENTRY_PREFIX = "L["
-PROJECT_ID = "257636"
+PROJECT_ID = "413260"
 API_ENDPOINT = f"https://wow.curseforge.com/api/projects/{PROJECT_ID}/localization/import?token={API_KEY}"
 
 
