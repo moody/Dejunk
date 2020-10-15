@@ -11,6 +11,8 @@
 ## X-DethsDBLib: DEJUNK_ADDON_SV
 ## SavedVariables: DEJUNK_ADDON_SV
 ## OptionalDeps: DethsColorLib, DethsDBLib, DethsTooltipLib
+## X-Curse-Project-ID: 413260
+## X-WoWI-ID: 25313
 
 
 # Libraries
