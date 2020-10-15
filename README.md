@@ -50,3 +50,41 @@ Dejunk is a customizable junk selling and destroying addon.
 - [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
 - [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 - [LibStub](https://www.wowace.com/projects/libstub)
+
+### Translators
+
+#### deDE (German)
+
+- Bullseiify
+- Mondeulchen
+
+#### esES (Spanish)
+
+- Nmyler
+
+#### esMX (Latin American Spanish)
+
+- cesarcpcn
+- cesarcpcnwf
+
+#### frFR (French)
+
+- \_ForgeUser277927
+- yapa38
+
+#### ptBR (Brazilian Portuguese)
+
+- \_ForgeUser7363429
+
+#### ruRU (Russian)
+
+- Hubbotu
+
+#### zhCN (Simplified Chinese)
+
+- nukmii
+
+#### zhTW (Traditional Chinese)
+
+- BNS333
+- kib85614
