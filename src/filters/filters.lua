@@ -7,6 +7,7 @@ local ERROR_CAPS = _G.ERROR_CAPS
 local Filters = Addon.Filters
 local L = Addon.Libs.L
 local Utils = Addon.Utils
+local concat = table.concat
 
 -- Filter arrays
 Filters[Dejunker] = {}
@@ -138,4 +139,10 @@ end
 function Filters:IncompleteTooltipError()
   self._incompleteTooltips = true
   return "NOT_JUNK", ERROR_CAPS
+end
+
+
+-- Constructs a reason string via snippets.
+function Filters:Reason(...)
+  return concat({ ... }, " > ")
 end
