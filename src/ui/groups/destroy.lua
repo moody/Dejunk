@@ -26,31 +26,23 @@ function Destroy:AddGeneral(parent)
   })
 
   -- Auto Destroy
-  Widgets:CheckBox({
-    parent = parent,
-    label = L.AUTO_DESTROY_TEXT,
-    tooltip = L.AUTO_DESTROY_TOOLTIP,
-    get = function() return DB.Profile.destroy.auto end,
-    set = function(value) DB.Profile.destroy.auto = value end
-  })
-
-  -- Save Space
   Widgets:CheckBoxSlider({
     parent = parent,
     checkBox = {
-      label = L.DESTROY_SAVE_SPACE_TEXT,
-      tooltip = L.DESTROY_SAVE_SPACE_TOOLTIP,
-      get = function() return DB.Profile.destroy.saveSpace.enabled end,
-      set = function(value) DB.Profile.destroy.saveSpace.enabled = value end
+      label = L.AUTO_DESTROY_TEXT,
+      tooltip = L.AUTO_DESTROY_TOOLTIP,
+      get = function() return DB.Profile.destroy.auto.enabled end,
+      set = function(value) DB.Profile.destroy.auto.enabled = value end
     },
     slider = {
-      label = L.DESTROY_SAVE_SPACE_SLIDER,
-      value = DB.Profile.destroy.saveSpace.value,
-      min = Consts.DESTROY_SAVE_SPACE_MIN,
-      max = Consts.DESTROY_SAVE_SPACE_MAX,
-      step = Consts.DESTROY_SAVE_SPACE_STEP,
+      label = L.AUTO_DESTROY_SLIDER_LABEL,
+      tooltip = L.AUTO_DESTROY_SLIDER_TOOLTIP:format(Consts.DESTROY_AUTO_MIN),
+      value = DB.Profile.destroy.auto.value,
+      min = Consts.DESTROY_AUTO_MIN,
+      max = Consts.DESTROY_AUTO_MAX,
+      step = Consts.DESTROY_AUTO_STEP,
       onValueChanged = function(self, event, value)
-        DB.Profile.destroy.saveSpace.value = value
+        DB.Profile.destroy.auto.value = value
       end
     }
   })

@@ -79,6 +79,7 @@ end
     },
     slider = {
       label = string,
+      tooltip = string,
       value = number,
       min = number,
       max = number,
@@ -106,6 +107,19 @@ function Widgets:CheckBoxSlider(options)
     options.slider.onValueChanged(self, event, value)
     self.editbox:ClearFocus()
   end)
+
+  if options.slider.tooltip then
+    slider:SetCallback("OnEnter", function(self)
+      GameTooltip:SetOwner(self.label, "ANCHOR_TOP")
+      GameTooltip:SetText(options.slider.label, 1.0, 0.82, 0)
+      GameTooltip:AddLine(options.slider.tooltip, 1, 1, 1, true)
+      GameTooltip:Show()
+    end)
+
+    slider:SetCallback("OnLeave", function()
+      GameTooltip:Hide()
+    end)
+  end
 
   self:CheckBox({
     parent = group,

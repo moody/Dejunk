@@ -284,6 +284,36 @@ conversions[#conversions+1] = (function()
 end)()
 
 -- ============================================================================
+-- Merge `destroy.saveSpace` with `destroy.auto`
+-- ============================================================================
+
+conversions[#conversions+1] = {
+  profile = function(profile)
+    local value = Consts.DESTROY_AUTO_MIN
+
+    if type(profile.destroy.saveSpace) == "table" then
+      local saveSpace = profile.destroy.saveSpace
+      if saveSpace.enabled and saveSpace.value then value = saveSpace.value end
+    end
+    profile.destroy.saveSpace = nil
+
+    if type(profile.destroy.auto) == "boolean" then
+      profile.destroy.auto = {
+        enabled = profile.destroy.auto,
+        value = value
+      }
+    end
+
+    if type(profile.destroy.auto) ~= "table" then
+      profile.destroy.auto = {
+        enabled = false,
+        value = Consts.DESTROY_AUTO_MIN
+      }
+    end
+  end
+}
+
+-- ============================================================================
 -- Clamp min-max values
 -- ============================================================================
 
@@ -301,6 +331,12 @@ conversions[#conversions+1] = {
       Consts.SELL_BELOW_AVERAGE_ILVL_MAX
     )
 
+    profile.destroy.auto.value = Clamp(
+      profile.destroy.auto.value,
+      Consts.DESTROY_AUTO_MIN,
+      Consts.DESTROY_AUTO_MAX
+    )
+
     profile.destroy.belowPrice.value = Clamp(
       profile.destroy.belowPrice.value,
       Consts.DESTROY_BELOW_PRICE_MIN,
@@ -311,12 +347,6 @@ conversions[#conversions+1] = {
       profile.destroy.byType.excessSoulShards.value,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
-    )
-
-    profile.destroy.saveSpace.value = Clamp(
-      profile.destroy.saveSpace.value,
-      Consts.DESTROY_SAVE_SPACE_MIN,
-      Consts.DESTROY_SAVE_SPACE_MAX
     )
   end
 }
