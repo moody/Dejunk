@@ -8,6 +8,11 @@ local GetItemCount = _G.GetItemCount
 local L = Addon.Libs.L
 local tremove = table.remove
 
+local REASON = Addon.Filters:DestroyReason(
+  L.BY_TYPE_TEXT,
+  L.DESTROY_EXCESS_SOUL_SHARDS_TEXT .. " (%s)"
+)
+
 function Filter:Run(item)
   if
     Consts.PLAYER_CLASS == "WARLOCK" and
@@ -16,7 +21,9 @@ function Filter:Run(item)
     GetItemCount(Consts.SOUL_SHARD_ITEM_ID) >
     DB.Profile.destroy.byType.excessSoulShards.value
   then
-    return "JUNK", L.REASON_DESTROY_EXCESS_SOUL_SHARDS_TEXT
+    return "JUNK", REASON:format(
+      DB.Profile.destroy.byType.excessSoulShards.value
+    )
   end
 
   return "PASS"

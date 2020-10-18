@@ -111,7 +111,7 @@ end
 
 function Confirmer:_ConfirmSoldItems(bag)
   for item in pairs(self.soldItems) do
-    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+    if item.Bag == bag and not Bags:StillInBags(item) then
       self.soldTotal = self.soldTotal + (item.Price * item.Quantity)
 
       Core:PrintVerbose(
@@ -162,7 +162,7 @@ end
 
 function Confirmer:_ConfirmDestroyedItems(bag)
   for item in pairs(self.destroyedItems) do
-    if item.Bag == bag and Bags:IsEmpty(item.Bag, item.Slot) then
+    if item.Bag == bag and not Bags:StillInBags(item) then
       self.destroyCount = self.destroyCount + 1
 
       Core:PrintVerbose(

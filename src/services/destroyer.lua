@@ -3,6 +3,7 @@ local assert = assert
 local Bags = Addon.Bags
 local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
 local ClearCursor = _G.ClearCursor
+local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
@@ -34,7 +35,11 @@ Destroyer.timer = 0
 
 local queueAutoDestroy do
   local function start()
-    if DB.Profile and DB.Profile.destroy.auto and not UI:IsShown() then
+    if (
+      DB.Profile and
+      DB.Profile.destroy.auto and
+      not UI:IsShown()
+    ) then
       Destroyer:Start(true)
       return true
     end
@@ -110,10 +115,10 @@ function Destroyer:Start(auto)
   end
 
   -- Save Space
-  if auto and DB.Profile.destroy.saveSpace.enabled then
+  if auto and DB.Profile.destroy.autoSlider > Consts.DESTROY_AUTO_SLIDER_MIN then
     -- Calculate number of items to destroy
     local freeSpace = CalculateTotalNumberOfFreeBagSlots()
-    local maxToDestroy = DB.Profile.destroy.saveSpace.value - freeSpace
+    local maxToDestroy = DB.Profile.destroy.autoSlider - freeSpace
     -- Stop if destroying is not necessary
     if maxToDestroy <= 0 then return end
 

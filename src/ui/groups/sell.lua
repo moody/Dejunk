@@ -45,7 +45,7 @@ function Sell:AddGeneral(parent)
   Widgets:CheckBoxSlider({
     parent = parent,
     checkBox = {
-      label = L.SELL_BELOW_PRICE_TEXT,
+      label = L.BELOW_PRICE_TEXT,
       tooltip = Utils:DoesNotApplyToPoor(L.SELL_BELOW_PRICE_TOOLTIP),
       get = function() return DB.Profile.sell.belowPrice.enabled end,
       set = function(value) DB.Profile.sell.belowPrice.enabled = value end
