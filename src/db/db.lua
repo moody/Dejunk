@@ -69,11 +69,8 @@ local defaults = {
     },
 
     destroy = {
-      auto = {
-        enabled = false,
-        value = Consts.DESTROY_AUTO_MIN
-      },
-
+      auto = false,
+      autoSlider = Consts.DESTROY_AUTO_SLIDER_MIN,
       belowPrice = {
         enabled = false,
         value = Consts.DESTROY_BELOW_PRICE_MIN

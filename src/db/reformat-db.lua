@@ -284,32 +284,18 @@ conversions[#conversions+1] = (function()
 end)()
 
 -- ============================================================================
--- Merge `destroy.saveSpace` with `destroy.auto`
+-- Convert `destroy.saveSpace` to `destroy.autoSlider`
 -- ============================================================================
 
 conversions[#conversions+1] = {
   profile = function(profile)
-    local value = Consts.DESTROY_AUTO_MIN
-
     if type(profile.destroy.saveSpace) == "table" then
       local saveSpace = profile.destroy.saveSpace
-      if saveSpace.enabled and saveSpace.value then value = saveSpace.value end
+      if saveSpace.enabled and type(saveSpace.value) == "number" then
+        profile.destroy.autoSlider = saveSpace.value
+      end
     end
     profile.destroy.saveSpace = nil
-
-    if type(profile.destroy.auto) == "boolean" then
-      profile.destroy.auto = {
-        enabled = profile.destroy.auto,
-        value = value
-      }
-    end
-
-    if type(profile.destroy.auto) ~= "table" then
-      profile.destroy.auto = {
-        enabled = false,
-        value = Consts.DESTROY_AUTO_MIN
-      }
-    end
   end
 }
 
@@ -331,10 +317,10 @@ conversions[#conversions+1] = {
       Consts.SELL_BELOW_AVERAGE_ILVL_MAX
     )
 
-    profile.destroy.auto.value = Clamp(
-      profile.destroy.auto.value,
-      Consts.DESTROY_AUTO_MIN,
-      Consts.DESTROY_AUTO_MAX
+    profile.destroy.autoSlider = Clamp(
+      profile.destroy.autoSlider,
+      Consts.DESTROY_AUTO_SLIDER_MIN,
+      Consts.DESTROY_AUTO_SLIDER_MAX
     )
 
     profile.destroy.belowPrice.value = Clamp(

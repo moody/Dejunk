@@ -81,10 +81,10 @@ Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX = 28
 Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP = 1
 Consts.SOUL_SHARD_ITEM_ID = 6265
 
--- destroy.auto
-Consts.DESTROY_AUTO_MIN = 0
-Consts.DESTROY_AUTO_MAX = 16
-Consts.DESTROY_AUTO_STEP = 1
+-- destroy.autoSlider
+Consts.DESTROY_AUTO_SLIDER_MIN = 0
+Consts.DESTROY_AUTO_SLIDER_MAX = 16
+Consts.DESTROY_AUTO_SLIDER_STEP = 1
 
 -- ============================================================================
 -- Consts Functions
