@@ -4,6 +4,11 @@ local DB = Addon.DB
 local Filter = {}
 local L = Addon.Libs.L
 
+local REASON = Addon.Filters:SellReason(
+  L.BY_TYPE_TEXT,
+  L.SELL_UNSUITABLE_TEXT
+)
+
 function Filter:Run(item)
   if DB.Profile.sell.byType.unsuitable then
     local suitable = true
@@ -17,7 +22,7 @@ function Filter:Run(item)
     end
 
     if not suitable then
-      return "JUNK", L.REASON_SELL_UNSUITABLE_TEXT
+      return "JUNK", REASON
     end
   end
 

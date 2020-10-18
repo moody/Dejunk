@@ -51,7 +51,7 @@ function Destroy:AddGeneral(parent)
   Widgets:CheckBoxSlider({
     parent = parent,
     checkBox = {
-      label = L.DESTROY_BELOW_PRICE_TEXT,
+      label = L.BELOW_PRICE_TEXT,
       tooltip = L.DESTROY_BELOW_PRICE_TOOLTIP,
       get = function() return DB.Profile.destroy.belowPrice.enabled end,
       set = function(value) DB.Profile.destroy.belowPrice.enabled = value end

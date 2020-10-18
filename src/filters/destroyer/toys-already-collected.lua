@@ -7,13 +7,18 @@ local Filter = {}
 local L = Addon.Libs.L
 local PlayerHasToy = _G.PlayerHasToy
 
+local REASON = Addon.Filters:DestroyReason(
+  L.BY_TYPE_TEXT,
+  L.DESTROY_TOYS_ALREADY_COLLECTED_TEXT
+)
+
 function Filter:Run(item)
   if DB.Profile.destroy.byType.toysAlreadyCollected and item.NoValue then
     if not DTL:ScanBagSlot(item.Bag, item.Slot) then
       return Addon.Filters:IncompleteTooltipError()
     else -- Tooltip can be scanned
       if DTL:IsSoulbound() and PlayerHasToy(item.ItemID) then
-        return "JUNK", L.REASON_DESTROY_TOYS_ALREADY_COLLECTED_TEXT
+        return "JUNK", REASON
       end
     end
   end

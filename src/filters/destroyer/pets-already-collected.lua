@@ -10,6 +10,11 @@ local L = Addon.Libs.L
 -- "Collected (%d/%d)" -> "Collected (.*)"
 local ITEM_PET_KNOWN_CAPTURE = _G.ITEM_PET_KNOWN:gsub("%%d/%%d", ".*")
 
+local REASON = Addon.Filters:DestroyReason(
+  L.BY_TYPE_TEXT,
+  L.DESTROY_PETS_ALREADY_COLLECTED_TEXT
+)
+
 function Filter:Run(item)
   if
     DB.Profile.destroy.byType.petsAlreadyCollected and
@@ -23,7 +28,7 @@ function Filter:Run(item)
         DTL:IsSoulbound() and
         (not not DTL:Match(false, ITEM_PET_KNOWN_CAPTURE))
       then
-        return "JUNK", L.REASON_DESTROY_PETS_ALREADY_COLLECTED_TEXT
+        return "JUNK", REASON
       end
     end
   end

@@ -1,9 +1,12 @@
 local _, Addon = ...
 if not Addon.IS_RETAIL then return end
 
+local Colors = Addon.Colors
 local Consts = Addon.Consts
 local DB = Addon.DB
+local DCL = Addon.Libs.DCL
 local Filter = {}
+local Filters = Addon.Filters
 local floor = math.floor
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local ItemQuality = Addon.ItemQuality
@@ -13,6 +16,11 @@ local LE_ITEM_ARMOR_GENERIC = _G.LE_ITEM_ARMOR_GENERIC
 local LE_ITEM_WEAPON_FISHINGPOLE = _G.LE_ITEM_WEAPON_FISHINGPOLE
 local LE_ITEM_WEAPON_GENERIC = _G.LE_ITEM_WEAPON_GENERIC
 local max = math.max
+
+local REASON = Filters:SellReason(
+  L.BY_TYPE_TEXT,
+  L.SELL_BELOW_AVERAGE_ILVL_TEXT .. " (%s)"
+)
 
 -- Special check required for these generic armor types
 local SPECIAL_ARMOR_EQUIPSLOTS = {
@@ -47,13 +55,15 @@ end
 function Filter:Run(item)
   if DB.Profile.sell.byType.belowAverageItemLevel.enabled and isEquipmentItem(item) then
     local average = floor(GetAverageItemLevel())
-    local diff = max(average - DB.Profile.sell.byType.belowAverageItemLevel.value, 0)
+    local value = DB.Profile.sell.byType.belowAverageItemLevel.value
+    local diff = max(average - value, 0)
+    local reason = REASON:format(DCL:ColorString(value, Colors.Yellow))
 
     if (item.ItemLevel <= diff) then -- Sell
-      return "JUNK", L.REASON_SELL_EQUIPMENT_BELOW_ILVL_TEXT:format(diff)
+      return "JUNK", reason
     else  -- Ignore, unless poor quality
       if (item.Quality ~= ItemQuality.Poor) then
-        return "NOT_JUNK", L.REASON_IGNORE_EQUIPMENT_ABOVE_ILVL_TEXT:format(diff)
+        return "NOT_JUNK", reason
       end
     end
   end
@@ -61,4 +71,4 @@ function Filter:Run(item)
   return "PASS"
 end
 
-Addon.Filters:Add(Addon.Dejunker, Filter)
+Filters:Add(Addon.Dejunker, Filter)
