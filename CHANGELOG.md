@@ -1,3 +1,14 @@
+# 9.0.1
+
+## Changes
+
+- Reason messages displayed in Dejunk tooltips now point directly to the corresponding option
+- Removed need for `Destroy > General > Save Space` check button
+
+## Fixes
+
+- Minor bug fixes
+
 # 9.0.0
 
 Updated for Shadowlands pre-patch.
