@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Chat = Addon.Chat
 local DB = Addon.DB
 local General = Addon.UI.Groups.General
 local L = Addon.Libs.L
@@ -49,6 +50,48 @@ function General:AddGlobal(parent)
     get = function() return not DB.Global.minimapIcon.hide end,
     set = function() MinimapIcon:Toggle() end
   })
+
+  do -- Chat
+    local logging = Widgets:InlineGroup({
+      parent = parent,
+      title = L.CHAT_TEXT,
+      fullWidth = true
+    })
+
+    -- Enabled
+    Widgets:CheckBox({
+      parent = logging,
+      label = L.ENABLE_TEXT,
+      tooltip = L.CHAT_ENABLE_TOOLTIP,
+      get = function() return DB.Global.chat.enabled end,
+      set = function(value) DB.Global.chat.enabled = value end
+    })
+
+    -- Verbose
+    Widgets:CheckBox({
+      parent = logging,
+      label = L.VERBOSE_TEXT,
+      tooltip = L.CHAT_VERBOSE_TOOLTIP,
+      get = function() return DB.Global.chat.verbose end,
+      set = function(value) DB.Global.chat.verbose = value end
+    })
+
+    -- Chat Frame
+    Widgets:Dropdown({
+      parent = logging,
+      label = L.FRAME_TEXT,
+      tooltip = L.CHAT_FRAME_TOOLTIP,
+      list = Chat:GetDropdownList(),
+      value = DB.Global.chat.frame,
+      onValueChanged = function(_, event, key)
+        local chatFrame = _G[key]
+        if type(chatFrame) == "table" and chatFrame.AddMessage then
+          DB.Global.chat.frame = key
+          Chat:Print(L.CHAT_FRAME_CHANGED_MESSAGE)
+        end
+      end
+    })
+  end
 end
 
 function General:AddChat(parent)

@@ -11,7 +11,12 @@ local defaults = {
   Global = {
     minimapIcon = { hide = false },
     showItemTooltip = true,
-    showMerchantButton = true
+    showMerchantButton = true,
+    chat = {
+      enabled = true,
+      verbose = true,
+      frame = _G.DEFAULT_CHAT_FRAME:GetName()
+    }
   },
   Profile = {
     general = {

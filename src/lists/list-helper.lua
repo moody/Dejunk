@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Chat = Addon.Chat
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
@@ -163,7 +164,7 @@ do -- ParseList()
       if not GetItemInfoInstant(itemID) then
         list._sv[itemID] = nil -- remove from sv
         list.toAdd[itemID] = nil -- remove from queue
-        Core:Print(
+        Chat:Print(
           L.FAILED_TO_PARSE_ITEM_ID:format(
             DCL:ColorString(itemID, DCL.CSS.Grey)
           )
@@ -186,7 +187,7 @@ do -- ParseList()
             parseAttempts[itemID] = nil
             list._sv[itemID] = nil -- remove from sv
             list.toAdd[itemID] = nil -- remove from parsing
-            Core:Print(
+            Chat:Print(
               L.FAILED_TO_PARSE_ITEM_ID:format(
                 DCL:ColorString(itemID, DCL.CSS.Grey)
               )

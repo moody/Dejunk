@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Bags = Addon.Bags
-local Core = Addon.Core
+local Chat = Addon.Chat
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
@@ -122,7 +122,7 @@ function Filters:GetItems(filterType, items)
 
   -- Print message if `IncompleteTooltipError()` was called
   if self._incompleteTooltips then
-    Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+    Chat:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
   end
 
   -- After
