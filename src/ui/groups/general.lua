@@ -10,7 +10,6 @@ local Widgets = Addon.UI.Widgets
 function General:Create(parent)
   Widgets:Heading(parent, L.GENERAL_TEXT)
   self:AddGlobal(parent)
-  self:AddChat(parent)
   self:AddRepairing(parent)
 end
 
@@ -92,32 +91,6 @@ function General:AddGlobal(parent)
       end
     })
   end
-end
-
-function General:AddChat(parent)
-  parent = Widgets:InlineGroup({
-    parent = parent,
-    title = L.CHAT_TEXT,
-    fullWidth = true
-  })
-
-  -- Silent Mode
-  Widgets:CheckBox({
-    parent = parent,
-    label = L.SILENT_MODE_TEXT,
-    tooltip = L.SILENT_MODE_TOOLTIP,
-    get = function() return DB.Profile.general.silentMode end,
-    set = function(value) DB.Profile.general.silentMode = value end
-  })
-
-  -- Verbose Mode
-  Widgets:CheckBox({
-    parent = parent,
-    label = L.VERBOSE_MODE_TEXT,
-    tooltip = L.VERBOSE_MODE_TOOLTIP,
-    get = function() return DB.Profile.general.verboseMode end,
-    set = function(value) DB.Profile.general.verboseMode = value end
-  })
 end
 
 function General:AddRepairing(parent)

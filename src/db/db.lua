@@ -20,8 +20,6 @@ local defaults = {
   },
   Profile = {
     general = {
-      silentMode = false,
-      verboseMode = true,
       autoRepair = false,
       useGuildRepair = true,
     },
