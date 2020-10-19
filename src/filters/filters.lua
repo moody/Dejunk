@@ -115,7 +115,11 @@ function Filters:GetItems(filterType, items)
 
   -- Filter items
   for i = #items, 1, -1 do
-    if not self:Run(filterType, items[i]) then
+    local item = items[i]
+    local isJunk, reason = self:Run(filterType, item)
+    if isJunk and reason then
+      item.Reason = reason
+    else
       table.remove(items, i)
     end
   end

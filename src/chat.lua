@@ -29,6 +29,13 @@ function Chat:Verbose(...)
   end
 end
 
+function Chat:Reason(reason)
+  if DB.Global.chat.reason then
+    self:Verbose("  ", reason)
+    self:Verbose("") -- space for readability
+  end
+end
+
 function Chat:GetDropdownList()
   local info = {}
 

@@ -15,6 +15,7 @@ local defaults = {
     chat = {
       enabled = true,
       verbose = true,
+      reason = false,
       frame = _G.DEFAULT_CHAT_FRAME:GetName()
     }
   },

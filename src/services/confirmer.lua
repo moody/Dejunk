@@ -119,6 +119,7 @@ function Confirmer:_ConfirmSoldItems(bag)
         L.SOLD_ITEM_VERBOSE:format(item.ItemLink) or
         L.SOLD_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
       )
+      Chat:Reason(item.Reason)
 
       self:_RemoveSold(item)
     end
@@ -170,6 +171,7 @@ function Confirmer:_ConfirmDestroyedItems(bag)
         L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
         L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
       )
+      Chat:Reason(item.Reason)
 
       self:_RemoveDestroyed(item)
     end

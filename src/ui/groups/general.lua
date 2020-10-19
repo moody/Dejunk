@@ -51,7 +51,7 @@ function General:AddGlobal(parent)
   })
 
   do -- Chat
-    local logging = Widgets:InlineGroup({
+    local chatGroup = Widgets:InlineGroup({
       parent = parent,
       title = L.CHAT_TEXT,
       fullWidth = true
@@ -59,7 +59,7 @@ function General:AddGlobal(parent)
 
     -- Enabled
     Widgets:CheckBox({
-      parent = logging,
+      parent = chatGroup,
       label = L.ENABLE_TEXT,
       tooltip = L.CHAT_ENABLE_TOOLTIP,
       get = function() return DB.Global.chat.enabled end,
@@ -68,16 +68,27 @@ function General:AddGlobal(parent)
 
     -- Verbose
     Widgets:CheckBox({
-      parent = logging,
+      parent = chatGroup,
       label = L.VERBOSE_TEXT,
       tooltip = L.CHAT_VERBOSE_TOOLTIP,
       get = function() return DB.Global.chat.verbose end,
       set = function(value) DB.Global.chat.verbose = value end
     })
 
+    -- Reason
+    Widgets:CheckBox({
+      parent = chatGroup,
+      label = L.REASON_TEXT,
+      tooltip = L.CHAT_REASON_TOOLTIP:format(
+        "|cFFFFD100"  .. L.VERBOSE_TEXT .. "|r"
+      ),
+      get = function() return DB.Global.chat.reason end,
+      set = function(value) DB.Global.chat.reason = value end
+    })
+
     -- Chat Frame
     Widgets:Dropdown({
-      parent = logging,
+      parent = chatGroup,
       label = L.FRAME_TEXT,
       tooltip = L.CHAT_FRAME_TOOLTIP,
       list = Chat:GetDropdownList(),
