@@ -6,20 +6,18 @@ local DCL = Addon.Libs.DCL
 local FCF_GetNumActiveChatFrames = _G.FCF_GetNumActiveChatFrames
 local strjoin = _G.strjoin
 
-local LOG_S = DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary)
-
--- @debug@
-local DEBUG_S = DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red)
--- @end-debug@
+local HEADING = DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary)
 
 function Chat:Debug(...)
-  if DEBUG_S then print(DEBUG_S, ...) end
+  --@debug@
+  print(DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red), ...)
+  --@end-debug@
 end
 
 function Chat:Print(...)
   if DB.Global and DB.Global.chat.enabled then
     local chatFrame = _G[DB.Global.chat.frame] or _G.DEFAULT_CHAT_FRAME
-    chatFrame:AddMessage(strjoin(" ", LOG_S, ...))
+    chatFrame:AddMessage(strjoin(" ", HEADING, ...))
   end
 end
 
