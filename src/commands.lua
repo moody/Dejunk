@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Bags = Addon.Bags
+local Chat = Addon.Chat
 local Commands = Addon.Commands
-local Core = Addon.Core
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local DTL = Addon.Libs.DTL
@@ -85,7 +85,7 @@ Commands.sell = create({
     if frame and frame:IsShown() then
       Dejunker:Start()
     else
-      Core:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+      Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
     end
   end
 })
@@ -129,7 +129,7 @@ Commands.open = (function()
       for i in pairs(frames) do
         local frame = _G[frames[i]]
         if frame and frame:IsShown() then
-          Core:Print(L.CANNOT_OPEN_ITEMS)
+          Chat:Print(L.CANNOT_OPEN_ITEMS)
           return
         end
       end
@@ -143,22 +143,22 @@ Commands.open = (function()
           hasLootables = true
           if DTL:ScanBagSlot(item.Bag, item.Slot) then
             if not DTL:Find(false, LOCKED) then
-              Core:Print(L.OPENING_ITEM:format(item.ItemLink))
+              Chat:Print(L.OPENING_ITEM:format(item.ItemLink))
               UseContainerItem(item.Bag, item.Slot)
             else
-              Core:Print(L.IGNORING_ITEM_LOCKED:format(item.ItemLink, LOCKED))
+              Chat:Print(L.IGNORING_ITEM_LOCKED:format(item.ItemLink, LOCKED))
             end
           else
             if not incompleteTooltips then
               incompleteTooltips = true
-              Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+              Chat:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
             end
           end
         end
       end
 
       if not hasLootables then
-        Core:Print(L.NO_ITEMS_TO_OPEN)
+        Chat:Print(L.NO_ITEMS_TO_OPEN)
       end
     end
   })

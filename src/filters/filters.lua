@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Bags = Addon.Bags
-local Core = Addon.Core
+local Chat = Addon.Chat
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
@@ -115,14 +115,18 @@ function Filters:GetItems(filterType, items)
 
   -- Filter items
   for i = #items, 1, -1 do
-    if not self:Run(filterType, items[i]) then
+    local item = items[i]
+    local isJunk, reason = self:Run(filterType, item)
+    if isJunk and reason then
+      item.Reason = reason
+    else
       table.remove(items, i)
     end
   end
 
   -- Print message if `IncompleteTooltipError()` was called
   if self._incompleteTooltips then
-    Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+    Chat:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
   end
 
   -- After

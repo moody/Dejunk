@@ -153,6 +153,20 @@ function Widgets:Dropdown(options)
   dropdown:SetList(options.list)
   dropdown:SetValue(options.value)
   dropdown:SetCallback("OnValueChanged", options.onValueChanged)
+
+  if options.tooltip then
+    dropdown:SetCallback("OnEnter", function(self)
+      GameTooltip:SetOwner(self.label, "ANCHOR_TOPLEFT")
+      GameTooltip:SetText(options.label, 1.0, 0.82, 0)
+      GameTooltip:AddLine(options.tooltip, 1, 1, 1, true)
+      GameTooltip:Show()
+    end)
+
+    dropdown:SetCallback("OnLeave", function()
+      GameTooltip:Hide()
+    end)
+  end
+
   options.parent:AddChild(dropdown)
   return dropdown
 end

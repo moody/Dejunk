@@ -1,3 +1,14 @@
+# 9.0.2
+
+## Changes
+
+- Chat options are now global and apply across all characters
+
+## Additions
+
+- Added option `General > Global > Chat > Frame` to specify which chat frame to output messages to ([#61](https://github.com/moody/Dejunk/issues/61))
+- Added option `General > Global > Chat > Reason` to output the reason why an item was sold or destroyed
+
 # 9.0.1
 
 ## Changes
