@@ -29,8 +29,7 @@ end
 
 function Chat:Reason(reason)
   if DB.Global.chat.reason then
-    self:Verbose("  ", reason)
-    self:Verbose("") -- space for readability
+    self:Verbose("-->", reason)
   end
 end
 
