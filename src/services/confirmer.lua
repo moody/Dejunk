@@ -65,7 +65,7 @@ function Confirmer:OnUpdate()
   if self.printDestroyCount and not Destroyer:IsDestroying() then
     self.printDestroyCount = false
 
-    if not DB.Global.chat.verbose and self.destroyCount > 0 then
+    if not DB.Profile.general.chat.verbose and self.destroyCount > 0 then
       Chat:Print(
         self.destroyCount == 1 and
         L.DESTROYED_ITEM or

@@ -1,3 +1,9 @@
+# 9.0.3
+
+## Changes
+
+- Due to oversight, the change which made chat options global has been reverted
+
 # 9.0.2
 
 ## Changes

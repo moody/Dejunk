@@ -10,6 +10,7 @@ local Widgets = Addon.UI.Widgets
 function General:Create(parent)
   Widgets:Heading(parent, L.GENERAL_TEXT)
   self:AddGlobal(parent)
+  self:AddChat(parent)
   self:AddRepairing(parent)
 end
 
@@ -49,59 +50,59 @@ function General:AddGlobal(parent)
     get = function() return not DB.Global.minimapIcon.hide end,
     set = function() MinimapIcon:Toggle() end
   })
+end
 
-  do -- Chat
-    local chatGroup = Widgets:InlineGroup({
-      parent = parent,
-      title = L.CHAT_TEXT,
-      fullWidth = true
-    })
+function General:AddChat(parent)
+  parent = Widgets:InlineGroup({
+    parent = parent,
+    title = L.CHAT_TEXT,
+    fullWidth = true
+  })
 
-    -- Enabled
-    Widgets:CheckBox({
-      parent = chatGroup,
-      label = L.ENABLE_TEXT,
-      tooltip = L.CHAT_ENABLE_TOOLTIP,
-      get = function() return DB.Global.chat.enabled end,
-      set = function(value) DB.Global.chat.enabled = value end
-    })
+  -- Enabled
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.ENABLE_TEXT,
+    tooltip = L.CHAT_ENABLE_TOOLTIP,
+    get = function() return DB.Profile.general.chat.enabled end,
+    set = function(value) DB.Profile.general.chat.enabled = value end
+  })
 
-    -- Verbose
-    Widgets:CheckBox({
-      parent = chatGroup,
-      label = L.VERBOSE_TEXT,
-      tooltip = L.CHAT_VERBOSE_TOOLTIP,
-      get = function() return DB.Global.chat.verbose end,
-      set = function(value) DB.Global.chat.verbose = value end
-    })
+  -- Verbose
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.VERBOSE_TEXT,
+    tooltip = L.CHAT_VERBOSE_TOOLTIP,
+    get = function() return DB.Profile.general.chat.verbose end,
+    set = function(value) DB.Profile.general.chat.verbose = value end
+  })
 
-    -- Reason
-    Widgets:CheckBox({
-      parent = chatGroup,
-      label = L.REASON_TEXT,
-      tooltip = L.CHAT_REASON_TOOLTIP:format(
-        "|cFFFFD100"  .. L.VERBOSE_TEXT .. "|r"
-      ),
-      get = function() return DB.Global.chat.reason end,
-      set = function(value) DB.Global.chat.reason = value end
-    })
+  -- Reason
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.REASON_TEXT,
+    tooltip = L.CHAT_REASON_TOOLTIP:format(
+      "|cFFFFD100"  .. L.VERBOSE_TEXT .. "|r"
+    ),
+    get = function() return DB.Profile.general.chat.reason end,
+    set = function(value) DB.Profile.general.chat.reason = value end
+  })
 
-    -- Chat Frame
-    Widgets:Dropdown({
-      parent = chatGroup,
-      label = L.FRAME_TEXT,
-      tooltip = L.CHAT_FRAME_TOOLTIP,
-      list = Chat:GetDropdownList(),
-      value = DB.Global.chat.frame,
-      onValueChanged = function(_, event, key)
-        local chatFrame = _G[key]
-        if type(chatFrame) == "table" and chatFrame.AddMessage then
-          DB.Global.chat.frame = key
-          Chat:Print(L.CHAT_FRAME_CHANGED_MESSAGE)
-        end
+  -- Chat Frame
+  Widgets:Dropdown({
+    parent = parent,
+    label = L.FRAME_TEXT,
+    tooltip = L.CHAT_FRAME_TOOLTIP,
+    list = Chat:GetDropdownList(),
+    value = DB.Profile.general.chat.frame,
+    onValueChanged = function(_, event, key)
+      local chatFrame = _G[key]
+      if type(chatFrame) == "table" and chatFrame.AddMessage then
+        DB.Profile.general.chat.frame = key
+        Chat:Print(L.CHAT_FRAME_CHANGED_MESSAGE)
       end
-    })
-  end
+    end
+  })
 end
 
 function General:AddRepairing(parent)
