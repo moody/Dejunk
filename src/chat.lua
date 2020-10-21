@@ -15,20 +15,20 @@ function Chat:Debug(...)
 end
 
 function Chat:Print(...)
-  if DB.Global and DB.Global.chat.enabled then
-    local chatFrame = _G[DB.Global.chat.frame] or _G.DEFAULT_CHAT_FRAME
+  if DB.Profile and DB.Profile.general.chat.enabled then
+    local chatFrame = _G[DB.Profile.general.chat.frame] or _G.DEFAULT_CHAT_FRAME
     chatFrame:AddMessage(strjoin(" ", HEADING, ...))
   end
 end
 
 function Chat:Verbose(...)
-  if DB.Global and DB.Global.chat.verbose then
+  if DB.Profile and DB.Profile.general.chat.verbose then
     self:Print(...)
   end
 end
 
 function Chat:Reason(reason)
-  if DB.Global.chat.reason then
+  if DB.Profile and DB.Profile.general.chat.reason then
     self:Verbose("  -", reason)
   end
 end

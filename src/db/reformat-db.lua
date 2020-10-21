@@ -300,6 +300,26 @@ conversions[#conversions+1] = {
 }
 
 -- ============================================================================
+-- Global: delete `chat` table
+-- Profile: move `general.silentMode` + `general.verboseMode` to `general.chat`
+-- ============================================================================
+
+conversions[#conversions+1] = {
+  global = function(global) global.chat = nil end,
+  profile = function(profile)
+    if type(profile.general.silentMode) == "boolean" then
+      profile.general.chat.enabled = not profile.general.silentMode
+    end
+    profile.general.silentMode = nil
+
+    if type(profile.general.verboseMode) == "boolean" then
+      profile.general.chat.verbose = profile.general.verboseMode
+    end
+    profile.general.verboseMode = nil
+  end
+}
+
+-- ============================================================================
 -- Clamp min-max values
 -- ============================================================================
 
