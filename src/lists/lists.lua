@@ -31,19 +31,20 @@ end)
 -- ============================================================================
 
 --[[
-  Creates a new list group and adds it to `Addon.List`.
+  Populates the group with required generic values and returns it.
 
   @param {table} group = {
-    {string} key,
-    {string} name,
+    {string} locale,
     {function} itemCanBeAdded,
 
     {table} inclusions = {
+      {table} uiGroup,
       {string} helpText,
       {function} getSvar
     },
 
     {table} exclusions = {
+      {table} uiGroup,
       {string} helpText,
       {function} getSvar
     }
