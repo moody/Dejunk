@@ -2,7 +2,9 @@ local _, Addon = ...
 local assert = assert
 local Bags = Addon.Bags
 local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
+local Chat = Addon.Chat
 local ClearCursor = _G.ClearCursor
+local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
@@ -34,7 +36,11 @@ Destroyer.timer = 0
 
 local queueAutoDestroy do
   local function start()
-    if DB.Profile and DB.Profile.destroy.auto and not UI:IsShown() then
+    if (
+      DB.Profile and
+      DB.Profile.destroy.auto and
+      not UI:IsShown()
+    ) then
       Destroyer:Start(true)
       return true
     end
@@ -89,7 +95,7 @@ end
 function Destroyer:Start(auto)
   local canDestroy, msg = Core:CanDestroy()
   if not canDestroy then
-    if not auto then Core:Print(msg) end
+    if not auto then Chat:Print(msg) end
     return
   end
 
@@ -99,7 +105,7 @@ function Destroyer:Start(auto)
   -- Stop if no items
   if #self.items == 0 then
     if not auto then
-      Core:Print(
+      Chat:Print(
         self.items.allCached and
         L.NO_DESTROYABLE_ITEMS or
         L.NO_CACHED_DESTROYABLE_ITEMS
@@ -110,10 +116,10 @@ function Destroyer:Start(auto)
   end
 
   -- Save Space
-  if auto and DB.Profile.destroy.saveSpace.enabled then
+  if auto and DB.Profile.destroy.autoSlider > Consts.DESTROY_AUTO_SLIDER_MIN then
     -- Calculate number of items to destroy
     local freeSpace = CalculateTotalNumberOfFreeBagSlots()
-    local maxToDestroy = DB.Profile.destroy.saveSpace.value - freeSpace
+    local maxToDestroy = DB.Profile.destroy.autoSlider - freeSpace
     -- Stop if destroying is not necessary
     if maxToDestroy <= 0 then return end
 
@@ -129,7 +135,7 @@ function Destroyer:Start(auto)
 
   -- If some items fail to be retrieved, we'll only have items that are cached
   if not self.items.allCached then
-    Core:Print(L.ONLY_DESTROYING_CACHED)
+    Chat:Print(L.ONLY_DESTROYING_CACHED)
   end
 
   -- Start

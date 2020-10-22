@@ -1,6 +1,7 @@
 local _, Addon = ...
 local assert = assert
 local Bags = Addon.Bags
+local Chat = Addon.Chat
 local Consts = Addon.Consts
 local Core = Addon.Core
 local DB = Addon.DB
@@ -50,7 +51,7 @@ end)
 function Dejunker:Start(auto)
   local canDejunk, msg = Core:CanDejunk()
   if not canDejunk then
-    if not auto then Core:Print(msg) end
+    if not auto then Chat:Print(msg) end
     return
   end
 
@@ -60,7 +61,7 @@ function Dejunker:Start(auto)
   -- Stop if no items
   if #self.items == 0 then
     if not auto then
-      Core:Print(
+      Chat:Print(
         self.items.allCached and
         L.NO_JUNK_ITEMS or
         L.NO_CACHED_JUNK_ITEMS
@@ -72,7 +73,7 @@ function Dejunker:Start(auto)
 
   -- If some items fail to be retrieved, we'll only have items that are cached
   if not self.items.allCached then
-    Core:Print(L.ONLY_SELLING_CACHED)
+    Chat:Print(L.ONLY_SELLING_CACHED)
   end
 
   -- Safe Mode: remove items and print message as necessary
@@ -82,7 +83,7 @@ function Dejunker:Start(auto)
     end
 
     if #self.items == Consts.SAFE_MODE_MAX then
-      Core:Print(L.SAFE_MODE_MESSAGE:format(Consts.SAFE_MODE_MAX))
+      Chat:Print(L.SAFE_MODE_MESSAGE:format(Consts.SAFE_MODE_MAX))
     end
   end
 

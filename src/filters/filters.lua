@@ -1,12 +1,13 @@
 local _, Addon = ...
 local Bags = Addon.Bags
-local Core = Addon.Core
+local Chat = Addon.Chat
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local ERROR_CAPS = _G.ERROR_CAPS
 local Filters = Addon.Filters
 local L = Addon.Libs.L
 local Utils = Addon.Utils
+local concat = table.concat
 
 -- Filter arrays
 Filters[Dejunker] = {}
@@ -114,14 +115,18 @@ function Filters:GetItems(filterType, items)
 
   -- Filter items
   for i = #items, 1, -1 do
-    if not self:Run(filterType, items[i]) then
+    local item = items[i]
+    local isJunk, reason = self:Run(filterType, item)
+    if isJunk and reason then
+      item.Reason = reason
+    else
       table.remove(items, i)
     end
   end
 
   -- Print message if `IncompleteTooltipError()` was called
   if self._incompleteTooltips then
-    Core:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
+    Chat:Print(L.IGNORING_ITEMS_INCOMPLETE_TOOLTIPS)
   end
 
   -- After
@@ -138,4 +143,25 @@ end
 function Filters:IncompleteTooltipError()
   self._incompleteTooltips = true
   return "NOT_JUNK", ERROR_CAPS
+end
+
+
+-- Constructs a reason string via snippets.
+function Filters:Reason(...)
+  return concat({ ... }, " > ")
+end
+
+-- Constructs a sell reason string.
+function Filters:SellReason(...)
+  return self:Reason(L.SELL_TEXT, ...)
+end
+
+-- Constructs a destroy reason string.
+function Filters:DestroyReason(...)
+  return self:Reason(L.DESTROY_TEXT, ...)
+end
+
+-- Constructs a sell/destroy reason string pair.
+function Filters:SharedReason(...)
+  return self:SellReason(...), self:DestroyReason(...)
 end

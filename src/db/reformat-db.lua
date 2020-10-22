@@ -284,6 +284,42 @@ conversions[#conversions+1] = (function()
 end)()
 
 -- ============================================================================
+-- Convert `destroy.saveSpace` to `destroy.autoSlider`
+-- ============================================================================
+
+conversions[#conversions+1] = {
+  profile = function(profile)
+    if type(profile.destroy.saveSpace) == "table" then
+      local saveSpace = profile.destroy.saveSpace
+      if saveSpace.enabled and type(saveSpace.value) == "number" then
+        profile.destroy.autoSlider = saveSpace.value
+      end
+    end
+    profile.destroy.saveSpace = nil
+  end
+}
+
+-- ============================================================================
+-- Global: delete `chat` table
+-- Profile: move `general.silentMode` + `general.verboseMode` to `general.chat`
+-- ============================================================================
+
+conversions[#conversions+1] = {
+  global = function(global) global.chat = nil end,
+  profile = function(profile)
+    if type(profile.general.silentMode) == "boolean" then
+      profile.general.chat.enabled = not profile.general.silentMode
+    end
+    profile.general.silentMode = nil
+
+    if type(profile.general.verboseMode) == "boolean" then
+      profile.general.chat.verbose = profile.general.verboseMode
+    end
+    profile.general.verboseMode = nil
+  end
+}
+
+-- ============================================================================
 -- Clamp min-max values
 -- ============================================================================
 
@@ -301,6 +337,12 @@ conversions[#conversions+1] = {
       Consts.SELL_BELOW_AVERAGE_ILVL_MAX
     )
 
+    profile.destroy.autoSlider = Clamp(
+      profile.destroy.autoSlider,
+      Consts.DESTROY_AUTO_SLIDER_MIN,
+      Consts.DESTROY_AUTO_SLIDER_MAX
+    )
+
     profile.destroy.belowPrice.value = Clamp(
       profile.destroy.belowPrice.value,
       Consts.DESTROY_BELOW_PRICE_MIN,
@@ -311,12 +353,6 @@ conversions[#conversions+1] = {
       profile.destroy.byType.excessSoulShards.value,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
       Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
-    )
-
-    profile.destroy.saveSpace.value = Clamp(
-      profile.destroy.saveSpace.value,
-      Consts.DESTROY_SAVE_SPACE_MIN,
-      Consts.DESTROY_SAVE_SPACE_MAX
     )
   end
 }

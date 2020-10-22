@@ -1,7 +1,7 @@
 local _, Addon = ...
 local CanGuildBankRepair = _G.CanGuildBankRepair
+local Chat = Addon.Chat
 local Confirmer = Addon.Confirmer
-local Core = Addon.Core
 local DB = Addon.DB
 local Dejunker = Addon.Dejunker
 local E = Addon.Events
@@ -68,7 +68,7 @@ local function repairer_OnUpdate(self, elapsed)
 
 			if not canRepair then -- Guild repair should have been successful
 				PlaySound(ITEM_REPAIR_SOUND_ID)
-				Core:Print(
+				Chat:Print(
           L.REPAIRED_ALL_ITEMS_GUILD:format(
             GetCoinTextureString(totalRepairCost)
           )
@@ -86,7 +86,7 @@ local function repairer_OnUpdate(self, elapsed)
 	elseif GetMoney() >= totalRepairCost then
 		RepairAllItems()
 		PlaySound(ITEM_REPAIR_SOUND_ID)
-		Core:Print(
+		Chat:Print(
       L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(totalRepairCost))
     )
 		Repairer:StopRepairing()
@@ -95,7 +95,7 @@ local function repairer_OnUpdate(self, elapsed)
 		if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
 			return -- Wait until junk has been sold
 		end
-		Core:Print(L.REPAIRED_NO_ITEMS)
+		Chat:Print(L.REPAIRED_NO_ITEMS)
 		Repairer:StopRepairing()
 		return
 	end

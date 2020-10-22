@@ -17,6 +17,7 @@ Addon.Libs = {
 
 -- Initialize Dejunk tables
 Addon.Bags = {}
+Addon.Chat = {}
 
 Addon.Colors = {
   Primary = "4FAFE3FF",

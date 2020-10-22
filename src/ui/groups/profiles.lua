@@ -1,8 +1,8 @@
 local _, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local AceSerializer = _G.LibStub("AceSerializer-3.0")
+local Chat = Addon.Chat
 local Colors = Addon.Colors
-local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local E = Addon.Events
@@ -23,7 +23,7 @@ local Widgets = Addon.UI.Widgets
 -- @param {string} key - profile key
 local function setProfile(key)
   if DB:SetProfile(key) then
-    Core:Print(
+    Chat:Print(
       L.PROFILE_ACTIVATED_TEXT:format(DCL:ColorString(key, Colors.Green))
     )
     EventManager:Fire(E.ProfileChanged)
@@ -36,7 +36,7 @@ end
 -- @param {string} key - profile key
 local function copyProfile(key)
   if DB:CopyProfile(key) then
-    Core:Print(
+    Chat:Print(
       L.PROFILE_COPIED_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
     EventManager:Fire(E.ProfileChanged)
@@ -49,7 +49,7 @@ end
 -- @param {string} key - profile key
 local function deleteProfile(key)
   if DB:DeleteProfile(key) then
-    Core:Print(
+    Chat:Print(
       L.PROFILE_DELETED_TEXT:format(DCL:ColorString(key, Colors.Red))
     )
     return true
@@ -62,7 +62,7 @@ end
 -- @param {table} importTable - existing profile data to import
 local function createProfile(key, importTable)
   if DB:ProfileExists(key) then
-    Core:Print(
+    Chat:Print(
       L.PROFILE_EXISTS_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
     return false
@@ -276,7 +276,7 @@ function Profiles:Import(parent)
       if status and profile and createProfile(key, profile) then
         Profiles.tabGroup:SelectTab("Profiles")
       else
-        Core:Print(L.PROFILE_INVALID_IMPORT_TEXT)
+        Chat:Print(L.PROFILE_INVALID_IMPORT_TEXT)
       end
     end
   })

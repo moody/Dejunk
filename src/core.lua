@@ -1,9 +1,6 @@
-local AddonName, Addon = ...
-local Colors = Addon.Colors
+local _, Addon = ...
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
-local DB = Addon.DB
-local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
 local GetNetStats = _G.GetNetStats
@@ -11,7 +8,6 @@ local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local Lists = Addon.Lists
 local max = math.max
-local print = print
 local Repairer = Addon.Repairer
 local select = select
 local UI = Addon.UI
@@ -19,34 +15,6 @@ local UI = Addon.UI
 -- ============================================================================
 -- Functions
 -- ============================================================================
-
--- Prints a formatted message ("[Dejunk] msg").
--- @param ... - the messages to print
-function Core:Print(...)
-  if DB.Profile.general.silentMode then return end
-  print(DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary), ...)
-end
-
--- Attempts to print a message if verbose mode is enabled.
--- @param ... - the messages to print
-function Core:PrintVerbose(...)
-  if DB.Profile.general.verboseMode then self:Print(...) end
-end
-
---[[
--- Prints a debug message ("[Dejunk Debug] title: ...").
--- @param title - the title of the debug message
--- @param ... - the messages to print
-function Core:Debug(title, ...)
-  print(
-    DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red),
-    (select("#", ...) > 0) and
-    DCL:ColorString(title, Colors.Green)..":" or
-    title,
-    ...
-  )
-end
---]] Core.Debug = _G.nop
 
 -- Returns true if the dejunking process can be safely started,
 -- and false plus a reason message otherwise.

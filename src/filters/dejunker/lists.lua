@@ -4,6 +4,16 @@ local Filters = Addon.Filters
 local L = Addon.Libs.L
 local Lists = Addon.Lists
 
+local EXCLUDE_REASON = Filters:Reason(
+  L.LIST_TEXT,
+  Lists.sell.exclusions.locale
+)
+
+local INCLUDE_REASON = Filters:Reason(
+  L.LIST_TEXT,
+  Lists.sell.inclusions.locale
+)
+
 Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
     -- If the item will be destroyed, just sell it
@@ -12,15 +22,11 @@ Filters:Add(Addon.Dejunker, {
     end
 
     if Lists.sell.exclusions:Has(item.ItemID) then
-      return "NOT_JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
-        Lists.sell.exclusions.locale
-      )
+      return "NOT_JUNK", EXCLUDE_REASON
     end
 
     if Lists.sell.inclusions:Has(item.ItemID) then
-      return "JUNK", L.REASON_ITEM_ON_LIST_TEXT:format(
-        Lists.sell.inclusions.locale
-      )
+      return "JUNK", INCLUDE_REASON
     end
 
     return "PASS"
