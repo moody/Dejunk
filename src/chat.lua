@@ -6,12 +6,17 @@ local DCL = Addon.Libs.DCL
 local FCF_GetNumActiveChatFrames = _G.FCF_GetNumActiveChatFrames
 local strjoin = _G.strjoin
 
+local FORCE_HEADING = DCL:ColorString(("[%s]"):format(AddonName), Colors.Yellow)
 local HEADING = DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary)
 
 function Chat:Debug(...)
   --@debug@
   print(DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red), ...)
   --@end-debug@
+end
+
+function Chat:Force(...)
+  print(FORCE_HEADING, ...)
 end
 
 function Chat:Print(...)

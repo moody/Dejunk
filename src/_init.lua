@@ -30,7 +30,12 @@ Addon.Commands = {}
 Addon.Confirmer = {}
 Addon.Consts = {}
 Addon.Core = {}
+
 Addon.DB = {}
+Addon.DatabaseUtils = {}
+Addon.GlobalVersioner = {}
+Addon.ProfileVersioner = {}
+
 Addon.Dejunker = {}
 Addon.Destroyer = {}
 Addon.EventManager = {}
