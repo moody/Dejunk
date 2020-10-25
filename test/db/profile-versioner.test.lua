@@ -133,8 +133,10 @@ instance.describe("_ClampValues()", function(test)
   end)
 end)
 
-instance.test("versions", function(expect)
-  for i=2, ProfileVersioner.CURRENT_VERSION do
-    expect(type(ProfileVersioner.versions[i])).toBe("function")
-  end
+instance.describe("versions", function(test)
+  test("has expected functions", function(expect)
+    for i=2, ProfileVersioner.CURRENT_VERSION do
+      expect(type(ProfileVersioner.versions[i])).toBe("function")
+    end
+  end)
 end)
