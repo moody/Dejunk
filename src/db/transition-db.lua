@@ -1,5 +1,7 @@
 local _, Addon = ...
+local Chat = Addon.Chat
 local DB = Addon.DB
+local L = Addon.Libs.L
 
 -- ============================================================================
 -- Helpers
@@ -63,6 +65,8 @@ function Addon:TransitionDB()
       end
     end
   end
+
+  Chat:Force(L.TRANSITIONED_DATABASE_MESSAGE)
 
   -- Delete
   _G.DEJUNK_ADDON_SV = nil
