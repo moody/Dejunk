@@ -11,6 +11,7 @@ local L = Addon.Libs.L
 local next = next
 local pcall = pcall
 local Profiles = Addon.UI.Groups.Profiles
+local ProfileVersioner = Addon.ProfileVersioner
 local strtrim = _G.strtrim
 local Utils = Addon.Utils
 local Widgets = Addon.UI.Widgets
@@ -66,10 +67,17 @@ local function createProfile(key, importTable)
       L.PROFILE_EXISTS_TEXT:format(DCL:ColorString(key, Colors.Yellow))
     )
     return false
-  elseif DB:CreateProfile(key, importTable) then
-    local success = pcall(function() Addon:ReformatDB() end)
-    if success then return setProfile(key) else DB:DeleteProfile(key) end
   end
+
+  if importTable then
+    local valid = pcall(function() ProfileVersioner:Run(importTable) end)
+    if not valid then return false end
+  end
+
+  if DB:CreateProfile(key, importTable) then
+    return setProfile(key)
+  end
+
   return false
 end
 
