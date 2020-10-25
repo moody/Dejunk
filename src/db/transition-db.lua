@@ -66,6 +66,12 @@ function Addon:TransitionDB()
     end
   end
 
+  -- Set profile of player correctly
+  local oldKey = profileKeys[DB:GetPlayerKey()]
+  if type(oldKey) == "string" then
+    DB:SetProfile(oldKey)
+  end
+
   Chat:Force(L.TRANSITIONED_DATABASE_MESSAGE)
 
   -- Delete
