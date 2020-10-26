@@ -55,6 +55,12 @@ function Addon:TransitionDB()
   -- ProfileKeys
   if type(profileKeys) == "table" then
     DB._svar.ProfileKeys = profileKeys
+
+    -- Set profile of player correctly
+    local oldKey = profileKeys[DB:GetPlayerKey()]
+    if type(oldKey) == "string" then
+      DB:SetProfile(oldKey)
+    end
   end
 
   -- Profiles
@@ -64,12 +70,6 @@ function Addon:TransitionDB()
         mergeLists(oldProfile, DB._svar.Profiles[key])
       end
     end
-  end
-
-  -- Set profile of player correctly
-  local oldKey = profileKeys[DB:GetPlayerKey()]
-  if type(oldKey) == "string" then
-    DB:SetProfile(oldKey)
   end
 
   Chat:Force(L.TRANSITIONED_DATABASE_MESSAGE)
