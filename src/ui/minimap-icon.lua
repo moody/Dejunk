@@ -11,11 +11,11 @@ local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
 local UI = Addon.UI
 
-local OBJECT_NAME = AddonName .. "MinimapIcon"
-
 -- Initialize once the DB becomes available.
 EventManager:Once(E.DatabaseReady, function()
-  local object = LDB:NewDataObject(OBJECT_NAME, {
+  local object = LDB:NewDataObject(AddonName, {
+    type = "data source",
+    text = AddonName,
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
@@ -37,7 +37,7 @@ EventManager:Once(E.DatabaseReady, function()
 		end,
   })
 
-  LDBIcon:Register(OBJECT_NAME, object, DB.Global.minimapIcon)
+  LDBIcon:Register(AddonName, object, DB.Global.minimapIcon)
 end)
 
 -- ============================================================================
@@ -47,13 +47,13 @@ end)
 -- Displays the minimap icon.
 function MinimapIcon:Show()
   DB.Global.minimapIcon.hide = false
-  LDBIcon:Show(OBJECT_NAME)
+  LDBIcon:Show(AddonName)
 end
 
 -- Hides the minimap icon.
 function MinimapIcon:Hide()
   DB.Global.minimapIcon.hide = true
-  LDBIcon:Hide(OBJECT_NAME)
+  LDBIcon:Hide(AddonName)
 end
 
 -- Toggles the minimap icon.
