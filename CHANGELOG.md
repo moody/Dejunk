@@ -1,7 +1,6 @@
-# 9.0.4
+# 9.0.5
 
 ## Changes
 
-- Due to increasing complexity and bug potential, the database has been changed.
-  During the transition, all existing settings will be reset to default, but
-  lists will remain.
+- `General > Chat > Reason` option is now enabled by default
+- `Sell > Ignore` and `Destroy > Ignore` options are now enabled by default
