@@ -60,8 +60,8 @@ else
 end
 
 -- sell.byType.belowAverageItemLevel
-Consts.SELL_BELOW_AVERAGE_ILVL_MIN = 10
-Consts.SELL_BELOW_AVERAGE_ILVL_MAX = 100
+Consts.SELL_BELOW_AVERAGE_ILVL_MIN = 2
+Consts.SELL_BELOW_AVERAGE_ILVL_MAX = 50
 Consts.SELL_BELOW_AVERAGE_ILVL_STEP = 1
 
 -- destroy.belowPrice
