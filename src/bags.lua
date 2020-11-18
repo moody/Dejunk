@@ -7,7 +7,15 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetItemInfo = _G.GetItemInfo
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS
+local EventManager = Addon.EventManager
+local E = Addon.Events
 
+-- Initialize cache table.
+Bags.cache = {}
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
 
 -- Bag iterator function.
 local function iterateBags()
@@ -32,6 +40,37 @@ local function iterateBags()
   end
 end
 
+
+-- Updates the item cache.
+local function updateCache()
+  for k in pairs(Bags.cache) do Bags.cache[k] = nil end
+
+  Bags.cache.allCached = true
+
+  for bag, slot, itemID in iterateBags() do
+    if itemID then
+      local item = Bags:GetItem(bag, slot)
+      if item then
+        Bags.cache[#Bags.cache+1] = item
+      else
+        Bags.cache.allCached = false
+      end
+    end
+  end
+
+  EventManager:Fire(E.BagsUpdated, Bags.cache.allCached)
+end
+
+EventManager:On(E.Wow.BagUpdateDelayed, updateCache)
+
+EventManager:On(E.BagsUpdated, function(allCached)
+  Addon.Chat:Debug('EVENT: BagsUpdated')
+  Addon.Chat:Debug('  allCached = ' .. tostring(allCached))
+end)
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 -- Returns a table of info for the item in the specified bag slot, or nil if the
 -- item could not be retrieved.
@@ -152,18 +191,8 @@ function Bags:GetItems(items)
     for k in pairs(items) do items[k] = nil end
   end
 
-  items.allCached = true
-
-  for bag, slot, itemID in iterateBags() do
-    if itemID then
-      local item = self:GetItem(bag, slot)
-      if item then
-        items[#items+1] = item
-      else
-        items.allCached = false
-      end
-    end
-  end
+  -- Shallow copy the cache.
+  for k, v in pairs(self.cache) do items[k] = v end
 
   return items
 end
