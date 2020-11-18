@@ -22,10 +22,13 @@ _G.BINDING_HEADER_DEJUNK_HEADER_SELL = L.SELL_TEXT
 _G.BINDING_HEADER_DEJUNK_HEADER_DESTROY = L.DESTROY_TEXT
 
 -- General
-_G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS = L.BINDINGS_TOGGLE_OPTIONS_TEXT
-_G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
-_G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING_BUTTON_TEXT
+_G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_OPTIONS_FRAME
+_G.BINDING_NAME_DEJUNK_TOGGLE_SELL_FRAME = L.TOGGLE_SELL_FRAME
+_G.BINDING_NAME_DEJUNK_TOGGLE_DESTROY_FRAME = L.TOGGLE_DESTROY_FRAME
 _G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
+
+-- Sell next item
+_G.BINDING_NAME_DEJUNK_SELL_NEXT_ITEM = L.SELL_NEXT_ITEM
 
 -- Sell Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
@@ -38,6 +41,9 @@ _G.BINDING_NAME_DEJUNK_ADD_EXCLUSIONS =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
   L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
+
+-- Destroy next item
+_G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
 
 -- Destroy Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
@@ -55,9 +61,9 @@ _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
 -- Binding Functions
 -- ============================================================================
 
-DejunkBindings_ToggleOptions = Commands.toggle
-DejunkBindings_StartSelling = Commands.sell
-DejunkBindings_StartDestroying = Commands.destroy
+DejunkBindings_ToggleOptionsFrame = Commands.toggle
+DejunkBindings_ToggleSellFrame = Commands.sell
+DejunkBindings_ToggleDestroyFrame = Commands.destroy
 DejunkBindings_OpenLootables = Commands.open
 
 function DejunkBindings_AddToList(groupName, listName)
@@ -68,6 +74,10 @@ end
 function DejunkBindings_RemoveFromList(groupName, listName)
   if not currentItemID then return end
   Lists[groupName][listName]:Remove(currentItemID, true)
+end
+
+function DejunkBindings_HandleNextItem(service)
+  Addon[service]:HandleNextItem()
 end
 
 -- ============================================================================

@@ -137,8 +137,8 @@ function ItemWindow:OnUpdate(elapsed)
       -- Set button text.
       self.button:SetText(
         self.service == Addon.Dejunker and
-        L.ITEM_WINDOW_SELL_NEXT_ITEM or
-        L.ITEM_WINDOW_DESTROY_NEXT_ITEM
+        L.SELL_NEXT_ITEM or
+        L.DESTROY_NEXT_ITEM
       )
 
       -- Update listFrame data.
