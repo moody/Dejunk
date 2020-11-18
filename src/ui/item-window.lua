@@ -10,7 +10,7 @@ function ItemWindow:IsShown()
 end
 
 function ItemWindow:Toggle(service)
-  if self:IsShown() then
+  if self:IsShown() and self.service == service then
     self:Hide()
   else
     self:Show(service)
@@ -21,8 +21,14 @@ function ItemWindow:Show(service)
   assert(service == Addon.Dejunker or service == Addon.Destroyer)
   if not self.frame then self:Create() end
 
+  -- Set service.
+  self.service = service
+
+  -- Refresh items.
+  service:RefreshItems()
+
   -- Set items.
-  self.itemFrame:SetItems(service.items)
+  self.itemFrame:SetItems(service:GetItems())
 
   -- Set frame title and button text.
   local serviceText =
@@ -34,11 +40,16 @@ function ItemWindow:Show(service)
   self.button:SetText(("%s %s"):format(serviceText, 'Next Item (L)'))
 
   -- Set button callback.
-  if service == Addon.Destroyer then
-    self.button:SetCallback("OnClick", function()
-      Addon.Destroyer:DestroyNextItem()
-    end)
-  end
+  self.button:SetCallback("OnClick", function()
+    service:HandleNextItem()
+    -- Hide ItemWindow if there are no more items.
+    if #service:GetItems() == 0 then self:Hide() end
+  end)
+
+  -- Set button OnUpdate script.
+  self.button.frame:SetScript("OnUpdate", function()
+    self.button:SetDisabled(Addon.Core:IsBusy() or #service:GetItems() == 0)
+  end)
 
   -- Hide main UI before showing.
   UI:Hide()
@@ -71,9 +82,22 @@ function ItemWindow:Create()
   -- Add button.
   self.button = Widgets:Button({
     parent = frame,
-    text = '...',
+    text = '',
     fullWidth = true
   })
+
+  -- Set OnUpdate script.
+  local timer = 0
+  frame.frame:SetScript("OnUpdate", function(_, elapsed)
+    timer = timer + elapsed
+    -- Refresh items once per second.
+    if timer >= 1 then
+      timer = 0
+      if self.service then
+        self.service:RefreshItems()
+      end
+    end
+  end)
 
   -- This function should only be called once.
   self.Create = nil
