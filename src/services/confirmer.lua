@@ -35,10 +35,7 @@ function Confirmer:IsConfirming(moduleName)
   end
 
   if moduleName == "Destroyer" then
-    return (
-      next(self.destroyedItems) ~= nil or
-      Destroyer:IsDestroying()
-    )
+    return next(self.destroyedItems) ~= nil
   end
 
   return (
@@ -62,7 +59,7 @@ function Confirmer:OnUpdate()
   end
 
   -- Final destroy message
-  if self.printDestroyCount and not Destroyer:IsDestroying() then
+  if self.printDestroyCount then
     self.printDestroyCount = false
 
     if not DB.Profile.general.chat.verbose and self.destroyCount > 0 then
@@ -199,16 +196,6 @@ end)
 -- ============================================================================
 -- Destroyer Events
 -- ============================================================================
-
-EventManager:On(E.DestroyerStart, function()
-  for k in pairs(Confirmer.destroyedItems) do
-    Confirmer.destroyedItems[k] = nil
-  end
-
-  Confirmer.destroyCount = 0
-  Confirmer.printDestroyCount = true
-end)
-
 
 EventManager:On(E.DestroyerAttemptToDestroy, function(item)
   Confirmer:_AddDestroyed(item)

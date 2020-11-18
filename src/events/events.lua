@@ -6,6 +6,9 @@ local E = Addon.Events
 -- ============================================================================
 
 local events = {
+  -- Bags
+  "BagsUpdated",
+
   -- DB
   "DatabaseReady",
   "ProfileChanged",
@@ -20,8 +23,6 @@ local events = {
   "DejunkerStop",
   "DejunkerAttemptToSell",
 
-  "DestroyerStart",
-  "DestroyerStop",
   "DestroyerAttemptToDestroy",
 
   -- UI

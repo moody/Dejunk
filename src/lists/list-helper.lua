@@ -116,7 +116,7 @@ do -- OnUpdate(), called in Core:OnUpdate()
   local interval = 0
 
   function ListHelper:OnUpdate(elapsed)
-    if Dejunker:IsDejunking() or Destroyer:IsDestroying() then return end
+    if Dejunker:IsDejunking() then return end
 
     -- Additions
     interval = interval + elapsed

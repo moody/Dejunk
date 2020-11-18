@@ -45,7 +45,6 @@ function UI:OnUpdate(elapsed)
   -- Update status text
   self.frame:SetStatusText(
     (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
-    (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
     (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
     (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
     ""
