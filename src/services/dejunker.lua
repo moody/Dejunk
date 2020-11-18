@@ -43,8 +43,68 @@ EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
 end)
 
 -- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+-- Identifies and handles the StaticPopup shown when attempting to vendor a
+-- tradeable item.
+local function handleStaticPopup()
+  local popup
+  for i=1, STATICPOPUP_NUMDIALOGS do
+    popup = _G["StaticPopup"..i]
+    if
+      popup and
+      popup:IsShown() and
+      popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"
+    then
+      popup.button1:Click()
+      return
+    end
+  end
+end
+
+-- ============================================================================
 -- Functions
 -- ============================================================================
+
+function Dejunker:GetItems()
+  return self.items
+end
+
+
+function Dejunker:RefreshItems()
+  if self.state == States.None then
+    Filters:GetItems(self, self.items)
+  end
+end
+
+
+function Dejunker:HandleNextItem()
+  -- Refresh items.
+  self:RefreshItems()
+
+  -- Stop if no items.
+  if #self.items == 0 then
+    Chat:Print(L.NO_JUNK_ITEMS)
+    return
+  end
+
+  -- Get first item.
+  local item = tremove(self.items, 1)
+
+  -- Verify that the item can be sold.
+  if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
+
+  -- Sell item.
+  UseContainerItem(item.Bag, item.Slot)
+
+  -- Handle StaticPopup.
+  if Addon.IS_RETAIL then handleStaticPopup() end
+
+  -- Fire event.
+  EventManager:Fire(E.DejunkerAttemptToSell, item)
+end
+
 
 -- Starts the dejunking process.
 -- @param {boolean} auto
@@ -106,24 +166,6 @@ end
 -- @return {boolean}
 function Dejunker:IsDejunking()
   return self.state ~= States.None
-end
-
-
--- Identifies and handles the StaticPopup shown when attempting to vendor a
--- tradeable item.
-local function handleStaticPopup()
-  local popup
-  for i=1, STATICPOPUP_NUMDIALOGS do
-    popup = _G["StaticPopup"..i]
-    if
-      popup and
-      popup:IsShown() and
-      popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"
-    then
-      popup.button1:Click()
-      return
-    end
-  end
 end
 
 
