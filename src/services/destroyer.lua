@@ -15,7 +15,6 @@ local ItemWindow = Addon.UI.ItemWindow
 local L = Addon.Libs.L
 local Lists = Addon.Lists
 local PickupContainerItem = _G.PickupContainerItem
-local tremove = table.remove
 local tsort = table.sort
 local UI = Addon.UI
 
@@ -132,7 +131,7 @@ function Destroyer:HandleNextItem(item)
     -- Stop if the item was not found.
     if index == nil then return end
   end
-  item = tremove(self.items, index)
+  item = self.items[index]
 
   -- Verify that the item can be destroyed.
   if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
