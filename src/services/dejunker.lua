@@ -44,6 +44,37 @@ EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
   end
 end)
 
+do -- Flag for refresh.
+  local function flagForRefresh()
+    Dejunker.needsRefresh = true
+  end
+
+  for _, e in ipairs({
+    E.BagsUpdated,
+    E.MainUIClosed,
+    E.ProfileChanged,
+  }) do
+    EventManager:On(e, flagForRefresh)
+  end
+
+  local function onListEvent(list)
+    if
+      list == Lists.sell.inclusions or
+      list == Lists.sell.exclusions
+    then
+      flagForRefresh()
+    end
+  end
+
+  for _, e in ipairs({
+    E.ListItemAdded,
+    E.ListItemRemoved,
+    E.ListRemovedAll,
+  }) do
+    EventManager:On(e, onListEvent)
+  end
+end
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
@@ -80,18 +111,22 @@ end
 
 
 function Dejunker:RefreshItems()
-  if self.state == States.None then
-    Filters:GetItems(self, self.items)
+  -- Stop if selling is in progress.
+  if self.state ~= States.None then return end
+  -- Stop if not necessary.
+  if not self.needsRefresh then return end
+  self.needsRefresh = false
 
-    -- Sort by quality.
-    tsort(self.items, function(a, b)
-      return (
-        a.Quality == b.Quality and
-        a.Name < b.Name or
-        a.Quality < b.Quality
-      )
-    end)
-  end
+  Filters:GetItems(self, self.items)
+
+  -- Sort by quality.
+  tsort(self.items, function(a, b)
+    return (
+      a.Quality == b.Quality and
+      a.Name < b.Name or
+      a.Quality < b.Quality
+    )
+  end)
 end
 
 

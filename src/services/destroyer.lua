@@ -65,22 +65,37 @@ local queueAutoDestroy do
   end
 end
 
-EventManager:On(E.BagsUpdated, queueAutoDestroy)
-EventManager:On(E.MainUIClosed, queueAutoDestroy)
+local function flagForRefresh()
+  Destroyer.needsRefresh = true
+end
+
+for _, e in ipairs({
+  E.BagsUpdated,
+  E.MainUIClosed,
+  E.ProfileChanged,
+}) do
+  EventManager:On(e, flagForRefresh)
+  EventManager:On(e, queueAutoDestroy)
+end
 
 do -- List events.
-  local function func(list)
+  local function onListEvent(list)
     if
       list == Lists.destroy.inclusions or
       list == Lists.destroy.exclusions
     then
+      flagForRefresh()
       queueAutoDestroy()
     end
   end
 
-  EventManager:On(E.ListItemAdded, func)
-  EventManager:On(E.ListItemRemoved, func)
-  EventManager:On(E.ListRemovedAll, func)
+  for _, e in ipairs({
+    E.ListItemAdded,
+    E.ListItemRemoved,
+    E.ListRemovedAll,
+  }) do
+    EventManager:On(e, onListEvent)
+  end
 end
 
 -- ============================================================================
@@ -98,6 +113,10 @@ end
 
 
 function Destroyer:RefreshItems()
+  -- Stop if not necessary.
+  if not self.needsRefresh then return end
+  self.needsRefresh = false
+
   Filters:GetItems(self, self.items)
 
   -- Sort by price.
