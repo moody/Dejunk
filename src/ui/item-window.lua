@@ -1,13 +1,30 @@
 local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
-local UI = Addon.UI
+local Core = Addon.Core
+local GameTooltip = _G.GameTooltip
 local ItemWindow = Addon.UI.ItemWindow
 local L = Addon.Libs.L
+local UI = Addon.UI
 local Widgets = Addon.UI.Widgets
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local function handleItem(item)
+  ItemWindow.service:HandleNextItem(item)
+  -- Hide ItemWindow if there are no more items.
+  if #ItemWindow.service:GetItems() == 0 then ItemWindow:Hide() end
+end
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 function ItemWindow:IsShown()
   return self.frame and self.frame:IsShown()
 end
+
 
 function ItemWindow:Toggle(service)
   if self:IsShown() and self.service == service then
@@ -17,109 +34,141 @@ function ItemWindow:Toggle(service)
   end
 end
 
+
 function ItemWindow:Show(service)
   assert(service == Addon.Dejunker or service == Addon.Destroyer)
+  -- Create the frame if necessary.
   if not self.frame then self:Create() end
-
   -- Set service.
   self.service = service
-
-  -- Refresh items.
-  service:RefreshItems()
-
-  -- Create handleItem function.
-  local function handleItem(item)
-    service:HandleNextItem(item)
-    -- Hide ItemWindow if there are no more items.
-    if #service:GetItems() == 0 then self:Hide() end
-  end
-
-  -- Set data.
-  self.itemFrame:SetData({
-    lists = service:GetLists(),
-    items = service:GetItems(),
-    handleItem = handleItem,
-  })
-
-  -- Set frame title and button text.
-  local serviceText =
-    service == Addon.Dejunker and
-    L.SELL_TEXT or
-    L.DESTROY_TEXT
-
-  self.frame:SetTitle(("%s %s"):format(AddonName, serviceText))
-  self.button:SetText(("%s %s"):format(serviceText, 'Next Item (L)'))
-
-  -- Set button callback. Wrap handleItem to avoid passing unexpected args.
-  self.button:SetCallback("OnClick", function() handleItem() end)
-
-  -- Set button OnUpdate script.
-  self.button.frame:SetScript("OnUpdate", function()
-    self.button:SetDisabled(Addon.Core:IsBusy() or #service:GetItems() == 0)
-  end)
-
+  -- Force OnUpdate.
+  self.dirty = true
+  self:OnUpdate(0)
+  -- Hide tooltip in case the help button tooltip is shown.
+  GameTooltip:Hide()
   -- Hide main UI before showing.
   UI:Hide()
   self.frame:Show()
 end
 
+
 function ItemWindow:Hide()
   if self.frame then self.frame:Hide() end
 end
 
+
 function ItemWindow:Create()
   local frame = AceGUI:Create("Window")
-  frame:SetTitle("ItemWindow")
+  frame:SetTitle(AddonName)
   frame:SetWidth(350)
-  frame:SetHeight(400)
-  frame.frame:SetMinResize(350, 400)
+  frame:SetHeight(405)
+  frame:EnableResize(false)
   frame:SetLayout("Flow")
   self.frame = frame
 
-  -- Add help label.
-  self.helpLabel = Widgets:Label({
+  -- Add help button.
+  Widgets:Button({
     parent = frame,
-    text = 'Right-Click an item to exclude it (L).',
-    fullWidth = true
+    text = L.HELP_TEXT,
+    fullWidth = true,
+    onEnter = function(b)
+      local line = ("%s|n|n%s|n|n%s"):format(
+        (
+          self.service == Addon.Dejunker and
+          L.ITEM_WINDOW_LEFT_CLICK_TO_SELL or
+          L.ITEM_WINDOW_LEFT_CLICK_TO_DESTROY
+        ),
+        L.ITEM_WINDOW_DRAG_DROP_TO_INCLUDE:format(
+          self.service:GetLists().inclusions.locale
+        ),
+        L.ITEM_WINDOW_RIGHT_CLICK_TO_EXCLUDE:format(
+          self.service:GetLists().exclusions.locale
+        )
+      )
+      GameTooltip:SetOwner(b.frame, "ANCHOR_TOP")
+      GameTooltip:SetText(L.HELP_TEXT, 1.0, 0.82, 0)
+      GameTooltip:AddLine(line, 1, 1, 1, true)
+      GameTooltip:Show()
+    end,
+    onLeave = function()
+      GameTooltip:Hide()
+    end
   })
 
   -- Add ItemFrame widget.
-  self.itemFrame = Widgets:ItemFrame({ parent = frame })
+  self.itemFrame = Widgets:ItemFrame({
+    parent = frame,
+    title = L.ITEM_WINDOW_CURRENT_ITEMS
+  })
 
   -- Add button.
   self.button = Widgets:Button({
     parent = frame,
-    text = '',
-    fullWidth = true
+    fullWidth = true,
+    onClick = function() handleItem() end
   })
 
   -- Set OnUpdate script.
-  local timer = 0
   frame.frame:SetScript("OnUpdate", function(_, elapsed)
-    timer = timer + elapsed
-    -- Refresh items once per second.
-    if timer >= 1 then
-      timer = 0
-      if self.service then
-        self.service:RefreshItems()
-      end
-    end
+    self:OnUpdate(elapsed)
   end)
 
   -- This function should only be called once.
   self.Create = nil
 end
 
-do -- Hook "CloseSpecialWindows" to hide UI when Esc is pressed
-  local closeSpecialWindows = _G.CloseSpecialWindows
-  _G.CloseSpecialWindows = function()
-    local found = closeSpecialWindows()
 
-    if ItemWindow:IsShown() then
-      ItemWindow:Hide()
-      return true
+function ItemWindow:OnUpdate(elapsed)
+  self.timer = (self.timer or 0) + elapsed
+  -- Update if dirty, otherwise every 0.1 seconds.
+  if self.dirty or self.timer >= 0.1 then
+    self.timer = 0
+
+    if self.dirty then
+      self.dirty = false
+
+      -- Set frame title.
+      self.frame:SetTitle(
+        AddonName .. " " .. (
+          self.service == Addon.Dejunker and L.SELL_TEXT or L.DESTROY_TEXT
+        )
+      )
+
+      -- Set button text.
+      self.button:SetText(
+        self.service == Addon.Dejunker and
+        L.ITEM_WINDOW_SELL_NEXT_ITEM or
+        L.ITEM_WINDOW_DESTROY_NEXT_ITEM
+      )
+
+      -- Update listFrame data.
+      self.itemFrame:SetData({
+        lists = self.service:GetLists(),
+        items = self.service:GetItems(),
+        handleItem = handleItem
+      })
     end
 
-    return found
+    -- Refresh items.
+    self.service:RefreshItems()
   end
+
+  -- Disable button if service has no items.
+  self.button:SetDisabled(Core:IsBusy() and #self.service:GetItems() == 0)
+end
+
+-- ============================================================================
+-- Hook "CloseSpecialWindows" to hide UI when Esc is pressed
+-- ============================================================================
+
+local closeSpecialWindows = _G.CloseSpecialWindows
+_G.CloseSpecialWindows = function()
+  local found = closeSpecialWindows()
+
+  if ItemWindow:IsShown() then
+    ItemWindow:Hide()
+    return true
+  end
+
+  return found
 end

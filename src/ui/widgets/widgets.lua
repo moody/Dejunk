@@ -318,6 +318,7 @@ end
 function Widgets:ItemFrame(options)
   local parent = self:InlineGroup({
     parent = options.parent,
+    title = options.title,
     fullWidth = true
   })
 
