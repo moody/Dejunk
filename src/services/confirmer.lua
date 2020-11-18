@@ -55,6 +55,7 @@ function Confirmer:OnUpdate()
       Chat:Print(
         L.SOLD_YOUR_JUNK:format(GetCoinTextureString(self.soldTotal))
       )
+      self.soldTotal = 0
     end
   end
 
