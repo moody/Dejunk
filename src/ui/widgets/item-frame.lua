@@ -4,11 +4,14 @@ local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Upvalues
+local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
+local CursorHasItem = _G.CursorHasItem
 local DCL = Addon.Libs.DCL
 local DressUpVisual = _G.DressUpVisual
 local floor = math.floor
 local GameTooltip = _G.GameTooltip
+local GetCursorInfo = _G.GetCursorInfo
 local GetMouseFocus = _G.GetMouseFocus
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsDressableItem = _G.IsDressableItem
@@ -71,7 +74,21 @@ end
 local frameMixins, frameScripts = {}, {}
 
 function frameMixins:HandleItem(item)
-  self.handleItem(item)
+  if CursorHasItem() then
+    local infoType, itemID = GetCursorInfo()
+
+    if (infoType == "item") then
+      self.lists.inclusions:Add(itemID)
+    end
+
+    ClearCursor()
+  elseif item then
+    self.handleItem(item)
+  end
+end
+
+function frameScripts:OnMouseUp()
+  self:HandleItem()
 end
 
 function frameMixins:ExcludeItem(itemID)
