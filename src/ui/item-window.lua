@@ -153,8 +153,8 @@ function ItemWindow:OnUpdate(elapsed)
     self.service:RefreshItems()
   end
 
-  -- Disable button if service has no items.
-  self.button:SetDisabled(Core:IsBusy() and #self.service:GetItems() == 0)
+  -- Disable button if Core:IsBusy() or service has no items.
+  self.button:SetDisabled(Core:IsBusy() or #self.service:GetItems() == 0)
 end
 
 -- ============================================================================
