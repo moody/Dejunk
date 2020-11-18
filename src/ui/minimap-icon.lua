@@ -10,6 +10,9 @@ local L = Addon.Libs.L
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
+local unpack = _G.unpack
+
+local _colors = { 1.0, 0.82, 0, 1, 1, 1 }
 
 -- Initialize once the DB becomes available.
 EventManager:Once(E.DatabaseReady, function()
@@ -38,11 +41,9 @@ EventManager:Once(E.DatabaseReady, function()
         Addon.VERSION
       )
       tooltip:AddLine(" ")
-      for i=1, 3 do
-        local left = L["MINIMAP_ICON_TOOLTIP_"..i.."_L"]
-        local right = L["MINIMAP_ICON_TOOLTIP_"..i.."_R"]
-        tooltip:AddDoubleLine(left, right, 1.0, 0.82, 0, 1, 1, 1)
-      end
+      tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, unpack(_colors))
+      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, unpack(_colors))
+      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, unpack(_colors))
 		end,
   })
 
