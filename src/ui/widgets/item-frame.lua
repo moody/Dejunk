@@ -4,17 +4,15 @@ local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Upvalues
-local ClearCursor = _G.ClearCursor
 local CreateFrame = _G.CreateFrame
-local CursorHasItem = _G.CursorHasItem
 local DCL = Addon.Libs.DCL
 local DressUpVisual = _G.DressUpVisual
 local floor = math.floor
 local GameTooltip = _G.GameTooltip
-local GetCursorInfo = _G.GetCursorInfo
 local GetMouseFocus = _G.GetMouseFocus
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsDressableItem = _G.IsDressableItem
+local L = Addon.Libs.L
 local max = math.max
 local UIParent = _G.UIParent
 local unpack = _G.unpack
@@ -161,7 +159,8 @@ end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetHyperlink(self.item.ItemLink)
+  GameTooltip:SetText(L.REASON_TEXT, 1.0, 0.82, 0)
+  GameTooltip:AddLine(self.item.Reason, 1, 1, 1, true)
   GameTooltip:Show()
 end
 
