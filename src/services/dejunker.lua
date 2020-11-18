@@ -11,8 +11,10 @@ local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
 local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local L = Addon.Libs.L
+local Lists = Addon.Lists
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
+local tsort = table.sort
 local UseContainerItem = _G.UseContainerItem
 
 local States = {
@@ -72,14 +74,28 @@ function Dejunker:GetItems()
 end
 
 
+function Dejunker:GetLists()
+  return Lists.sell
+end
+
+
 function Dejunker:RefreshItems()
   if self.state == States.None then
     Filters:GetItems(self, self.items)
+
+    -- Sort by quality.
+    tsort(self.items, function(a, b)
+      return (
+        a.Quality == b.Quality and
+        a.Name < b.Name or
+        a.Quality < b.Quality
+      )
+    end)
   end
 end
 
 
-function Dejunker:HandleNextItem()
+function Dejunker:HandleNextItem(item)
   -- Refresh items.
   self:RefreshItems()
 
@@ -89,8 +105,18 @@ function Dejunker:HandleNextItem()
     return
   end
 
-  -- Get first item.
-  local item = tremove(self.items, 1)
+  -- Get item.
+  local index = 1
+  if item then
+    -- Get index of specified item.
+    index = nil
+    for i, v in pairs(self.items) do
+      if v == item then index = i end
+    end
+    -- Stop if the item was not found.
+    if index == nil then return end
+  end
+  item = tremove(self.items, index)
 
   -- Verify that the item can be sold.
   if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end

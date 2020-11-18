@@ -93,6 +93,11 @@ function Destroyer:GetItems()
 end
 
 
+function Destroyer:GetLists()
+  return Lists.destroy
+end
+
+
 function Destroyer:RefreshItems()
   Filters:GetItems(self, self.items)
 
@@ -103,7 +108,7 @@ function Destroyer:RefreshItems()
 end
 
 
-function Destroyer:HandleNextItem()
+function Destroyer:HandleNextItem(item)
   -- Refresh items.
   self:RefreshItems()
 
@@ -116,8 +121,18 @@ function Destroyer:HandleNextItem()
   -- Don't run if the cursor has an item, spell, etc.
   if GetCursorInfo() then return end
 
-  -- Get first item.
-  local item = tremove(self.items, 1)
+  -- Get item.
+  local index = 1
+  if item then
+    -- Get index of specified item.
+    index = nil
+    for i, v in pairs(self.items) do
+      if v == item then index = i end
+    end
+    -- Stop if the item was not found.
+    if index == nil then return end
+  end
+  item = tremove(self.items, index)
 
   -- Verify that the item can be destroyed.
   if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end

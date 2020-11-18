@@ -40,15 +40,27 @@ end
 
 -- Clear stuff
 function widgetMixins:OnRelease()
+  self.frame.lists = nil
   self.frame.items = nil
+  self.frame.handleItem = nil
   self.frame.scrollBar.items = nil
 end
 
-function widgetMixins:SetItems(items)
+--[[
+  data = {
+    lists = table,
+    items = table,
+    handleItem = function,
+  }
+]]
+function widgetMixins:SetData(data)
+  assert(data.lists and data.items and data.handleItem)
   self.frame.offset = 0
-  self.frame.items = items
-  self.frame.scrollBar.items = items
-  self.frame.scrollBar:SetMinMaxValues(0, max(#items - NUM_LIST_BUTTONS, 0))
+  self.frame.lists = data.lists
+  self.frame.items = data.items
+  self.frame.handleItem = data.handleItem
+  self.frame.scrollBar.items = data.items
+  self.frame.scrollBar:SetMinMaxValues(0, max(#data.items - NUM_LIST_BUTTONS, 0))
   self.frame.scrollBar:SetValue(0)
 end
 
@@ -58,24 +70,12 @@ end
 
 local frameMixins, frameScripts = {}, {}
 
-function frameMixins:AddCursorItem()
-  -- if CursorHasItem() then
-  --   local infoType, itemID = GetCursorInfo()
-
-  --   if (infoType == "item") then
-  --     self.list:Add(itemID)
-  --   end
-
-  --   ClearCursor()
-  -- end
+function frameMixins:HandleItem(item)
+  self.handleItem(item)
 end
 
-function frameMixins:RemoveItem(itemID)
-  -- self.list:Remove(itemID)
-end
-
-function frameScripts:OnMouseUp()
-  self:AddCursorItem()
+function frameMixins:ExcludeItem(itemID)
+  self.lists.exclusions:Add(itemID)
 end
 
 function frameScripts:OnUpdate(elapsed)
@@ -150,10 +150,10 @@ function ButtonScripts:OnClick(button)
         DressUpVisual(self.item.ItemLink)
       end
     else
-      -- self:GetParent():AddCursorItem()
+      self:GetParent():HandleItem(self.item)
     end
   elseif (button == "RightButton") then
-    -- self:GetParent():RemoveItem(self.item.ItemID)
+    self:GetParent():ExcludeItem(self.item.ItemID)
   end
 end
 

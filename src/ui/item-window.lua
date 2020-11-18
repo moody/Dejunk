@@ -27,8 +27,19 @@ function ItemWindow:Show(service)
   -- Refresh items.
   service:RefreshItems()
 
-  -- Set items.
-  self.itemFrame:SetItems(service:GetItems())
+  -- Create handleItem function.
+  local function handleItem(item)
+    service:HandleNextItem(item)
+    -- Hide ItemWindow if there are no more items.
+    if #service:GetItems() == 0 then self:Hide() end
+  end
+
+  -- Set data.
+  self.itemFrame:SetData({
+    lists = service:GetLists(),
+    items = service:GetItems(),
+    handleItem = handleItem,
+  })
 
   -- Set frame title and button text.
   local serviceText =
@@ -39,12 +50,8 @@ function ItemWindow:Show(service)
   self.frame:SetTitle(("%s %s"):format(AddonName, serviceText))
   self.button:SetText(("%s %s"):format(serviceText, 'Next Item (L)'))
 
-  -- Set button callback.
-  self.button:SetCallback("OnClick", function()
-    service:HandleNextItem()
-    -- Hide ItemWindow if there are no more items.
-    if #service:GetItems() == 0 then self:Hide() end
-  end)
+  -- Set button callback. Wrap handleItem to avoid passing unexpected args.
+  self.button:SetCallback("OnClick", function() handleItem() end)
 
   -- Set button OnUpdate script.
   self.button.frame:SetScript("OnUpdate", function()
