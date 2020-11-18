@@ -1,18 +1,15 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
+local Commands = Addon.Commands
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
-local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local ItemWindow = Addon.UI.ItemWindow
 local L = Addon.Libs.L
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
-local UI = Addon.UI
 
 -- Initialize once the DB becomes available.
 EventManager:Once(E.DatabaseReady, function()
@@ -24,14 +21,14 @@ EventManager:Once(E.DatabaseReady, function()
     OnClick = function(_, button)
       if IsShiftKeyDown() then
         if (button == "LeftButton") then
-          ItemWindow:Toggle(Dejunker)
+          Commands.sell()
         end
 
         if (button == "RightButton") then
-          ItemWindow:Toggle(Destroyer)
+          Commands.destroy()
         end
       elseif (button == "LeftButton") then
-        UI:Toggle()
+        Commands.toggle()
       end
     end,
 
