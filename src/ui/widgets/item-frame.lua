@@ -5,7 +5,6 @@ if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Upvalues
 local ClearCursor = _G.ClearCursor
-local Colors = Addon.Colors
 local CreateFrame = _G.CreateFrame
 local CursorHasItem = _G.CursorHasItem
 local DCL = Addon.Libs.DCL
@@ -294,7 +293,7 @@ local function Constructor()
 
   -- No items text.
   frame.noItemsText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  frame.noItemsText:SetText(Addon.Libs.L.NO_ITEMS_TEXT)
+  frame.noItemsText:SetText(L.NO_ITEMS_TEXT)
   frame.noItemsText:SetTextColor(1, 1, 1)
   frame.noItemsText:SetAlpha(0.5)
   frame.noItemsText:SetPoint("CENTER")
