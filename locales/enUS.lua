@@ -4,10 +4,10 @@ local AddonName = ...
 local L = _G.LibStub('AceLocale-3.0'):NewLocale(AddonName, 'enUS', true)
 
 L["ADDED_ITEM_TO_LIST"] = "Added %s to %s."
-L["AUTO_DESTROY_SLIDER_LABEL"] = "Save Space"
-L["AUTO_DESTROY_SLIDER_TOOLTIP"] = "Only auto destroy items when less than a set number of bag spaces remain.|n|nTo disable this, set the slider to %s."
-L["AUTO_DESTROY_TEXT"] = "Auto Destroy"
-L["AUTO_DESTROY_TOOLTIP"] = "Destroy junk items periodically while this window is closed."
+L["AUTO_OPEN_DESTROY_SLIDER_LABEL"] = "Save Space"
+L["AUTO_OPEN_DESTROY_SLIDER_TOOLTIP"] = "Only auto open the Destroy frame when less than a set number of bag spaces remain.|n|nTo disable this, set the slider to %s."
+L["AUTO_OPEN_DESTROY_TEXT"] = "Auto Open"
+L["AUTO_OPEN_DESTROY_TOOLTIP"] = "Automatically open the Destroy frame when destroyable items are found."
 L["AUTO_REPAIR_TEXT"] = "Auto Repair"
 L["AUTO_REPAIR_TOOLTIP"] = "Automatically repair items upon opening a merchant window."
 L["AUTO_SELL_TEXT"] = "Auto Sell"
