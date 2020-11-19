@@ -13,8 +13,6 @@ local Widgets = Addon.UI.Widgets
 
 local function handleItem(item)
   ItemWindow.service:HandleNextItem(item)
-  -- Hide ItemWindow if there are no more items.
-  if #ItemWindow.service:GetItems() == 0 then ItemWindow:Hide() end
 end
 
 -- ============================================================================
