@@ -15,8 +15,6 @@ local pairs = pairs
 local TIMEOUT_DELAY = 5 -- seconds
 
 Confirmer.destroyedItems = {}
-Confirmer.destroyCount = 0
-Confirmer.printDestroyCount = false
 
 Confirmer.soldItems = {}
 Confirmer.soldTotal = 0
@@ -56,19 +54,6 @@ function Confirmer:OnUpdate()
         L.SOLD_YOUR_JUNK:format(GetCoinTextureString(self.soldTotal))
       )
       self.soldTotal = 0
-    end
-  end
-
-  -- Final destroy message
-  if self.printDestroyCount then
-    self.printDestroyCount = false
-
-    if not DB.Profile.general.chat.verbose and self.destroyCount > 0 then
-      Chat:Print(
-        self.destroyCount == 1 and
-        L.DESTROYED_ITEM or
-        L.DESTROYED_ITEMS:format(self.destroyCount)
-      )
     end
   end
 end
@@ -128,7 +113,6 @@ end
 function Confirmer:_AddDestroyed(item)
   if self.destroyedItems[item] then return end
   self.destroyedItems[item] = true
-  self.printDestroyCount = false
 
   -- Fail if the item hasn't been confirmed after a short delay
   _G.C_Timer.After(TIMEOUT_DELAY, function()
@@ -142,9 +126,6 @@ end
 
 function Confirmer:_RemoveDestroyed(item)
   self.destroyedItems[item] = nil
-  if not next(self.destroyedItems) then
-    self.printDestroyCount = true
-  end
 end
 
 
@@ -162,9 +143,7 @@ end
 function Confirmer:_ConfirmDestroyedItems(bag)
   for item in pairs(self.destroyedItems) do
     if item.Bag == bag and not Bags:StillInBags(item) then
-      self.destroyCount = self.destroyCount + 1
-
-      Chat:Verbose(
+      Chat:Print(
         item.Quantity == 1 and
         L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
         L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
