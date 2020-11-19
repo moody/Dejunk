@@ -16,7 +16,6 @@ Dejunk is a customizable junk selling and destroying addon.
 ### Destroying
 
 - Customize a list of items to include or exclude when destroying
-- Optional space saving mode (auto destroy items as bag space depletes)
 - Options to destroy all items of a specific quality (from Poor to Epic)
 - And more...
 
@@ -24,17 +23,16 @@ Dejunk is a customizable junk selling and destroying addon.
 
 You can bind keys to:
 
-- Toggle the options frame
-- Start selling
-- Start destroying
-- Open lootables
+- Toggle UI frames
+- Sell or destroy next item
+- Open lootable items
 - Manage lists
 
 ## Chat Commands
 
 ### Toggle
 
-Toggles the user interface.
+Toggles the options frame.
 
 ```text
 /dejunk [toggle]
@@ -42,7 +40,7 @@ Toggles the user interface.
 
 ### Sell
 
-Starts selling items.
+Toggles the sell frame.
 
 ```text
 /dejunk sell
@@ -50,7 +48,7 @@ Starts selling items.
 
 ### Destroy
 
-Starts destroying items.
+Toggles the destroy frame.
 
 ```text
 /dejunk destroy
