@@ -156,7 +156,10 @@ function ButtonMixins:SetItem(item)
   self.item = item
   self.icon:SetTexture(item.Texture)
   self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  self.text:SetText(("[%s]"):format(item.Name))
+  self.text:SetText(("[%s]%s"):format(
+    item.Name,
+    (item.Quantity > 1 and ("|cFFFFFFFFx" .. item.Quantity .. "") or "")
+  ))
   self.text:SetTextColor(unpack(DCL:GetColorByQuality(item.Quality)))
   if GetMouseFocus() == self then self:ShowTooltip() end
 end
@@ -177,11 +180,7 @@ end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetHyperlink(self.item.ItemLink)
-  GameTooltip:AddLine(" ")
-  GameTooltip:AddLine(DCL:ColorString(AddonName, Colors.Primary))
-  GameTooltip:AddLine("  " .. DCL:ColorString(L.REASON_TEXT, Colors.Yellow))
-  GameTooltip:AddLine("    " .. self.item.Reason, 1, 1, 1)
+  GameTooltip:SetBagItem(self.item.Bag, self.item.Slot)
   GameTooltip:Show()
 end
 
