@@ -1,10 +1,11 @@
-local _, Addon = ...
+local AddonName, Addon = ...
 local Type, Version = "Dejunk_ItemFrame", 1
 local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Upvalues
 local ClearCursor = _G.ClearCursor
+local Colors = Addon.Colors
 local CreateFrame = _G.CreateFrame
 local CursorHasItem = _G.CursorHasItem
 local DCL = Addon.Libs.DCL
@@ -176,8 +177,11 @@ end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetText(L.REASON_TEXT, 1.0, 0.82, 0)
-  GameTooltip:AddLine(self.item.Reason, 1, 1, 1, true)
+  GameTooltip:SetHyperlink(self.item.ItemLink)
+  GameTooltip:AddLine(" ")
+  GameTooltip:AddLine(DCL:ColorString(AddonName, Colors.Primary))
+  GameTooltip:AddLine("  " .. DCL:ColorString(L.REASON_TEXT, Colors.Yellow))
+  GameTooltip:AddLine("    " .. self.item.Reason, 1, 1, 1)
   GameTooltip:Show()
 end
 
@@ -223,6 +227,7 @@ local function createButton(parent, index)
   for k, v in pairs(ButtonMixins) do button[k] = v end
   for k, v in pairs(ButtonScripts) do button:SetScript(k, v) end
 
+  button:Hide()
   return button
 end
 
