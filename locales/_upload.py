@@ -3,45 +3,65 @@ import os
 import requests
 import sys
 
-
 API_KEY = os.getenv("CF_API_KEY")
 assert API_KEY
 
-LOCALE_ENTRY_PREFIX = "L["
-PROJECT_ID = "413260"
-API_ENDPOINT = f"https://wow.curseforge.com/api/projects/{PROJECT_ID}/localization/import?token={API_KEY}"
+API_ENDPOINT = "https://wow.curseforge.com/api/projects/413260/localization"
+EXPORT_URL = f"{API_ENDPOINT}/export?token={API_KEY}"
+IMPORT_URL = f"{API_ENDPOINT}/import?token={API_KEY}"
+IMPORT_METADATA = json.dumps(
+    {"language": "enUS", "missing-phrase-handling": "DeletePhrase"}
+)
 
 
-# Get localizations
-print("Retrieving locale entries...")
-localizations = ""
-
-with open("locales/enUS.lua") as f:
+def parse(lines):
     entries = []
-
-    for line in f.readlines():
-        if line.startswith(LOCALE_ENTRY_PREFIX):
-            print(f"  {line.split('=')[0]}")
+    for line in lines:
+        line = line.strip()
+        if line.startswith("L["):
             entries.append(line)
-
-    localizations = "".join(entries)
-    print(f"\nRetrieved {len(entries)} locale entries.\n")
+    return entries
 
 
-# Upload to CurseForge
-print("Uploading to CurseForge...")
+def getLocales():
+    with open("locales/enUS.lua", encoding="utf-8") as f:
+        return parse(f.readlines())
 
-payload = {
-    "metadata": json.dumps(
-        {"language": "enUS", "missing-phrase-handling": "DeletePhrase"}
-    ),
-    "localizations": localizations,
-}
 
-r = requests.post(url=API_ENDPOINT, data=payload)
+def getCurseLocales():
+    r = requests.get(url=EXPORT_URL)
+    if r.ok:
+        return parse(r.text.splitlines())
+    else:
+        raise Exception(r.text)
 
-if r.ok:
-    print("Success!")
-else:
-    print(r.text)
-    sys.exit(1)
+
+def upload(localizations):
+    localizations = "\n".join(localizations)
+
+    r = requests.post(
+        url=IMPORT_URL,
+        data={"metadata": IMPORT_METADATA, "localizations": localizations},
+    )
+
+    if not r.ok:
+        raise Exception(r.text)
+
+
+# Get locales.
+print("Retrieving locales...")
+locales = getLocales()
+
+# Get locales from Curse.
+print("Retrieving Curse locales...")
+curseLocales = getCurseLocales()
+
+# Upload unchanged locales so that any changed locales are deleted.
+print("Uploading unchanged locales...")
+upload([x for x in locales if x in curseLocales])
+
+# Upload all locales.
+print("Uploading all locales...")
+upload(locales)
+
+print("Success!")
