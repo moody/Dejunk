@@ -1,14 +1,15 @@
 local _, Addon = ...
 local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER
 local Bags = Addon.Bags
+local C_Timer = _G.C_Timer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetItemInfo = _G.GetItemInfo
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS
-local EventManager = Addon.EventManager
-local E = Addon.Events
 
 -- Initialize cache table.
 Bags.cache = {}
@@ -61,11 +62,23 @@ local function updateCache()
   EventManager:Fire(E.BagsUpdated, Bags.cache.allCached)
 end
 
-EventManager:On(E.Wow.BagUpdateDelayed, updateCache)
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+local _ticker = nil
+
+EventManager:On(E.Wow.BagUpdateDelayed, function()
+  if _ticker then _ticker:Cancel() end
+  updateCache()
+end)
 
 EventManager:On(E.BagsUpdated, function(allCached)
-  Addon.Chat:Debug('EVENT: BagsUpdated')
-  Addon.Chat:Debug('  allCached = ' .. tostring(allCached))
+  -- If not all cached, start a new ticker to try again.
+  if not allCached then
+    if _ticker then _ticker:Cancel() end
+    _ticker = C_Timer.NewTicker(0.25, updateCache, 1)
+  end
 end)
 
 -- ============================================================================
