@@ -15,8 +15,6 @@ local pairs = pairs
 local TIMEOUT_DELAY = 5 -- seconds
 
 Confirmer.destroyedItems = {}
-Confirmer.destroyCount = 0
-Confirmer.printDestroyCount = false
 
 Confirmer.soldItems = {}
 Confirmer.soldTotal = 0
@@ -35,10 +33,7 @@ function Confirmer:IsConfirming(moduleName)
   end
 
   if moduleName == "Destroyer" then
-    return (
-      next(self.destroyedItems) ~= nil or
-      Destroyer:IsDestroying()
-    )
+    return next(self.destroyedItems) ~= nil
   end
 
   return (
@@ -58,19 +53,7 @@ function Confirmer:OnUpdate()
       Chat:Print(
         L.SOLD_YOUR_JUNK:format(GetCoinTextureString(self.soldTotal))
       )
-    end
-  end
-
-  -- Final destroy message
-  if self.printDestroyCount and not Destroyer:IsDestroying() then
-    self.printDestroyCount = false
-
-    if not DB.Profile.general.chat.verbose and self.destroyCount > 0 then
-      Chat:Print(
-        self.destroyCount == 1 and
-        L.DESTROYED_ITEM or
-        L.DESTROYED_ITEMS:format(self.destroyCount)
-      )
+      self.soldTotal = 0
     end
   end
 end
@@ -130,7 +113,6 @@ end
 function Confirmer:_AddDestroyed(item)
   if self.destroyedItems[item] then return end
   self.destroyedItems[item] = true
-  self.printDestroyCount = false
 
   -- Fail if the item hasn't been confirmed after a short delay
   _G.C_Timer.After(TIMEOUT_DELAY, function()
@@ -144,9 +126,6 @@ end
 
 function Confirmer:_RemoveDestroyed(item)
   self.destroyedItems[item] = nil
-  if not next(self.destroyedItems) then
-    self.printDestroyCount = true
-  end
 end
 
 
@@ -164,9 +143,7 @@ end
 function Confirmer:_ConfirmDestroyedItems(bag)
   for item in pairs(self.destroyedItems) do
     if item.Bag == bag and not Bags:StillInBags(item) then
-      self.destroyCount = self.destroyCount + 1
-
-      Chat:Verbose(
+      Chat:Print(
         item.Quantity == 1 and
         L.DESTROYED_ITEM_VERBOSE:format(item.ItemLink) or
         L.DESTROYED_ITEMS_VERBOSE:format(item.ItemLink, item.Quantity)
@@ -199,16 +176,6 @@ end)
 -- ============================================================================
 -- Destroyer Events
 -- ============================================================================
-
-EventManager:On(E.DestroyerStart, function()
-  for k in pairs(Confirmer.destroyedItems) do
-    Confirmer.destroyedItems[k] = nil
-  end
-
-  Confirmer.destroyCount = 0
-  Confirmer.printDestroyCount = true
-end)
-
 
 EventManager:On(E.DestroyerAttemptToDestroy, function(item)
   Confirmer:_AddDestroyed(item)

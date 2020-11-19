@@ -1,13 +1,14 @@
 local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Colors = Addon.Colors
+local Commands = Addon.Commands
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local ItemWindow = Addon.UI.ItemWindow
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local Lists = Addon.Lists
@@ -29,6 +30,7 @@ end
 
 function UI:Show()
   if not self.frame then self:Create() end
+  ItemWindow:Hide()
   self.frame:Show()
 end
 
@@ -43,7 +45,6 @@ function UI:OnUpdate(elapsed)
   -- Update status text
   self.frame:SetStatusText(
     (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
-    (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
     (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
     (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
     ""
@@ -82,19 +83,11 @@ function UI:Create()
     )
   )
 
-  -- Start Destroying button
-  local startDestroying = Widgets:Button({
-    parent = frame,
-    text = L.START_DESTROYING_BUTTON_TEXT,
-    width = 175,
-    onClick = function() Destroyer:Start() end
-  })
-  self.widgetsToDisable[startDestroying] = true
-
   -- Key Bindings button
   local keyBindings = Widgets:Button({
     parent = frame,
     text = _G.KEY_BINDINGS,
+    width = 175,
     onClick = function()
       UI:Hide()
 
@@ -113,6 +106,20 @@ function UI:Create()
     end
   })
   self.widgetsToDisable[keyBindings] = true
+
+  -- Toggle sell frame button.
+  self.widgetsToDisable[Widgets:Button({
+    parent = frame,
+    text = L.TOGGLE_SELL_FRAME,
+    onClick = function() Commands.sell() end
+  })] = true
+
+  -- Toggle destroy frame button.
+  self.widgetsToDisable[Widgets:Button({
+    parent = frame,
+    text = L.TOGGLE_DESTROY_FRAME,
+    onClick = function() Commands.destroy() end
+  })] = true
 
   -- Container for the TreeGroup
   local treeGroupContainer = Widgets:SimpleGroup({

@@ -1,5 +1,5 @@
 #@retail@
-## Interface: 90001
+## Interface: 90002
 #@end-retail@
 #@non-retail@
 # ## Interface: 11305
@@ -115,6 +115,7 @@ src\ui\item-tooltip.lua
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
 src\ui\main.lua
+src\ui\item-window.lua
 
 src\ui\groups\general.lua
 src\ui\groups\sell.lua
@@ -124,6 +125,7 @@ src\ui\groups\commands.lua
 src\ui\groups\profiles.lua
 
 src\ui\widgets\widgets.lua
+src\ui\widgets\item-frame.lua
 src\ui\widgets\ListFrame.lua
 
 # Bindings

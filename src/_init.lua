@@ -83,5 +83,6 @@ Addon.UI = {
 
     Profiles = {}
   },
+  ItemWindow = {},
   MerchantButton = {}
 }

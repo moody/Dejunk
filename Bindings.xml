@@ -1,17 +1,17 @@
 <Bindings>
-  <!-- Toggle options -->
-  <Binding name="DEJUNK_TOGGLE_OPTIONS" header="DEJUNK_HEADER_GENERAL" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_ToggleOptions()
+  <!-- Toggle options frame -->
+  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" header="DEJUNK_HEADER_GENERAL" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_ToggleOptionsFrame()
   </Binding>
 
-  <!-- Start selling -->
-  <Binding name="DEJUNK_START_SELLING" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_StartSelling()
+  <!-- Toggle sell frame -->
+  <Binding name="DEJUNK_TOGGLE_SELL_FRAME" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_ToggleSellFrame()
   </Binding>
 
-  <!-- Start destroying -->
-  <Binding name="DEJUNK_START_DESTROYING" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_StartDestroying()
+  <!-- Toggle destroy frame -->
+  <Binding name="DEJUNK_TOGGLE_DESTROY_FRAME" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_ToggleDestroyFrame()
   </Binding>
 
   <!-- Open lootables -->
@@ -19,8 +19,13 @@
     DejunkBindings_OpenLootables()
   </Binding>
 
+  <!-- Sell next item -->
+  <Binding name="DEJUNK_SELL_NEXT_ITEM" header="DEJUNK_HEADER_SELL" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_HandleNextItem("Dejunker")
+  </Binding>
+
   <!-- Add/rem sell inclusions -->
-  <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNK_HEADER_SELL" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_ADD_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("sell", "inclusions")
   </Binding>
   <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
@@ -35,8 +40,13 @@
     DejunkBindings_RemoveFromList("sell", "exclusions")
   </Binding>
 
+  <!-- Destroy next item -->
+  <Binding name="DEJUNK_DESTROY_NEXT_ITEM" header="DEJUNK_HEADER_DESTROY" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_HandleNextItem("Destroyer")
+  </Binding>
+
   <!-- Add/rem destroy inclusions -->
-  <Binding name="DEJUNK_ADD_DESTROYABLES" header="DEJUNK_HEADER_DESTROY" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_ADD_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("destroy", "inclusions")
   </Binding>
   <Binding name="DEJUNK_REM_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">

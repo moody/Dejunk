@@ -1,6 +1,9 @@
 local _, Addon = ...
 local BACKPACK_CONTAINER = _G.BACKPACK_CONTAINER
 local Bags = Addon.Bags
+local C_Timer = _G.C_Timer
+local E = Addon.Events
+local EventManager = Addon.EventManager
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
@@ -8,6 +11,12 @@ local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetItemInfo = _G.GetItemInfo
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS
 
+-- Initialize cache table.
+Bags.cache = {}
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
 
 -- Bag iterator function.
 local function iterateBags()
@@ -32,6 +41,49 @@ local function iterateBags()
   end
 end
 
+
+-- Updates the item cache.
+local function updateCache()
+  for k in pairs(Bags.cache) do Bags.cache[k] = nil end
+
+  Bags.cache.allCached = true
+
+  for bag, slot, itemID in iterateBags() do
+    if itemID then
+      local item = Bags:GetItem(bag, slot)
+      if item then
+        Bags.cache[#Bags.cache+1] = item
+      else
+        Bags.cache.allCached = false
+      end
+    end
+  end
+
+  EventManager:Fire(E.BagsUpdated, Bags.cache.allCached)
+end
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+local _ticker = nil
+
+EventManager:On(E.Wow.BagUpdateDelayed, function()
+  if _ticker then _ticker:Cancel() end
+  updateCache()
+end)
+
+EventManager:On(E.BagsUpdated, function(allCached)
+  -- If not all cached, start a new ticker to try again.
+  if not allCached then
+    if _ticker then _ticker:Cancel() end
+    _ticker = C_Timer.NewTicker(0.25, updateCache, 1)
+  end
+end)
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 -- Returns a table of info for the item in the specified bag slot, or nil if the
 -- item could not be retrieved.
@@ -152,18 +204,8 @@ function Bags:GetItems(items)
     for k in pairs(items) do items[k] = nil end
   end
 
-  items.allCached = true
-
-  for bag, slot, itemID in iterateBags() do
-    if itemID then
-      local item = self:GetItem(bag, slot)
-      if item then
-        items[#items+1] = item
-      else
-        items.allCached = false
-      end
-    end
-  end
+  -- Shallow copy the cache.
+  for k, v in pairs(self.cache) do items[k] = v end
 
   return items
 end

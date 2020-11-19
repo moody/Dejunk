@@ -1,15 +1,18 @@
 local AddonName, Addon = ...
 local Colors = Addon.Colors
+local Commands = Addon.Commands
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
-local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local L = Addon.Libs.L
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
-local UI = Addon.UI
+local unpack = _G.unpack
+
+local _colors = { 1.0, 0.82, 0, 1, 1, 1 }
 
 -- Initialize once the DB becomes available.
 EventManager:Once(E.DatabaseReady, function()
@@ -19,10 +22,16 @@ EventManager:Once(E.DatabaseReady, function()
   	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
-      if (button == "LeftButton") then
-        UI:Toggle()
-      elseif (button == "RightButton") then
-        Destroyer:Start()
+      if IsShiftKeyDown() then
+        if (button == "LeftButton") then
+          Commands.sell()
+        end
+
+        if (button == "RightButton") then
+          Commands.destroy()
+        end
+      elseif (button == "LeftButton") then
+        Commands.toggle()
       end
     end,
 
@@ -32,8 +41,9 @@ EventManager:Once(E.DatabaseReady, function()
         Addon.VERSION
       )
       tooltip:AddLine(" ")
-			tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_1, DCL.CSS.White))
-      tooltip:AddLine(DCL:ColorString(L.MINIMAP_ICON_TOOLTIP_2, DCL.CSS.White))
+      tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, unpack(_colors))
+      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, unpack(_colors))
+      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, unpack(_colors))
 		end,
   })
 

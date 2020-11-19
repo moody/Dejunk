@@ -285,7 +285,7 @@ function Widgets:SimpleGroup(options)
 end
 
 --[[
-  Add a Dejunk_ListFrame widget to a parent widget and returns it.
+  Adds a Dejunk_ListFrame widget to a parent widget and returns it.
 
   options = {
     parent = widget,
@@ -306,4 +306,25 @@ function Widgets:ListFrame(options)
   parent:AddChild(listFrame)
 
   return listFrame
+end
+
+--[[
+  Adds a Dejunk_ItemFrame widget to a parent widget and returns it.
+
+  options = {
+    parent = widget,
+  }
+]]
+function Widgets:ItemFrame(options)
+  local parent = self:InlineGroup({
+    parent = options.parent,
+    title = options.title,
+    fullWidth = true
+  })
+
+  local itemFrame = AceGUI:Create("Dejunk_ItemFrame")
+  itemFrame:SetFullWidth(true)
+  parent:AddChild(itemFrame)
+
+  return itemFrame
 end

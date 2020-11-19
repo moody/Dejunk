@@ -11,8 +11,10 @@ local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
 local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local L = Addon.Libs.L
+local Lists = Addon.Lists
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
+local tsort = table.sort
 local UseContainerItem = _G.UseContainerItem
 
 local States = {
@@ -42,9 +44,135 @@ EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
   end
 end)
 
+do -- Flag for refresh.
+  local function flagForRefresh()
+    Dejunker.needsRefresh = true
+  end
+
+  for _, e in ipairs({
+    E.BagsUpdated,
+    E.MainUIClosed,
+    E.ProfileChanged,
+  }) do
+    EventManager:On(e, flagForRefresh)
+  end
+
+  local function onListEvent(list)
+    if
+      list == Lists.sell.inclusions or
+      list == Lists.sell.exclusions
+    then
+      flagForRefresh()
+    end
+  end
+
+  for _, e in ipairs({
+    E.ListItemAdded,
+    E.ListItemRemoved,
+    E.ListRemovedAll,
+  }) do
+    EventManager:On(e, onListEvent)
+  end
+end
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+-- Identifies and handles the StaticPopup shown when attempting to vendor a
+-- tradeable item.
+local function handleStaticPopup()
+  local popup
+  for i=1, STATICPOPUP_NUMDIALOGS do
+    popup = _G["StaticPopup"..i]
+    if
+      popup and
+      popup:IsShown() and
+      popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"
+    then
+      popup.button1:Click()
+      return
+    end
+  end
+end
+
 -- ============================================================================
 -- Functions
 -- ============================================================================
+
+function Dejunker:GetItems()
+  return self.items
+end
+
+
+function Dejunker:GetLists()
+  return Lists.sell
+end
+
+
+function Dejunker:RefreshItems()
+  -- Stop if selling is in progress.
+  if self.state ~= States.None then return end
+  -- Stop if not necessary.
+  if not self.needsRefresh then return end
+  self.needsRefresh = false
+
+  Filters:GetItems(self, self.items)
+
+  -- Sort by quality.
+  tsort(self.items, function(a, b)
+    return (
+      a.Quality == b.Quality and
+      a.Name < b.Name or
+      a.Quality < b.Quality
+    )
+  end)
+end
+
+
+function Dejunker:HandleNextItem(item)
+  -- Stop if selling is in progress.
+  if self.state ~= States.None then return end
+
+  -- Stop if the merchant frame is not shown.
+  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
+    return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
+
+  -- Refresh items.
+  self:RefreshItems()
+
+  -- Stop if no items.
+  if #self.items == 0 then
+    return Chat:Print(L.NO_JUNK_ITEMS)
+  end
+
+  -- Get item.
+  local index = 1
+  if item then
+    -- Get index of specified item.
+    index = nil
+    for i, v in pairs(self.items) do
+      if v == item then index = i end
+    end
+    -- Stop if the item was not found.
+    if index == nil then return end
+  end
+  item = self.items[index]
+
+  -- Verify that the item can be sold.
+  if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
+
+  -- Sell item.
+  UseContainerItem(item.Bag, item.Slot)
+
+  -- Handle StaticPopup.
+  if Addon.IS_RETAIL then handleStaticPopup() end
+
+  -- Fire event.
+  EventManager:Fire(E.DejunkerAttemptToSell, item)
+end
+
 
 -- Starts the dejunking process.
 -- @param {boolean} auto
@@ -106,24 +234,6 @@ end
 -- @return {boolean}
 function Dejunker:IsDejunking()
   return self.state ~= States.None
-end
-
-
--- Identifies and handles the StaticPopup shown when attempting to vendor a
--- tradeable item.
-local function handleStaticPopup()
-  local popup
-  for i=1, STATICPOPUP_NUMDIALOGS do
-    popup = _G["StaticPopup"..i]
-    if
-      popup and
-      popup:IsShown() and
-      popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"
-    then
-      popup.button1:Click()
-      return
-    end
-  end
 end
 
 
