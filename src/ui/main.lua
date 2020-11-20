@@ -8,7 +8,7 @@ local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local ItemWindow = Addon.UI.ItemWindow
+local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
 local Lists = Addon.Lists
@@ -30,7 +30,7 @@ end
 
 function UI:Show()
   if not self.frame then self:Create() end
-  ItemWindow:Hide()
+  ItemFrames:HideAll()
   self.frame:Show()
 end
 

@@ -63,8 +63,13 @@ Addon.Lists = {}
 Addon.Repairer = {}
 Addon.Utils = {}
 
--- /UI/
-Addon.MinimapIcon = {} -- TODO: add to Addon.UI
+-- /ui
+Addon.MinimapIcon = {}
+
+Addon.ItemFrames = {
+  Sell = {},
+  Destroy = {},
+}
 
 Addon.UI = {
   Widgets = {},
@@ -83,6 +88,5 @@ Addon.UI = {
 
     Profiles = {}
   },
-  ItemWindow = {},
   MerchantButton = {}
 }

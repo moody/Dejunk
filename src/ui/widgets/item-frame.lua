@@ -1,4 +1,4 @@
-local _, Addon = ...
+local AddonName, Addon = ...
 local Type, Version = "Dejunk_ItemFrame", 1
 local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
@@ -155,7 +155,10 @@ function ButtonMixins:SetItem(item)
   self.item = item
   self.icon:SetTexture(item.Texture)
   self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  self.text:SetText(("[%s]"):format(item.Name))
+  self.text:SetText(("[%s]%s"):format(
+    item.Name,
+    (item.Quantity > 1 and ("|cFFFFFFFFx" .. item.Quantity .. "") or "")
+  ))
   self.text:SetTextColor(unpack(DCL:GetColorByQuality(item.Quality)))
   if GetMouseFocus() == self then self:ShowTooltip() end
 end
@@ -176,8 +179,7 @@ end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetText(L.REASON_TEXT, 1.0, 0.82, 0)
-  GameTooltip:AddLine(self.item.Reason, 1, 1, 1, true)
+  GameTooltip:SetBagItem(self.item.Bag, self.item.Slot)
   GameTooltip:Show()
 end
 
@@ -223,6 +225,7 @@ local function createButton(parent, index)
   for k, v in pairs(ButtonMixins) do button[k] = v end
   for k, v in pairs(ButtonScripts) do button:SetScript(k, v) end
 
+  button:Hide()
   return button
 end
 
@@ -290,7 +293,7 @@ local function Constructor()
 
   -- No items text.
   frame.noItemsText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-  frame.noItemsText:SetText(Addon.Libs.L.NO_ITEMS_TEXT)
+  frame.noItemsText:SetText(L.NO_ITEMS_TEXT)
   frame.noItemsText:SetTextColor(1, 1, 1)
   frame.noItemsText:SetAlpha(0.5)
   frame.noItemsText:SetPoint("CENTER")

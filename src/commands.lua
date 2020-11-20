@@ -2,12 +2,10 @@ local _, Addon = ...
 local Bags = Addon.Bags
 local Chat = Addon.Chat
 local Commands = Addon.Commands
-local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
 local DTL = Addon.Libs.DTL
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local ItemWindow = Addon.UI.ItemWindow
+local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local LOCKED = _G.LOCKED
 local strlower = _G.strlower
@@ -81,7 +79,7 @@ Commands.sell = create({
   title = L.SELL_TEXT,
   help = L.CMD_HELP_SELL,
   usage = "sell",
-  run = function() ItemWindow:Toggle(Dejunker) end
+  run = function() ItemFrames.Sell:Toggle() end
 })
 
 
@@ -91,7 +89,7 @@ Commands.destroy = create({
   title = L.DESTROY_TEXT,
   help = L.CMD_HELP_DESTROY,
   usage = "destroy",
-  run = function() ItemWindow:Toggle(Destroyer) end
+  run = function() ItemFrames.Destroy:Toggle() end
 })
 
 
