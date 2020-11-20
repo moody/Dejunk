@@ -2,6 +2,7 @@ local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Core = Addon.Core
 local GameTooltip = _G.GameTooltip
+local GetCoinTextureString = _G.GetCoinTextureString
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local UI = Addon.UI
@@ -28,10 +29,8 @@ end
 function ItemFrameMixins:Show()
   -- Create the frame if necessary.
   if not self.frame then self:Create() end
-  -- Refresh items.
-  self.options.service:RefreshItems()
-  -- Reset OnUpdate timer.
-  self.timer = 0
+  -- Set dirty flag.
+  self.dirty = true
   -- Hide tooltip in case the help button tooltip is shown.
   GameTooltip:Hide()
   -- Hide main UI before showing.
@@ -50,7 +49,7 @@ function ItemFrameMixins:Create()
   frame.frame:SetFrameStrata("MEDIUM")
   frame:SetTitle(self.options.title)
   frame:SetWidth(350)
-  frame:SetHeight(341)
+  frame:SetHeight(364)
   frame:EnableResize(false)
   frame:SetPoint(unpack(self.options.point))
   frame:SetLayout("Flow")
@@ -84,15 +83,18 @@ function ItemFrameMixins:Create()
   -- Add ItemFrame widget.
   self.itemFrame = Widgets:ItemFrame({
     parent = frame,
-    title = L.ITEM_WINDOW_CURRENT_ITEMS
+    title = L.ITEM_WINDOW_CURRENT_ITEMS,
+    data = {
+      lists = self.options.service:GetLists(),
+      items = self.options.service:GetItems(),
+      handleItem = function(item)
+        self.options.service:HandleNextItem(item)
+      end,
+    }
   })
-  self.itemFrame:SetData({
-    lists = self.options.service:GetLists(),
-    items = self.options.service:GetItems(),
-    handleItem = function(item)
-      self.options.service:HandleNextItem(item)
-    end,
-  })
+
+  -- Add total heading.
+  self.totalHeading = Widgets:Heading(frame)
 
   -- Add button.
   self.button = Widgets:Button({
@@ -104,11 +106,29 @@ function ItemFrameMixins:Create()
 
   -- Set OnUpdate script.
   frame.frame:SetScript("OnUpdate", function(_, elapsed)
-    -- Update every 0.1 seconds.
+    -- Update every 0.1 seconds or if dirty.
     self.timer = (self.timer or 0) + elapsed
-    if self.timer >= 0.1 then
+    if self.timer >= 0.1 or self.dirty then
       self.timer = 0
+      self.dirty = false
+
+      -- Refresh items.
       self.options.service:RefreshItems()
+      local items = self.options.service:GetItems()
+
+      -- Set ItemFrame title.
+      self.itemFrame.parent:SetTitle(
+        ("%s (|cFFFFFFFF%s|r)"):format(L.ITEM_WINDOW_CURRENT_ITEMS, #items)
+      )
+
+      -- Update total heading.
+      local total = 0
+      for _, item in ipairs(items) do
+        total = total + (item.Price * item.Quantity)
+      end
+      self.totalHeading:SetText(
+        ("|cFFFFFFFF%s|r"):format(GetCoinTextureString(total))
+      )
     end
 
     -- Disable button if Core:IsBusy() or no items.
