@@ -115,7 +115,7 @@ src\ui\item-tooltip.lua
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
 src\ui\main.lua
-src\ui\item-window.lua
+src\ui\item-frames.lua
 
 src\ui\groups\general.lua
 src\ui\groups\sell.lua

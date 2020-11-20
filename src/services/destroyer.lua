@@ -11,7 +11,7 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local Filters = Addon.Filters
 local GetCursorInfo = _G.GetCursorInfo
-local ItemWindow = Addon.UI.ItemWindow
+local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local Lists = Addon.Lists
 local PickupContainerItem = _G.PickupContainerItem
@@ -182,5 +182,5 @@ function Destroyer:AutoShow()
     if maxToDestroy <= 0 then return end
   end
 
-  ItemWindow:Show(self)
+  ItemFrames.Destroy:Show()
 end
