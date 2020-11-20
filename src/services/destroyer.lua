@@ -71,31 +71,14 @@ end
 
 for _, e in ipairs({
   E.BagsUpdated,
+  E.ListItemAdded,
+  E.ListItemRemoved,
+  E.ListRemovedAll,
   E.MainUIClosed,
   E.ProfileChanged,
 }) do
   EventManager:On(e, flagForRefresh)
   EventManager:On(e, queueAutoDestroy)
-end
-
-do -- List events.
-  local function onListEvent(list)
-    if
-      list == Lists.destroy.inclusions or
-      list == Lists.destroy.exclusions
-    then
-      flagForRefresh()
-      queueAutoDestroy()
-    end
-  end
-
-  for _, e in ipairs({
-    E.ListItemAdded,
-    E.ListItemRemoved,
-    E.ListRemovedAll,
-  }) do
-    EventManager:On(e, onListEvent)
-  end
 end
 
 -- ============================================================================

@@ -1,10 +1,14 @@
 local AddonName, Addon = ...
+local Colors = Addon.Colors
+local Commands = Addon.Commands
 local Core = Addon.Core
 local DB = Addon.DB
+local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
-local DTL = Addon.Libs.DTL
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local GameTooltip = _G.GameTooltip
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local L = Addon.Libs.L
 local MerchantButton = Addon.UI.MerchantButton
 local UI = Addon.UI
@@ -51,23 +55,28 @@ EventManager:Once(E.DatabaseReady, function()
 
   button:HookScript("OnClick", function(self, mouseButton)
     if (mouseButton == "LeftButton") then
-      Dejunker:Start()
+      if IsShiftKeyDown() then Commands.sell() else Dejunker:Start() end
     elseif (mouseButton == "RightButton") then
-      UI:Toggle()
+      if IsShiftKeyDown() then Commands.destroy() else UI:Toggle() end
     end
   end)
 
   button:HookScript("OnEnter", function(self)
-    DTL:ShowTooltip(
-      self,
-      "ANCHOR_RIGHT",
-      self:GetText(),
-      L.DEJUNK_BUTTON_TOOLTIP
+    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+    GameTooltip:AddDoubleLine(
+      DCL:ColorString(AddonName, Colors.Primary),
+      Addon.VERSION
     )
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddDoubleLine(L.LEFT_CLICK, L.START_SELLING_BUTTON_TEXT, nil, nil, nil, 1, 1, 1)
+    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME, nil, nil, nil, 1, 1, 1)
+    GameTooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, nil, nil, nil, 1, 1, 1)
+    GameTooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, nil, nil, nil, 1, 1, 1)
+    GameTooltip:Show()
   end)
 
   button:HookScript("OnLeave", function()
-    DTL:HideTooltip()
+    GameTooltip:Hide()
   end)
 
   -- Add to MerchantButton + update

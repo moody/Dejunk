@@ -69,7 +69,10 @@ function UI:Create()
   frame:SetHeight(660)
   frame.frame:SetMinResize(600, 500)
   frame:SetLayout("Flow")
-  frame:SetCallback("OnClose", function() EventManager:Fire(E.MainUIClosed) end)
+  frame:SetCallback("OnClose", function()
+    EventManager:Fire(E.MainUIClosed)
+    ItemFrames:ReshowHidden()
+  end)
   self.frame = frame
   self.widgetsToDisable = {}
   self.disabled = false

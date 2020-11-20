@@ -11,6 +11,7 @@ local Widgets = Addon.UI.Widgets
     text = string,
     fullWidth = boolean,
     width = number,
+    height = number,
     onClick = function,
     onEnter = function,
     onLeave = function
@@ -21,6 +22,7 @@ function Widgets:Button(options)
   button:SetText(options.text)
   button:SetFullWidth(options.fullWidth)
   if options.width then button:SetWidth(options.width) end
+  if options.height then button:SetHeight(options.height) end
   button:SetCallback("OnClick", options.onClick)
   button:SetCallback("OnEnter", options.onEnter)
   button:SetCallback("OnLeave", options.onLeave)
@@ -313,6 +315,12 @@ end
 
   options = {
     parent = widget,
+    title = string,
+    data = {
+      lists = table,
+      items = table,
+      handleItem = function
+    }
   }
 ]]
 function Widgets:ItemFrame(options)
@@ -324,7 +332,11 @@ function Widgets:ItemFrame(options)
 
   local itemFrame = AceGUI:Create("Dejunk_ItemFrame")
   itemFrame:SetFullWidth(true)
-  parent:AddChild(itemFrame)
 
+  if options.data then
+    itemFrame:SetData(options.data)
+  end
+
+  parent:AddChild(itemFrame)
   return itemFrame
 end
