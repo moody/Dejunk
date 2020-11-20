@@ -22,10 +22,9 @@ local unpack = _G.unpack
 
 -- Consts
 local PAD_X, PAD_Y = 4, 16
-local BUTTON_SPACING = 0 -- math.floor(PAD_Y * 0.25 + 0.5)
 local BUTTON_ICON_SIZE = 22
 local BUTTON_HEIGHT = BUTTON_ICON_SIZE + 10
-local NUM_LIST_BUTTONS = 8
+local NUM_LIST_BUTTONS = 6
 
 -- ============================================================================
 -- Widget Mixins
@@ -35,10 +34,7 @@ local widgetMixins = {}
 
 -- Reset stuff to defaults
 function widgetMixins:OnAcquire()
-  self:SetHeight(
-    BUTTON_HEIGHT * NUM_LIST_BUTTONS +
-    BUTTON_SPACING * (NUM_LIST_BUTTONS - 1)
-  )
+  self:SetHeight(BUTTON_HEIGHT * NUM_LIST_BUTTONS)
 end
 
 -- Clear stuff
@@ -271,8 +267,8 @@ local function getButtons(frame, scrollBar)
     local lastButton = buttons[#buttons]
 
     if lastButton then
-      button:SetPoint("TOPLEFT", lastButton, "BOTTOMLEFT", 0, -BUTTON_SPACING)
-      button:SetPoint("TOPRIGHT", lastButton, "BOTTOMRIGHT", 0, -BUTTON_SPACING)
+      button:SetPoint("TOPLEFT", lastButton, "BOTTOMLEFT", 0, 0)
+      button:SetPoint("TOPRIGHT", lastButton, "BOTTOMRIGHT", 0, 0)
     else
       button:SetPoint("TOPLEFT", frame, PAD_X, 0)
       button:SetPoint("TOPRIGHT", scrollBar.ScrollUpButton, "TOPLEFT", -PAD_X, 0)
