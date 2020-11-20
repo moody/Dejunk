@@ -46,6 +46,7 @@ end
 
 function ItemFrameMixins:Create()
   local frame = AceGUI:Create("Window")
+  frame.frame:SetFrameStrata("MEDIUM")
   frame:SetTitle(self.options.title)
   frame:SetWidth(350)
   frame:SetHeight(405)
