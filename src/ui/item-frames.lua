@@ -27,12 +27,12 @@ end
 
 
 function ItemFrameMixins:Show()
+  -- Stop if already shown.
+  if self:IsShown() then return end
   -- Create the frame if necessary.
   if not self.frame then self:Create() end
   -- Set dirty flag.
   self.dirty = true
-  -- Hide tooltip in case the help button tooltip is shown.
-  GameTooltip:Hide()
   -- Hide main UI before showing.
   UI:Hide()
   self.frame:Show()
@@ -161,9 +161,19 @@ end
 -- ============================================================================
 
 ItemFrames.frames = {}
+ItemFrames.hiddenFrames = {}
 
+-- Shows frames previously hidden by `HideAll`.
+function ItemFrames:ReshowHidden()
+  for frame, wasShown in pairs(self.hiddenFrames) do
+    if wasShown then frame:Show() end
+  end
+end
+
+-- Hides all item frames.
 function ItemFrames:HideAll()
   for frame in pairs(self.frames) do
+    self.hiddenFrames[frame] = frame:IsShown()
     frame:Hide()
   end
 end
