@@ -49,7 +49,7 @@ function ItemFrameMixins:Create()
   frame.frame:SetFrameStrata("MEDIUM")
   frame:SetTitle(self.options.title)
   frame:SetWidth(350)
-  frame:SetHeight(364)
+  frame:SetHeight(370)
   frame:EnableResize(false)
   frame:SetPoint(unpack(self.options.point))
   frame:SetLayout("Flow")
@@ -100,6 +100,7 @@ function ItemFrameMixins:Create()
   self.button = Widgets:Button({
     parent = frame,
     fullWidth = true,
+    height = 32,
     text = self.options.buttonText,
     onClick = function() self.options.service:HandleNextItem() end,
   })
