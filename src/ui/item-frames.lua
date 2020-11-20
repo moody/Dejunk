@@ -5,6 +5,7 @@ local GameTooltip = _G.GameTooltip
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local UI = Addon.UI
+local unpack = _G.unpack
 local Widgets = Addon.UI.Widgets
 
 -- ============================================================================
@@ -51,6 +52,7 @@ function ItemFrameMixins:Create()
   frame:SetWidth(350)
   frame:SetHeight(405)
   frame:EnableResize(false)
+  frame:SetPoint(unpack(self.options.point))
   frame:SetLayout("Flow")
   self.frame = frame
 
@@ -157,6 +159,7 @@ end
 local function init(frame, options)
   assertType(options, "table")
   assertType(options.title, "string")
+  assertType(options.point, "table")
   assertType(options.helpTooltip, "string")
   assertType(options.buttonText, "string")
   assertType(options.service, "table")
@@ -171,10 +174,10 @@ local function init(frame, options)
   ItemFrames.frames[frame] = true
 end
 
-
 -- Sell Frame
 init(ItemFrames.Sell, {
   title = AddonName .. " " .. L.SELL_TEXT,
+  point = { "CENTER", -200, 0 },
   helpTooltip = L.ITEM_WINDOW_LEFT_CLICK_TO_SELL,
   buttonText = L.SELL_NEXT_ITEM,
   service = Addon.Dejunker,
@@ -184,6 +187,7 @@ init(ItemFrames.Sell, {
 -- Destroy Frame
 init(ItemFrames.Destroy, {
   title = AddonName .. " " .. L.DESTROY_TEXT,
+  point = { "CENTER", 200, 0 },
   helpTooltip = L.ITEM_WINDOW_LEFT_CLICK_TO_DESTROY,
   buttonText = L.DESTROY_NEXT_ITEM,
   service = Addon.Destroyer,
