@@ -51,27 +51,13 @@ do -- Flag for refresh.
 
   for _, e in ipairs({
     E.BagsUpdated,
+    E.ListItemAdded,
+    E.ListItemRemoved,
+    E.ListRemovedAll,
     E.MainUIClosed,
     E.ProfileChanged,
   }) do
     EventManager:On(e, flagForRefresh)
-  end
-
-  local function onListEvent(list)
-    if
-      list == Lists.sell.inclusions or
-      list == Lists.sell.exclusions
-    then
-      flagForRefresh()
-    end
-  end
-
-  for _, e in ipairs({
-    E.ListItemAdded,
-    E.ListItemRemoved,
-    E.ListRemovedAll,
-  }) do
-    EventManager:On(e, onListEvent)
   end
 end
 
