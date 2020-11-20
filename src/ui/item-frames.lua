@@ -115,6 +115,19 @@ function ItemFrameMixins:Create()
     )
   end)
 
+  -- Hook CloseSpecialWindows to hide when ESC is pressed.
+  local closeSpecialWindows = _G.CloseSpecialWindows
+  _G.CloseSpecialWindows = function()
+    local found = closeSpecialWindows()
+
+    if frame:IsShown() then
+      frame:Hide()
+      return true
+    end
+
+    return found
+  end
+
   -- This function should only be called once.
   self.Create = nil
 end
