@@ -313,6 +313,12 @@ end
 
   options = {
     parent = widget,
+    title = string,
+    data = {
+      lists = table,
+      items = table,
+      handleItem = function
+    }
   }
 ]]
 function Widgets:ItemFrame(options)
@@ -324,7 +330,11 @@ function Widgets:ItemFrame(options)
 
   local itemFrame = AceGUI:Create("Dejunk_ItemFrame")
   itemFrame:SetFullWidth(true)
-  parent:AddChild(itemFrame)
 
+  if options.data then
+    itemFrame:SetData(options.data)
+  end
+
+  parent:AddChild(itemFrame)
   return itemFrame
 end
