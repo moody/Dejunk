@@ -98,7 +98,7 @@ function Core:OnUpdate(elapsed)
     interval = 0
     home, world = select(3, GetNetStats())
     latency = max(home, world) * 0.001 -- convert to seconds
-    self.MinDelay = max(latency, 0.1) -- 0.1 seconds min
+    self.MinDelay = max(latency, 0.15) -- 0.15 seconds min
   end
 
   ListHelper:OnUpdate(elapsed)
