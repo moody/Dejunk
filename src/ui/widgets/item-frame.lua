@@ -1,16 +1,18 @@
-local AddonName, Addon = ...
+local _, Addon = ...
 local Type, Version = "Dejunk_ItemFrame", 1
 local AceGUI = Addon.Libs.AceGUI
 if (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
 -- Upvalues
 local ClearCursor = _G.ClearCursor
+local Colors = Addon.Colors
 local CreateFrame = _G.CreateFrame
 local CursorHasItem = _G.CursorHasItem
 local DCL = Addon.Libs.DCL
 local DressUpVisual = _G.DressUpVisual
 local floor = math.floor
 local GameTooltip = _G.GameTooltip
+local GetCoinTextureString = _G.GetCoinTextureString
 local GetCursorInfo = _G.GetCursorInfo
 local GetMouseFocus = _G.GetMouseFocus
 local IsControlKeyDown = _G.IsControlKeyDown
@@ -18,7 +20,6 @@ local IsDressableItem = _G.IsDressableItem
 local L = Addon.Libs.L
 local max = math.max
 local UIParent = _G.UIParent
-local unpack = _G.unpack
 
 -- Consts
 local PAD_X, PAD_Y = 4, 16
@@ -42,6 +43,7 @@ function widgetMixins:OnRelease()
   self.frame.lists = nil
   self.frame.items = nil
   self.frame.handleItem = nil
+  self.frame.handleItemTooltip = nil
   self.frame.scrollBar.items = nil
 end
 
@@ -50,14 +52,19 @@ end
     lists = table,
     items = table,
     handleItem = function,
+    handleItemTooltip = string,
   }
 ]]
 function widgetMixins:SetData(data)
-  assert(data.lists and data.items and data.handleItem)
+  assert(type(data.lists) == "table")
+  assert(type(data.items) == "table")
+  assert(type(data.handleItem) == "function")
+  assert(type(data.handleItemTooltip) == "string")
   self.frame.offset = 0
   self.frame.lists = data.lists
   self.frame.items = data.items
   self.frame.handleItem = data.handleItem
+  self.frame.handleItemTooltip = data.handleItemTooltip
   self.frame.scrollBar.items = data.items
   self.frame.scrollBar:SetMinMaxValues(0, max(#data.items - NUM_LIST_BUTTONS, 0))
   self.frame.scrollBar:SetValue(0)
@@ -149,13 +156,17 @@ local ButtonMixins, ButtonScripts = {}, {}
 
 function ButtonMixins:SetItem(item)
   self.item = item
+  self.itemText = DCL:ColorString(
+    (
+      item.Quantity > 1 and
+      (item.ItemLink .. "x" .. item.Quantity) or
+      item.ItemLink
+    ),
+    DCL.CSS.White
+  )
   self.icon:SetTexture(item.Texture)
   self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-  self.text:SetText(("[%s]%s"):format(
-    item.Name,
-    (item.Quantity > 1 and ("|cFFFFFFFFx" .. item.Quantity .. "") or "")
-  ))
-  self.text:SetTextColor(unpack(DCL:GetColorByQuality(item.Quality)))
+  self.text:SetText(self.itemText)
   if GetMouseFocus() == self then self:ShowTooltip() end
 end
 
@@ -175,7 +186,35 @@ end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  GameTooltip:SetBagItem(self.item.Bag, self.item.Slot)
+  -- Set title to itemText.
+  GameTooltip:SetText(self.itemText)
+  -- Add total.
+  local total = GetCoinTextureString(self.item.Price * self.item.Quantity)
+  GameTooltip:AddLine(("%s:  %s"):format(_G.SELL_PRICE, total), 1, 1, 1)
+  -- Blank.
+  GameTooltip:AddLine(" ")
+  -- Add reason.
+  GameTooltip:AddLine(DCL:ColorString(L.REASON_TEXT, Colors.Yellow))
+  GameTooltip:AddLine("  " .. self.item.Reason, 1, 1, 1)
+  -- Blank.
+  GameTooltip:AddLine(" ")
+  -- Add left-click info.
+  GameTooltip:AddDoubleLine(
+    L.LEFT_CLICK,
+    self:GetParent().handleItemTooltip,
+    nil, nil, nil,
+    1, 1, 1
+  )
+  -- Add right-click info.
+  GameTooltip:AddDoubleLine(
+    L.RIGHT_CLICK,
+    L.BINDINGS_ADD_TO_LIST_TEXT:format(
+      self:GetParent().lists.exclusions.locale
+    ),
+    nil, nil, nil,
+    1, 1, 1
+  )
+  -- Show.
   GameTooltip:Show()
 end
 

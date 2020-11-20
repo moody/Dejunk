@@ -55,30 +55,17 @@ function ItemFrameMixins:Create()
   frame:SetLayout("Flow")
   self.frame = frame
 
-  -- Add help button.
-  Widgets:Button({
+  -- Add help label.
+  Widgets:Label({
     parent = frame,
-    text = L.HELP_TEXT,
+    text = L.ITEM_WINDOW_DRAG_DROP_TO_INCLUDE:format(
+      self.options.service:GetLists().inclusions.locale
+    ),
     fullWidth = true,
-    onEnter = function(b)
-      local line = ("%s|n|n%s|n|n%s"):format(
-        self.options.helpTooltip,
-        L.ITEM_WINDOW_DRAG_DROP_TO_INCLUDE:format(
-          self.options.service:GetLists().inclusions.locale
-        ),
-        L.ITEM_WINDOW_RIGHT_CLICK_TO_EXCLUDE:format(
-          self.options.service:GetLists().exclusions.locale
-        )
-      )
-      GameTooltip:SetOwner(b.frame, "ANCHOR_TOP")
-      GameTooltip:SetText(L.HELP_TEXT, 1.0, 0.82, 0)
-      GameTooltip:AddLine(line, 1, 1, 1, true)
-      GameTooltip:Show()
-    end,
-    onLeave = function()
-      GameTooltip:Hide()
-    end
   })
+
+  -- Add space.
+  Widgets:Label({ parent = frame, text = " ", fullWidth = true })
 
   -- Add ItemFrame widget.
   self.itemFrame = Widgets:ItemFrame({
@@ -90,6 +77,7 @@ function ItemFrameMixins:Create()
       handleItem = function(item)
         self.options.service:HandleNextItem(item)
       end,
+      handleItemTooltip = self.options.handleItemTooltip
     }
   })
 
@@ -191,7 +179,7 @@ local function init(frame, options)
   assertType(options, "table")
   assertType(options.title, "string")
   assertType(options.point, "table")
-  assertType(options.helpTooltip, "string")
+  assertType(options.handleItemTooltip, "string")
   assertType(options.buttonText, "string")
   assertType(options.service, "table")
   assert(
@@ -209,7 +197,7 @@ end
 init(ItemFrames.Sell, {
   title = AddonName .. " " .. L.SELL_TEXT,
   point = { "CENTER", -200, 0 },
-  helpTooltip = L.ITEM_WINDOW_LEFT_CLICK_TO_SELL,
+  handleItemTooltip = L.SELL_TEXT,
   buttonText = L.SELL_NEXT_ITEM,
   service = Addon.Dejunker,
 })
@@ -219,7 +207,7 @@ init(ItemFrames.Sell, {
 init(ItemFrames.Destroy, {
   title = AddonName .. " " .. L.DESTROY_TEXT,
   point = { "CENTER", 200, 0 },
-  helpTooltip = L.ITEM_WINDOW_LEFT_CLICK_TO_DESTROY,
+  handleItemTooltip = L.DESTROY_TEXT,
   buttonText = L.DESTROY_NEXT_ITEM,
   service = Addon.Destroyer,
 })
