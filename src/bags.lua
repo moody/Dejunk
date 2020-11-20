@@ -10,6 +10,10 @@ local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetItemInfo = _G.GetItemInfo
 local NUM_BAG_SLOTS = _G.NUM_BAG_SLOTS
+local pairs = pairs
+local select = select
+local setmetatable = setmetatable
+local type = type
 
 -- Initialize cache table.
 Bags.cache = {}
@@ -204,8 +208,14 @@ function Bags:GetItems(items)
     for k in pairs(items) do items[k] = nil end
   end
 
-  -- Shallow copy the cache.
-  for k, v in pairs(self.cache) do items[k] = v end
+  -- Copy the cache.
+  for k, v in pairs(self.cache) do
+    if type(v) == "table" then
+      items[k] = setmetatable({}, { __index = v })
+    else
+      items[k] = v
+    end
+  end
 
   return items
 end
