@@ -9,5 +9,5 @@ manual-changelog:
 ignore:
   - Dejunk.png
   - README.md
-  - locales/_upload.py
+  - scripts
   - test

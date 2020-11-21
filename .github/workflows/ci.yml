@@ -1,7 +1,7 @@
-name: Localization
+name: CI
 
 on:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -12,12 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v1
-      - run: pip install requests
 
       - name: Find Unused Locales
         run: python scripts/find_unused_locales.py
-
-      - name: Upload to CurseForge
-        run: python scripts/upload_locales.py
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}

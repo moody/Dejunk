@@ -4,6 +4,7 @@ local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
 local Chat = Addon.Chat
 local ClearCursor = _G.ClearCursor
 local Consts = Addon.Consts
+local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
 local Destroyer = Addon.Destroyer
@@ -18,14 +19,7 @@ local PickupContainerItem = _G.PickupContainerItem
 local tsort = table.sort
 local UI = Addon.UI
 
-local States = {
-  None = 0,
-  Destroying = 1
-}
-
 Destroyer.items = {}
-Destroyer.state = States.None
-Destroyer.timer = 0
 
 -- ============================================================================
 -- Events
@@ -110,13 +104,22 @@ end
 
 
 function Destroyer:HandleNextItem(item)
+  -- Stop if unsafe.
+  local canDestroy, msg = Core:CanDestroy()
+  if not canDestroy then
+    return Chat:Print(msg)
+  end
+
   -- Refresh items.
   self:RefreshItems()
 
   -- Stop if no items.
   if #self.items == 0 then
-    Chat:Print(L.NO_DESTROYABLE_ITEMS)
-    return
+    return Chat:Print(
+      self.items.allCached and
+      L.NO_DESTROYABLE_ITEMS or
+      L.NO_CACHED_DESTROYABLE_ITEMS
+    )
   end
 
   -- Don't run if the cursor has an item, spell, etc.

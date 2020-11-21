@@ -117,8 +117,11 @@ end
 
 
 function Dejunker:HandleNextItem(item)
-  -- Stop if selling is in progress.
-  if self.state ~= States.None then return end
+  -- Stop if unsafe.
+  local canDejunk, msg = Core:CanDejunk()
+  if not canDejunk then
+    return Chat:Print(msg)
+  end
 
   -- Stop if the merchant frame is not shown.
   if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
