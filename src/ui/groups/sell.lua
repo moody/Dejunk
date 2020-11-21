@@ -56,9 +56,9 @@ function Sell:AddGeneral(parent)
       min = Consts.SELL_BELOW_PRICE_MIN,
       max = Consts.SELL_BELOW_PRICE_MAX,
       step = Consts.SELL_BELOW_PRICE_STEP,
-      onValueChanged = function(self, event, value)
+      onValueChanged = function(this, event, value)
         DB.Profile.sell.belowPrice.value = value
-        self:SetLabel(GetCoinTextureString(DB.Profile.sell.belowPrice.value))
+        this:SetLabel(GetCoinTextureString(DB.Profile.sell.belowPrice.value))
       end
     }
   })
@@ -152,7 +152,7 @@ function Sell:AddByType(parent)
         min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
         max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
         step = Consts.SELL_BELOW_AVERAGE_ILVL_STEP,
-        onValueChanged = function(self, event, value)
+        onValueChanged = function(_, event, value)
           DB.Profile.sell.byType.belowAverageItemLevel.value = value
         end
       }

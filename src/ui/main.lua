@@ -165,8 +165,8 @@ function UI:Create()
     { text = L.PROFILES_TEXT, value = "Profiles" }
   })
 
-  treeGroup:SetCallback("OnGroupSelected", function(self, event, key)
-    self:ReleaseChildren()
+  treeGroup:SetCallback("OnGroupSelected", function(this, event, key)
+    this:ReleaseChildren()
 
     local group = UI.Groups[key] or error(key .. " group not supported")
     local parent = AceGUI:Create(group.parent or "ScrollFrame")
@@ -178,7 +178,7 @@ function UI:Create()
     parent:ResumeLayout()
     parent:DoLayout()
 
-    self:AddChild(parent)
+    this:AddChild(parent)
   end)
 
   treeGroup:SelectByValue("General")
