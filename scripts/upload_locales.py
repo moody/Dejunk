@@ -23,12 +23,12 @@ def parse(lines):
     return entries
 
 
-def getLocales():
+def getEntries():
     with open("locales/enUS.lua", encoding="utf-8") as f:
         return parse(f.readlines())
 
 
-def getCurseLocales():
+def getCurseEntries():
     r = requests.get(url=EXPORT_URL)
     if r.ok:
         return parse(r.text.splitlines())
@@ -48,20 +48,28 @@ def upload(localizations):
         raise Exception(r.text)
 
 
-# Get locales.
-print("Retrieving locales...")
-locales = getLocales()
+# Get entries.
+print("Retrieving local entries...", end=" ")
+entries = getEntries()
+print(f"{len(entries)} entries retrieved.")
 
-# Get locales from Curse.
-print("Retrieving Curse locales...")
-curseLocales = getCurseLocales()
+# Get entries from Curse.
+print("Retrieving Curse entries...", end=" ")
+curseEntries = getCurseEntries()
+print(f"{len(curseEntries)} entries retrieved.")
 
-# Upload unchanged locales so that any changed locales are deleted.
-print("Uploading unchanged locales...")
-upload([x for x in locales if x in curseLocales])
+# Get unchanged entries.
+unchangedEntries = [x for x in entries if x in curseEntries]
 
-# Upload all locales.
-print("Uploading all locales...")
-upload(locales)
+# Upload [unchangedEntries], so that stale entries are deleted.
+print(f"Uploading {len(unchangedEntries)} unchanged entries...", end=" ")
+upload(unchangedEntries)
+print("Done.")
+
+# Upload all entries.
+print(f"Uploading {len(entries)} local entries:")
+for k in entries:
+    print(f"  {k}")
+upload(entries)
 
 print("Success!")
