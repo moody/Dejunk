@@ -1,0 +1,17 @@
+name: CI
+
+on:
+  pull-request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+
+      - name: Find Unused Locales
+        run: python locales/_find_unused.py
