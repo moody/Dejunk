@@ -15,9 +15,9 @@ jobs:
       - run: pip install requests
 
       - name: Find Unused Locales
-        run: python locales/_find_unused.py
+        run: python scripts/find_unused_locales.py
 
       - name: Upload to CurseForge
-        run: python locales/_upload.py
+        run: python scripts/upload_locales.py
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}

@@ -14,4 +14,4 @@ jobs:
       - uses: actions/setup-python@v1
 
       - name: Find Unused Locales
-        run: python locales/_find_unused.py
+        run: python scripts/find_unused_locales.py
