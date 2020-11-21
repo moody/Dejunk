@@ -4,6 +4,7 @@ local CalculateTotalNumberOfFreeBagSlots = _G.CalculateTotalNumberOfFreeBagSlots
 local Chat = Addon.Chat
 local ClearCursor = _G.ClearCursor
 local Consts = Addon.Consts
+local Core = Addon.Core
 local DB = Addon.DB
 local DeleteCursorItem = _G.DeleteCursorItem
 local Destroyer = Addon.Destroyer
@@ -18,14 +19,7 @@ local PickupContainerItem = _G.PickupContainerItem
 local tsort = table.sort
 local UI = Addon.UI
 
-local States = {
-  None = 0,
-  Destroying = 1
-}
-
 Destroyer.items = {}
-Destroyer.state = States.None
-Destroyer.timer = 0
 
 -- ============================================================================
 -- Events
@@ -110,6 +104,9 @@ end
 
 
 function Destroyer:HandleNextItem(item)
+  -- Stop if busy.
+  if Core:IsBusy() then return end
+
   -- Refresh items.
   self:RefreshItems()
 
