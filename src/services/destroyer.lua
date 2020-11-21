@@ -115,8 +115,11 @@ function Destroyer:HandleNextItem(item)
 
   -- Stop if no items.
   if #self.items == 0 then
-    Chat:Print(L.NO_DESTROYABLE_ITEMS)
-    return
+    return Chat:Print(
+      self.items.allCached and
+      L.NO_DESTROYABLE_ITEMS or
+      L.NO_CACHED_DESTROYABLE_ITEMS
+    )
   end
 
   -- Don't run if the cursor has an item, spell, etc.
