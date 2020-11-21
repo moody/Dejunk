@@ -104,8 +104,11 @@ end
 
 
 function Destroyer:HandleNextItem(item)
-  -- Stop if busy.
-  if Core:IsBusy() then return end
+  -- Stop if unsafe.
+  local canDestroy, msg = Core:CanDestroy()
+  if not canDestroy then
+    return Chat:Print(msg)
+  end
 
   -- Refresh items.
   self:RefreshItems()

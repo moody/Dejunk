@@ -117,8 +117,11 @@ end
 
 
 function Dejunker:HandleNextItem(item)
-  -- Stop if busy.
-  if Core:IsBusy() then return end
+  -- Stop if unsafe.
+  local canDejunk, msg = Core:CanDejunk()
+  if not canDejunk then
+    return Chat:Print(msg)
+  end
 
   -- Stop if the merchant frame is not shown.
   if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
