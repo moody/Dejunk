@@ -2,4 +2,5 @@
 
 ## Changes
 
+- Locale updates
 - Minor bug fixes
