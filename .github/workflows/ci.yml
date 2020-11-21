@@ -15,3 +15,9 @@ jobs:
 
       - name: Find Unused Locales
         run: python scripts/find_unused_locales.py
+
+      - name: Run Luacheck
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--codes --no-color -q"
+          annotate: warning
