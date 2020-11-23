@@ -11,6 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Run Luacheck
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--codes --no-color -q"
+          annotate: warning
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+
+      - name: Install requests
+        run: pip install requests
+
+      - name: Find Unused Locales
+        run: python scripts/find_unused_locales.py
+
+      - name: Upload Locales
+        run: python scripts/upload_locales.py
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+
       - name: Release Classic
         run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.5
         env:

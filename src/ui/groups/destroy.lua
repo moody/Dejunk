@@ -41,7 +41,7 @@ function Destroy:AddGeneral(parent)
       min = Consts.DESTROY_AUTO_SLIDER_MIN,
       max = Consts.DESTROY_AUTO_SLIDER_MAX,
       step = Consts.DESTROY_AUTO_SLIDER_STEP,
-      onValueChanged = function(self, event, value)
+      onValueChanged = function(_, event, value)
         DB.Profile.destroy.autoSlider = value
       end
     }
@@ -62,9 +62,9 @@ function Destroy:AddGeneral(parent)
       min = Consts.DESTROY_BELOW_PRICE_MIN,
       max = Consts.DESTROY_BELOW_PRICE_MAX,
       step = Consts.DESTROY_BELOW_PRICE_STEP,
-      onValueChanged = function(self, event, value)
+      onValueChanged = function(this, event, value)
         DB.Profile.destroy.belowPrice.value = value
-        self:SetLabel(GetCoinTextureString(DB.Profile.destroy.belowPrice.value))
+        this:SetLabel(GetCoinTextureString(DB.Profile.destroy.belowPrice.value))
       end
     }
   })
@@ -168,7 +168,7 @@ function Destroy:AddByType(parent)
         min = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
         max = Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX,
         step = Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP,
-        onValueChanged = function(self, event, value)
+        onValueChanged = function(_, event, value)
           DB.Profile.destroy.byType.excessSoulShards.value = value
         end
       }

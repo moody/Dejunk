@@ -111,8 +111,8 @@ function Profiles:Create(parent)
     { text = L.EXPORT_PROFILE_TEXT, value = "Export" }
   })
 
-  tabGroup:SetCallback("OnGroupSelected", function(self, event, group)
-    self:ReleaseChildren()
+  tabGroup:SetCallback("OnGroupSelected", function(this, event, group)
+    this:ReleaseChildren()
 
     local scrollFrame = AceGUI:Create("ScrollFrame")
     scrollFrame:SetLayout("Flow")
@@ -123,7 +123,7 @@ function Profiles:Create(parent)
     scrollFrame:ResumeLayout()
     scrollFrame:DoLayout()
 
-    self:AddChild(scrollFrame)
+    this:AddChild(scrollFrame)
   end)
 
   tabGroup:SelectTab("Profiles")
@@ -153,15 +153,15 @@ function Profiles:Profiles(parent)
     Widgets:EditBox({
       parent = group,
       label = L.PROFILE_NEW_TEXT,
-      onEnterPressed = function(self, event, key)
+      onEnterPressed = function(this, event, key)
         key = strtrim(key)
         if (#key > 0) and createProfile(key) then
-          self:SetText("")
-          self:ClearFocus()
+          this:SetText("")
+          this:ClearFocus()
           Profiles:UpdateDropdowns()
         else
-          self:SetFocus()
-          self:HighlightText(0)
+          this:SetFocus()
+          this:HighlightText(0)
         end
       end
     })
@@ -170,7 +170,7 @@ function Profiles:Profiles(parent)
     self.existingProfiles = Widgets:Dropdown({
       parent = group,
       label = L.PROFILE_EXISTING_PROFILES_TEXT,
-      onValueChanged = function(self, event, key)
+      onValueChanged = function(_, event, key)
         setProfile(key)
         Profiles:UpdateDropdowns()
       end
@@ -192,9 +192,9 @@ function Profiles:Profiles(parent)
 
     self.copyProfile = Widgets:Dropdown({
       parent = group,
-      onValueChanged = function(self, event, key)
+      onValueChanged = function(this, event, key)
         copyProfile(key)
-        self:SetValue()
+        this:SetValue()
       end
     })
   end
@@ -214,7 +214,7 @@ function Profiles:Profiles(parent)
 
     self.deleteProfile = Widgets:Dropdown({
       parent = group,
-      onValueChanged = function(self, event, key)
+      onValueChanged = function(_, event, key)
         Utils:YesNoPopup({
           text = L.DELETE_PROFILE_POPUP:format(
             DCL:ColorString(key, Colors.Yellow)

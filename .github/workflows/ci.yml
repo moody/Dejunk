@@ -1,6 +1,9 @@
 name: CI
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     branches:
       - master
@@ -11,7 +14,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-python@v1
+
+      - name: Run Luacheck
+        uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--codes --no-color -q"
+          annotate: warning
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
 
       - name: Find Unused Locales
         run: python scripts/find_unused_locales.py

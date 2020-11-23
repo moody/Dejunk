@@ -19,7 +19,7 @@ EventManager:Once(E.DatabaseReady, function()
   local object = LDB:NewDataObject(AddonName, {
     type = "data source",
     text = AddonName,
-  	icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
+    icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
       if IsShiftKeyDown() then
