@@ -1,6 +1,5 @@
-# 9.0.7
+# 9.0.8
 
 ## Changes
 
 - Locale updates
-- Minor bug fixes
