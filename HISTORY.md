@@ -1,3 +1,10 @@
+# 9.0.7
+
+## Changes
+
+- Locale updates
+- Minor bug fixes
+
 # 9.0.6
 
 ## Changes to Destroying
