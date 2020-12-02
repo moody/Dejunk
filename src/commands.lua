@@ -70,9 +70,8 @@ local create = (function()
   end
 
   return function(t)
-    assert(type(t.title) == "string")
+    assert(type(t.keyword) == "string")
     assert(type(t.help) == "string")
-    assert(type(t.usage) == "string")
     assert(type(t.run) == "function")
 
     t.sortIndex = nextIndex()
@@ -92,30 +91,26 @@ end)()
 
 -- Toggles the options frame.
 Commands.toggle = create({
-  title = L.TOGGLE_TEXT,
+  keyword = "toggle",
   help = L.CMD_HELP_TOGGLE,
-  usage = "[toggle]",
   run = function() UI:Toggle() end
 })
 
 
 -- Toggles the sell frame.
 Commands.sell = create({
-  title = L.SELL_TEXT,
+  keyword = "sell",
   help = L.CMD_HELP_SELL,
-  usage = "sell",
   run = function() ItemFrames.Sell:Toggle() end,
   subcommands = {
     start = create({
-      title = L.START_TEXT,
+      keyword = "start",
       help = L.CMD_HELP_SELL_START,
-      usage = "start",
       run = function() Dejunker:Start() end,
     }),
     next = create({
-      title = L.NEXT_TEXT,
+      keyword = "next",
       help = L.CMD_HELP_SELL_NEXT,
-      usage = "next",
       run = function() Dejunker:HandleNextItem() end,
     })
   },
@@ -124,15 +119,13 @@ Commands.sell = create({
 
 -- Toggles the destroy frame.
 Commands.destroy = create({
-  title = L.DESTROY_TEXT,
+  keyword = "destroy",
   help = L.CMD_HELP_DESTROY,
-  usage = "destroy",
   run = function() ItemFrames.Destroy:Toggle() end,
   subcommands = {
     next = create({
-      title = L.NEXT_TEXT,
+      keyword = "next",
       help = L.CMD_HELP_DESTROY_NEXT,
-      usage = "next",
       run = function() Destroyer:HandleNextItem() end,
     })
   }
@@ -158,9 +151,8 @@ Commands.open = (function()
   }
 
   return create({
-    title = L.OPEN_TEXT,
+    keyword = "open",
     help = L.CMD_HELP_OPEN,
-    usage = "open",
     run = function()
       -- Stop if a frame is open which modifies the behavior of `UseContainerItem`
       for i in pairs(frames) do
@@ -206,10 +198,10 @@ end)()
 -- ============================================================================
 
 local function getUsageText(cmd)
-  local usage = cmd.usage
+  local usage = cmd.keyword
   local parent = cmd.parent
   while parent do
-    usage = parent.usage .. " " .. usage
+    usage = parent.keyword .. " " .. usage
     parent = parent.parent
   end
   return "/dejunk " .. usage
@@ -230,11 +222,7 @@ end
 -- Set up command tables to return a sorted array of commands when called.
 
 local function compareCommands(a, b)
-  return (
-    a.sortIndex == b.sortIndex and
-    a.title < b.title or
-    a.sortIndex < b.sortIndex
-  )
+  return a.sortIndex < b.sortIndex
 end
 
 local function returnSortedOnCall(t)
