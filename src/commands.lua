@@ -3,6 +3,7 @@ local Bags = Addon.Bags
 local Chat = Addon.Chat
 local Commands = Addon.Commands
 local Dejunker = Addon.Dejunker
+local Destroyer = Addon.Destroyer
 local DTL = Addon.Libs.DTL
 local E = Addon.Events
 local EventManager = Addon.EventManager
@@ -110,6 +111,12 @@ Commands.sell = create({
       help = L.CMD_HELP_SELL_START,
       usage = "start",
       run = function() Dejunker:Start() end,
+    }),
+    next = create({
+      title = L.NEXT_TEXT,
+      help = L.CMD_HELP_SELL_NEXT,
+      usage = "next",
+      run = function() Dejunker:HandleNextItem() end,
     })
   },
 })
@@ -120,7 +127,15 @@ Commands.destroy = create({
   title = L.DESTROY_TEXT,
   help = L.CMD_HELP_DESTROY,
   usage = "destroy",
-  run = function() ItemFrames.Destroy:Toggle() end
+  run = function() ItemFrames.Destroy:Toggle() end,
+  subcommands = {
+    next = create({
+      title = L.NEXT_TEXT,
+      help = L.CMD_HELP_DESTROY_NEXT,
+      usage = "next",
+      run = function() Destroyer:HandleNextItem() end,
+    })
+  }
 })
 
 

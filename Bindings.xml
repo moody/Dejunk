@@ -26,7 +26,7 @@
 
   <!-- Sell next item -->
   <Binding name="DEJUNK_SELL_NEXT_ITEM" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_HandleNextItem("Dejunker")
+    DejunkBindings_SellNextItem()
   </Binding>
 
   <!-- Add/rem sell inclusions -->
@@ -47,7 +47,7 @@
 
   <!-- Destroy next item -->
   <Binding name="DEJUNK_DESTROY_NEXT_ITEM" header="DEJUNK_HEADER_DESTROY" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_HandleNextItem("Destroyer")
+    DejunkBindings_DestroyNextItem()
   </Binding>
 
   <!-- Add/rem destroy inclusions -->

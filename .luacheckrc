@@ -17,5 +17,7 @@ globals = {
   "DejunkBindings_OpenLootables",
   "DejunkBindings_AddToList",
   "DejunkBindings_RemoveFromList",
-  "DejunkBindings_HandleNextItem",
+  "DejunkBindings_StartSelling",
+  "DejunkBindings_SellNextItem",
+  "DejunkBindings_DestroyNextItem",
 }

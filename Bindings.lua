@@ -62,6 +62,10 @@ DejunkBindings_OpenLootables = Commands.open
 
 -- Sell.
 DejunkBindings_StartSelling = Commands.sell.subcommands.start
+DejunkBindings_SellNextItem = Commands.sell.subcommands.next
+
+-- Destroy.
+DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
 
 function DejunkBindings_AddToList(groupName, listName)
   if not currentItemID then return end
@@ -71,10 +75,6 @@ end
 function DejunkBindings_RemoveFromList(groupName, listName)
   if not currentItemID then return end
   Lists[groupName][listName]:Remove(currentItemID, true)
-end
-
-function DejunkBindings_HandleNextItem(service)
-  Addon[service]:HandleNextItem()
 end
 
 -- ============================================================================
