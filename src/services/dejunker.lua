@@ -123,11 +123,6 @@ function Dejunker:HandleNextItem(item)
     return Chat:Print(msg)
   end
 
-  -- Stop if the merchant frame is not shown.
-  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
-    return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-  end
-
   -- Refresh items.
   self:RefreshItems()
 
