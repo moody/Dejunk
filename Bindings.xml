@@ -19,8 +19,13 @@
     DejunkBindings_OpenLootables()
   </Binding>
 
+  <!-- Start selling -->
+  <Binding name="DEJUNK_START_SELLING" header="DEJUNK_HEADER_SELL" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_StartSelling()
+  </Binding>
+
   <!-- Sell next item -->
-  <Binding name="DEJUNK_SELL_NEXT_ITEM" header="DEJUNK_HEADER_SELL" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_SELL_NEXT_ITEM" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_HandleNextItem("Dejunker")
   </Binding>
 

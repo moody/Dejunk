@@ -13,45 +13,38 @@ local currentItemID = nil
 -- Binding Strings
 -- ============================================================================
 
--- Category
+-- Category.
 _G.BINDING_CATEGORY_DEJUNK = DCL:ColorString(AddonName, Colors.Primary)
 
--- Headers
+-- Headers.
 _G.BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL_TEXT
 _G.BINDING_HEADER_DEJUNK_HEADER_SELL = L.SELL_TEXT
 _G.BINDING_HEADER_DEJUNK_HEADER_DESTROY = L.DESTROY_TEXT
 
--- General
+-- General.
 _G.BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_OPTIONS_FRAME
 _G.BINDING_NAME_DEJUNK_TOGGLE_SELL_FRAME = L.TOGGLE_SELL_FRAME
 _G.BINDING_NAME_DEJUNK_TOGGLE_DESTROY_FRAME = L.TOGGLE_DESTROY_FRAME
 _G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
 
--- Sell next item
+-- Sell.
+_G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_SELL_NEXT_ITEM = L.SELL_NEXT_ITEM
-
--- Sell Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_INCLUSIONS =
   L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
-
--- Sell Exclusions
 _G.BINDING_NAME_DEJUNK_ADD_EXCLUSIONS =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
   L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
 
--- Destroy next item
+-- Destroy.
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
-
--- Destroy Inclusions
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
   L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
-
--- Destroy Exclusions
 _G.BINDING_NAME_DEJUNK_ADD_UNDESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.exclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
@@ -61,10 +54,14 @@ _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
 -- Binding Functions
 -- ============================================================================
 
+-- General.
 DejunkBindings_ToggleOptionsFrame = Commands.toggle
 DejunkBindings_ToggleSellFrame = Commands.sell
 DejunkBindings_ToggleDestroyFrame = Commands.destroy
 DejunkBindings_OpenLootables = Commands.open
+
+-- Sell.
+DejunkBindings_StartSelling = Commands.sell.subcommands.start
 
 function DejunkBindings_AddToList(groupName, listName)
   if not currentItemID then return end
