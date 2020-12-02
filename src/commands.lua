@@ -2,6 +2,7 @@ local _, Addon = ...
 local Bags = Addon.Bags
 local Chat = Addon.Chat
 local Commands = Addon.Commands
+local Dejunker = Addon.Dejunker
 local DTL = Addon.Libs.DTL
 local E = Addon.Events
 local EventManager = Addon.EventManager
@@ -10,6 +11,7 @@ local L = Addon.Libs.L
 local LOCKED = _G.LOCKED
 local strlower = _G.strlower
 local UI = Addon.UI
+local unpack = _G.unpack
 local UseContainerItem = _G.UseContainerItem
 
 -- ============================================================================
@@ -22,21 +24,21 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   _G.SlashCmdList.DEJUNK = function(msg)
     msg = strlower(msg or "")
 
-    -- Split message into args
+    -- Split message into args.
     local args = {}
     for s in msg:gmatch('%S+') do args[#args+1] = s end
 
-    -- First arg is command name
+    -- First arg is command name.
     local key = table.remove(args, 1)
 
-    -- Get command, default to `toggle`
+    -- Get command, default to `toggle`.
     local cmd = key and Commands[key] or nil
     if (type(cmd) ~= "table") or (type(cmd.run) ~= "function") then
       cmd = Commands.toggle
     end
 
-    -- Execute command
-    cmd(args)
+    -- Execute command.
+    cmd(unpack(args))
   end
 end)
 
@@ -47,17 +49,41 @@ end)
 -- Creates a new command.
 local create = (function()
   local mt = {
-    __call = function(self, ...)
-      return self.run(...)
+    __call = function(self, arg1, ...)
+      -- Check for subcommand.
+      if type(arg1) == "string" then
+        local subcommand = self.subcommands[arg1]
+        if type(subcommand) == "table" then
+          return subcommand(...)
+        end
+      end
+      -- Default to `run()`.
+      return self.run(arg1, ...)
     end
   }
 
+  local i = 0
+  local function nextIndex()
+    i = i + 1
+    return i
+  end
+
   return function(t)
-    assert(type(t.sortIndex) == "number")
     assert(type(t.title) == "string")
     assert(type(t.help) == "string")
     assert(type(t.usage) == "string")
     assert(type(t.run) == "function")
+
+    t.sortIndex = nextIndex()
+
+    if type(t.subcommands) ~= "table" then
+      t.subcommands = {}
+    else
+      for _, sub in pairs(t.subcommands) do
+        sub.parent = t
+      end
+    end
+
     return setmetatable(t, mt)
   end
 end)()
@@ -65,7 +91,6 @@ end)()
 
 -- Toggles the options frame.
 Commands.toggle = create({
-  sortIndex = -1,
   title = L.TOGGLE_TEXT,
   help = L.CMD_HELP_TOGGLE,
   usage = "[toggle]",
@@ -75,17 +100,23 @@ Commands.toggle = create({
 
 -- Toggles the sell frame.
 Commands.sell = create({
-  sortIndex = 1,
   title = L.SELL_TEXT,
   help = L.CMD_HELP_SELL,
   usage = "sell",
-  run = function() ItemFrames.Sell:Toggle() end
+  run = function() ItemFrames.Sell:Toggle() end,
+  subcommands = {
+    start = create({
+      title = L.START_TEXT,
+      help = L.CMD_HELP_SELL_START,
+      usage = "start",
+      run = function() Dejunker:Start() end,
+    })
+  },
 })
 
 
 -- Toggles the destroy frame.
 Commands.destroy = create({
-  sortIndex = 2,
   title = L.DESTROY_TEXT,
   help = L.CMD_HELP_DESTROY,
   usage = "destroy",
@@ -112,7 +143,6 @@ Commands.open = (function()
   }
 
   return create({
-    sortIndex = 3,
     title = L.OPEN_TEXT,
     help = L.CMD_HELP_OPEN,
     usage = "open",
@@ -157,27 +187,55 @@ Commands.open = (function()
 end)()
 
 -- ============================================================================
--- Metatable
+-- Usage
 -- ============================================================================
 
--- Set up `Addon.Commmands()` to return a sorted array of commands.
-
-local sortedCmds = {}
-
-for _, cmd in pairs(Commands) do
-  sortedCmds[#sortedCmds+1] = cmd
+local function getUsageText(cmd)
+  local usage = cmd.usage
+  local parent = cmd.parent
+  while parent do
+    usage = parent.usage .. " " .. usage
+    parent = parent.parent
+  end
+  return "/dejunk " .. usage
 end
 
-table.sort(sortedCmds, function(a, b)
+for _, cmd in pairs(Commands) do
+  for _, sub in pairs(cmd.subcommands) do
+    sub.usage = getUsageText(sub)
+  end
+
+  cmd.usage = getUsageText(cmd)
+end
+
+-- ============================================================================
+-- Metatables
+-- ============================================================================
+
+-- Set up command tables to return a sorted array of commands when called.
+
+local function compareCommands(a, b)
   return (
     a.sortIndex == b.sortIndex and
     a.title < b.title or
     a.sortIndex < b.sortIndex
   )
-end)
+end
 
-setmetatable(Commands, {
-  __call = function(self)
-    return sortedCmds
+local function returnSortedOnCall(t)
+  -- Get commands.
+  local commands = {}
+  for _, cmd in pairs(t) do
+    commands[#commands+1] = cmd
+    -- Recurse on subcommands.
+    returnSortedOnCall(cmd.subcommands)
   end
-})
+
+  -- Sort [commands].
+  table.sort(commands, compareCommands)
+
+  -- Return [commands] when [t] is called.
+  setmetatable(t, { __call = function() return commands end })
+end
+
+returnSortedOnCall(Commands)
