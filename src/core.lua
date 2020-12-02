@@ -20,10 +20,6 @@ local UI = Addon.UI
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDejunk()
-  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
-    return false, L.CANNOT_SELL_WITHOUT_MERCHANT
-  end
-
   if Dejunker:IsDejunking() or Confirmer:IsConfirming("Dejunker") then
     return false, L.SELLING_IN_PROGRESS
   end

@@ -117,6 +117,11 @@ end
 
 
 function Dejunker:HandleNextItem(item)
+  -- Stop if the merchant frame is not shown.
+  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
+    return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
+
   -- Stop if unsafe.
   local canDejunk, msg = Core:CanDejunk()
   if not canDejunk then
