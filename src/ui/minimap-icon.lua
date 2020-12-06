@@ -22,16 +22,20 @@ EventManager:Once(E.DatabaseReady, function()
     icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
-      if IsShiftKeyDown() then
-        if (button == "LeftButton") then
+      if button == "LeftButton" then
+        if IsShiftKeyDown() then
           Commands.sell()
+        else
+          Commands.toggle()
         end
+      end
 
-        if (button == "RightButton") then
+      if button == "RightButton" then
+        if IsShiftKeyDown() then
           Commands.destroy()
+        else
+          Commands.destroy("next")
         end
-      elseif (button == "LeftButton") then
-        Commands.toggle()
       end
     end,
 
@@ -43,6 +47,8 @@ EventManager:Once(E.DatabaseReady, function()
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, unpack(_colors))
       tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, unpack(_colors))
+      tooltip:AddLine(" ")
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.DESTROY_NEXT_ITEM, unpack(_colors))
       tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, unpack(_colors))
 		end,
   })
