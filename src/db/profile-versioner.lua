@@ -4,7 +4,7 @@ local Consts = Addon.Consts
 local ProfileVersioner = Addon.ProfileVersioner
 
 -- Versions
-ProfileVersioner.CURRENT_VERSION = 1
+ProfileVersioner.CURRENT_VERSION = 2
 ProfileVersioner.DEFAULT_VERSION = -1
 
 ProfileVersioner.versions = {}
@@ -58,6 +58,12 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.DESTROY_AUTO_SLIDER_MAX
   )
 
+  profile.destroy.autoStart.value = Clamp(
+    profile.destroy.autoStart.value,
+    Consts.DESTROY_AUTO_SLIDER_MIN,
+    Consts.DESTROY_AUTO_SLIDER_MAX
+  )
+
   profile.destroy.belowPrice.value = Clamp(
     profile.destroy.belowPrice.value,
     Consts.DESTROY_BELOW_PRICE_MIN,
@@ -70,3 +76,24 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
   )
 end
+
+-- ============================================================================
+-- Version 2
+-- ============================================================================
+
+ProfileVersioner:_AddVersion(2, function(profile)
+  if type(profile.destroy.autoStart) ~= "table" then
+    profile.destroy.autoStart = {
+      enabled = false,
+      value = Consts.DESTROY_AUTO_SLIDER_MIN,
+    }
+  else
+    if type(profile.destroy.autoStart.enabled) ~= "boolean" then
+      profile.destroy.autoStart.enabled = false
+    end
+
+    if type(profile.destroy.autoStart.value) ~= "number" then
+      profile.destroy.autoStart.value = Consts.DESTROY_AUTO_SLIDER_MIN
+    end
+  end
+end)
