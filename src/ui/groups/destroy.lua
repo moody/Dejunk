@@ -31,18 +31,18 @@ function Destroy:AddGeneral(parent)
     checkBox = {
       label = L.AUTO_OPEN_DESTROY_TEXT,
       tooltip = L.AUTO_OPEN_DESTROY_TOOLTIP,
-      get = function() return DB.Profile.destroy.auto end,
-      set = function(value) DB.Profile.destroy.auto = value end
+      get = function() return DB.Profile.destroy.autoOpen.enabled end,
+      set = function(value) DB.Profile.destroy.autoOpen.enabled = value end
     },
     slider = {
       label = L.AUTO_OPEN_DESTROY_SLIDER_LABEL,
       tooltip = L.AUTO_OPEN_DESTROY_SLIDER_TOOLTIP:format(Consts.DESTROY_AUTO_SLIDER_MIN),
-      value = DB.Profile.destroy.autoSlider,
+      value = DB.Profile.destroy.autoOpen.value,
       min = Consts.DESTROY_AUTO_SLIDER_MIN,
       max = Consts.DESTROY_AUTO_SLIDER_MAX,
       step = Consts.DESTROY_AUTO_SLIDER_STEP,
       onValueChanged = function(_, event, value)
-        DB.Profile.destroy.autoSlider = value
+        DB.Profile.destroy.autoOpen.value = value
       end
     }
   })
