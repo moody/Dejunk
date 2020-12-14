@@ -137,6 +137,7 @@ src\core.lua
 
 #@do-not-package@
 test\_init.lua
+test\db\database-utils.test.lua
 test\db\global-versioner.test.lua
 test\db\profile-versioner.test.lua
 #@end-do-not-package@
