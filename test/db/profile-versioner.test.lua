@@ -28,109 +28,75 @@ instance.describe("_Update()", function(test)
 end)
 
 instance.describe("_ClampValues()", function(test)
-  test("clamps `sell.belowPrice`", function(expect)
-    local profile = DatabaseUtils:Profile()
-    -- min
-    profile.sell.belowPrice.value = Consts.SELL_BELOW_PRICE_MIN - 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.belowPrice.value).toBe(Consts.SELL_BELOW_PRICE_MIN)
-    -- current
-    profile.sell.belowPrice.value = Consts.SELL_BELOW_PRICE_MIN + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.belowPrice.value).toBe(Consts.SELL_BELOW_PRICE_MIN + 1)
-    -- max
-    profile.sell.belowPrice.value = Consts.SELL_BELOW_PRICE_MAX + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.belowPrice.value).toBe(Consts.SELL_BELOW_PRICE_MAX)
-  end)
+  local function clampTest(options)
+    test(options.message, function(expect)
+      local profile = DatabaseUtils:Profile()
 
-  test("clamps `sell.byType.belowAverageItemLevel`", function(expect)
-    local profile = DatabaseUtils:Profile()
-    -- min
-    profile.sell.byType.belowAverageItemLevel.value =
-      Consts.SELL_BELOW_AVERAGE_ILVL_MIN - 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.byType.belowAverageItemLevel.value).toBe(
-      Consts.SELL_BELOW_AVERAGE_ILVL_MIN
-    )
-    -- current
-    profile.sell.byType.belowAverageItemLevel.value =
-      Consts.SELL_BELOW_AVERAGE_ILVL_MIN + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.byType.belowAverageItemLevel.value).toBe(
-      Consts.SELL_BELOW_AVERAGE_ILVL_MIN + 1
-    )
-    -- max
-    profile.sell.byType.belowAverageItemLevel.value =
-      Consts.SELL_BELOW_AVERAGE_ILVL_MAX + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.sell.byType.belowAverageItemLevel.value).toBe(
-      Consts.SELL_BELOW_AVERAGE_ILVL_MAX
-    )
-  end)
+      -- min
+      options.set(profile, options.min - 1)
+      ProfileVersioner:_ClampValues(profile)
+      expect(options.get(profile)).toBe(options.min)
 
-  test("clamps `destroy.autoSlider`", function(expect)
-    local profile = DatabaseUtils:Profile()
-    -- min
-    profile.destroy.autoSlider = Consts.DESTROY_AUTO_SLIDER_MIN - 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.autoSlider).toBe(Consts.DESTROY_AUTO_SLIDER_MIN)
-    -- current
-    profile.destroy.autoSlider = Consts.DESTROY_AUTO_SLIDER_MIN + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.autoSlider).toBe(Consts.DESTROY_AUTO_SLIDER_MIN + 1)
-    -- max
-    profile.destroy.autoSlider = Consts.DESTROY_AUTO_SLIDER_MAX + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.autoSlider).toBe(Consts.DESTROY_AUTO_SLIDER_MAX)
-  end)
+      -- midrange
+      local midrange = (options.max + options.min) / 2
+      options.set(profile, midrange)
+      ProfileVersioner:_ClampValues(profile)
+      expect(options.get(profile)).toBe(midrange)
 
-  test("clamps `destroy.belowPrice`", function(expect)
-    local profile = DatabaseUtils:Profile()
-    -- min
-    profile.destroy.belowPrice.value = Consts.DESTROY_BELOW_PRICE_MIN - 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.belowPrice.value).toBe(
-      Consts.DESTROY_BELOW_PRICE_MIN
-    )
-    -- current
-    profile.destroy.belowPrice.value = Consts.DESTROY_BELOW_PRICE_MIN + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.belowPrice.value).toBe(
-      Consts.DESTROY_BELOW_PRICE_MIN + 1
-    )
-    -- max
-    profile.destroy.belowPrice.value = Consts.DESTROY_BELOW_PRICE_MAX + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.belowPrice.value).toBe(
-      Consts.DESTROY_BELOW_PRICE_MAX
-    )
-  end)
+      -- max
+      options.set(profile, options.max + 1)
+      ProfileVersioner:_ClampValues(profile)
+      expect(options.get(profile)).toBe(options.max)
+    end)
+  end
 
-  test("clamps `destroy.byType.excessSoulShards`", function(expect)
-    local profile = DatabaseUtils:Profile()
-    -- min
-    profile.destroy.byType.excessSoulShards.value =
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN - 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.byType.excessSoulShards.value).toBe(
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
-    )
-    -- current
-    profile.destroy.byType.excessSoulShards.value =
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.byType.excessSoulShards.value).toBe(
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN + 1
-    )
-    -- max
-    profile.destroy.byType.excessSoulShards.value =
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX + 1
-    ProfileVersioner:_ClampValues(profile)
-    expect(profile.destroy.byType.excessSoulShards.value).toBe(
-      Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
-    )
-  end)
+  clampTest({
+    message = "sell.belowPrice",
+    get = function(p) return p.sell.belowPrice.value end,
+    set = function(p, v) p.sell.belowPrice.value = v end,
+    min = Consts.SELL_BELOW_PRICE_MIN,
+    max = Consts.SELL_BELOW_PRICE_MAX,
+  })
+
+  clampTest({
+    message = "sell.byType.belowAverageItemLevel",
+    get = function(p) return p.sell.byType.belowAverageItemLevel.value end,
+    set = function(p, v) p.sell.byType.belowAverageItemLevel.value = v end,
+    min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
+    max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
+  })
+
+  clampTest({
+    message = "destroy.autoOpen.value",
+    get = function(p) return p.destroy.autoOpen.value end,
+    set = function(p, v) p.destroy.autoOpen.value = v end,
+    min = Consts.DESTROY_AUTO_SLIDER_MIN,
+    max = Consts.DESTROY_AUTO_SLIDER_MAX,
+  })
+
+  clampTest({
+    message = "destroy.autoStart.value",
+    get = function(p) return p.destroy.autoStart.value end,
+    set = function(p, v) p.destroy.autoStart.value = v end,
+    min = Consts.DESTROY_AUTO_SLIDER_MIN,
+    max = Consts.DESTROY_AUTO_SLIDER_MAX,
+  })
+
+  clampTest({
+    message = "destroy.belowPrice",
+    get = function(p) return p.destroy.belowPrice.value end,
+    set = function(p, v) p.destroy.belowPrice.value = v end,
+    min = Consts.DESTROY_BELOW_PRICE_MIN,
+    max = Consts.DESTROY_BELOW_PRICE_MAX,
+  })
+
+  clampTest({
+    message = "destroy.byType.excessSoulShards",
+    get = function(p) return p.destroy.byType.excessSoulShards.value end,
+    set = function(p, v) p.destroy.byType.excessSoulShards.value = v end,
+    min = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
+    max = Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX,
+  })
 end)
 
 instance.describe("versions", function(test)
@@ -138,5 +104,24 @@ instance.describe("versions", function(test)
     for i=2, ProfileVersioner.CURRENT_VERSION do
       expect(type(ProfileVersioner.versions[i])).toBe("function")
     end
+  end)
+
+  test("Version 2", function(expect)
+    local profile = {
+      version = 1,
+      destroy = { auto = false, autoSlider = 0 },
+    }
+    ProfileVersioner.versions[2](profile)
+    expect(profile.version).toBe(2)
+    expect(profile.destroy.auto).toBe(nil)
+    expect(profile.destroy.autoSlider).toBe(nil)
+    expect(profile.destroy.autoOpen).toEqual({
+      enabled = false,
+      value = Consts.DESTROY_AUTO_SLIDER_MIN,
+    })
+    expect(profile.destroy.autoStart).toEqual({
+      enabled = false,
+      value = Consts.DESTROY_AUTO_SLIDER_MIN,
+    })
   end)
 end)
