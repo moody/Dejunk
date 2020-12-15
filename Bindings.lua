@@ -40,6 +40,7 @@ _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
   L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
 
 -- Destroy.
+_G.BINDING_NAME_DEJUNK_START_DESTROYING = Addon.IS_CLASSIC and L.START_DESTROYING or nil
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
@@ -65,6 +66,7 @@ DejunkBindings_StartSelling = Commands.sell.subcommands.start
 DejunkBindings_SellNextItem = Commands.sell.subcommands.next
 
 -- Destroy.
+DejunkBindings_StartDestroying = Addon.IS_CLASSIC and Commands.destroy.subcommands.start or nil
 DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
 
 function DejunkBindings_AddToList(groupName, listName)
