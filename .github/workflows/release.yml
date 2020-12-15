@@ -23,8 +23,8 @@ jobs:
       - name: Install requests
         run: pip install requests
 
-      - name: Find Unused Locales
-        run: python scripts/find_unused_locales.py
+      - name: Validate Locales
+        run: python scripts/validate_locales.py
 
       - name: Upload Locales
         run: python scripts/upload_locales.py
