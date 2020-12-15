@@ -202,8 +202,6 @@ end
 -- Starts the destroying process.
 -- @param {boolean} auto
 function Destroyer:Start(auto)
-  Chat:Debug(("Destroyer:Start(%s)"):format(tostring(auto)))
-
   -- Stop if not Classic.
   if not Addon.IS_CLASSIC then
     return Chat:Print(L.START_DESTROYING_GAME_VERSION_ERROR)
