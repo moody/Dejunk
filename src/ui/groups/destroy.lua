@@ -29,14 +29,17 @@ function Destroy:AddGeneral(parent)
   Widgets:CheckBoxSlider({
     parent = parent,
     checkBox = {
-      label = L.AUTO_OPEN_DESTROY_TEXT,
+      label = L.AUTO_OPEN_TEXT,
       tooltip = L.AUTO_OPEN_DESTROY_TOOLTIP,
       get = function() return DB.Profile.destroy.autoOpen.enabled end,
       set = function(value) DB.Profile.destroy.autoOpen.enabled = value end
     },
     slider = {
-      label = L.AUTO_OPEN_DESTROY_SLIDER_LABEL,
-      tooltip = L.AUTO_OPEN_DESTROY_SLIDER_TOOLTIP:format(Consts.DESTROY_AUTO_SLIDER_MIN),
+      label = L.THRESHOLD_TEXT,
+      tooltip = L.AUTO_OPTION_THRESHOLD_TOOLTIP:format(
+        "|cFFFFD100"  .. L.AUTO_OPEN_TEXT .. "|r",
+        "|cFFFFD100"  .. L.AUTO_OPEN_TEXT .. "|r"
+      ),
       value = DB.Profile.destroy.autoOpen.value,
       min = Consts.DESTROY_AUTO_SLIDER_MIN,
       max = Consts.DESTROY_AUTO_SLIDER_MAX,
@@ -52,14 +55,17 @@ function Destroy:AddGeneral(parent)
     Widgets:CheckBoxSlider({
       parent = parent,
       checkBox = {
-        label = 'L.AUTO_START_TEXT',
-        tooltip = 'L.AUTO_START_DESTROY_TOOLTIP',
+        label = L.AUTO_START_TEXT,
+        tooltip = L.AUTO_START_DESTROY_TOOLTIP,
         get = function() return DB.Profile.destroy.autoStart.enabled end,
         set = function(value) DB.Profile.destroy.autoStart.enabled = value end
       },
       slider = {
-        label = 'L.DESTROY_AUTO_START_SLIDER_LABEL',
-        tooltip = 'L.DESTROY_AUTO_START_SLIDER_TOOLTIP:format(Consts.DESTROY_AUTO_SLIDER_MIN)',
+        label = L.THRESHOLD_TEXT,
+        tooltip = L.AUTO_OPTION_THRESHOLD_TOOLTIP:format(
+          "|cFFFFD100"  .. L.AUTO_START_TEXT .. "|r",
+          "|cFFFFD100"  .. L.AUTO_START_TEXT .. "|r"
+        ),
         value = DB.Profile.destroy.autoStart.value,
         min = Consts.DESTROY_AUTO_SLIDER_MIN,
         max = Consts.DESTROY_AUTO_SLIDER_MAX,
