@@ -32,7 +32,7 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
       - name: Release Classic
-        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.5
+        run: curl -s https://raw.githubusercontent.com/BigWigsMods/packager/master/release.sh | bash -s -- -g 1.13.6
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_OAUTH }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
