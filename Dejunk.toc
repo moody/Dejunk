@@ -2,7 +2,7 @@
 ## Interface: 90002
 #@end-retail@
 #@non-retail@
-# ## Interface: 11305
+# ## Interface: 11306
 #@end-non-retail@
 ## Title: Dejunk
 ## Author: Dethanyel
@@ -137,6 +137,7 @@ src\core.lua
 
 #@do-not-package@
 test\_init.lua
+test\db\database-utils.test.lua
 test\db\global-versioner.test.lua
 test\db\profile-versioner.test.lua
 #@end-do-not-package@

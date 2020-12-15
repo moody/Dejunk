@@ -34,7 +34,11 @@ EventManager:Once(E.DatabaseReady, function()
         if IsShiftKeyDown() then
           Commands.destroy()
         else
-          Commands.destroy("next")
+          if Addon.IS_CLASSIC then
+            Commands.destroy("start")
+          else
+            Commands.destroy("next")
+          end
         end
       end
     end,
@@ -48,7 +52,11 @@ EventManager:Once(E.DatabaseReady, function()
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, unpack(_colors))
       tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, unpack(_colors))
       tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.DESTROY_NEXT_ITEM, unpack(_colors))
+      tooltip:AddDoubleLine(
+        L.RIGHT_CLICK,
+        (Addon.IS_CLASSIC and L.START_DESTROYING or L.DESTROY_NEXT_ITEM),
+        unpack(_colors)
+      )
       tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, unpack(_colors))
 		end,
   })
