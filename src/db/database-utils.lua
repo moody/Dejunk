@@ -41,6 +41,21 @@ function DatabaseUtils:Reformat()
   end
 end
 
+-- Ensures that the table [t] contains a value for the key [k]. If `t[k]` does
+-- not exist, or does not match the [default] value type, it is assigned the
+-- [default] value.
+--
+-- Recurses if `t[k]` and [default] are tables.
+function DatabaseUtils:EnsureKey(t, k, default)
+  if type(t[k]) == "table" and type(default) == "table" then
+    for dk in pairs(default) do
+      self:EnsureKey(t[k], dk, default[dk])
+    end
+  elseif type(t[k]) ~= type(default) then
+    t[k] = default
+  end
+end
+
 -- Returns default global table.
 function DatabaseUtils:Global()
   return {
@@ -116,8 +131,16 @@ function DatabaseUtils:Profile()
     },
 
     destroy = {
-      auto = false,
-      autoSlider = Consts.DESTROY_AUTO_SLIDER_MIN,
+      autoOpen = {
+        enabled = false,
+        value = Consts.DESTROY_AUTO_SLIDER_MIN,
+      },
+
+      autoStart = {
+        enabled = false,
+        value = Consts.DESTROY_AUTO_SLIDER_MIN,
+      },
+
       belowPrice = {
         enabled = false,
         value = Consts.DESTROY_BELOW_PRICE_MIN

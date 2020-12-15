@@ -156,17 +156,15 @@ local ButtonMixins, ButtonScripts = {}, {}
 
 function ButtonMixins:SetItem(item)
   self.item = item
-  self.itemText = DCL:ColorString(
-    (
-      item.Quantity > 1 and
-      (item.ItemLink .. "x" .. item.Quantity) or
-      item.ItemLink
-    ),
-    DCL.CSS.White
+  self.itemText = (
+    item.Quantity > 1 and
+    (item.ItemLink .. "x" .. item.Quantity) or
+    item.ItemLink
   )
   self.icon:SetTexture(item.Texture)
   self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
   self.text:SetText(self.itemText)
+  self.text:SetTextColor(1, 1, 1)
   if GetMouseFocus() == self then self:ShowTooltip() end
 end
 
@@ -187,7 +185,7 @@ end
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
   -- Set title to itemText.
-  GameTooltip:SetText(self.itemText)
+  GameTooltip:SetText(self.itemText, 1, 1, 1)
   -- Add total.
   local total = GetCoinTextureString(self.item.Price * self.item.Quantity)
   GameTooltip:AddLine(("%s:  %s"):format(_G.SELL_PRICE, total), 1, 1, 1)

@@ -72,6 +72,11 @@ end
 
 local _ticker = nil
 
+EventManager:Once(E.Wow.PlayerLogin, function()
+  if _ticker then _ticker:Cancel() end
+  updateCache()
+end)
+
 EventManager:On(E.Wow.BagUpdateDelayed, function()
   if _ticker then _ticker:Cancel() end
   updateCache()

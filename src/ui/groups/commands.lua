@@ -1,36 +1,56 @@
 local _, Addon = ...
+local Colors = Addon.Colors
 local Commands = Addon.Commands
+local DCL = Addon.Libs.DCL
 local Group = Addon.UI.Groups.Commands
 local L = Addon.Libs.L
 local Widgets = Addon.UI.Widgets
 
 local function add(parent, cmd)
-  parent = Widgets:InlineGroup({
+  local group = Widgets:InlineGroup({
     parent = parent,
     fullWidth = true,
-    title = cmd.title,
+    title = DCL:ColorString(cmd.keyword, Colors.Primary),
   })
 
+  -- Help text.
   Widgets:Label({
-    parent = parent,
+    parent = group,
     fullWidth = true,
     text = cmd.help,
   })
 
-  parent = Widgets:InlineGroup({
-    parent = parent,
+  -- Usage.
+  Widgets:Label({
+    parent = Widgets:InlineGroup({
+      parent = group,
+      fullWidth = true,
+      title = DCL:ColorString(L.USAGE_TEXT, Colors.Yellow),
+    }),
     fullWidth = true,
-    title = L.USAGE_TEXT,
+    text = cmd.usage,
   })
 
-  Widgets:Label({
-    parent = parent,
-    fullWidth = true,
-    text = "/dejunk " .. cmd.usage,
-  })
+  return group
+end
+
+local function addAll(parent, commands)
+  for _, cmd in ipairs(commands) do
+    local group = add(parent, cmd)
+
+    if next(cmd.subcommands) then
+      group = Widgets:InlineGroup({
+        parent = group,
+        fullWidth = true,
+        title = DCL:ColorString(L.SUBCOMMANDS_TEXT, Colors.Green),
+      })
+
+      addAll(group, cmd.subcommands())
+    end
+  end
 end
 
 function Group:Create(parent)
   Widgets:Heading(parent, L.COMMANDS_TEXT)
-  for _, cmd in ipairs(Commands()) do add(parent, cmd) end
+  addAll(parent, Commands())
 end

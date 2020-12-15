@@ -1,10 +1,11 @@
 local _, Addon = ...
 local Clamp = _G.Clamp
 local Consts = Addon.Consts
+local DatabaseUtils = Addon.DatabaseUtils
 local ProfileVersioner = Addon.ProfileVersioner
 
 -- Versions
-ProfileVersioner.CURRENT_VERSION = 1
+ProfileVersioner.CURRENT_VERSION = 2
 ProfileVersioner.DEFAULT_VERSION = -1
 
 ProfileVersioner.versions = {}
@@ -52,8 +53,14 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.SELL_BELOW_AVERAGE_ILVL_MAX
   )
 
-  profile.destroy.autoSlider = Clamp(
-    profile.destroy.autoSlider,
+  profile.destroy.autoOpen.value = Clamp(
+    profile.destroy.autoOpen.value,
+    Consts.DESTROY_AUTO_SLIDER_MIN,
+    Consts.DESTROY_AUTO_SLIDER_MAX
+  )
+
+  profile.destroy.autoStart.value = Clamp(
+    profile.destroy.autoStart.value,
     Consts.DESTROY_AUTO_SLIDER_MIN,
     Consts.DESTROY_AUTO_SLIDER_MAX
   )
@@ -70,3 +77,21 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
   )
 end
+
+-- ============================================================================
+-- Version 2
+-- ============================================================================
+
+ProfileVersioner:_AddVersion(2, function(profile)
+  -- Remove old settings.
+  profile.destroy.auto = nil
+  profile.destroy.autoSlider = nil
+
+  -- Ensure `destroy.autoOpen` & `destroy.autoStart`.
+  for _, k in pairs({ "autoOpen", "autoStart" }) do
+    DatabaseUtils:EnsureKey(profile.destroy, k, {
+      enabled = false,
+      value = Consts.DESTROY_AUTO_SLIDER_MIN,
+    })
+  end
+end)
