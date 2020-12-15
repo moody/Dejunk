@@ -1,5 +1,6 @@
 # 9.0.9
 
+- `General > Chat > Verbose` and `General > Chat > Reason` are now disabled by default.
 - **Right-Clicking** the minimap icon will now either:
   - Destroy Next Item (Retail)
   - Start Destroying (Classic)
