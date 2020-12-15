@@ -31,6 +31,9 @@ jobs:
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
+      - name: Generate Classic Bindings.xml
+        run: python scripts/bindings_xml.py -c
+
       - name: Release Classic
         uses: BigWigsMods/packager@master
         with:
@@ -39,6 +42,9 @@ jobs:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+
+      - name: Generate Retail Bindings.xml
+        run: python scripts/bindings_xml.py
 
       - name: Release Retail
         uses: BigWigsMods/packager@master
