@@ -19,5 +19,6 @@ globals = {
   "DejunkBindings_RemoveFromList",
   "DejunkBindings_StartSelling",
   "DejunkBindings_SellNextItem",
+  "DejunkBindings_StartDestroying",
   "DejunkBindings_DestroyNextItem",
 }
