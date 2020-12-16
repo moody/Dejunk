@@ -283,7 +283,7 @@ function Destroyer:OnUpdate(elapsed)
 
     -- Stop if there are no more items.
     if #self.items == 0 then
-      self:Stop()
+      return self:Stop()
     end
 
     -- Handle next item.
