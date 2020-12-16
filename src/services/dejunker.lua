@@ -50,6 +50,7 @@ do -- Flag for refresh.
     E.ListRemovedAll,
     E.MainUIClosed,
     E.ProfileChanged,
+    E.Wow.ItemUnlocked,
   }) do
     EventManager:On(e, flagForRefresh)
   end

@@ -82,6 +82,7 @@ do
     E.ListRemovedAll,
     E.MainUIClosed,
     E.ProfileChanged,
+    E.Wow.ItemUnlocked,
   }) do
     EventManager:On(e, flagForRefresh)
     EventManager:On(e, queueAutoDestroy)
@@ -127,6 +128,9 @@ end
 
 
 function Destroyer:RefreshItems()
+  -- Stop if destroying is in progress.
+  if self.isDestroying then return end
+
   -- Stop if not necessary.
   if not self.needsRefresh then return end
   self.needsRefresh = false
