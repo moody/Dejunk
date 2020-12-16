@@ -1,5 +1,4 @@
 local _, Addon = ...
-local assert = assert
 local Bags = Addon.Bags
 local Chat = Addon.Chat
 local Consts = Addon.Consts
@@ -17,13 +16,8 @@ local tremove = table.remove
 local tsort = table.sort
 local UseContainerItem = _G.UseContainerItem
 
-local States = {
-  None = 0,
-  Dejunking = 1
-}
-
-Dejunker.state = States.None
 Dejunker.items = {}
+Dejunker.isDejunking = false
 Dejunker.timer = 0
 
 -- ============================================================================
@@ -56,6 +50,7 @@ do -- Flag for refresh.
     E.ListRemovedAll,
     E.MainUIClosed,
     E.ProfileChanged,
+    E.Wow.ItemUnlocked,
   }) do
     EventManager:On(e, flagForRefresh)
   end
@@ -68,6 +63,10 @@ end
 -- Identifies and handles the StaticPopup shown when attempting to vendor a
 -- tradeable item.
 local function handleStaticPopup()
+  -- Stop if not retail.
+  if not Addon.IS_RETAIL then return end
+
+  -- Handle popup.
   local popup
   for i=1, STATICPOPUP_NUMDIALOGS do
     popup = _G["StaticPopup"..i]
@@ -80,6 +79,24 @@ local function handleStaticPopup()
       return
     end
   end
+end
+
+
+local function handleItem(index)
+  local item = tremove(Dejunker.items, index)
+  if not item then return end
+
+  -- Verify that the item can be sold.
+  if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
+
+  -- Sell item.
+  UseContainerItem(item.Bag, item.Slot)
+
+  -- Handle popup.
+  handleStaticPopup()
+
+  -- Fire event.
+  EventManager:Fire(E.DejunkerAttemptToSell, item)
 end
 
 -- ============================================================================
@@ -98,7 +115,8 @@ end
 
 function Dejunker:RefreshItems()
   -- Stop if selling is in progress.
-  if self.state ~= States.None then return end
+  if self.isDejunking then return end
+
   -- Stop if not necessary.
   if not self.needsRefresh then return end
   self.needsRefresh = false
@@ -136,7 +154,7 @@ function Dejunker:HandleNextItem(item)
     return Chat:Print(L.NO_JUNK_ITEMS)
   end
 
-  -- Get item.
+  -- Get item index.
   local index = 1
   if item then
     -- Get index of specified item.
@@ -147,35 +165,26 @@ function Dejunker:HandleNextItem(item)
     -- Stop if the item was not found.
     if index == nil then return end
   end
-  item = self.items[index]
 
-  -- Verify that the item can be sold.
-  if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
-
-  -- Sell item.
-  UseContainerItem(item.Bag, item.Slot)
-
-  -- Handle StaticPopup.
-  if Addon.IS_RETAIL then handleStaticPopup() end
-
-  -- Fire event.
-  EventManager:Fire(E.DejunkerAttemptToSell, item)
+  -- Handle item.
+  handleItem(index)
 end
 
 
 -- Starts the dejunking process.
 -- @param {boolean} auto
 function Dejunker:Start(auto)
+  -- Stop if unsafe.
   local canDejunk, msg = Core:CanDejunk()
   if not canDejunk then
     if not auto then Chat:Print(msg) end
     return
   end
 
-  -- Get junk items
-  Filters:GetItems(self, self.items)
+  -- Refresh items.
+  self:RefreshItems()
 
-  -- Stop if no items
+  -- Stop if no items.
   if #self.items == 0 then
     if not auto then
       Chat:Print(
@@ -188,12 +197,12 @@ function Dejunker:Start(auto)
     return
   end
 
-  -- If some items fail to be retrieved, we'll only have items that are cached
+  -- If some items fail to be retrieved, we'll only have items that are cached.
   if not self.items.allCached then
     Chat:Print(L.ONLY_SELLING_CACHED)
   end
 
-  -- Safe Mode: remove items and print message as necessary
+  -- Safe Mode: remove items and print message as necessary.
   if DB.Profile.sell.safeMode then
     while #self.items > Consts.SAFE_MODE_MAX do
       tremove(self.items)
@@ -204,8 +213,8 @@ function Dejunker:Start(auto)
     end
   end
 
-  -- Start
-  self.state = States.Dejunking
+  -- Start.
+  self.isDejunking = true
   self.timer = 0
   EventManager:Fire(E.DejunkerStart)
 end
@@ -213,8 +222,7 @@ end
 
 -- Stops the dejunking process.
 function Dejunker:Stop()
-  assert(self.state ~= States.None)
-  self.state = States.None
+  self.isDejunking = false
   EventManager:Fire(E.DejunkerStop)
 end
 
@@ -222,40 +230,26 @@ end
 -- Returns true if the Dejunker is active.
 -- @return {boolean}
 function Dejunker:IsDejunking()
-  return self.state ~= States.None
+  return self.isDejunking
 end
 
 
 -- Game update function called via `Addon.Core:OnUpdate()`.
 -- @param {number} elapsed - time since last frame
 function Dejunker:OnUpdate(elapsed)
-  if self.state ~= States.Dejunking then return end
+  if not self.isDejunking then return end
 
   self.timer = self.timer + elapsed
 
   if self.timer >= Core.MinDelay then
     self.timer = 0
 
-    -- Get next item
-    local item = tremove(self.items)
-
-    -- Stop if there are no more items
-    if not item then
+    -- Stop if there are no more items.
+    if #self.items == 0 then
       return self:Stop()
     end
 
-    -- Otherwise, verify that the item in the bag slot has not been changed
-    if not Bags:StillInBags(item) or Bags:IsLocked(item) then
-      return
-    end
-
-    -- Sell item
-    UseContainerItem(item.Bag, item.Slot)
-
-    -- Handle StaticPopup
-    if Addon.IS_RETAIL then handleStaticPopup() end
-
-    -- Fire event
-    EventManager:Fire(E.DejunkerAttemptToSell, item)
+    -- Handle next item.
+    handleItem()
   end
 end

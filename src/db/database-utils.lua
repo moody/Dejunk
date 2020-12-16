@@ -75,8 +75,8 @@ function DatabaseUtils:Profile()
     general = {
       chat = {
         enabled = true,
-        verbose = true,
-        reason = true,
+        verbose = false,
+        reason = false,
         frame = _G.DEFAULT_CHAT_FRAME:GetName()
       },
       autoRepair = false,
