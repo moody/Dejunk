@@ -14,6 +14,7 @@ local Lists = Addon.Lists
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
 local tsort = table.sort
+local UI = Addon.UI
 local UseContainerItem = _G.UseContainerItem
 
 Dejunker.items = {}
@@ -118,7 +119,7 @@ function Dejunker:RefreshItems()
   if self.isDejunking then return end
 
   -- Stop if not necessary.
-  if not self.needsRefresh then return end
+  if not (self.needsRefresh or UI:IsShown()) then return end
   self.needsRefresh = false
 
   Filters:GetItems(self, self.items)
