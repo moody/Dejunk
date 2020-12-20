@@ -113,12 +113,12 @@ function Dejunker:GetLists()
 end
 
 
-function Dejunker:RefreshItems(force)
+function Dejunker:RefreshItems()
   -- Stop if selling is in progress.
   if self.isDejunking then return end
 
   -- Stop if not necessary.
-  if not (self.needsRefresh or force) then return end
+  if not self.needsRefresh then return end
   self.needsRefresh = false
 
   Filters:GetItems(self, self.items)
@@ -147,7 +147,7 @@ function Dejunker:HandleNextItem(item)
   end
 
   -- Refresh items.
-  self:RefreshItems(true)
+  self:RefreshItems()
 
   -- Stop if no items.
   if #self.items == 0 then
@@ -182,7 +182,7 @@ function Dejunker:Start(auto)
   end
 
   -- Refresh items.
-  self:RefreshItems(true)
+  self:RefreshItems()
 
   -- Stop if no items.
   if #self.items == 0 then
