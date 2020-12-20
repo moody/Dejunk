@@ -132,7 +132,7 @@ function Destroyer:RefreshItems()
   if self.isDestroying then return end
 
   -- Stop if not necessary.
-  if not self.needsRefresh then return end
+  if not (self.needsRefresh or UI:IsShown()) then return end
   self.needsRefresh = false
 
   Filters:GetItems(self, self.items)
