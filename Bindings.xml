@@ -29,6 +29,11 @@
     DejunkBindings_SellNextItem()
   </Binding>
 
+  <!-- Sell all items -->
+  <Binding name="DEJUNK_SELL_ALL_ITEMS" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_SellAllItems()
+  </Binding>
+
   <!-- Add/rem sell inclusions -->
   <Binding name="DEJUNK_ADD_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("sell", "inclusions")
