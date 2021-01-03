@@ -55,6 +55,11 @@
     DejunkBindings_DestroyNextItem()
   </Binding>
 
+  <!-- Destroy all items -->
+  <Binding name="DEJUNK_DESTROY_ALL_ITEMS" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_DestroyAllItems()
+  </Binding>
+
   <!-- Add/rem destroy inclusions -->
   <Binding name="DEJUNK_ADD_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("destroy", "inclusions")
