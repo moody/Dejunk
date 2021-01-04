@@ -31,6 +31,7 @@ _G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
 -- Sell.
 _G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_SELL_NEXT_ITEM = L.SELL_NEXT_ITEM
+_G.BINDING_NAME_DEJUNK_SELL_ALL_ITEMS = L.SELL_ALL_ITEMS
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_INCLUSIONS =
@@ -43,6 +44,7 @@ _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
 -- Destroy.
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
+_G.BINDING_NAME_DEJUNK_DESTROY_ALL_ITEMS = L.DESTROY_ALL_ITEMS
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
@@ -65,6 +67,7 @@ DejunkBindings_OpenLootables = Commands.open
 -- Sell.
 DejunkBindings_StartSelling = Commands.sell.subcommands.start
 DejunkBindings_SellNextItem = Commands.sell.subcommands.next
+DejunkBindings_SellAllItems = Commands.sell.subcommands.all
 
 -- Destroy.
 function DejunkBindings_StartDestroying()
@@ -75,6 +78,7 @@ function DejunkBindings_StartDestroying()
   Commands.destroy.subcommands.start()
 end
 DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
+DejunkBindings_DestroyAllItems = Commands.destroy.subcommands.all
 
 function DejunkBindings_AddToList(groupName, listName)
   if not currentItemID then return end

@@ -180,6 +180,32 @@ function Destroyer:HandleNextItem(item)
 end
 
 
+function Destroyer:HandleAllItems()
+    -- Stop if unsafe.
+  local canDestroy, msg = Core:CanDestroy()
+  if not canDestroy then
+    return Chat:Print(msg)
+  end
+
+  -- Refresh items.
+  self:RefreshItems()
+
+  -- Stop if no items.
+  if #self.items == 0 then
+    return Chat:Print(
+      self.items.allCached and
+      L.NO_DESTROYABLE_ITEMS or
+      L.NO_CACHED_DESTROYABLE_ITEMS
+    )
+  end
+
+  -- Handle until no more items.
+  while #self.items > 0 do
+    handleItem()
+  end
+end
+
+
 function Destroyer:AutoShow()
   -- Refresh items.
   self:RefreshItems()
