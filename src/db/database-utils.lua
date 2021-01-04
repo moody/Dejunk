@@ -77,6 +77,8 @@ function DatabaseUtils:Profile()
         enabled = true,
         verbose = false,
         reason = false,
+        sell = true,
+        destroy = true,
         frame = _G.DEFAULT_CHAT_FRAME:GetName()
       },
       autoRepair = false,

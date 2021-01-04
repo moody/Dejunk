@@ -9,6 +9,10 @@ local strjoin = _G.strjoin
 local FORCE_HEADING = DCL:ColorString(("[%s]"):format(AddonName), Colors.Yellow)
 local HEADING = DCL:ColorString(("[%s]"):format(AddonName), Colors.Primary)
 
+-- ============================================================================
+-- General Functions
+-- ============================================================================
+
 function Chat:Debug(...)
   --@debug@
   print(DCL:ColorString(("[%s Debug]"):format(AddonName), Colors.Red), ...)
@@ -46,4 +50,36 @@ function Chat:GetDropdownList()
   end
 
   return info
+end
+
+-- ============================================================================
+-- Sell Functions
+-- ============================================================================
+
+function Chat:Sell(...)
+  if DB.Profile and DB.Profile.general.chat.sell then self:Print(...) end
+end
+
+function Chat:SellVerbose(...)
+  if DB.Profile and DB.Profile.general.chat.sell then self:Verbose(...) end
+end
+
+function Chat:SellReason(...)
+  if DB.Profile and DB.Profile.general.chat.sell then self:Reason(...) end
+end
+
+-- ============================================================================
+-- Destroy Functions
+-- ============================================================================
+
+function Chat:Destroy(...)
+  if DB.Profile and DB.Profile.general.chat.destroy then self:Print(...) end
+end
+
+function Chat:DestroyVerbose(...)
+  if DB.Profile and DB.Profile.general.chat.destroy then self:Verbose(...) end
+end
+
+function Chat:DestroyReason(...)
+  if DB.Profile and DB.Profile.general.chat.destroy then self:Reason(...) end
 end
