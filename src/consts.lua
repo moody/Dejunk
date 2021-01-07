@@ -86,6 +86,11 @@ Consts.DESTROY_AUTO_SLIDER_MIN = 0
 Consts.DESTROY_AUTO_SLIDER_MAX = 16
 Consts.DESTROY_AUTO_SLIDER_STEP = 1
 
+-- sell/destroy.byType.itemLevelRange
+Consts.ITEM_LEVEL_RANGE_MIN = 1
+Consts.ITEM_LEVEL_RANGE_MAX = 999
+Consts.ITEM_LEVEL_RANGE_STEP = 1
+
 -- ============================================================================
 -- Consts Functions
 -- ============================================================================

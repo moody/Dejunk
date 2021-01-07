@@ -107,6 +107,11 @@ function DatabaseUtils:Profile()
           enabled = false,
           value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
         },
+        itemLevelRange = {
+          enabled = false,
+          min = Consts.ITEM_LEVEL_RANGE_MIN,
+          max = Consts.ITEM_LEVEL_RANGE_MAX
+        }
       },
 
       ignore = {
@@ -163,6 +168,11 @@ function DatabaseUtils:Profile()
           enabled = false,
           value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
         },
+        itemLevelRange = {
+          enabled = false,
+          min = Consts.ITEM_LEVEL_RANGE_MIN,
+          max = Consts.ITEM_LEVEL_RANGE_MIN
+        }
       },
 
       ignore = {

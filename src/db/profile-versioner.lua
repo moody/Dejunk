@@ -53,6 +53,18 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.SELL_BELOW_AVERAGE_ILVL_MAX
   )
 
+  profile.sell.byType.itemLevelRange.min = Clamp(
+    profile.sell.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MIN,
+    profile.sell.byType.itemLevelRange.max
+  )
+
+  profile.sell.byType.itemLevelRange.max = Clamp(
+    profile.sell.byType.itemLevelRange.max,
+    profile.sell.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MAX
+  )
+
   profile.destroy.autoOpen.value = Clamp(
     profile.destroy.autoOpen.value,
     Consts.DESTROY_AUTO_SLIDER_MIN,
@@ -75,6 +87,18 @@ function ProfileVersioner:_ClampValues(profile)
     profile.destroy.byType.excessSoulShards.value,
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
+  )
+
+  profile.destroy.byType.itemLevelRange.min = Clamp(
+    profile.destroy.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MIN,
+    profile.destroy.byType.itemLevelRange.max
+  )
+
+  profile.destroy.byType.itemLevelRange.max = Clamp(
+    profile.destroy.byType.itemLevelRange.max,
+    profile.destroy.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MAX
   )
 end
 
