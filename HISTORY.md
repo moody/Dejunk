@@ -1,3 +1,8 @@
+# 9.0.10
+
+- Minor bug fixes
+- Locale updates
+
 # 9.0.9
 
 - `General > Chat > Verbose` and `General > Chat > Reason` are now disabled by default.
