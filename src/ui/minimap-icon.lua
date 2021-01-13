@@ -5,14 +5,12 @@ local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local IsAltKeyDown = _G.IsAltKeyDown
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local L = Addon.Libs.L
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local MinimapIcon = Addon.MinimapIcon
-local unpack = _G.unpack
-
-local _colors = { 1.0, 0.82, 0, 1, 1, 1 }
 
 -- Initialize once the DB becomes available.
 EventManager:Once(E.DatabaseReady, function()
@@ -33,6 +31,8 @@ EventManager:Once(E.DatabaseReady, function()
       if button == "RightButton" then
         if IsShiftKeyDown() then
           Commands.destroy()
+        elseif IsAltKeyDown() then
+          Commands.destroy("all")
         else
           if Addon.IS_CLASSIC then
             Commands.destroy("start")
@@ -49,15 +49,13 @@ EventManager:Once(E.DatabaseReady, function()
         Addon.VERSION
       )
       tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, unpack(_colors))
-      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, unpack(_colors))
+      tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, nil, nil, nil, 1, 1, 1)
+      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, nil, nil, nil, 1, 1, 1)
       tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(
-        L.RIGHT_CLICK,
-        (Addon.IS_CLASSIC and L.START_DESTROYING or L.DESTROY_NEXT_ITEM),
-        unpack(_colors)
-      )
-      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, unpack(_colors))
+      local rightClickAction = Addon.IS_CLASSIC and L.START_DESTROYING or L.DESTROY_NEXT_ITEM
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, rightClickAction, nil, nil, nil, 1, 1, 1)
+      tooltip:AddDoubleLine(L.ALT_RIGHT_CLICK, L.DESTROY_ALL_ITEMS, nil, nil, nil, 1, 1, 1)
+      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, nil, nil, nil, 1, 1, 1)
 		end,
   })
 

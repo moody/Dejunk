@@ -4,6 +4,7 @@ local AddonName = ...
 local L = _G.LibStub('AceLocale-3.0'):NewLocale(AddonName, 'enUS', true)
 
 L["ADDED_ITEM_TO_LIST"] = "Added %s to %s."
+L["ALT_RIGHT_CLICK"] = "Alt Right-Click"
 L["AUTO_OPEN_DESTROY_TOOLTIP"] = "Automatically open the Destroy frame when destroyable items are found."
 L["AUTO_OPEN_TEXT"] = "Auto Open"
 L["AUTO_OPTION_THRESHOLD_TOOLTIP"] = "Adjust the threshold to only activate %s when less than a set number of bag spaces remain.|n|nTo always activate %s, set the threshold to 0."
