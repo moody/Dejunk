@@ -120,11 +120,6 @@ Commands.sell = create({
       help = L.CMD_HELP_SELL_NEXT,
       run = function() Dejunker:HandleNextItem() end,
     }),
-    all = create({
-      keyword = "all",
-      help = L.CMD_HELP_SELL_ALL .. "|n|n" .. L.CMD_ALL_ITEMS_WARNING,
-      run = function() Dejunker:HandleAllItems() end,
-    }),
   },
 })
 

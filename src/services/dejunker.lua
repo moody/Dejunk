@@ -172,33 +172,6 @@ function Dejunker:HandleNextItem(item)
 end
 
 
-function Dejunker:HandleAllItems()
-  -- Stop if the merchant frame is not shown.
-  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
-    return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-  end
-
-  -- Stop if unsafe.
-  local canDejunk, msg = Core:CanDejunk()
-  if not canDejunk then
-    return Chat:Print(msg)
-  end
-
-  -- Refresh items.
-  self:RefreshItems()
-
-  -- Stop if no items.
-  if #self.items == 0 then
-    return Chat:Print(L.NO_JUNK_ITEMS)
-  end
-
-  -- Handle until no more items.
-  while #self.items > 0 do
-    handleItem()
-  end
-end
-
-
 -- Starts the dejunking process.
 -- @param {boolean} auto
 function Dejunker:Start(auto)
