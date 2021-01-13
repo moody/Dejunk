@@ -126,13 +126,13 @@ ProfileVersioner:_AddVersion(3, function(profile)
   DatabaseUtils:EnsureKey(profile.sell.byType, 'itemLevelRange', {
     enabled = false,
     min = Consts.ITEM_LEVEL_RANGE_MIN,
-    max = Consts.ITEM_LEVEL_RANGE_MAX,
+    max = Consts.ITEM_LEVEL_RANGE_MIN,
   })
 
   -- Ensure `destroy.byType.itemLevelRange`.
   DatabaseUtils:EnsureKey(profile.destroy.byType, 'itemLevelRange', {
     enabled = false,
     min = Consts.ITEM_LEVEL_RANGE_MIN,
-    max = Consts.ITEM_LEVEL_RANGE_MAX,
+    max = Consts.ITEM_LEVEL_RANGE_MIN,
   })
 end)

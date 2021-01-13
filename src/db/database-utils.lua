@@ -106,7 +106,7 @@ function DatabaseUtils:Profile()
         itemLevelRange = {
           enabled = false,
           min = Consts.ITEM_LEVEL_RANGE_MIN,
-          max = Consts.ITEM_LEVEL_RANGE_MAX
+          max = Consts.ITEM_LEVEL_RANGE_MIN
         }
       },
 
