@@ -127,7 +127,6 @@ L["ITEM_LEVEL_RANGE_MAX_TOOLTIP"] = "Equipment with an item level equal to or be
 L["ITEM_LEVEL_RANGE_MIN_TOOLTIP"] = "Equipment with an item level equal to or above this value will be considered junk."
 L["ITEM_LEVEL_RANGE_TEXT"] = "Item Level Range"
 L["ITEM_LEVEL_RANGE_TOOLTIP"] = "Applies to equipment with an item level between a minimum and maximum value.|n|nDoes not apply to cosmetic items or fishing poles."
-L["ITEM_LEVELS_TEXT"] = "Item Levels"
 L["ITEM_NOT_ON_LIST"] = "%s is not on %s."
 L["ITEM_TOOLTIP_TEXT"] = "Item Tooltip"
 L["ITEM_TOOLTIP_TOOLTIP"] = "Display a Dejunk message in an item's tooltip indicating if it will be sold or destroyed.|n|nThis tooltip only applies to items in your bags."
