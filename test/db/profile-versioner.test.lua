@@ -59,14 +59,6 @@ instance.describe("_ClampValues()", function(test)
   })
 
   clampTest({
-    message = "sell.byType.belowAverageItemLevel",
-    get = function(p) return p.sell.byType.belowAverageItemLevel.value end,
-    set = function(p, v) p.sell.byType.belowAverageItemLevel.value = v end,
-    min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
-    max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
-  })
-
-  clampTest({
     message = "destroy.autoOpen.value",
     get = function(p) return p.destroy.autoOpen.value end,
     set = function(p, v) p.destroy.autoOpen.value = v end,

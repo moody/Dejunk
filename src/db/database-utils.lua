@@ -103,10 +103,6 @@ function DatabaseUtils:Profile()
 
       byType = {
         unsuitable = false,
-        belowAverageItemLevel = {
-          enabled = false,
-          value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
-        },
         itemLevelRange = {
           enabled = false,
           min = Consts.ITEM_LEVEL_RANGE_MIN,

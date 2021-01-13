@@ -136,29 +136,6 @@ function Sell:AddByType(parent)
     set = function(value) DB.Profile.sell.byType.unsuitable = value end
   })
 
-  -- Below Average ILVL
-  if Addon.IS_RETAIL then
-    Widgets:CheckBoxSlider({
-      parent = parent,
-      checkBox = {
-        label = L.SELL_BELOW_AVERAGE_ILVL_TEXT,
-        tooltip = L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
-        get = function() return DB.Profile.sell.byType.belowAverageItemLevel.enabled end,
-        set = function(value) DB.Profile.sell.byType.belowAverageItemLevel.enabled = value end
-      },
-      slider = {
-        label = L.ITEM_LEVELS_TEXT,
-        value = DB.Profile.sell.byType.belowAverageItemLevel.value,
-        min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
-        max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
-        step = Consts.SELL_BELOW_AVERAGE_ILVL_STEP,
-        onValueChanged = function(_, event, value)
-          DB.Profile.sell.byType.belowAverageItemLevel.value = value
-        end
-      }
-    })
-  end
-
   -- Item Level Range.
   Widgets:CheckBoxSliderRange({
     parent = parent,
