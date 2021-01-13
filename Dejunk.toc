@@ -10,7 +10,6 @@
 ## Notes: Customizable junk selling and destroying.
 ## X-DethsDBLib: __DEJUNK_SAVED_VARIABLES__
 ## SavedVariables: __DEJUNK_SAVED_VARIABLES__, DEJUNK_ADDON_SV
-## OptionalDeps: DethsColorLib, DethsDBLib, DethsTooltipLib, West
 ## X-Curse-Project-ID: 413260
 ## X-WoWI-ID: 25313
 
@@ -104,10 +103,9 @@ src\filters\shared\ignore-equipment-sets.lua
 src\filters\shared\ignore-tradeable.lua
 
 src\filters\dejunker\unsuitable-equipment.lua
-src\filters\dejunker\below-average-item-level.lua
 
+src\filters\shared\item-level-range.lua
 src\filters\shared\ignore-soulbound.lua
-
 src\filters\shared\by-quality.lua
 
 # UI
@@ -133,11 +131,3 @@ Bindings.lua
 
 # Core
 src\core.lua
-
-
-#@do-not-package@
-test\_init.lua
-test\db\database-utils.test.lua
-test\db\global-versioner.test.lua
-test\db\profile-versioner.test.lua
-#@end-do-not-package@

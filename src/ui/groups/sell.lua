@@ -136,28 +136,40 @@ function Sell:AddByType(parent)
     set = function(value) DB.Profile.sell.byType.unsuitable = value end
   })
 
-  -- Below Average ILVL
-  if Addon.IS_RETAIL then
-    Widgets:CheckBoxSlider({
-      parent = parent,
-      checkBox = {
-        label = L.SELL_BELOW_AVERAGE_ILVL_TEXT,
-        tooltip = L.SELL_BELOW_AVERAGE_ILVL_TOOLTIP,
-        get = function() return DB.Profile.sell.byType.belowAverageItemLevel.enabled end,
-        set = function(value) DB.Profile.sell.byType.belowAverageItemLevel.enabled = value end
-      },
-      slider = {
-        label = L.ITEM_LEVELS_TEXT,
-        value = DB.Profile.sell.byType.belowAverageItemLevel.value,
-        min = Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
-        max = Consts.SELL_BELOW_AVERAGE_ILVL_MAX,
-        step = Consts.SELL_BELOW_AVERAGE_ILVL_STEP,
-        onValueChanged = function(_, event, value)
-          DB.Profile.sell.byType.belowAverageItemLevel.value = value
-        end
-      }
-    })
-  end
+  -- Item Level Range.
+  Widgets:CheckBoxSliderRange({
+    parent = parent,
+    checkBox = {
+      label = L.ITEM_LEVEL_RANGE_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_TOOLTIP,
+      get = function() return DB.Profile.sell.byType.itemLevelRange.enabled end,
+      set = function(value)
+        DB.Profile.sell.byType.itemLevelRange.enabled = value
+      end
+    },
+    minSlider = {
+      label = L.MINIMUM_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_MIN_TOOLTIP,
+      value = DB.Profile.sell.byType.itemLevelRange.min,
+      min = Consts.ITEM_LEVEL_RANGE_MIN,
+      max = DB.Profile.sell.byType.itemLevelRange.max,
+      step = Consts.ITEM_LEVEL_RANGE_STEP,
+      onValueChanged = function(this, event, value)
+        DB.Profile.sell.byType.itemLevelRange.min = value
+      end
+    },
+    maxSlider = {
+      label = L.MAXIMUM_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_MAX_TOOLTIP,
+      value = DB.Profile.sell.byType.itemLevelRange.max,
+      min = DB.Profile.sell.byType.itemLevelRange.min,
+      max = Consts.ITEM_LEVEL_RANGE_MAX,
+      step = Consts.ITEM_LEVEL_RANGE_STEP,
+      onValueChanged = function(this, event, value)
+        DB.Profile.sell.byType.itemLevelRange.max = value
+      end
+    },
+  })
 end
 
 function Sell:AddIgnore(parent)

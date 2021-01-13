@@ -204,6 +204,41 @@ function Destroy:AddByType(parent)
       }
     })
   end
+
+  -- Item Level Range.
+  Widgets:CheckBoxSliderRange({
+    parent = parent,
+    checkBox = {
+      label = L.ITEM_LEVEL_RANGE_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_TOOLTIP,
+      get = function() return DB.Profile.destroy.byType.itemLevelRange.enabled end,
+      set = function(value)
+        DB.Profile.destroy.byType.itemLevelRange.enabled = value
+      end
+    },
+    minSlider = {
+      label = L.MINIMUM_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_MIN_TOOLTIP,
+      value = DB.Profile.destroy.byType.itemLevelRange.min,
+      min = Consts.ITEM_LEVEL_RANGE_MIN,
+      max = DB.Profile.destroy.byType.itemLevelRange.max,
+      step = Consts.ITEM_LEVEL_RANGE_STEP,
+      onValueChanged = function(this, event, value)
+        DB.Profile.destroy.byType.itemLevelRange.min = value
+      end
+    },
+    maxSlider = {
+      label = L.MAXIMUM_TEXT,
+      tooltip = L.ITEM_LEVEL_RANGE_MAX_TOOLTIP,
+      value = DB.Profile.destroy.byType.itemLevelRange.max,
+      min = DB.Profile.destroy.byType.itemLevelRange.min,
+      max = Consts.ITEM_LEVEL_RANGE_MAX,
+      step = Consts.ITEM_LEVEL_RANGE_STEP,
+      onValueChanged = function(this, event, value)
+        DB.Profile.destroy.byType.itemLevelRange.max = value
+      end
+    },
+  })
 end
 
 function Destroy:AddIgnore(parent)

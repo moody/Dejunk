@@ -43,6 +43,7 @@ _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
 -- Destroy.
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
+_G.BINDING_NAME_DEJUNK_DESTROY_ALL_ITEMS = L.DESTROY_ALL_ITEMS
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
@@ -75,6 +76,7 @@ function DejunkBindings_StartDestroying()
   Commands.destroy.subcommands.start()
 end
 DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
+DejunkBindings_DestroyAllItems = Commands.destroy.subcommands.all
 
 function DejunkBindings_AddToList(groupName, listName)
   if not currentItemID then return end

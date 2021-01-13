@@ -119,7 +119,7 @@ Commands.sell = create({
       keyword = "next",
       help = L.CMD_HELP_SELL_NEXT,
       run = function() Dejunker:HandleNextItem() end,
-    })
+    }),
   },
 })
 
@@ -143,7 +143,12 @@ Commands.destroy = create({
       keyword = "next",
       help = L.CMD_HELP_DESTROY_NEXT,
       run = function() Destroyer:HandleNextItem() end,
-    })
+    }),
+    all = create({
+      keyword = "all",
+      help = L.CMD_HELP_DESTROY_ALL .. "|n|n" .. L.CMD_ALL_ITEMS_WARNING,
+      run = function() Destroyer:HandleAllItems() end,
+    }),
   }
 })
 

@@ -5,7 +5,7 @@ local DatabaseUtils = Addon.DatabaseUtils
 local ProfileVersioner = Addon.ProfileVersioner
 
 -- Versions
-ProfileVersioner.CURRENT_VERSION = 2
+ProfileVersioner.CURRENT_VERSION = 3
 ProfileVersioner.DEFAULT_VERSION = -1
 
 ProfileVersioner.versions = {}
@@ -47,10 +47,16 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.SELL_BELOW_PRICE_MAX
   )
 
-  profile.sell.byType.belowAverageItemLevel.value = Clamp(
-    profile.sell.byType.belowAverageItemLevel.value,
-    Consts.SELL_BELOW_AVERAGE_ILVL_MIN,
-    Consts.SELL_BELOW_AVERAGE_ILVL_MAX
+  profile.sell.byType.itemLevelRange.min = Clamp(
+    profile.sell.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MIN,
+    profile.sell.byType.itemLevelRange.max
+  )
+
+  profile.sell.byType.itemLevelRange.max = Clamp(
+    profile.sell.byType.itemLevelRange.max,
+    profile.sell.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MAX
   )
 
   profile.destroy.autoOpen.value = Clamp(
@@ -76,6 +82,18 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN,
     Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX
   )
+
+  profile.destroy.byType.itemLevelRange.min = Clamp(
+    profile.destroy.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MIN,
+    profile.destroy.byType.itemLevelRange.max
+  )
+
+  profile.destroy.byType.itemLevelRange.max = Clamp(
+    profile.destroy.byType.itemLevelRange.max,
+    profile.destroy.byType.itemLevelRange.min,
+    Consts.ITEM_LEVEL_RANGE_MAX
+  )
 end
 
 -- ============================================================================
@@ -94,4 +112,27 @@ ProfileVersioner:_AddVersion(2, function(profile)
       value = Consts.DESTROY_AUTO_SLIDER_MIN,
     })
   end
+end)
+
+-- ============================================================================
+-- Version 3
+-- ============================================================================
+
+ProfileVersioner:_AddVersion(3, function(profile)
+  -- Remove old settings.
+  profile.sell.byType.belowAverageItemLevel = nil
+
+  -- Ensure `sell.byType.itemLevelRange`.
+  DatabaseUtils:EnsureKey(profile.sell.byType, 'itemLevelRange', {
+    enabled = false,
+    min = Consts.ITEM_LEVEL_RANGE_MIN,
+    max = Consts.ITEM_LEVEL_RANGE_MIN,
+  })
+
+  -- Ensure `destroy.byType.itemLevelRange`.
+  DatabaseUtils:EnsureKey(profile.destroy.byType, 'itemLevelRange', {
+    enabled = false,
+    min = Consts.ITEM_LEVEL_RANGE_MIN,
+    max = Consts.ITEM_LEVEL_RANGE_MIN,
+  })
 end)

@@ -77,6 +77,8 @@ function DatabaseUtils:Profile()
         enabled = true,
         verbose = false,
         reason = false,
+        sell = true,
+        destroy = true,
         frame = _G.DEFAULT_CHAT_FRAME:GetName()
       },
       autoRepair = false,
@@ -101,10 +103,11 @@ function DatabaseUtils:Profile()
 
       byType = {
         unsuitable = false,
-        belowAverageItemLevel = {
+        itemLevelRange = {
           enabled = false,
-          value = Consts.SELL_BELOW_AVERAGE_ILVL_MIN
-        },
+          min = Consts.ITEM_LEVEL_RANGE_MIN,
+          max = Consts.ITEM_LEVEL_RANGE_MIN
+        }
       },
 
       ignore = {
@@ -161,6 +164,11 @@ function DatabaseUtils:Profile()
           enabled = false,
           value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
         },
+        itemLevelRange = {
+          enabled = false,
+          min = Consts.ITEM_LEVEL_RANGE_MIN,
+          max = Consts.ITEM_LEVEL_RANGE_MIN
+        }
       },
 
       ignore = {

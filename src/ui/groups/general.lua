@@ -68,6 +68,24 @@ function General:AddChat(parent)
     set = function(value) DB.Profile.general.chat.enabled = value end
   })
 
+  -- Sell
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.SELL_TEXT,
+    tooltip = L.CHAT_SELL_TOOLTIP,
+    get = function() return DB.Profile.general.chat.sell end,
+    set = function(value) DB.Profile.general.chat.sell = value end
+  })
+
+  -- Destroy
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.DESTROY_TEXT,
+    tooltip = L.CHAT_DESTROY_TOOLTIP,
+    get = function() return DB.Profile.general.chat.destroy end,
+    set = function(value) DB.Profile.general.chat.destroy = value end
+  })
+
   -- Verbose
   Widgets:CheckBox({
     parent = parent,

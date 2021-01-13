@@ -31,12 +31,11 @@ def getReferences():
             lineNum = 0
             for line in f.readlines():
                 lineNum += 1
-                match = re.search(LOCALE_REFERENCE_PATTERN, line)
-                if match:
-                    for key in match.groups():
-                        if not key in references:
-                            references[key] = []
-                        references[key].append(f"{path} (line: {lineNum})")
+                keys = re.findall(LOCALE_REFERENCE_PATTERN, line)
+                for key in keys:
+                    if not key in references:
+                        references[key] = []
+                    references[key].append(f"{path} (line: {lineNum})")
 
     return references
 
