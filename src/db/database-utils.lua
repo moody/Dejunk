@@ -63,7 +63,17 @@ function DatabaseUtils:Global()
 
     minimapIcon = { hide = false },
     showItemTooltip = true,
-    showMerchantButton = true
+    showMerchantButton = true,
+
+    sell = {
+      inclusions = {},
+      exclusions = {}
+    },
+
+    destroy = {
+      inclusions = {},
+      exclusions = {}
+    }
   }
 end
 

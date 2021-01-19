@@ -31,18 +31,18 @@
 
   <!-- Add/rem sell inclusions -->
   <Binding name="DEJUNK_ADD_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToList("sell", "inclusions")
+    DejunkBindings_AddToList("sell", "inclusions", "profile")
   </Binding>
   <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromList("sell", "inclusions")
+    DejunkBindings_RemoveFromList("sell", "inclusions", "profile")
   </Binding>
 
   <!-- Add/rem sell exclusions -->
   <Binding name="DEJUNK_ADD_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToList("sell", "exclusions")
+    DejunkBindings_AddToList("sell", "exclusions", "profile")
   </Binding>
   <Binding name="DEJUNK_REM_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromList("sell", "exclusions")
+    DejunkBindings_RemoveFromList("sell", "exclusions", "profile")
   </Binding>
 
   <!-- Start destroying -->
@@ -62,17 +62,17 @@
 
   <!-- Add/rem destroy inclusions -->
   <Binding name="DEJUNK_ADD_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToList("destroy", "inclusions")
+    DejunkBindings_AddToList("destroy", "inclusions", "profile")
   </Binding>
   <Binding name="DEJUNK_REM_DESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromList("destroy", "inclusions")
+    DejunkBindings_RemoveFromList("destroy", "inclusions", "profile")
   </Binding>
 
   <!-- Add/rem destroy exclusions -->
   <Binding name="DEJUNK_ADD_UNDESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_AddToList("destroy", "exclusions")
+    DejunkBindings_AddToList("destroy", "exclusions", "profile")
   </Binding>
   <Binding name="DEJUNK_REM_UNDESTROYABLES" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_RemoveFromList("destroy", "exclusions")
+    DejunkBindings_RemoveFromList("destroy", "exclusions", "profile")
   </Binding>
 </Bindings>

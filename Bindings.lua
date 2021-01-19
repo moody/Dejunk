@@ -32,26 +32,26 @@ _G.BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLES
 _G.BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING_BUTTON_TEXT
 _G.BINDING_NAME_DEJUNK_SELL_NEXT_ITEM = L.SELL_NEXT_ITEM
 _G.BINDING_NAME_DEJUNK_ADD_INCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.inclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_INCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.inclusions.localeShort)
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.inclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_ADD_EXCLUSIONS =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.sell.exclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.localeShort)
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.sell.exclusions.profile.localeShort)
 
 -- Destroy.
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
 _G.BINDING_NAME_DEJUNK_DESTROY_ALL_ITEMS = L.DESTROY_ALL_ITEMS
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.inclusions.localeShort)
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.inclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_ADD_UNDESTROYABLES =
-  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.exclusions.localeShort)
+  L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.exclusions.profile.localeShort)
 _G.BINDING_NAME_DEJUNK_REM_UNDESTROYABLES =
-  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.exclusions.localeShort)
+  L.BINDINGS_REMOVE_FROM_LIST_TEXT:format(Lists.destroy.exclusions.profile.localeShort)
 
 -- ============================================================================
 -- Binding Functions
@@ -78,14 +78,14 @@ end
 DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
 DejunkBindings_DestroyAllItems = Commands.destroy.subcommands.all
 
-function DejunkBindings_AddToList(groupName, listName)
+function DejunkBindings_AddToList(groupName, listName, listType)
   if not currentItemID then return end
-  Lists[groupName][listName]:Add(currentItemID)
+  Lists[groupName][listName][listType]:Add(currentItemID)
 end
 
-function DejunkBindings_RemoveFromList(groupName, listName)
+function DejunkBindings_RemoveFromList(groupName, listName, listType)
   if not currentItemID then return end
-  Lists[groupName][listName]:Remove(currentItemID, true)
+  Lists[groupName][listName][listType]:Remove(currentItemID, true)
 end
 
 -- ============================================================================
