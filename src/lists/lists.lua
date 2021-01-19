@@ -46,7 +46,10 @@ end)
 -- ============================================================================
 
 local function getLocales(groupKey, listKey)
-  local suffix = listKey == "global" and L.GLOBAL_TEXT or L.PROFILE_TEXT
+  local suffix = DCL:ColorString(
+    (listKey == "global" and L.GLOBAL_TEXT or L.PROFILE_TEXT),
+    "FFFFFF"
+  )
 
   local locale = ("%s (%s)"):format(
     (
