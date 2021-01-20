@@ -136,7 +136,7 @@ function Mixins:Import(parent, list)
   local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     fullWidth = true,
-    numLines = 25
+    numLines = 23
   })
 
   Widgets:Button({
@@ -168,7 +168,7 @@ function Mixins:Export(parent, list)
   local editBox = Widgets:MultiLineEditBox({
     parent = parent,
     fullWidth = true,
-    numLines = 25
+    numLines = 23
   })
 
   Widgets:Button({
