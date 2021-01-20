@@ -24,7 +24,7 @@ local PAD_X, PAD_Y = 4, 16
 local BUTTON_SPACING = 0 -- math.floor(PAD_Y * 0.25 + 0.5)
 local BUTTON_ICON_SIZE = 22
 local BUTTON_HEIGHT = BUTTON_ICON_SIZE + 10
-local NUM_LIST_BUTTONS = 10
+local NUM_LIST_BUTTONS = 8
 
 -- ============================================================================
 -- Widget Mixins

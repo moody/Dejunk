@@ -81,7 +81,7 @@ function frameMixins:HandleItem(item)
     local infoType, itemID = GetCursorInfo()
 
     if (infoType == "item") then
-      self.lists.inclusions:Add(itemID)
+      self.lists.inclusions.profile:Add(itemID)
     end
 
     ClearCursor()
@@ -95,7 +95,7 @@ function frameScripts:OnMouseUp()
 end
 
 function frameMixins:ExcludeItem(itemID)
-  self.lists.exclusions:Add(itemID)
+  self.lists.exclusions.profile:Add(itemID)
 end
 
 function frameScripts:OnUpdate(elapsed)
@@ -207,7 +207,7 @@ function ButtonMixins:ShowTooltip()
   GameTooltip:AddDoubleLine(
     L.RIGHT_CLICK,
     L.BINDINGS_ADD_TO_LIST_TEXT:format(
-      self:GetParent().lists.exclusions.locale
+      self:GetParent().lists.exclusions.profile.locale
     ),
     nil, nil, nil,
     1, 1, 1

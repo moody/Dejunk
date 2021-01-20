@@ -12,7 +12,6 @@ local EventManager = Addon.EventManager
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
-local Lists = Addon.Lists
 local pairs = pairs
 local UI = Addon.UI
 local Widgets = Addon.UI.Widgets
@@ -144,21 +143,21 @@ function UI:Create()
     { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
     {
-      text = Lists.sell.inclusions.localeShort,
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Red),
       value = "SellInclusions"
     },
     {
-      text = Lists.sell.exclusions.localeShort,
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Green),
       value = "SellExclusions"
     },
     { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
     {
-      text = Lists.destroy.inclusions.localeShort,
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Red),
       value = "DestroyInclusions"
     },
     {
-      text = Lists.destroy.exclusions.localeShort,
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Green),
       value = "DestroyExclusions"
     },
     { text = "", value = "SPACE_3", disabled = true },

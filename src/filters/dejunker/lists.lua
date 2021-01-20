@@ -4,14 +4,24 @@ local Filters = Addon.Filters
 local L = Addon.Libs.L
 local Lists = Addon.Lists
 
-local EXCLUDE_REASON = Filters:Reason(
+local GLOBAL_EXCLUDE_REASON = Filters:Reason(
   L.LIST_TEXT,
-  Lists.sell.exclusions.locale
+  Lists.sell.exclusions.global.locale
 )
 
-local INCLUDE_REASON = Filters:Reason(
+local GLOBAL_INCLUDE_REASON = Filters:Reason(
   L.LIST_TEXT,
-  Lists.sell.inclusions.locale
+  Lists.sell.inclusions.global.locale
+)
+
+local PROFILE_EXCLUDE_REASON = Filters:Reason(
+  L.LIST_TEXT,
+  Lists.sell.exclusions.profile.locale
+)
+
+local PROFILE_INCLUDE_REASON = Filters:Reason(
+  L.LIST_TEXT,
+  Lists.sell.inclusions.profile.locale
 )
 
 Filters:Add(Addon.Dejunker, {
@@ -21,12 +31,22 @@ Filters:Add(Addon.Dejunker, {
       return "JUNK", L.REASON_SELL_ITEM_TO_BE_DESTROYED
     end
 
-    if Lists.sell.exclusions:Has(item.ItemID) then
-      return "NOT_JUNK", EXCLUDE_REASON
+    -- Profile lists.
+    if Lists.sell.exclusions.profile:Has(item.ItemID) then
+      return "NOT_JUNK", PROFILE_EXCLUDE_REASON
     end
 
-    if Lists.sell.inclusions:Has(item.ItemID) then
-      return "JUNK", INCLUDE_REASON
+    if Lists.sell.inclusions.profile:Has(item.ItemID) then
+      return "JUNK", PROFILE_INCLUDE_REASON
+    end
+
+    -- Global lists.
+    if Lists.sell.exclusions.global:Has(item.ItemID) then
+      return "NOT_JUNK", GLOBAL_EXCLUDE_REASON
+    end
+
+    if Lists.sell.inclusions.global:Has(item.ItemID) then
+      return "JUNK", GLOBAL_INCLUDE_REASON
     end
 
     return "PASS"

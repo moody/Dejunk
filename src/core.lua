@@ -28,16 +28,18 @@ function Core:CanDejunk()
     return false, L.CANNOT_SELL_WHILE_DESTROYING
   end
 
-  if
-    ListHelper:IsParsing(Lists.sell.inclusions) or
-    ListHelper:IsParsing(Lists.sell.exclusions)
-  then
-    return
-      false,
-      L.CANNOT_SELL_WHILE_LISTS_UPDATING:format(
-        Lists.sell.inclusions.locale,
-        Lists.sell.exclusions.locale
-      )
+  for _, listKey in pairs(Lists.LIST_KEYS) do
+    if
+      ListHelper:IsParsing(Lists.sell.inclusions[listKey]) or
+      ListHelper:IsParsing(Lists.sell.exclusions[listKey])
+    then
+      return
+        false,
+        L.CANNOT_SELL_WHILE_LISTS_UPDATING:format(
+          Lists.sell.inclusions[listKey].locale,
+          Lists.sell.exclusions[listKey].locale
+        )
+    end
   end
 
   return true
@@ -55,16 +57,18 @@ function Core:CanDestroy()
     return false, L.CANNOT_DESTROY_WHILE_SELLING
   end
 
-  if
-    ListHelper:IsParsing(Lists.destroy.inclusions) or
-    ListHelper:IsParsing(Lists.destroy.exclusions)
-  then
-    return
-      false,
-      L.CANNOT_DESTROY_WHILE_LISTS_UPDATING:format(
-        Lists.destroy.inclusions.locale,
-        Lists.destroy.exclusions.locale
-      )
+  for _, listKey in pairs(Lists.LIST_KEYS) do
+    if
+      ListHelper:IsParsing(Lists.destroy.inclusions[listKey]) or
+      ListHelper:IsParsing(Lists.destroy.exclusions[listKey])
+    then
+      return
+        false,
+        L.CANNOT_DESTROY_WHILE_LISTS_UPDATING:format(
+          Lists.destroy.inclusions[listKey].locale,
+          Lists.destroy.exclusions[listKey].locale
+        )
+    end
   end
 
   return true
