@@ -4,6 +4,7 @@ local Colors = Addon.Colors
 local Commands = Addon.Commands
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
+local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
@@ -15,6 +16,30 @@ local ListHelper = Addon.ListHelper
 local pairs = pairs
 local UI = Addon.UI
 local Widgets = Addon.UI.Widgets
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local function getStatusText()
+  if Dejunker:IsDejunking() then return L.STATUS_SELLING_ITEMS_TEXT end
+  if Destroyer:IsDestroying() then return L.STATUS_DESTROYING_ITEMS_TEXT end
+  if Confirmer:IsConfirming() then return L.STATUS_CONFIRMING_ITEMS_TEXT end
+  if ListHelper:IsParsing() then return L.STATUS_UPDATING_LISTS_TEXT end
+
+  if DB.GetProfileKey then
+    return ("%s: |cFFFFFFFF%s|r"):format(
+      L.ACTIVE_PROFILE_TEXT,
+      DB:GetProfileKey()
+    )
+  end
+
+  return ""
+end
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 function UI:IsShown()
   return self.frame and self.frame:IsShown()
@@ -42,14 +67,8 @@ end
 function UI:OnUpdate(elapsed)
   if not self.frame or not self.frame:IsShown() then return end
 
-  -- Update status text
-  self.frame:SetStatusText(
-    (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
-    (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
-    (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
-    (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
-    ""
-  )
+  -- Update status text.
+  self.frame:SetStatusText(getStatusText())
 
   -- Update disabled state
   local disabled = Core:IsBusy()

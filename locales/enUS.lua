@@ -3,6 +3,7 @@
 local AddonName = ...
 local L = _G.LibStub('AceLocale-3.0'):NewLocale(AddonName, 'enUS', true)
 
+L["ACTIVE_PROFILE_TEXT"] = "Active Profile"
 L["ADDED_ITEM_TO_LIST"] = "Added %s to %s."
 L["ALT_RIGHT_CLICK"] = "Alt Right-Click"
 L["AUTO_OPEN_DESTROY_TOOLTIP"] = "Automatically open the Destroy frame when destroyable items are found."
