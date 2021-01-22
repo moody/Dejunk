@@ -4,6 +4,7 @@ local Colors = Addon.Colors
 local Commands = Addon.Commands
 local Confirmer = Addon.Confirmer
 local Core = Addon.Core
+local DB = Addon.DB
 local DCL = Addon.Libs.DCL
 local Dejunker = Addon.Dejunker
 local Destroyer = Addon.Destroyer
@@ -12,10 +13,33 @@ local EventManager = Addon.EventManager
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local ListHelper = Addon.ListHelper
-local Lists = Addon.Lists
 local pairs = pairs
 local UI = Addon.UI
 local Widgets = Addon.UI.Widgets
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local function getStatusText()
+  if Dejunker:IsDejunking() then return L.STATUS_SELLING_ITEMS_TEXT end
+  if Destroyer:IsDestroying() then return L.STATUS_DESTROYING_ITEMS_TEXT end
+  if Confirmer:IsConfirming() then return L.STATUS_CONFIRMING_ITEMS_TEXT end
+  if ListHelper:IsParsing() then return L.STATUS_UPDATING_LISTS_TEXT end
+
+  if DB.GetProfileKey then
+    return ("%s: |cFFFFFFFF%s|r"):format(
+      L.ACTIVE_PROFILE_TEXT,
+      DB:GetProfileKey()
+    )
+  end
+
+  return ""
+end
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
 
 function UI:IsShown()
   return self.frame and self.frame:IsShown()
@@ -43,14 +67,8 @@ end
 function UI:OnUpdate(elapsed)
   if not self.frame or not self.frame:IsShown() then return end
 
-  -- Update status text
-  self.frame:SetStatusText(
-    (Dejunker:IsDejunking() and L.STATUS_SELLING_ITEMS_TEXT) or
-    (Destroyer:IsDestroying() and L.STATUS_DESTROYING_ITEMS_TEXT) or
-    (Confirmer:IsConfirming() and L.STATUS_CONFIRMING_ITEMS_TEXT) or
-    (ListHelper:IsParsing() and L.STATUS_UPDATING_LISTS_TEXT) or
-    ""
-  )
+  -- Update status text.
+  self.frame:SetStatusText(getStatusText())
 
   -- Update disabled state
   local disabled = Core:IsBusy()
@@ -144,21 +162,21 @@ function UI:Create()
     { text = "", value = "SPACE_1", disabled = true },
     { text = L.SELL_TEXT, value = "Sell" },
     {
-      text = Lists.sell.inclusions.localeShort,
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Red),
       value = "SellInclusions"
     },
     {
-      text = Lists.sell.exclusions.localeShort,
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Green),
       value = "SellExclusions"
     },
     { text = "", value = "SPACE_2", disabled = true },
     { text = L.DESTROY_TEXT, value = "Destroy" },
     {
-      text = Lists.destroy.inclusions.localeShort,
+      text = DCL:ColorString(L.INCLUSIONS_TEXT, Colors.Red),
       value = "DestroyInclusions"
     },
     {
-      text = Lists.destroy.exclusions.localeShort,
+      text = DCL:ColorString(L.EXCLUSIONS_TEXT, Colors.Green),
       value = "DestroyExclusions"
     },
     { text = "", value = "SPACE_3", disabled = true },

@@ -1,7 +1,6 @@
 local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Core = Addon.Core
-local GameTooltip = _G.GameTooltip
 local GetCoinTextureString = _G.GetCoinTextureString
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
@@ -59,7 +58,7 @@ function ItemFrameMixins:Create()
   Widgets:Label({
     parent = frame,
     text = L.ITEM_WINDOW_DRAG_DROP_TO_INCLUDE:format(
-      self.options.service:GetLists().inclusions.locale
+      self.options.service:GetLists().inclusions.profile.locale
     ),
     fullWidth = true,
   })
