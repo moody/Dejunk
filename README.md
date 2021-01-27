@@ -1,66 +1,23 @@
 # Dejunk
 
-Dejunk is a customizable junk selling and destroying addon.
+Dejunk is an addon for automating some tedious aspects of inventory management.
+It provides a variety of options and filters to determine what items in a
+player's bags are junk. Once set up, Dejunk can handle the process of selling
+and destroying items with minimal user interaction.
 
 ![Dejunk](/Dejunk.png?raw=true)
 
 ## Features
 
-### Selling
-
-- Customize a list of items to include or exclude when selling
-- Optional safe mode (only sell up to 12 items at a time)
-- Options to sell all items of a specific quality (from Poor to Epic)
-- And more...
-
-### Destroying
-
-- Customize a list of items to include or exclude when destroying
-- Options to destroy all items of a specific quality (from Poor to Epic)
-- And more...
-
-### Key Bindings
-
-You can bind keys to:
-
-- Toggle UI frames
-- Sell or destroy next item
-- Open lootable items
-- Manage lists
+- Automates the process of selling and destroying items
+- Provides profile and global item lists allowing customization of items to
+  include or exclude when selling and destroying
+- Provides various options and filters to flag items as junk or to ignore them
+- Provides keybindings for most operations (toggling UI, managing lists, etc.)
 
 ## Chat Commands
 
-### Toggle
-
-Toggles the options frame.
-
-```text
-/dejunk [toggle]
-```
-
-### Sell
-
-Toggles the sell frame.
-
-```text
-/dejunk sell
-```
-
-### Destroy
-
-Toggles the destroy frame.
-
-```text
-/dejunk destroy
-```
-
-### Open
-
-Starts opening lootable items.
-
-```text
-/dejunk open
-```
+See a list of available chat commands on the [wiki](https://github.com/moody/Dejunk/wiki/Chat-Commands).
 
 ## Credits
 
