@@ -206,7 +206,7 @@ function Sell:AddIgnore(parent)
       set = function(value) DB.Profile.sell.ignore.consumables = value end
     })
 
-    if Addon.IS_RETAIL then
+    if not Addon.IS_CLASSIC then
       -- Gems
       Widgets:CheckBox({
         parent = byCategory,
@@ -215,7 +215,9 @@ function Sell:AddIgnore(parent)
         get = function() return DB.Profile.sell.ignore.gems end,
         set = function(value) DB.Profile.sell.ignore.gems = value end
       })
+    end
 
+    if Addon.IS_RETAIL then
       -- Glyphs
       Widgets:CheckBox({
         parent = byCategory,

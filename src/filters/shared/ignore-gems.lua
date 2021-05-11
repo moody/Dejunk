@@ -1,5 +1,5 @@
 local _, Addon = ...
-if not Addon.IS_RETAIL then return end
+if Addon.IS_CLASSIC then return end
 
 local Consts = Addon.Consts
 local DB = Addon.DB

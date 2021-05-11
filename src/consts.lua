@@ -113,8 +113,11 @@ function Consts:Initialize()
   if Addon.IS_RETAIL then
     self.BATTLEPET_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_BATTLEPET)
     self.COMPANION_SUBCLASS = GetItemSubClassInfo(_G.LE_ITEM_CLASS_MISCELLANEOUS, 2)
-    self.GEM_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_GEM)
     self.GLYPH_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_GLYPH)
+  end
+
+  if not Addon.IS_CLASSIC then
+    self.GEM_CLASS = GetItemClassInfo(_G.LE_ITEM_CLASS_GEM)
   end
 
   -- Armor class and subclasses
