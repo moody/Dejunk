@@ -40,6 +40,15 @@ jobs:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
           WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
 
+      - name: Release BC
+        uses: BigWigsMods/packager@master
+        with:
+          args: -g bc
+        env:
+          GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+          WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+
       - name: Release Retail
         uses: BigWigsMods/packager@master
         env:
