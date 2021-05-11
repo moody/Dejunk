@@ -181,7 +181,7 @@ function Destroy:AddByType(parent)
   end
 
   -- Excess Soul Shards
-  if Addon.IS_CLASSIC then
+  if Addon.IS_CLASSIC or Addon.IS_BC then
     Widgets:CheckBoxSlider({
       parent = parent,
       checkBox = {
