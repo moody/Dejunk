@@ -1,4 +1,7 @@
-# 9.0.12
+# Dejunk Changelog
 
-- Added global inclusion and exclusion lists
-  - When selling or destroying, global lists are considered after the equivalent lists of the currently active profile
+## 9.0.14
+
+- Added support for Burning Crusade Classic
+- Updated the "Sell/Destroy Next Item" buttons to allow closing their respective
+  frames if there are no items to display ([#100](https://github.com/moody/Dejunk/issues/100))
