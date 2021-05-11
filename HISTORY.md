@@ -1,4 +1,11 @@
-# 9.0.11
+# Dejunk History
+
+## 9.0.12
+
+- Added global inclusion and exclusion lists
+  - When selling or destroying, global lists are considered after the equivalent lists of the currently active profile
+
+## 9.0.11
 
 - Removed `Sell > By Type > Below Average Item Level`
 - Added `Sell/Destroy > By Type > Item Level Range` options ([#56](https://github.com/moody/Dejunk/issues/56))
@@ -6,12 +13,12 @@
 - Added command:
   - `/dejunk destroy all` - destroys all items at once
 
-# 9.0.10
+## 9.0.10
 
 - Minor bug fixes
 - Locale updates
 
-# 9.0.9
+## 9.0.9
 
 - `General > Chat > Verbose` and `General > Chat > Reason` are now disabled by default.
 - **Right-Clicking** the minimap icon will now either:
@@ -26,22 +33,22 @@
   - `/dejunk destroy start` - starts the destroying process (Classic only)
   - `/dejunk destroy next` - destroys the next item
 
-# 9.0.8
+## 9.0.8
 
-## Changes
+### Changes
 
 - Locale updates
 
-# 9.0.7
+## 9.0.7
 
-## Changes
+### Changes
 
 - Locale updates
 - Minor bug fixes
 
-# 9.0.6
+## 9.0.6
 
-## Changes to Destroying
+### Changes to Destroying
 
 As of Shadowlands patch 9.0.2, addons can no longer destroy items at will.
 Addons may only destroy items in response to a hardware event.
@@ -60,7 +67,7 @@ Now, Dejunk can only destroy items _one at a time_ in two ways:
 - Interacting with the new Destroy frame
 - Using a keybind
 
-## Additions
+### Additions
 
 - Added a Sell frame to display current items that will be sold.
   Open the frame by:
@@ -78,65 +85,65 @@ Now, Dejunk can only destroy items _one at a time_ in two ways:
   - Running the command `/dejunk destroy`
   - Using a keybind
 
-## Changes
+### Changes
 
 - Replaced `Destroy > General > Auto Destroy` with `Auto Open` which will
   automatically open the Destroy frame when destroyable items are found
 - Reduced min-max values for `Sell > By Type > Below Average Item Level` to
   2-50 (was 10-100)
 
-# 9.0.5
+## 9.0.5
 
-## Fixes
+### Fixes
 
 - Fixed compatibility with LibDataBroker add-ons, such as Titan Panel ([#77](https://github.com/moody/Dejunk/issues/77))
 
-## Changes
+### Changes
 
 - `General > Chat > Reason` option is now enabled by default
 - `Sell > Ignore` and `Destroy > Ignore` options are now enabled by default
 
-# 9.0.4
+## 9.0.4
 
-## Changes
+### Changes
 
 - Due to increasing complexity and bug potential, the database has been changed.
   During the transition, all existing settings will be reset to default, but
   lists will remain.
 
-# 9.0.3
+## 9.0.3
 
-## Changes
+### Changes
 
 - Due to oversight, the change which made chat options global has been reverted
 
-# 9.0.2
+## 9.0.2
 
-## Changes
+### Changes
 
 - Chat options are now global and apply across all characters
 
-## Additions
+### Additions
 
 - Added option `General > Global > Chat > Frame` to specify which chat frame to output messages to ([#61](https://github.com/moody/Dejunk/issues/61))
 - Added option `General > Global > Chat > Reason` to output the reason why an item was sold or destroyed
 
-# 9.0.1
+## 9.0.1
 
-## Changes
+### Changes
 
 - Reason messages displayed in Dejunk tooltips now point directly to the corresponding option
 - Removed need for `Destroy > General > Save Space` check button
 
-## Fixes
+### Fixes
 
 - Minor bug fixes
 
-# 9.0.0
+## 9.0.0
 
 Updated for Shadowlands pre-patch.
 
-## Additions
+### Additions
 
 - Added command `/dejunk toggle` to toggle the user interface
 - Added command `/dejunk sell` to start selling items
