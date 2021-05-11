@@ -181,7 +181,7 @@ function Destroy:AddByType(parent)
   end
 
   -- Excess Soul Shards
-  if Addon.IS_CLASSIC then
+  if Addon.IS_CLASSIC or Addon.IS_BC then
     Widgets:CheckBoxSlider({
       parent = parent,
       checkBox = {
@@ -275,7 +275,7 @@ function Destroy:AddIgnore(parent)
       set = function(value) DB.Profile.destroy.ignore.consumables = value end
     })
 
-    if Addon.IS_RETAIL then
+    if not Addon.IS_CLASSIC then
       -- Gems
       Widgets:CheckBox({
         parent = byCategory,
@@ -284,7 +284,9 @@ function Destroy:AddIgnore(parent)
         get = function() return DB.Profile.destroy.ignore.gems end,
         set = function(value) DB.Profile.destroy.ignore.gems = value end
       })
+    end
 
+    if Addon.IS_RETAIL then
       -- Glyphs
       Widgets:CheckBox({
         parent = byCategory,

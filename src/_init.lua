@@ -3,7 +3,8 @@ Addon.VERSION = _G.GetAddOnMetadata(AddonName, "Version")
 
 -- Game version flags
 Addon.IS_RETAIL = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE
-Addon.IS_CLASSIC = not Addon.IS_RETAIL
+Addon.IS_CLASSIC = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC
+Addon.IS_BC = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 
 -- Libs
 Addon.Libs = {
