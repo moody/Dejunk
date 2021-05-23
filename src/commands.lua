@@ -130,24 +130,15 @@ Commands.destroy = create({
   help = L.CMD_HELP_DESTROY,
   run = function() ItemFrames.Destroy:Toggle() end,
   subcommands = {
-    start = (
-      Addon.IS_CLASSIC and
-      create({
-        keyword = "start",
-        help = L.CMD_HELP_DESTROY_START,
-        run = function() Destroyer:Start() end,
-      }) or
-      nil
-    ),
+    start = create({
+      keyword = "start",
+      help = L.CMD_HELP_DESTROY_START,
+      run = function() Destroyer:Start() end,
+    }),
     next = create({
       keyword = "next",
       help = L.CMD_HELP_DESTROY_NEXT,
       run = function() Destroyer:HandleNextItem() end,
-    }),
-    all = create({
-      keyword = "all",
-      help = L.CMD_HELP_DESTROY_ALL .. "|n|n" .. L.CMD_ALL_ITEMS_WARNING,
-      run = function() Destroyer:HandleAllItems() end,
     }),
   }
 })
