@@ -97,6 +97,7 @@ function DatabaseUtils:Profile()
 
     sell = {
       auto = false,
+      autoOpen = false,
       safeMode = true,
       belowPrice = {
         enabled = false,

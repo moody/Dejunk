@@ -32,6 +32,15 @@ function Sell:AddGeneral(parent)
     set = function(value) DB.Profile.sell.auto = value end
   })
 
+  -- Auto Open
+  Widgets:CheckBox({
+    parent = parent,
+    label = L.AUTO_OPEN_TEXT,
+    tooltip = L.AUTO_OPEN_SELL_TOOLTIP,
+    get = function() return DB.Profile.sell.autoOpen end,
+    set = function(value) DB.Profile.sell.autoOpen = value end
+  })
+
   -- Safe Mode
   Widgets:CheckBox({
     parent = parent,
