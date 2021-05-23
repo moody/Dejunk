@@ -1,5 +1,6 @@
 local _, Addon = ...
 local Bags = Addon.Bags
+local C_Timer = _G.C_Timer
 local Chat = Addon.Chat
 local Consts = Addon.Consts
 local Core = Addon.Core
@@ -26,12 +27,18 @@ Dejunker.timer = 0
 -- Events
 -- ============================================================================
 
-EventManager:On(E.Wow.MerchantShow, function()
-  -- Auto Sell.
-  if DB.Profile.sell.auto then Dejunker:Start(true) end
-  -- Auto Open.
-  if DB.Profile.sell.autoOpen then ItemFrames.Sell:Show() end
-end)
+do -- E.Wow.MerchantShow
+  local function autoStart()
+    Dejunker:Start(true)
+  end
+
+  EventManager:On(E.Wow.MerchantShow, function()
+    -- Auto Sell.
+    if DB.Profile.sell.auto then C_Timer.After(0.1, autoStart) end
+    -- Auto Open.
+    if DB.Profile.sell.autoOpen then ItemFrames.Sell:Show() end
+  end)
+end
 
 EventManager:On(E.Wow.MerchantClosed, function()
   -- Stop.
@@ -143,11 +150,6 @@ end
 
 
 function Dejunker:HandleNextItem(item)
-  -- Stop if the merchant frame is not shown.
-  if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
-    return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-  end
-
   -- Stop if unsafe.
   local canDejunk, msg = Core:CanDejunk()
   if not canDejunk then

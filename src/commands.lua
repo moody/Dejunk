@@ -106,14 +106,7 @@ Commands.sell = create({
     start = create({
       keyword = "start",
       help = L.CMD_HELP_SELL_START,
-      run = function()
-        -- Stop if the merchant frame is not shown.
-        if not (_G.MerchantFrame and _G.MerchantFrame:IsShown()) then
-          return Chat:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
-        end
-        -- Otherwise, start.
-        Dejunker:Start()
-      end,
+      run = function() Dejunker:Start() end,
     }),
     next = create({
       keyword = "next",
