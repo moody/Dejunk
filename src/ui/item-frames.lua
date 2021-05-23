@@ -93,7 +93,7 @@ function ItemFrameMixins:Create()
       if #self.options.service:GetItems() == 0 then
         self:Hide()
       else
-        self.options.service:HandleNextItem()
+        self.options.service:Start()
       end
     end,
   })
@@ -206,7 +206,7 @@ init(ItemFrames.Sell, {
   title = AddonName .. " " .. L.SELL_TEXT,
   point = { "CENTER", -200, 0 },
   handleItemTooltip = L.SELL_TEXT,
-  buttonText = L.SELL_NEXT_ITEM,
+  buttonText = L.START_SELLING_BUTTON_TEXT,
   service = Addon.Dejunker,
 })
 
@@ -216,6 +216,6 @@ init(ItemFrames.Destroy, {
   title = AddonName .. " " .. L.DESTROY_TEXT,
   point = { "CENTER", 200, 0 },
   handleItemTooltip = L.DESTROY_TEXT,
-  buttonText = L.DESTROY_NEXT_ITEM,
+  buttonText = L.START_DESTROYING,
   service = Addon.Destroyer,
 })
