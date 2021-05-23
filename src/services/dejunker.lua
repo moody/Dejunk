@@ -9,6 +9,7 @@ local E = Addon.Events
 local ERR_VENDOR_DOESNT_BUY = _G.ERR_VENDOR_DOESNT_BUY
 local EventManager = Addon.EventManager
 local Filters = Addon.Filters
+local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
 local Lists = Addon.Lists
 local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
@@ -26,11 +27,17 @@ Dejunker.timer = 0
 -- ============================================================================
 
 EventManager:On(E.Wow.MerchantShow, function()
+  -- Auto Sell.
   if DB.Profile.sell.auto then Dejunker:Start(true) end
+  -- Auto Open.
+  if DB.Profile.sell.autoOpen then ItemFrames.Sell:Show() end
 end)
 
 EventManager:On(E.Wow.MerchantClosed, function()
+  -- Stop.
   if Dejunker:IsDejunking() then Dejunker:Stop() end
+  -- Auto Open.
+  if DB.Profile.sell.autoOpen then ItemFrames.Sell:Hide() end
 end)
 
 EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
