@@ -53,7 +53,6 @@ _G.BINDING_NAME_DEJUNK_REM_EXCLUSIONS_GLOBAL =
 -- Destroy.
 _G.BINDING_NAME_DEJUNK_START_DESTROYING = L.START_DESTROYING
 _G.BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
-_G.BINDING_NAME_DEJUNK_DESTROY_ALL_ITEMS = L.DESTROY_ALL_ITEMS
 _G.BINDING_NAME_DEJUNK_ADD_DESTROYABLES =
   L.BINDINGS_ADD_TO_LIST_TEXT:format(Lists.destroy.inclusions.profile.locale)
 _G.BINDING_NAME_DEJUNK_REM_DESTROYABLES =
@@ -86,15 +85,8 @@ DejunkBindings_StartSelling = Commands.sell.subcommands.start
 DejunkBindings_SellNextItem = Commands.sell.subcommands.next
 
 -- Destroy.
-function DejunkBindings_StartDestroying()
-  -- Stop if not Classic.
-  if not Addon.IS_CLASSIC then
-    return Chat:Print(L.START_DESTROYING_GAME_VERSION_ERROR)
-  end
-  Commands.destroy.subcommands.start()
-end
+DejunkBindings_StartDestroying = Commands.destroy.subcommands.start
 DejunkBindings_DestroyNextItem = Commands.destroy.subcommands.next
-DejunkBindings_DestroyAllItems = Commands.destroy.subcommands.all
 
 function DejunkBindings_AddToList(groupName, listName, listType)
   if not currentItemID then return end

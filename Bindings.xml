@@ -28,9 +28,6 @@
   <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_DestroyNextItem()
   </Binding>
-  <Binding name="DEJUNK_DESTROY_ALL_ITEMS" category="BINDING_CATEGORY_DEJUNK">
-    DejunkBindings_DestroyAllItems()
-  </Binding>
 
   <!-- Lists -->
   <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="BINDING_CATEGORY_DEJUNK">

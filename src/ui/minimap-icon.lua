@@ -32,13 +32,9 @@ EventManager:Once(E.DatabaseReady, function()
         if IsShiftKeyDown() then
           Commands.destroy()
         elseif IsAltKeyDown() then
-          Commands.destroy("all")
+          Commands.destroy("start")
         else
-          if Addon.IS_CLASSIC then
-            Commands.destroy("start")
-          else
-            Commands.destroy("next")
-          end
+          Commands.destroy("next")
         end
       end
     end,
@@ -52,9 +48,8 @@ EventManager:Once(E.DatabaseReady, function()
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, nil, nil, nil, 1, 1, 1)
       tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, nil, nil, nil, 1, 1, 1)
       tooltip:AddLine(" ")
-      local rightClickAction = Addon.IS_CLASSIC and L.START_DESTROYING or L.DESTROY_NEXT_ITEM
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, rightClickAction, nil, nil, nil, 1, 1, 1)
-      tooltip:AddDoubleLine(L.ALT_RIGHT_CLICK, L.DESTROY_ALL_ITEMS, nil, nil, nil, 1, 1, 1)
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.DESTROY_NEXT_ITEM, nil, nil, nil, 1, 1, 1)
+      tooltip:AddDoubleLine(L.ALT_RIGHT_CLICK, L.START_DESTROYING, nil, nil, nil, 1, 1, 1)
       tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, nil, nil, nil, 1, 1, 1)
 		end,
   })

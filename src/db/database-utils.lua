@@ -66,11 +66,13 @@ function DatabaseUtils:Global()
     showMerchantButton = true,
 
     sell = {
+      frame = { point = nil },
       inclusions = {},
       exclusions = {}
     },
 
     destroy = {
+      frame = { point = nil },
       inclusions = {},
       exclusions = {}
     }
@@ -97,6 +99,7 @@ function DatabaseUtils:Profile()
 
     sell = {
       auto = false,
+      autoOpen = false,
       safeMode = true,
       belowPrice = {
         enabled = false,

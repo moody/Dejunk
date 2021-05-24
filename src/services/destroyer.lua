@@ -113,6 +113,32 @@ local function handleItem(index)
   EventManager:Fire(E.DestroyerAttemptToDestroy, item)
 end
 
+
+local function handleAllItems()
+  -- Stop if unsafe.
+  local canDestroy, msg = Core:CanDestroy()
+  if not canDestroy then
+    return Chat:Print(msg)
+  end
+
+  -- Refresh items.
+  Destroyer:RefreshItems()
+
+  -- Stop if no items.
+  if #Destroyer.items == 0 then
+    return Chat:Print(
+      Destroyer.items.allCached and
+      L.NO_DESTROYABLE_ITEMS or
+      L.NO_CACHED_DESTROYABLE_ITEMS
+    )
+  end
+
+  -- Handle until no more items.
+  while #Destroyer.items > 0 do
+    handleItem()
+  end
+end
+
 -- ============================================================================
 -- Functions
 -- ============================================================================
@@ -180,32 +206,6 @@ function Destroyer:HandleNextItem(item)
 end
 
 
-function Destroyer:HandleAllItems()
-    -- Stop if unsafe.
-  local canDestroy, msg = Core:CanDestroy()
-  if not canDestroy then
-    return Chat:Print(msg)
-  end
-
-  -- Refresh items.
-  self:RefreshItems()
-
-  -- Stop if no items.
-  if #self.items == 0 then
-    return Chat:Print(
-      self.items.allCached and
-      L.NO_DESTROYABLE_ITEMS or
-      L.NO_CACHED_DESTROYABLE_ITEMS
-    )
-  end
-
-  -- Handle until no more items.
-  while #self.items > 0 do
-    handleItem()
-  end
-end
-
-
 function Destroyer:AutoShow()
   -- Refresh items.
   self:RefreshItems()
@@ -225,16 +225,13 @@ function Destroyer:AutoShow()
   ItemFrames.Destroy:Show()
 end
 
--- ============================================================================
--- Auto Destroy (Classic Only)
--- ============================================================================
 
 -- Starts the destroying process.
 -- @param {boolean} auto
 function Destroyer:Start(auto)
-  -- Stop if not Classic.
+  -- Handle all items if not Classic.
   if not Addon.IS_CLASSIC then
-    return Chat:Print(L.START_DESTROYING_GAME_VERSION_ERROR)
+    return handleAllItems()
   end
 
   -- Stop if unsafe.
