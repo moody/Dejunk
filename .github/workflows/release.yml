@@ -43,7 +43,7 @@ jobs:
       - name: Release BC
         uses: BigWigsMods/packager@master
         with:
-          args: -g bc
+          args: -g bcc
         env:
           GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
