@@ -1,9 +1,13 @@
 local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Core = Addon.Core
+local DB = Addon.DB
+local floor = math.floor
 local GetCoinTextureString = _G.GetCoinTextureString
+local hooksecurefunc = _G.hooksecurefunc
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
+local type = type
 local UI = Addon.UI
 local unpack = _G.unpack
 local Widgets = Addon.UI.Widgets
@@ -50,9 +54,22 @@ function ItemFrameMixins:Create()
   frame:SetWidth(350)
   frame:SetHeight(370)
   frame:EnableResize(false)
-  frame:SetPoint(unpack(self.options.point))
   frame:SetLayout("Flow")
   self.frame = frame
+
+  do -- Set point.
+    local success = pcall(function()
+      frame:ClearAllPoints()
+      frame:SetPoint(unpack(self.options.getPoint()))
+    end)
+
+    if not success then
+      -- Revert to default point.
+      self.options.setPoint(nil)
+      frame:ClearAllPoints()
+      frame:SetPoint(unpack(self.options.defaultPoint))
+    end
+  end
 
   -- Add help label.
   Widgets:Label({
@@ -97,6 +114,12 @@ function ItemFrameMixins:Create()
       end
     end,
   })
+
+  -- Hook StopMovingOrSizing.
+  hooksecurefunc(frame.frame, "StopMovingOrSizing", function(f)
+    local point, _, _, x, y = f:GetPoint()
+    self.options.setPoint({ point, floor(x + 0.5), floor(y + 0.5) })
+  end)
 
   -- Set OnUpdate script.
   frame.frame:SetScript("OnUpdate", function(_, elapsed)
@@ -186,7 +209,9 @@ end
 local function init(frame, options)
   assertType(options, "table")
   assertType(options.title, "string")
-  assertType(options.point, "table")
+  assertType(options.defaultPoint, "table")
+  assertType(options.getPoint, "function")
+  assertType(options.setPoint, "function")
   assertType(options.handleItemTooltip, "string")
   assertType(options.buttonText, "string")
   assertType(options.service, "table")
@@ -204,7 +229,9 @@ end
 -- Sell Frame
 init(ItemFrames.Sell, {
   title = AddonName .. " " .. L.SELL_TEXT,
-  point = { "CENTER", -200, 0 },
+  defaultPoint = { "CENTER", -200, 0 },
+  getPoint = function() return DB.Global.sell.frame.point end,
+  setPoint = function(point) DB.Global.sell.frame.point = point end,
   handleItemTooltip = L.SELL_TEXT,
   buttonText = L.START_SELLING_BUTTON_TEXT,
   service = Addon.Dejunker,
@@ -214,7 +241,9 @@ init(ItemFrames.Sell, {
 -- Destroy Frame
 init(ItemFrames.Destroy, {
   title = AddonName .. " " .. L.DESTROY_TEXT,
-  point = { "CENTER", 200, 0 },
+  defaultPoint = { "CENTER", 200, 0 },
+  getPoint = function() return DB.Global.destroy.frame.point end,
+  setPoint = function(point) DB.Global.destroy.frame.point = point end,
   handleItemTooltip = L.DESTROY_TEXT,
   buttonText = L.START_DESTROYING,
   service = Addon.Destroyer,

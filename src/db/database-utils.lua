@@ -66,11 +66,13 @@ function DatabaseUtils:Global()
     showMerchantButton = true,
 
     sell = {
+      frame = { point = nil },
       inclusions = {},
       exclusions = {}
     },
 
     destroy = {
+      frame = { point = nil },
       inclusions = {},
       exclusions = {}
     }
