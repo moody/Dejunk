@@ -17,6 +17,7 @@ local GetCursorInfo = _G.GetCursorInfo
 local GetMouseFocus = _G.GetMouseFocus
 local IsControlKeyDown = _G.IsControlKeyDown
 local IsDressableItem = _G.IsDressableItem
+local IsShiftKeyDown = _G.IsShiftKeyDown
 local L = Addon.Libs.L
 local max = math.max
 local UIParent = _G.UIParent
@@ -169,7 +170,9 @@ function ButtonMixins:SetItem(item)
 end
 
 function ButtonScripts:OnClick(button)
-  if (button == "LeftButton") then
+  if IsShiftKeyDown() then return end
+
+  if button == "LeftButton" then
     if IsControlKeyDown() then
       if IsDressableItem(self.item.ItemID) then
         DressUpVisual(self.item.ItemLink)
@@ -177,41 +180,57 @@ function ButtonScripts:OnClick(button)
     else
       self:GetParent():HandleItem(self.item)
     end
-  elseif (button == "RightButton") then
+  elseif button == "RightButton" then
     self:GetParent():ExcludeItem(self.item.ItemID)
   end
 end
 
 function ButtonMixins:ShowTooltip()
   GameTooltip:SetOwner(self, "ANCHOR_TOP")
-  -- Set title to itemText.
-  GameTooltip:SetText(self.itemText, 1, 1, 1)
-  -- Add total.
-  local total = GetCoinTextureString(self.item.Price * self.item.Quantity)
-  GameTooltip:AddLine(("%s:  %s"):format(_G.SELL_PRICE, total), 1, 1, 1)
-  -- Blank.
-  GameTooltip:AddLine(" ")
-  -- Add reason.
-  GameTooltip:AddLine(DCL:ColorString(L.REASON_TEXT, Colors.Yellow))
-  GameTooltip:AddLine("  " .. self.item.Reason, 1, 1, 1)
-  -- Blank.
-  GameTooltip:AddLine(" ")
-  -- Add left-click info.
-  GameTooltip:AddDoubleLine(
-    L.LEFT_CLICK,
-    self:GetParent().handleItemTooltip,
-    nil, nil, nil,
-    1, 1, 1
-  )
-  -- Add right-click info.
-  GameTooltip:AddDoubleLine(
-    L.RIGHT_CLICK,
-    L.BINDINGS_ADD_TO_LIST_TEXT:format(
-      self:GetParent().lists.exclusions.profile.locale
-    ),
-    nil, nil, nil,
-    1, 1, 1
-  )
+
+  if IsShiftKeyDown() then
+    GameTooltip:SetBagItem(self.item.Bag, self.item.Slot)
+  else
+    -- Set title to itemText.
+    GameTooltip:SetText(self.itemText, 1, 1, 1)
+
+    -- Add total.
+    local total = GetCoinTextureString(self.item.Price * self.item.Quantity)
+    GameTooltip:AddLine(("%s:  %s"):format(_G.SELL_PRICE, total), 1, 1, 1)
+
+    -- Add reason.
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddLine(DCL:ColorString(L.REASON_TEXT, Colors.Yellow))
+    GameTooltip:AddLine("  " .. self.item.Reason, 1, 1, 1)
+
+    -- Add left-click info.
+    GameTooltip:AddLine(" ")
+    GameTooltip:AddDoubleLine(
+      L.LEFT_CLICK,
+      self:GetParent().handleItemTooltip,
+      nil, nil, nil,
+      1, 1, 1
+    )
+
+    -- Add right-click info.
+    GameTooltip:AddDoubleLine(
+      L.RIGHT_CLICK,
+      L.BINDINGS_ADD_TO_LIST_TEXT:format(
+        self:GetParent().lists.exclusions.profile.locale
+      ),
+      nil, nil, nil,
+      1, 1, 1
+    )
+
+    -- Add hold shift info.
+    GameTooltip:AddDoubleLine(
+      L.HOLD_SHIFT,
+      L.ITEM_TOOLTIP_TEXT,
+      nil, nil, nil,
+      1, 1, 1
+    )
+  end
+
   -- Show.
   GameTooltip:Show()
 end
