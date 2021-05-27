@@ -2,17 +2,13 @@ local AddonName, Addon = ...
 local AceGUI = Addon.Libs.AceGUI
 local Colors = Addon.Colors
 local Commands = Addon.Commands
-local Confirmer = Addon.Confirmer
 local Core = Addon.Core
 local DB = Addon.DB
 local DCL = Addon.Libs.DCL
-local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local ItemFrames = Addon.ItemFrames
 local L = Addon.Libs.L
-local ListHelper = Addon.ListHelper
 local pairs = pairs
 local UI = Addon.UI
 local Widgets = Addon.UI.Widgets
@@ -22,10 +18,8 @@ local Widgets = Addon.UI.Widgets
 -- ============================================================================
 
 local function getStatusText()
-  if Dejunker:IsDejunking() then return L.STATUS_SELLING_ITEMS_TEXT end
-  if Destroyer:IsDestroying() then return L.STATUS_DESTROYING_ITEMS_TEXT end
-  if Confirmer:IsConfirming() then return L.STATUS_CONFIRMING_ITEMS_TEXT end
-  if ListHelper:IsParsing() then return L.STATUS_UPDATING_LISTS_TEXT end
+  local isBusy, reason = Core:IsBusy()
+  if isBusy then return reason end
 
   if DB.GetProfileKey then
     return ("%s: |cFFFFFFFF%s|r"):format(

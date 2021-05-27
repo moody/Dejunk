@@ -149,13 +149,13 @@ function ItemFrameMixins:Create()
     end
 
     -- Update button.
-    if #self.options.service:GetItems() == 0 then
-      self.button:SetDisabled(false)
-      self.button:SetText(_G.CLOSE)
-    else
-      self.button:SetDisabled(Core:IsBusy())
-      self.button:SetText(self.options.buttonText)
-    end
+    local isBusy, reason = Core:IsBusy()
+    self.button:SetDisabled(isBusy)
+    self.button:SetText(isBusy and reason or (
+      #self.options.service:GetItems() == 0 and
+      _G.CLOSE or
+      self.options.buttonText
+    ))
   end)
 
   -- Hook CloseSpecialWindows to hide when ESC is pressed.
