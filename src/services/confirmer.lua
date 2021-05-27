@@ -49,7 +49,7 @@ function Confirmer:OnUpdate()
 
     if self.soldTotal > 0 then
       Chat:Sell(
-        L.SOLD_YOUR_JUNK:format(GetCoinTextureString(self.soldTotal))
+        L.PROFIT_MESSAGE:format(GetCoinTextureString(self.soldTotal))
       )
       self.soldTotal = 0
     end
