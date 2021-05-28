@@ -78,14 +78,26 @@ function Core:CanDestroy()
   return true
 end
 
--- Returns true if Dejunk is busy performing a critical action.
--- @return - boolean
+--- Returns `true` and a reason message if a critical process is in progress.
+--- @return boolean, string|nil
 function Core:IsBusy()
-  return
-    Dejunker:IsDejunking() or
-    Destroyer:IsDestroying() or
-    ListHelper:IsParsing() or
-    Confirmer:IsConfirming()
+  if Dejunker:IsDejunking() then
+    return true, L.STATUS_SELLING_ITEMS_TEXT
+  end
+
+  if Destroyer:IsDestroying() then
+    return true, L.STATUS_DESTROYING_ITEMS_TEXT
+  end
+
+  if Confirmer:IsConfirming() then
+    return true, L.STATUS_CONFIRMING_ITEMS_TEXT
+  end
+
+  if ListHelper:IsParsing() then
+    return true, L.STATUS_UPDATING_LISTS_TEXT
+  end
+
+  return false
 end
 
 -- ============================================================================
