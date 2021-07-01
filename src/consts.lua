@@ -38,8 +38,8 @@ local LE_ITEM_WEAPON_THROWN = _G.LE_ITEM_WEAPON_THROWN
 local LE_ITEM_WEAPON_UNARMED = _G.LE_ITEM_WEAPON_UNARMED
 local LE_ITEM_WEAPON_WAND = _G.LE_ITEM_WEAPON_WAND
 local LE_ITEM_WEAPON_WARGLAIVE = _G.LE_ITEM_WEAPON_WARGLAIVE
-local NUM_LE_ITEM_ARMORS = _G.NUM_LE_ITEM_ARMORS
-local NUM_LE_ITEM_WEAPONS = _G.NUM_LE_ITEM_WEAPONS
+local NUM_LE_ITEM_ARMORS = _G.NUM_LE_ITEM_ARMORS or _G.Enum.ItemArmorSubclassMeta.NumValues
+local NUM_LE_ITEM_WEAPONS = _G.NUM_LE_ITEM_WEAPONS or _G.Enum.ItemWeaponSubclassMeta.NumValues
 
 -- ============================================================================
 -- General Constants
