@@ -17,7 +17,6 @@ local STATICPOPUP_NUMDIALOGS = _G.STATICPOPUP_NUMDIALOGS
 local tremove = table.remove
 local tsort = table.sort
 local UI = Addon.UI
-local UseContainerItem = _G.UseContainerItem
 
 Dejunker.items = {}
 Dejunker.isDejunking = false
@@ -105,7 +104,7 @@ local function handleItem(index)
   if not Bags:StillInBags(item) or Bags:IsLocked(item) then return end
 
   -- Sell item.
-  UseContainerItem(item.Bag, item.Slot)
+  _G.UseContainerItem(item.Bag, item.Slot)
 
   -- Handle popup.
   handleStaticPopup()
