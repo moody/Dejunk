@@ -1,5 +1,9 @@
 # Dejunk History
 
+## 9.1.0
+
+- Updated for 9.1
+
 ## 9.0.15
 
 - Removed the "Destroy All Items" keybind in favor of "Start Destroying"
