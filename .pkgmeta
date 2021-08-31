@@ -9,4 +9,5 @@ manual-changelog:
 ignore:
   - Dejunk.png
   - README.md
+  - HISTORY.md
   - scripts
