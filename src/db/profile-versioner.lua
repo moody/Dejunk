@@ -65,12 +65,6 @@ function ProfileVersioner:_ClampValues(profile)
     Consts.DESTROY_AUTO_SLIDER_MAX
   )
 
-  profile.destroy.autoStart.value = Clamp(
-    profile.destroy.autoStart.value,
-    Consts.DESTROY_AUTO_SLIDER_MIN,
-    Consts.DESTROY_AUTO_SLIDER_MAX
-  )
-
   profile.destroy.belowPrice.value = Clamp(
     profile.destroy.belowPrice.value,
     Consts.DESTROY_BELOW_PRICE_MIN,
@@ -105,13 +99,11 @@ ProfileVersioner:_AddVersion(2, function(profile)
   profile.destroy.auto = nil
   profile.destroy.autoSlider = nil
 
-  -- Ensure `destroy.autoOpen` & `destroy.autoStart`.
-  for _, k in pairs({ "autoOpen", "autoStart" }) do
-    DatabaseUtils:EnsureKey(profile.destroy, k, {
-      enabled = false,
-      value = Consts.DESTROY_AUTO_SLIDER_MIN,
-    })
-  end
+  -- Ensure `destroy.autoOpen`.
+  DatabaseUtils:EnsureKey(profile.destroy, "autoOpen", {
+    enabled = false,
+    value = Consts.DESTROY_AUTO_SLIDER_MIN,
+  })
 end)
 
 -- ============================================================================

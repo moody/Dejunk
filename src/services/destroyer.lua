@@ -22,7 +22,6 @@ local tsort = table.sort
 local UI = Addon.UI
 
 Destroyer.items = {}
-Destroyer.isDestroying = false
 Destroyer.timer = 0
 
 -- ============================================================================
@@ -32,15 +31,6 @@ Destroyer.timer = 0
 do
   local function start()
     if DB.Profile and not UI:IsShown() then
-      if
-        Addon.IS_CLASSIC and
-        DB.Profile.destroy.autoStart.enabled and
-        not ItemFrames.Destroy:IsShown()
-      then
-        Destroyer:Start(true)
-        return true
-      end
-
       if DB.Profile.destroy.autoOpen.enabled then
         if not ItemFrames.Destroy:IsShown() then
           Destroyer:AutoShow()
@@ -154,9 +144,6 @@ end
 
 
 function Destroyer:RefreshItems()
-  -- Stop if destroying is in progress.
-  if self.isDestroying then return end
-
   -- Stop if not necessary.
   if not (self.needsRefresh or UI:IsShown()) then return end
   self.needsRefresh = false
@@ -227,93 +214,6 @@ end
 
 
 -- Starts the destroying process.
--- @param {boolean} auto
-function Destroyer:Start(auto)
-  -- Handle all items if not Classic.
-  if not Addon.IS_CLASSIC then
-    return handleAllItems()
-  end
-
-  -- Stop if unsafe.
-  local canDestroy, msg = Core:CanDestroy()
-  if not canDestroy then
-    if not auto then Chat:Print(msg) end
-    return
-  end
-
-  -- Refresh items.
-  self:RefreshItems()
-
-  -- Stop if no items.
-  if #self.items == 0 then
-    if not auto then
-      Chat:Print(
-        self.items.allCached and
-        L.NO_DESTROYABLE_ITEMS or
-        L.NO_CACHED_DESTROYABLE_ITEMS
-      )
-    end
-
-    return
-  end
-
-  -- Auto start slider check.
-  if
-    auto and
-    DB.Profile.destroy.autoStart.value > Consts.DESTROY_AUTO_SLIDER_MIN
-  then
-    -- Calculate number of items to destroy.
-    local freeSpace = CalculateTotalNumberOfFreeBagSlots()
-    local maxToDestroy = DB.Profile.destroy.autoStart.value - freeSpace
-    -- Stop if destroying is not necessary.
-    if maxToDestroy <= 0 then return end
-    -- Remove extraneous entries (most expensive first).
-    local numToRemove = max(#self.items - maxToDestroy, 0)
-    for _=1, numToRemove do tremove(self.items) end
-  end
-
-  -- If some items fail to be retrieved, we'll only have items that are cached.
-  if not self.items.allCached then
-    Chat:Print(L.ONLY_DESTROYING_CACHED)
-  end
-
-  -- Start.
-  self.isDestroying = true
-  self.timer = 0
-  -- EventManager:Fire(E.DestroyerStart)
-end
-
-
--- Stops the destroying process.
-function Destroyer:Stop()
-  self.isDestroying = false
-  -- EventManager:Fire(E.DestroyerStop)
-end
-
-
--- Returns true if the Destroyer is active.
--- @return {boolean}
-function Destroyer:IsDestroying()
-  return self.isDestroying
-end
-
-
--- Game update function called via `Addon.Core:OnUpdate()`.
--- @param {number} elapsed - time since last frame
-function Destroyer:OnUpdate(elapsed)
-  if not self.isDestroying then return end
-
-  self.timer = self.timer + elapsed
-
-  if self.timer >= Core.MinDelay then
-    self.timer = 0
-
-    -- Stop if there are no more items.
-    if #self.items == 0 then
-      return self:Stop()
-    end
-
-    -- Handle next item.
-    handleItem()
-  end
+function Destroyer:Start()
+  handleAllItems()
 end

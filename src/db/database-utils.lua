@@ -152,11 +152,6 @@ function DatabaseUtils:Profile()
         value = Consts.DESTROY_AUTO_SLIDER_MIN,
       },
 
-      autoStart = {
-        enabled = false,
-        value = Consts.DESTROY_AUTO_SLIDER_MIN,
-      },
-
       belowPrice = {
         enabled = false,
         value = Consts.DESTROY_BELOW_PRICE_MIN

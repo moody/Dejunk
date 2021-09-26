@@ -28,7 +28,7 @@ function Core:CanDejunk()
     return false, L.SELLING_IN_PROGRESS
   end
 
-  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
+  if Confirmer:IsConfirming("Destroyer") then
     return false, L.CANNOT_SELL_WHILE_DESTROYING
   end
 
@@ -53,7 +53,7 @@ end
 -- and false plus a reason message otherwise.
 -- @return bool, string or nil
 function Core:CanDestroy()
-  if Destroyer:IsDestroying() or Confirmer:IsConfirming("Destroyer") then
+  if Confirmer:IsConfirming("Destroyer") then
     return false, L.DESTROYING_IN_PROGRESS
   end
 
@@ -83,10 +83,6 @@ end
 function Core:IsBusy()
   if Dejunker:IsDejunking() then
     return true, L.STATUS_SELLING_ITEMS_TEXT
-  end
-
-  if Destroyer:IsDestroying() then
-    return true, L.STATUS_DESTROYING_ITEMS_TEXT
   end
 
   if Confirmer:IsConfirming() then
@@ -125,7 +121,6 @@ function Core:OnUpdate(elapsed)
   ListHelper:OnUpdate(elapsed)
 
   Dejunker:OnUpdate(elapsed)
-  Destroyer:OnUpdate(elapsed)
   if Repairer.OnUpdate then Repairer:OnUpdate(elapsed) end
   Confirmer:OnUpdate(elapsed)
 

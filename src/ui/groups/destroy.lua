@@ -50,33 +50,6 @@ function Destroy:AddGeneral(parent)
     }
   })
 
-  -- Auto Start
-  if Addon.IS_CLASSIC then
-    Widgets:CheckBoxSlider({
-      parent = parent,
-      checkBox = {
-        label = L.AUTO_START_TEXT,
-        tooltip = L.AUTO_START_DESTROY_TOOLTIP,
-        get = function() return DB.Profile.destroy.autoStart.enabled end,
-        set = function(value) DB.Profile.destroy.autoStart.enabled = value end
-      },
-      slider = {
-        label = L.THRESHOLD_TEXT,
-        tooltip = L.AUTO_OPTION_THRESHOLD_TOOLTIP:format(
-          "|cFFFFD100"  .. L.AUTO_START_TEXT .. "|r",
-          "|cFFFFD100"  .. L.AUTO_START_TEXT .. "|r"
-        ),
-        value = DB.Profile.destroy.autoStart.value,
-        min = Consts.DESTROY_AUTO_SLIDER_MIN,
-        max = Consts.DESTROY_AUTO_SLIDER_MAX,
-        step = Consts.DESTROY_AUTO_SLIDER_STEP,
-        onValueChanged = function(_, event, value)
-          DB.Profile.destroy.autoStart.value = value
-        end
-      }
-    })
-  end
-
   -- Below Price
   Widgets:CheckBoxSlider({
     parent = parent,
