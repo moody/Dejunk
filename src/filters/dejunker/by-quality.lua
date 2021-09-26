@@ -4,7 +4,7 @@ local DCL = Addon.Libs.DCL
 local ItemQuality = Addon.ItemQuality
 local L = Addon.Libs.L
 
-local SELL_REASON, DESTROY_REASON = Addon.Filters:SharedReason(
+local REASON = Addon.Filters:SellReason(
   L.BY_QUALITY_TEXT,
   "%s"
 )
@@ -42,13 +42,6 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    return run(item, DB.Profile.sell.byQuality, SELL_REASON)
-  end
-})
-
--- Destroyer
-Addon.Filters:Add(Addon.Destroyer, {
-  Run = function(_, item)
-    return run(item, DB.Profile.destroy.byQuality, DESTROY_REASON)
+    return run(item, DB.Profile.sell.byQuality, REASON)
   end
 })

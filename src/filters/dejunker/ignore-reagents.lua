@@ -4,7 +4,7 @@ local DB = Addon.DB
 local L = Addon.Libs.L
 local ItemQuality = Addon.ItemQuality
 
-local SELL_REASON, DESTROY_REASON = Addon.Filters:SharedReason(
+local REASON = Addon.Filters:SellReason(
   L.IGNORE_TEXT,
   L.BY_CATEGORY_TEXT,
   L.IGNORE_REAGENTS_TEXT
@@ -25,13 +25,6 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    return run(item, DB.Profile.sell.ignore, SELL_REASON)
-  end
-})
-
--- Destroyer
-Addon.Filters:Add(Addon.Destroyer, {
-  Run = function(_, item)
-    return run(item, DB.Profile.destroy.ignore, DESTROY_REASON)
+    return run(item, DB.Profile.sell.ignore, REASON)
   end
 })
