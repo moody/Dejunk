@@ -59,29 +59,12 @@ else
   Consts.SELL_BELOW_PRICE_STEP = 1 -- 1 copper
 end
 
--- destroy.belowPrice
-if Addon.IS_RETAIL then
-  Consts.DESTROY_BELOW_PRICE_MIN = 100 -- 1 silver
-  Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 10 -- 10 gold
-  Consts.DESTROY_BELOW_PRICE_STEP = 100 -- 1 silver
-else
-  Consts.DESTROY_BELOW_PRICE_MIN = 2 -- 2 copper
-  Consts.DESTROY_BELOW_PRICE_MAX = 100 * 100 * 1 -- 1 gold
-  Consts.DESTROY_BELOW_PRICE_STEP = 1 -- 1 copper
-end
-
--- destroy.byType.excessSoulShards
-Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN = 3
-Consts.DESTROY_EXCESS_SOUL_SHARDS_MAX = 28
-Consts.DESTROY_EXCESS_SOUL_SHARDS_STEP = 1
-Consts.SOUL_SHARD_ITEM_ID = 6265
-
--- destroy.autoOpen, destroy.autoStart
+-- destroy.autoOpen
 Consts.DESTROY_AUTO_SLIDER_MIN = 0
 Consts.DESTROY_AUTO_SLIDER_MAX = 16
 Consts.DESTROY_AUTO_SLIDER_STEP = 1
 
--- sell/destroy.byType.itemLevelRange
+-- sell.byType.itemLevelRange
 Consts.ITEM_LEVEL_RANGE_MIN = 1
 Consts.ITEM_LEVEL_RANGE_MAX = 999
 Consts.ITEM_LEVEL_RANGE_STEP = 1

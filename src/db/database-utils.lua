@@ -152,57 +152,6 @@ function DatabaseUtils:Profile()
         value = Consts.DESTROY_AUTO_SLIDER_MIN,
       },
 
-      autoStart = {
-        enabled = false,
-        value = Consts.DESTROY_AUTO_SLIDER_MIN,
-      },
-
-      belowPrice = {
-        enabled = false,
-        value = Consts.DESTROY_BELOW_PRICE_MIN
-      },
-
-      byQuality = {
-        poor = false,
-        common = false,
-        uncommon = false,
-        rare = false,
-        epic = false,
-      },
-
-      byType = {
-        petsAlreadyCollected = false,
-        toysAlreadyCollected = false,
-        excessSoulShards = {
-          enabled = false,
-          value = Consts.DESTROY_EXCESS_SOUL_SHARDS_MIN
-        },
-        itemLevelRange = {
-          enabled = false,
-          min = Consts.ITEM_LEVEL_RANGE_MIN,
-          max = Consts.ITEM_LEVEL_RANGE_MIN
-        }
-      },
-
-      ignore = {
-        battlePets = true,
-        bindsWhenEquipped = true,
-        consumables = true,
-        cosmetic = true,
-        equipmentSets = true,
-        gems = true,
-        glyphs = true,
-        itemEnhancements = true,
-        miscellaneous = true,
-        questItems = true,
-        readable = true,
-        reagents = true,
-        recipes = true,
-        soulbound = true,
-        tradeable = true,
-        tradeGoods = true,
-      },
-
       inclusions = {},
       exclusions = {}
     }

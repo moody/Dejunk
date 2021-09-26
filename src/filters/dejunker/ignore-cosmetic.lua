@@ -5,7 +5,7 @@ local L = Addon.Libs.L
 local LE_ITEM_ARMOR_COSMETIC = _G.LE_ITEM_ARMOR_COSMETIC
 local LE_ITEM_ARMOR_GENERIC = _G.LE_ITEM_ARMOR_GENERIC
 
-local SELL_REASON, DESTROY_REASON = Addon.Filters:SharedReason(
+local REASON = Addon.Filters:SellReason(
   L.IGNORE_TEXT,
   L.BY_TYPE_TEXT,
   L.IGNORE_COSMETIC_TEXT
@@ -41,13 +41,6 @@ end
 -- Dejunker
 Addon.Filters:Add(Addon.Dejunker, {
   Run = function(_, item)
-    return run(item, DB.Profile.sell.ignore, SELL_REASON)
-  end
-})
-
--- Destroyer
-Addon.Filters:Add(Addon.Destroyer, {
-  Run = function(_, item)
-    return run(item, DB.Profile.destroy.ignore, DESTROY_REASON)
+    return run(item, DB.Profile.sell.ignore, REASON)
   end
 })

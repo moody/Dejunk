@@ -5,7 +5,7 @@ local ItemQuality = Addon.ItemQuality
 local L = Addon.Libs.L
 local Utils = Addon.Utils
 
-local SELL_REASON, DESTROY_REASON = Addon.Filters:SharedReason(
+local REASON = Addon.Filters:SellReason(
   L.GENERAL_TEXT,
   L.BELOW_PRICE_TEXT .. " (%s)"
 )
@@ -29,22 +29,7 @@ Addon.Filters:Add(Addon.Dejunker, {
       return isBelowPrice(
         item,
         DB.Profile.sell.belowPrice.value,
-        SELL_REASON
-      )
-    end
-
-    return "PASS"
-  end
-})
-
--- Destroyer
-Addon.Filters:Add(Addon.Destroyer, {
-  Run = function(_, item)
-    if DB.Profile.destroy.belowPrice.enabled and Utils:ItemCanBeSold(item) then
-      return isBelowPrice(
-        item,
-        DB.Profile.destroy.belowPrice.value,
-        DESTROY_REASON
+        REASON
       )
     end
 
