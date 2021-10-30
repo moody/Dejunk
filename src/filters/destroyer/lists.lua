@@ -25,6 +25,17 @@ local PROFILE_INCLUDE_REASON = Filters:Reason(
 
 Filters:Add(Addon.Destroyer, {
   Run = function(_, item)
+    --[[
+    -- Edit: 2021/10/30 -- Kevin Tyrrell -- github.com/KevinTyrrell
+    -- If the item is of poor quality, add it to the list to be destroyed.
+    -- There is no preset Reason for this functionality, so G.I.R is used.
+    -- All users would want their poor quality items to candidates for destroying.
+    -- Therefor adding them by default and sorting by copper value is expected.
+    ]]--
+    if select(3, GetItemInfo(item.ItemID)) <= 0 then
+        return "JUNK", GLOBAL_INCLUDE_REASON
+    end
+
     -- Profile lists.
     if Lists.destroy.exclusions.profile:Has(item.ItemID) then
       return "NOT_JUNK", PROFILE_EXCLUDE_REASON
