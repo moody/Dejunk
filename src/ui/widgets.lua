@@ -1,7 +1,8 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
-local Widgets = Addon.UserInterface.Widgets
 local GameTooltip = GameTooltip
+local L = Addon.Locale
+local Widgets = Addon.UserInterface.Widgets
 
 local BORDER_BACKDROP = {
   bgFile = "Interface\\Buttons\\WHITE8x8",
@@ -294,6 +295,7 @@ end
     width? = number,
     height? = number,
     titleText? = string,
+    descriptionText = string,
     list = table
   }
 ]]
@@ -313,6 +315,26 @@ function Widgets:ListFrame(options)
   local BUTTON_HEIGHT = (
       frame:GetHeight() - frame.titleBackground:GetHeight() - (SPACING * 2) - ((NUM_BUTTONS - 1) * SPACING)
       ) / NUM_BUTTONS
+
+  -- Title tooltip.
+  frame.titleTooltipFrame = CreateFrame("Frame", "$parent_TitleTooltipFrame", frame)
+  frame.titleTooltipFrame:SetPoint("TOPLEFT", frame.titleBackground)
+  frame.titleTooltipFrame:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+
+  function frame.titleTooltipFrame:UpdateTooltip()
+    GameTooltip:SetOwner(self, "ANCHOR_TOP")
+    GameTooltip:SetText(options.titleText)
+    GameTooltip:AddLine(options.descriptionText .. "|n|n" .. L.LIST_FRAME_TOOLTIP, 1, 0.82, 0, true)
+    GameTooltip:Show()
+  end
+
+  frame.titleTooltipFrame:SetScript("OnEnter", function(self)
+    self:UpdateTooltip()
+  end)
+
+  frame.titleTooltipFrame:SetScript("OnLeave", function()
+    GameTooltip:Hide()
+  end)
 
   -- Slider.
   frame.slider = self:Frame({
@@ -363,6 +385,7 @@ function Widgets:ListFrame(options)
     frame.buttons[#frame.buttons + 1] = button
   end
 
+  -- No items text.
   frame.noItemsText = frame:CreateFontString("$parent_NoItemsText", "ARTWORK", "GameFontNormal")
   frame.noItemsText:SetPoint("CENTER")
   frame.noItemsText:SetText(Colors.White(Addon.Locale.NO_ITEMS))
