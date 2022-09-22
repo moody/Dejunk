@@ -1,127 +1,57 @@
-## Interface: 90100
-## Interface-Classic: 11307
-## Interface-BCC: 20502
+## Interface: 90200
 ## Title: Dejunk
-## Author: Dethanyel
 ## Version: @project-version@
-## Notes: Customizable junk selling and destroying.
-## X-DethsDBLib: __DEJUNK_SAVED_VARIABLES__
-## SavedVariables: __DEJUNK_SAVED_VARIABLES__, DEJUNK_ADDON_SV
-## X-Curse-Project-ID: 413260
-## X-WoWI-ID: 25313
+## Author: https://github.com/moody
+## Notes: Simple junk selling and destroying.
+## SavedVariables: __DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__
+## SavedVariablesPerCharacter: __DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__
 
-
-# Libraries
-libs\LibStub\LibStub.lua
-libs\AceLocale-3.0\AceLocale-3.0.lua
-libs\AceSerializer-3.0\AceSerializer-3.0.lua
-libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
-libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
-libs\LibDBIcon-1.0\LibDBIcon-1.0.lua
-libs\AceGUI-3.0\AceGUI-3.0.xml
-libs\DethsLibLoader\DethsLibLoader.lua
-libs\DethsColorLib\DethsColorLib.xml
-libs\DethsDBLib\DethsDBLib.xml
-libs\DethsTooltipLib\DethsTooltipLib.lua
-
-
-# Locales
-locales\enUS.lua
-locales\deDE.lua
-locales\esES.lua
-locales\esMX.lua
-locales\frFR.lua
-locales\itIT.lua
-locales\koKR.lua
-locales\ptBR.lua
-locales\ruRU.lua
-locales\zhCN.lua
-locales\zhTW.lua
-
+# Libs
+libs\LibStub.lua
+libs\CallbackHandler-1.0.lua
+libs\LibDataBroker-1.1.lua
+libs\LibDBIcon-1.0.lua
 
 # Init
 src\_init.lua
+
+# Locale
+src\locale.lua
 
 # Events
 src\events\events.lua
 src\events\event-manager.lua
 
-# Lists
-src\lists\list_mixins.lua
-src\lists\lists.lua
-src\lists\list-helper.lua
+# SavedVariables
+src\saved-variables.lua
 
-# General
-src\bags.lua
-src\chat.lua
+# Commands
 src\commands.lua
-src\consts.lua
-src\utils.lua
 
-# DB
-src\db\db.lua
-src\db\database-utils.lua
-src\db\global-versioner.lua
-src\db\profile-versioner.lua
-src\db\transition-db.lua
+# Bags
+src\bags.lua
 
-# Services
-src\services\confirmer.lua
-src\services\dejunker.lua
-src\services\destroyer.lua
-src\services\repairer.lua
+# Lists
+src\lists.lua
 
-# Filters (order matters)
-src\filters\filters.lua
+# Junk Filter
+src\junk-filter.lua
 
-src\filters\destroyer\lists.lua
+# Seller
+src\seller.lua
 
-src\filters\dejunker\lists.lua
-src\filters\dejunker\below-price.lua
+# Destroyer
+src\destroyer.lua
 
-src\filters\dejunker\ignore-battle-pets.lua
-src\filters\dejunker\ignore-consumables.lua
-src\filters\dejunker\ignore-cosmetic.lua
-src\filters\dejunker\ignore-gems.lua
-src\filters\dejunker\ignore-glyphs.lua
-src\filters\dejunker\ignore-item-enhancements.lua
-src\filters\dejunker\ignore-miscellaneous.lua
-src\filters\dejunker\ignore-quest-items.lua
-src\filters\dejunker\ignore-readable.lua
-src\filters\dejunker\ignore-reagents.lua
-src\filters\dejunker\ignore-recipes.lua
-src\filters\dejunker\ignore-trade-goods.lua
-
-src\filters\dejunker\ignore-binds-when-equipped.lua
-src\filters\dejunker\ignore-equipment-sets.lua
-src\filters\dejunker\ignore-tradeable.lua
-
-src\filters\dejunker\unsuitable-equipment.lua
-
-src\filters\dejunker\item-level-range.lua
-src\filters\dejunker\ignore-soulbound.lua
-src\filters\dejunker\by-quality.lua
+# Confirmer
+src\confirmer.lua
 
 # UI
-src\ui\item-tooltip.lua
+src\ui\widgets.lua
+src\ui\user-interface.lua
 src\ui\merchant-button.lua
 src\ui\minimap-icon.lua
-src\ui\main.lua
-src\ui\item-frames.lua
+src\ui\item-tooltip.lua
 
-src\ui\groups\general.lua
-src\ui\groups\sell.lua
-src\ui\groups\destroy.lua
-src\ui\groups\lists.lua
-src\ui\groups\commands.lua
-src\ui\groups\profiles.lua
-
-src\ui\widgets\widgets.lua
-src\ui\widgets\item-frame.lua
-src\ui\widgets\ListFrame.lua
-
-# Bindings
+# Bindings.
 Bindings.lua
-
-# Core
-src\core.lua
