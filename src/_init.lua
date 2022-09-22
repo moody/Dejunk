@@ -24,7 +24,6 @@ do -- Colors.
   Addon.Colors = {}
 
   local colors = {
-    Primary = "FF4FAFE3",
     White = "FFFFFFFF",
     Blue = "FF4FAFE3",
     Red = "FFE34F4F",
@@ -102,7 +101,7 @@ Addon.UserInterface = {
 
 function Addon:Print(...)
   if self.SavedVariables:Get().chatMessages then
-    print(self.Colors.Primary("[" .. ADDON_NAME .. "]"), ...)
+    print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
   end
 end
 

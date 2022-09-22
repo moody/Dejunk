@@ -16,7 +16,7 @@ hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
 
   -- Add lines.
   self:AddLine(" ")
-  self:AddLine(Colors.Primary(AddonName))
+  self:AddLine(Colors.Blue(AddonName))
   self:AddLine("  " .. (isJunk and Colors.Red(L.ITEM_IS_JUNK) or Colors.Green(L.ITEM_IS_NOT_JUNK)))
   self:AddLine("  " .. Colors.Grey("- " .. Colors.White(reason)))
 

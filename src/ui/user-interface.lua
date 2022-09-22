@@ -20,7 +20,7 @@ local function initialize()
     points = { { "CENTER" } },
     width = 650,
     height = 500,
-    titleText = Colors.Primary(ADDON_NAME),
+    titleText = Colors.Blue(ADDON_NAME),
   })
   table.insert(UISpecialFrames, parentFrame:GetName())
 

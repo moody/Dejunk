@@ -42,7 +42,7 @@ EventManager:Once(E.SavedVariablesReady, function()
 
   button:HookScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-    GameTooltip:AddDoubleLine(Colors.Primary(ADDON_NAME), Addon.VERSION)
+    GameTooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
     GameTooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.START_SELLING))
     GameTooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_USER_INTERFACE))
     GameTooltip:Show()

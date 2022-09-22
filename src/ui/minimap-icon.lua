@@ -26,7 +26,7 @@ EventManager:Once(E.SavedVariablesReady, function()
     end,
 
     OnTooltipShow = function(tooltip)
-      tooltip:AddDoubleLine(Colors.Primary(ADDON_NAME), Addon.VERSION)
+      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
       tooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.TOGGLE_USER_INTERFACE))
       tooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.DESTROY_NEXT_ITEM))
     end
