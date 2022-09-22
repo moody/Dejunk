@@ -1,6 +1,12 @@
-# Dejunk Changelog
+# Changelog
 
-## 9.1.2
+All notable changes to this project will be documented in this file.
 
-- Removed `Auto Destroy` from the Classic version. Per the PTR, the functionality allowing auto destroy is set to be removed from Classic.
-- Removed all destroy filters in favor of Inclusions. Now, when destroying, items will only be marked as junk if they have been added to either the global or profile Inclusions list.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2022-09-22
+
+### Changed
+
+- Rebuilt addon from the ground up
