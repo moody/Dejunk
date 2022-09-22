@@ -13,7 +13,7 @@ EventManager:Once(E.SavedVariablesReady, function()
   local object = LDB:NewDataObject(ADDON_NAME, {
     type = "data source",
     text = ADDON_NAME,
-    icon = "Interface\\AddOns\\DejunkRedux\\Dejunk_Icon",
+    icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
       if button == "LeftButton" then
