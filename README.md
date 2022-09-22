@@ -10,7 +10,7 @@ list in order to mark them as junk.
 Once set up, Dejunk can handle the process of selling or destroying junk items
 with the press of a button.
 
-![Dejunk](/Dejunk.png?raw=true)
+![Dejunk](/.images/Dejunk.png?raw=true)
 
 ## Features
 
