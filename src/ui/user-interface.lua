@@ -24,6 +24,12 @@ local function initialize()
   })
   table.insert(UISpecialFrames, parentFrame:GetName())
 
+  -- Version text.
+  parentFrame.versionText = parentFrame:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
+  parentFrame.versionText:SetPoint("TOP", parentFrame, 0, -Widgets:Padding(1.5))
+  parentFrame.versionText:SetText(Colors.White(Addon.VERSION))
+  parentFrame.versionText:SetAlpha(0.5)
+
   -- Busy text.
   parentFrame.busyText = parentFrame:CreateFontString("$parent_BusyText", "ARTWORK", "GameFont_Gigantic")
   parentFrame.busyText:SetPoint("CENTER")
