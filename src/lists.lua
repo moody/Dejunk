@@ -83,9 +83,9 @@ function Mixins:GetIndex(itemId)
 end
 
 function Mixins:RemoveAll()
+  if next(self.sv) then Addon:Print(L.ALL_ITEMS_REMOVED_FROM_LIST:format(self.name)) end
   for k in pairs(self.sv) do self.sv[k] = nil end
   for k in pairs(self.items) do self.items[k] = nil end
-  Addon:Print(L.ALL_ITEMS_REMOVED_FROM_LIST:format(self.name))
 end
 
 function Mixins:GetItems()

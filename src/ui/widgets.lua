@@ -316,23 +316,30 @@ function Widgets:ListFrame(options)
       frame:GetHeight() - frame.titleBackground:GetHeight() - (SPACING * 2) - ((NUM_BUTTONS - 1) * SPACING)
       ) / NUM_BUTTONS
 
-  -- Title tooltip.
-  frame.titleTooltipFrame = CreateFrame("Frame", "$parent_TitleTooltipFrame", frame)
-  frame.titleTooltipFrame:SetPoint("TOPLEFT", frame.titleBackground)
-  frame.titleTooltipFrame:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+  -- Title button.
+  frame.titleButton = CreateFrame("Button", "$parent_TitleButton", frame)
+  frame.titleButton:SetPoint("TOPLEFT", frame.titleBackground)
+  frame.titleButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+  frame.titleButton:RegisterForClicks("RightButtonUp")
 
-  function frame.titleTooltipFrame:UpdateTooltip()
+  function frame.titleButton:UpdateTooltip()
     GameTooltip:SetOwner(self, "ANCHOR_TOP")
     GameTooltip:SetText(options.titleText)
     GameTooltip:AddLine(options.descriptionText .. "|n|n" .. L.LIST_FRAME_TOOLTIP, 1, 0.82, 0, true)
     GameTooltip:Show()
   end
 
-  frame.titleTooltipFrame:SetScript("OnEnter", function(self)
+  frame.titleButton:SetScript("OnClick", function(self, button)
+    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      frame.list:RemoveAll()
+    end
+  end)
+
+  frame.titleButton:SetScript("OnEnter", function(self)
     self:UpdateTooltip()
   end)
 
-  frame.titleTooltipFrame:SetScript("OnLeave", function()
+  frame.titleButton:SetScript("OnLeave", function()
     GameTooltip:Hide()
   end)
 
