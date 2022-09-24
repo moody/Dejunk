@@ -41,6 +41,7 @@
 
   <!-- UI Widgets -->
   <Script file="src\ui\widgets\_init.lua"/>
+  <Script file="src\ui\widgets\button.lua"/>
   <Script file="src\ui\widgets\frame.lua"/>
   <Script file="src\ui\widgets\items-frame.lua"/>
   <Script file="src\ui\widgets\list-frame.lua"/>
