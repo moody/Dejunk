@@ -31,12 +31,6 @@ end
 -- Initialize
 -- ============================================================================
 
-local function isBusy()
-  if Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
-  if Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
-  return false
-end
-
 -- Parent frame.
 local parentFrame = Widgets:Window({
   name = ADDON_NAME .. "_ParentFrame",
@@ -53,13 +47,14 @@ parentFrame.versionText:SetAlpha(0.5)
 
 -- Busy text.
 parentFrame.busyText = parentFrame:CreateFontString("$parent_BusyText", "ARTWORK", "GameFont_Gigantic")
-parentFrame.busyText:SetPoint("CENTER")
+parentFrame.busyText:SetPoint("LEFT", Widgets:Padding(), 0)
+parentFrame.busyText:SetPoint("RIGHT", -Widgets:Padding(), 0)
 parentFrame.busyText:SetAlpha(0.5)
 parentFrame.busyText:Hide()
 
 parentFrame:HookScript("OnUpdate", function(self)
-  local busy, reason = isBusy()
-  if busy then
+  local isBusy, reason = Addon:IsBusy()
+  if isBusy then
     self.busyText:SetText(Colors.White(reason))
     self.busyText:Show()
     self.optionsFrame:Hide()

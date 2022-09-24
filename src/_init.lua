@@ -100,6 +100,12 @@ Addon.UserInterface = {
 -- Functions
 -- ============================================================================
 
+function Addon:IsBusy()
+  if self.Seller:IsBusy() then return true, self.Locale.IS_BUSY_SELLING_ITEMS end
+  if self.Lists:IsBusy() then return true, self.Locale.IS_BUSY_UPDATING_LISTS end
+  return false
+end
+
 function Addon:Print(...)
   if self.SavedVariables:Get().chatMessages then
     print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
