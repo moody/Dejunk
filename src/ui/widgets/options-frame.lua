@@ -95,7 +95,7 @@ function Widgets:OptionButton(options)
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
   frame.label:SetPoint("LEFT", frame, self:Padding(0.5), 0)
-  frame.label:SetPoint("RIGHT", frame, self:Padding(0.5), 0)
+  frame.label:SetPoint("RIGHT", frame, -self:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
 
   function frame:UpdateTooltip()
