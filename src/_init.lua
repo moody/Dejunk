@@ -92,6 +92,7 @@ Addon.Destroyer = {}
 
 -- UserInterface.
 Addon.UserInterface = {
+  JunkFrame = {},
   Widgets = {}
 }
 

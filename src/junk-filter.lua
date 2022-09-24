@@ -10,12 +10,19 @@ local SavedVariables = Addon.SavedVariables
 -- Local Functions
 -- ============================================================================
 
-local function concat(...)
-  return table.concat({ ... }, Colors.Grey(" > "))
+local concat
+do
+  local cache = {}
+  concat = function(...)
+    for k in pairs(cache) do cache[k] = nil end
+    for i = 1, select("#", ...) do cache[#cache + 1] = select(i, ...) end
+    return table.concat(cache, Colors.Grey(" > "))
+  end
 end
 
-local function getJunkItems(filterFunc)
-  local items = Bags:GetItems()
+
+local function getJunkItems(filterFunc, items)
+  items = Bags:GetItems(items)
 
   for i = #items, 1, -1 do
     local item = items[i]
@@ -35,12 +42,16 @@ end
 -- JunkFilter
 -- ============================================================================
 
-function JunkFilter:GetSellableJunkItems()
-  return getJunkItems(self.IsSellableJunkItem)
+function JunkFilter:GetSellableJunkItems(items)
+  return getJunkItems(self.IsSellableJunkItem, items)
 end
 
-function JunkFilter:GetDestroyableJunkItems()
-  return getJunkItems(self.IsDestroyableJunkItem)
+function JunkFilter:GetDestroyableJunkItems(items)
+  return getJunkItems(self.IsDestroyableJunkItem, items)
+end
+
+function JunkFilter:GetJunkItems(items)
+  return getJunkItems(self.IsJunkItem, items)
 end
 
 function JunkFilter:IsSellableJunkItem(item)

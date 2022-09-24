@@ -12,26 +12,28 @@ Bags.cache = {}
 
 local function getItem(bag, slot)
   -- GetContainerItemInfo.
-  local _, quantity, _, quality, _, lootable, link, _, noValue, id = GetContainerItemInfo(bag, slot)
+  local texture, quantity, _, quality, _, lootable, link, _, noValue, id = GetContainerItemInfo(bag, slot)
   if id == nil then return nil end
 
   -- GetItemInfo.
-  local price, classId = select(11, GetItemInfo(link))
-  if price == nil then
-    price, classId = select(11, GetItemInfo(id))
-    if price == nil then return nil end
+  local name, _, _, _, _, _, _, _, _, _, price, classId = GetItemInfo(link)
+  if name == nil then
+    name, _, _, _, _, _, _, _, _, _, price, classId = GetItemInfo(id)
+    if name == nil then return nil end
   end
 
   -- Build item.
   return {
     bag = bag,
     slot = slot,
+    texture = texture,
     quantity = quantity,
     quality = quality,
     lootable = lootable,
     link = link,
     noValue = noValue,
     id = id,
+    name = name,
     price = price,
     classId = classId
   }
@@ -116,8 +118,12 @@ function Bags:GetItem(bag, slot)
   end
 end
 
-function Bags:GetItems()
-  local items = {}
+function Bags:GetItems(items)
+  if type(items) ~= "table" then
+    items = {}
+  else
+    for k in pairs(items) do items[k] = nil end
+  end
 
   -- Add cached items.
   for _, item in ipairs(self.cache) do

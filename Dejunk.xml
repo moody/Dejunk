@@ -42,6 +42,7 @@
   <!-- UI Widgets -->
   <Script file="src\ui\widgets\_init.lua"/>
   <Script file="src\ui\widgets\frame.lua"/>
+  <Script file="src\ui\widgets\items-frame.lua"/>
   <Script file="src\ui\widgets\list-frame.lua"/>
   <Script file="src\ui\widgets\options-frame.lua"/>
   <Script file="src\ui\widgets\title-frame.lua"/>
@@ -49,6 +50,7 @@
 
   <!-- UI -->
   <Script file="src\ui\user-interface.lua"/>
+  <Script file="src\ui\junk-frame.lua"/>
   <Script file="src\ui\merchant-button.lua"/>
   <Script file="src\ui\minimap-icon.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>

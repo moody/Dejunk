@@ -126,7 +126,7 @@ local function initialize()
       { "BOTTOMRIGHT", parentFrame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Red(L.INCLUSIONS_TEXT),
-    descriptionText = L.INCLUSIONS_DESCRIPTION,
+    tooltipText = L.INCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Inclusions
   })
 
@@ -139,7 +139,7 @@ local function initialize()
       { "BOTTOMLEFT", parentFrame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Green(L.EXCLUSIONS_TEXT),
-    descriptionText = L.EXCLUSIONS_DESCRIPTION,
+    tooltipText = L.EXCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Exclusions
   })
 
