@@ -212,7 +212,7 @@ function Widgets:ItemButton(options)
 
   function frame:UpdateTooltip()
     GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetHyperlink("item:" .. self.item.id)
+    GameTooltip:SetHyperlink(self.item.link)
     GameTooltip:Show()
   end
 
