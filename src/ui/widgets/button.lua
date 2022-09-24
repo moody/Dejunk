@@ -29,6 +29,7 @@ function Widgets:Button(options)
   frame.label:SetPoint("LEFT", frame, self:Padding(0.5), 0)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
+  frame:SetFontString(frame.label)
 
   frame:SetHeight(max(frame.label:GetHeight(), frame.label:GetStringHeight()) + self:Padding(2))
 
