@@ -20,8 +20,7 @@ function Widgets:Button(options)
 
   -- Base frame.
   local frame = self:Frame(options)
-  frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-  frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+  frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.8))
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
@@ -36,13 +35,11 @@ function Widgets:Button(options)
   frame:SetScript("OnClick", options.onClick)
 
   frame:SetScript("OnEnter", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
+    self:SetBackdropColor(Colors.DarkGrey:GetRGB())
   end)
 
   frame:SetScript("OnLeave", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.8))
   end)
 
   return frame
