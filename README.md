@@ -1,25 +1,45 @@
 # Dejunk
 
-Dejunk is an addon for automating some tedious aspects of inventory management.
-It provides a variety of options and filters to determine what items in a
-player's bags are junk. Once set up, Dejunk can handle the process of selling
-and destroying items with minimal user interaction.
+Dejunk is an addon for automating some tedious aspects of selling and
+destroying items.
 
-![Dejunk](/Dejunk.png?raw=true)
+By default, all poor quality items are considered junk items (this setting can
+be turned off). Higher quality items must be manually added to an `Inclusions`
+list in order to mark them as junk.
+
+Once set up, Dejunk can handle the process of selling or destroying junk items
+with the press of a button.
+
+![Dejunk](/.images/Dejunk.png?raw=true)
 
 ## Features
 
-- Automates the process of selling and destroying items
-- Provides profile and global item lists allowing customization of items to
-  include or exclude when selling and destroying
-- Provides various options and filters to flag items as junk or to ignore them
-- Provides keybindings for most operations (toggling UI, managing lists, etc.)
+- Automate the process of selling junk items at a merchant
+- Destroy junk items with the press of a button
+- Customize a list of junk items to always sell or destroy (Inclusions)
+- Customize a list of junk items to never sell or destroy (Exclusions)
+- Set up keybindings or use chat commands for most operations
 
 ## Chat Commands
 
-See a list of available chat commands on the [wiki](https://github.com/moody/Dejunk/wiki/Chat-Commands).
+```ps1
+# Toggle the user interface.
+/dejunk
 
-## Credits
+# Start selling items.
+/dejunk sell
+
+# Destroy next item.
+/dejunk destroy
+
+# Open lootable items.
+/dejunk loot
+
+# Display these commands.
+/dejunk help
+```
+
+## Credit
 
 ### Art
 
@@ -27,46 +47,7 @@ See a list of available chat commands on the [wiki](https://github.com/moody/Dej
 
 ### Libraries
 
-- [Ace3](https://www.wowace.com/projects/Ace3)
 - [CallbackHandler-1.0](https://www.wowace.com/projects/callbackhandler)
 - [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
 - [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 - [LibStub](https://www.wowace.com/projects/libstub)
-
-### Translators
-
-#### deDE (German)
-
-- Bullseiify
-- Mondeulchen
-
-#### esES (Spanish)
-
-- Nmyler
-
-#### esMX (Latin American Spanish)
-
-- cesarcpcn
-- cesarcpcnwf
-
-#### frFR (French)
-
-- \_ForgeUser277927
-- yapa38
-
-#### ptBR (Brazilian Portuguese)
-
-- \_ForgeUser7363429
-
-#### ruRU (Russian)
-
-- Hubbotu
-
-#### zhCN (Simplified Chinese)
-
-- nukmii
-
-#### zhTW (Traditional Chinese)
-
-- BNS333
-- kib85614

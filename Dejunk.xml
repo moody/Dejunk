@@ -1,0 +1,61 @@
+<Ui>
+  <!-- Libs -->
+  <Script file="libs\LibStub.lua"/>
+  <Script file="libs\CallbackHandler-1.0.lua"/>
+  <Script file="libs\LibDataBroker-1.1.lua"/>
+  <Script file="libs\LibDBIcon-1.0.lua"/>
+
+  <!-- Init -->
+  <Script file="src\_init.lua"/>
+
+  <!-- Locale -->
+  <Script file="src\locale.lua"/>
+
+  <!-- Events -->
+  <Script file="src\events\events.lua"/>
+  <Script file="src\events\event-manager.lua"/>
+
+  <!-- SavedVariables -->
+  <Script file="src\saved-variables.lua"/>
+
+  <!-- Commands -->
+  <Script file="src\commands.lua"/>
+
+  <!-- Bags -->
+  <Script file="src\bags.lua"/>
+
+  <!-- Lists -->
+  <Script file="src\lists.lua"/>
+
+  <!-- JunkFilter -->
+  <Script file="src\junk-filter.lua"/>
+
+  <!-- Seller -->
+  <Script file="src\seller.lua"/>
+
+  <!-- Destroyer -->
+  <Script file="src\destroyer.lua"/>
+
+  <!-- Confirmer -->
+  <Script file="src\confirmer.lua"/>
+
+  <!-- UI Widgets -->
+  <Script file="src\ui\widgets\_init.lua"/>
+  <Script file="src\ui\widgets\button.lua"/>
+  <Script file="src\ui\widgets\frame.lua"/>
+  <Script file="src\ui\widgets\items-frame.lua"/>
+  <Script file="src\ui\widgets\list-frame.lua"/>
+  <Script file="src\ui\widgets\options-frame.lua"/>
+  <Script file="src\ui\widgets\title-frame.lua"/>
+  <Script file="src\ui\widgets\window.lua"/>
+
+  <!-- UI -->
+  <Script file="src\ui\user-interface.lua"/>
+  <Script file="src\ui\junk-frame.lua"/>
+  <Script file="src\ui\merchant-button.lua"/>
+  <Script file="src\ui\minimap-icon.lua"/>
+  <Script file="src\ui\item-tooltip.lua"/>
+
+  <!-- Bindings -->
+  <Script file="Bindings.lua"/>
+</Ui>

@@ -1,93 +1,122 @@
-local AddonName, Addon = ...
-Addon.VERSION = _G.GetAddOnMetadata(AddonName, "Version")
+local ADDON_NAME, Addon = ...
 
--- Game version flags
-Addon.IS_RETAIL = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_MAINLINE
-Addon.IS_CLASSIC = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CLASSIC
-Addon.IS_BC = _G.WOW_PROJECT_ID == _G.WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+Addon.VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
+Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
--- Libs
+-- ============================================================================
+-- Tables
+-- ============================================================================
+
+-- Libs.
 Addon.Libs = {
-  AceGUI = _G.LibStub("AceGUI-3.0"),
-  L = _G.LibStub("AceLocale-3.0"):GetLocale(AddonName),
-  LDB = _G.LibStub("LibDataBroker-1.1"),
-  LDBIcon = _G.LibStub("LibDBIcon-1.0"),
-  DCL = Addon.DethsColorLib,
-  DTL = _G.DethsLibLoader("DethsTooltipLib", "1.0")
+  LDB = LibStub("LibDataBroker-1.1"),
+  LDBIcon = LibStub("LibDBIcon-1.0")
 }
 
--- Initialize Dejunk tables
-Addon.Bags = {}
-Addon.Chat = {}
+-- Locale.
+Addon.Locale = setmetatable({}, {
+  __index = function(t, k)
+    return rawget(t, k) or k
+  end
+})
 
-Addon.Colors = {
-  Primary = "4FAFE3FF",
-  Red = "E34F4FFF",
-  Green = "4FE34FFF",
-  Yellow = "E3E34FFF"
-}
+do -- Colors.
+  Addon.Colors = {}
 
-Addon.Commands = {}
-Addon.Confirmer = {}
-Addon.Consts = {}
-Addon.Core = {}
-
-Addon.DB = {}
-Addon.DatabaseUtils = {}
-Addon.GlobalVersioner = {}
-Addon.ProfileVersioner = {}
-
-Addon.Dejunker = {}
-Addon.Destroyer = {}
-Addon.EventManager = {}
-Addon.Events = {}
-Addon.Filters = {}
-
- do -- ItemQuality
-  local ItemQuality = _G.Enum.ItemQuality
-  Addon.ItemQuality = {
-    Poor = _G.LE_ITEM_QUALITY_POOR or ItemQuality.Poor,
-    Common = _G.LE_ITEM_QUALITY_COMMON or ItemQuality.Common,
-    Uncommon = _G.LE_ITEM_QUALITY_UNCOMMON or ItemQuality.Uncommon,
-    Rare = _G.LE_ITEM_QUALITY_RARE or ItemQuality.Rare,
-    Epic = _G.LE_ITEM_QUALITY_EPIC or ItemQuality.Epic,
-    Legendary = _G.LE_ITEM_QUALITY_LEGENDARY or ItemQuality.Legendary,
-    Artifact = _G.LE_ITEM_QUALITY_ARTIFACT or ItemQuality.Artifact,
-    Heirloom = _G.LE_ITEM_QUALITY_HEIRLOOM or ItemQuality.Heirloom,
-    WoWToken = _G.LE_ITEM_QUALITY_WOW_TOKEN or ItemQuality.WoWToken
+  local colors = {
+    White = "FFFFFFFF",
+    Blue = "FF4FAFE3",
+    Red = "FFE34F4F",
+    Green = "FF4FE34F",
+    Yellow = "FFE3E34F",
+    Gold = "FFFFD100",
+    Grey = "FF9D9D9D",
+    DarkGrey = "FF1E1E1E"
   }
+
+  for name, hex in pairs(colors) do
+    local color = CreateColorFromHexString(hex)
+
+    local t = setmetatable({}, {
+      __call = function(self, text, alpha)
+        alpha = (alpha or 1) * 255
+        local _hex = ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
+        return WrapTextInColorCode(text or "", _hex)
+      end
+    })
+
+    function t:GetRGB()
+      return color:GetRGB()
+    end
+
+    function t:GetRGBA(alpha)
+      local r, g, b, a = color:GetRGBA()
+      return r, g, b, alpha or a
+    end
+
+    function t:GetHex(alpha)
+      alpha = (alpha or 1) * 255
+      return ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
+    end
+
+    Addon.Colors[name] = t
+  end
 end
 
-Addon.ListHelper = {}
-Addon.ListMixins = {}
-Addon.Lists = {}
-Addon.Repairer = {}
-Addon.Utils = {}
+-- Events.
+Addon.Events = {}
+Addon.EventManager = {}
 
--- /ui
-Addon.MinimapIcon = {}
+-- SavedVariables.
+Addon.SavedVariables = {}
 
-Addon.ItemFrames = {
-  Sell = {},
-  Destroy = {},
+-- Commands.
+Addon.Commands = {}
+
+-- Bags.
+Addon.Bags = {}
+
+-- Lists.
+Addon.Lists = {
+  Inclusions = {},
+  Exclusions = {}
 }
 
-Addon.UI = {
-  Widgets = {},
-  Groups = {
-    General = {},
+-- JunkFilter.
+Addon.JunkFilter = {}
 
-    Sell = {},
-    SellInclusions = {},
-    SellExclusions = {},
+-- Seller.
+Addon.Seller = {}
 
-    Destroy = {},
-    DestroyInclusions = {},
-    DestroyExclusions = {},
+-- Destroyer.
+Addon.Destroyer = {}
 
-    Commands = {},
-
-    Profiles = {}
-  },
-  MerchantButton = {}
+-- UserInterface.
+Addon.UserInterface = {
+  JunkFrame = {},
+  Widgets = {}
 }
+
+-- ============================================================================
+-- Functions
+-- ============================================================================
+
+function Addon:IsBusy()
+  if self.Seller:IsBusy() then return true, self.Locale.IS_BUSY_SELLING_ITEMS end
+  if self.Lists:IsBusy() then return true, self.Locale.IS_BUSY_UPDATING_LISTS end
+  return false
+end
+
+function Addon:ForcePrint(...)
+  print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
+end
+
+function Addon:Print(...)
+  if self.SavedVariables:Get().chatMessages then
+    print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
+  end
+end
+
+function Addon:Debug(...)
+  print(self.Colors.Red("[Debug]"), ...)
+end

@@ -1,59 +1,24 @@
 local AddonName, Addon = ...
 local Bags = Addon.Bags
 local Colors = Addon.Colors
-local DB = Addon.DB
-local DCL = Addon.Libs.DCL
-local Dejunker = Addon.Dejunker
-local Destroyer = Addon.Destroyer
-local Filters = Addon.Filters
-local L = Addon.Libs.L
+local JunkFilter = Addon.JunkFilter
+local L = Addon.Locale
+local SavedVariables = Addon.SavedVariables
 
-local item = {}
+hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
+  if not SavedVariables:Get().itemTooltips or Bags:IsBagSlotEmpty(bag, slot) then return end
 
-_G.hooksecurefunc(_G.GameTooltip, "SetBagItem", function(self, bag, slot)
-  if not DB.Global.showItemTooltip or Bags:IsEmpty(bag, slot) then return end
-  if not Bags:GetItem(bag, slot, item) then return end
+  local item = Bags:GetItem(bag, slot)
+  if not item then return end
 
-  local sellLeftText, sellRightText do
-    local isJunk, reason = Filters:Run(Dejunker, item)
-    if reason then
-      sellLeftText =
-        isJunk and
-        DCL:ColorString(L.ITEM_WILL_BE_SOLD, Colors.Red) or
-        DCL:ColorString(L.ITEM_WILL_NOT_BE_SOLD, Colors.Green)
+  local isJunk, reason = JunkFilter:IsJunkItem(item)
+  if not reason then return end
 
-      sellRightText = DCL:ColorString(reason, DCL.CSS.White)
-    end
-  end
-
-  local destroyLeftText, destroyRightText do
-    local isJunk, reason = Filters:Run(Destroyer, item)
-    if reason then
-      destroyLeftText =
-        isJunk and
-        DCL:ColorString(L.ITEM_WILL_BE_DESTROYED, Colors.Red) or
-        DCL:ColorString(L.ITEM_WILL_NOT_BE_DESTROYED, Colors.Green)
-
-      destroyRightText = DCL:ColorString(reason, DCL.CSS.White)
-    end
-  end
-
-  -- Exit early if no text to display
-  if not (sellLeftText or destroyLeftText) then return end
-
-  -- Add lines
-  self:AddLine(" ") -- blank line
-  self:AddLine(DCL:ColorString(AddonName, Colors.Primary))
-
-  if sellLeftText then
-    self:AddLine("  " .. sellLeftText)
-    self:AddLine("    " .. sellRightText)
-  end
-
-  if destroyLeftText then
-    self:AddLine("  " .. destroyLeftText)
-    self:AddLine("    " .. destroyRightText)
-  end
+  -- Add lines.
+  self:AddLine(" ")
+  self:AddLine(Colors.Blue(AddonName))
+  self:AddLine("  " .. (isJunk and Colors.Red(L.ITEM_IS_JUNK) or Colors.Green(L.ITEM_IS_NOT_JUNK)))
+  self:AddLine("  " .. Colors.Grey("- " .. Colors.White(reason)))
 
   self:Show()
 end)

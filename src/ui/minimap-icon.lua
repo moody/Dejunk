@@ -1,83 +1,48 @@
-local AddonName, Addon = ...
+local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local Commands = Addon.Commands
-local DB = Addon.DB
-local DCL = Addon.Libs.DCL
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local L = Addon.Libs.L
+local L = Addon.Locale
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
-local MinimapIcon = Addon.MinimapIcon
+local SavedVariables = Addon.SavedVariables
 
--- Initialize once the DB becomes available.
-EventManager:Once(E.DatabaseReady, function()
-  local object = LDB:NewDataObject(AddonName, {
+EventManager:Once(E.SavedVariablesReady, function()
+  local object = LDB:NewDataObject(ADDON_NAME, {
     type = "data source",
-    text = AddonName,
+    text = ADDON_NAME,
     icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
 
     OnClick = function(_, button)
       if button == "LeftButton" then
-        if IsShiftKeyDown() then
-          Commands.sell()
-        else
-          Commands.toggle()
-        end
+        Commands.options()
       end
 
       if button == "RightButton" then
         if IsShiftKeyDown() then
           Commands.destroy()
-        elseif IsAltKeyDown() then
-          Commands.destroy("start")
         else
-          Commands.destroy("next")
+          Commands.junk()
         end
       end
     end,
 
     OnTooltipShow = function(tooltip)
-      tooltip:AddDoubleLine(
-        DCL:ColorString(AddonName, Colors.Primary),
-        Addon.VERSION
-      )
-      tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME, nil, nil, nil, 1, 1, 1)
-      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, nil, nil, nil, 1, 1, 1)
-      tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.DESTROY_NEXT_ITEM, nil, nil, nil, 1, 1, 1)
-      tooltip:AddDoubleLine(L.ALT_RIGHT_CLICK, L.START_DESTROYING, nil, nil, nil, 1, 1, 1)
-      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, nil, nil, nil, 1, 1, 1)
-		end,
+      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
+      tooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.TOGGLE_OPTIONS_FRAME))
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_JUNK_FRAME))
+      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, Colors.White(L.DESTROY_NEXT_ITEM))
+    end
   })
+  LDBIcon:Register(ADDON_NAME, object, SavedVariables:GetGlobal().minimapIcon)
 
-  LDBIcon:Register(AddonName, object, DB.Global.minimapIcon)
+  -- Update visibility.
+  C_Timer.NewTicker(0, function()
+    if SavedVariables:Get().minimapIcon.hide then
+      LDBIcon:Hide(ADDON_NAME)
+    else
+      LDBIcon:Show(ADDON_NAME)
+    end
+  end)
 end)
-
--- ============================================================================
--- General Functions
--- ============================================================================
-
--- Displays the minimap icon.
-function MinimapIcon:Show()
-  DB.Global.minimapIcon.hide = false
-  LDBIcon:Show(AddonName)
-end
-
--- Hides the minimap icon.
-function MinimapIcon:Hide()
-  DB.Global.minimapIcon.hide = true
-  LDBIcon:Hide(AddonName)
-end
-
--- Toggles the minimap icon.
-function MinimapIcon:Toggle()
-  if DB.Global.minimapIcon.hide then
-    self:Show()
-  else
-    self:Hide()
-  end
-end

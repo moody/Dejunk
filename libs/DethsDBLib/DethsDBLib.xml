@@ -1,7 +1,0 @@
-<Ui>
-  <script file="src/init.lua"/>
-  <script file="src/consts.lua"/>
-  <script file="src/mixins.lua"/>
-  <script file="src/utils.lua"/>
-  <script file="src/main.lua"/>
-</Ui>
