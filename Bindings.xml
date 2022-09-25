@@ -3,6 +3,9 @@
   <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" header="DEJUNK_HEADER_GENERAL" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_ToggleOptionsFrame()
   </Binding>
+  <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="BINDING_CATEGORY_DEJUNK">
+    DejunkBindings_ToggleJunkFrame()
+  </Binding>
   <Binding name="DEJUNK_START_SELLING" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_StartSelling()
   </Binding>

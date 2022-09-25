@@ -18,7 +18,8 @@ BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL
 BINDING_HEADER_DEJUNK_HEADER_LISTS = L.LISTS
 
 -- General.
-BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_USER_INTERFACE
+BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_OPTIONS_FRAME
+BINDING_NAME_DEJUNK_TOGGLE_JUNK_FRAME = L.TOGGLE_JUNK_FRAME
 BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING
 BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
 BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLE_ITEMS
@@ -34,7 +35,8 @@ BINDING_NAME_DEJUNK_REM_EXCLUSIONS = L.BINDINGS_REMOVE_FROM_LIST:format(Lists.Ex
 -- ============================================================================
 
 -- General.
-DejunkBindings_ToggleOptionsFrame = Commands.toggle
+DejunkBindings_ToggleOptionsFrame = Commands.options
+DejunkBindings_ToggleJunkFrame = Commands.junk
 DejunkBindings_StartSelling = Commands.sell
 DejunkBindings_DestroyNextItem = Commands.destroy
 DejunkBindings_OpenLootables = Commands.loot
