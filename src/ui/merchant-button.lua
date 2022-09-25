@@ -1,97 +1,58 @@
-local AddonName, Addon = ...
+local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local Commands = Addon.Commands
-local Core = Addon.Core
-local DB = Addon.DB
-local DCL = Addon.Libs.DCL
-local Dejunker = Addon.Dejunker
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local GameTooltip = _G.GameTooltip
-local IsShiftKeyDown = _G.IsShiftKeyDown
-local L = Addon.Libs.L
-local MerchantButton = Addon.UI.MerchantButton
-local UI = Addon.UI
+local L = Addon.Locale
+local SavedVariables = Addon.SavedVariables
 
--- ============================================================================
--- Events
--- ============================================================================
+EventManager:Once(E.SavedVariablesReady, function()
+  local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
+  frame:SetText(ADDON_NAME)
+  frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
-EventManager:Once(E.DatabaseReady, function()
-  local button = _G.CreateFrame(
-    "Button",
-    AddonName .. "MerchantButton",
-    _G.MerchantFrame,
-    "OptionsButtonTemplate"
-  )
-  button:SetText(AddonName)
-  button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-
-  -- Skin & position button for ElvUI if necessary
-  local ElvUI = _G.ElvUI and _G.ElvUI[1] -- ElvUI Engine
-  if
-    ElvUI and
-    ElvUI.private.skins.blizzard.enable and
-    ElvUI.private.skins.blizzard.merchant
-  then
-    ElvUI:GetModule("Skins"):HandleButton(button)
-    if Addon.IS_RETAIL then
-      button:SetPoint("TOPLEFT", 11, -28)
-    else
-      button:SetPoint("BOTTOMLEFT", _G.MerchantItem1, "TOPLEFT", 0, 8)
-    end
+  if Addon.IS_RETAIL then
+    frame:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
   else
-    if Addon.IS_RETAIL then
-      button:SetPoint("TOPRIGHT", _G.MerchantFrameLootFilter, "TOPLEFT", -4, 0)
-    else
-      button:SetPoint("TOPLEFT", 60, -28)
-    end
+    frame:SetPoint("TOPLEFT", 60, -28)
   end
 
-  -- Scripts
-  button:HookScript("OnUpdate", function(self)
-    self:SetEnabled(Core:CanDejunk())
-  end)
-
-  button:HookScript("OnClick", function(self, mouseButton)
-    if (mouseButton == "LeftButton") then
-      if IsShiftKeyDown() then Commands.sell() else Dejunker:Start() end
-    elseif (mouseButton == "RightButton") then
-      if IsShiftKeyDown() then Commands.destroy() else UI:Toggle() end
+  MerchantFrame:HookScript("OnUpdate", function()
+    if SavedVariables:Get().merchantButton then
+      frame:Show()
+    else
+      frame:Hide()
     end
   end)
 
-  button:HookScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:AddDoubleLine(
-      DCL:ColorString(AddonName, Colors.Primary),
-      Addon.VERSION
-    )
-    GameTooltip:AddLine(" ")
-    GameTooltip:AddDoubleLine(L.LEFT_CLICK, L.START_SELLING_BUTTON_TEXT, nil, nil, nil, 1, 1, 1)
-    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME, nil, nil, nil, 1, 1, 1)
-    GameTooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.TOGGLE_SELL_FRAME, nil, nil, nil, 1, 1, 1)
-    GameTooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_DESTROY_FRAME, nil, nil, nil, 1, 1, 1)
+  frame:HookScript("OnUpdate", function(self)
+    self:SetEnabled(not Addon:IsBusy())
+  end)
+
+  frame:HookScript("OnClick", function(self, button)
+    if button == "LeftButton" then
+      Commands.sell()
+    end
+
+    if button == "RightButton" then
+      if IsShiftKeyDown() then
+        Commands.options()
+      else
+        Commands.junk()
+      end
+    end
+  end)
+
+  frame:HookScript("OnEnter", function(self)
+    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+    GameTooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
+    GameTooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.START_SELLING))
+    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_JUNK_FRAME))
+    GameTooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, Colors.White(L.TOGGLE_OPTIONS_FRAME))
     GameTooltip:Show()
   end)
 
-  button:HookScript("OnLeave", function()
+  frame:HookScript("OnLeave", function()
     GameTooltip:Hide()
   end)
-
-  -- Add to MerchantButton + update
-  MerchantButton.button = button
-  MerchantButton:Update()
 end)
-
--- ============================================================================
--- Functions
--- ============================================================================
-
-function MerchantButton:Update()
-  if DB.Global.showMerchantButton then
-    self.button:Show()
-  else
-    self.button:Hide()
-  end
-end

@@ -6,31 +6,31 @@ local E = Addon.Events
 -- ============================================================================
 
 local events = {
-  -- Bags
+  -- Bags.
   "BagsUpdated",
 
-  -- DB
-  "DatabaseReady",
-  "ProfileChanged",
+  -- SavedVariables.
+  "SavedVariablesReady",
+  "SavedVariablesSwitched",
 
-  -- Lists
+  -- Lists.
   "ListItemAdded",
   "ListItemRemoved",
   "ListRemovedAll",
 
-  -- Services
-  "DejunkerStart",
-  "DejunkerStop",
-  "DejunkerAttemptToSell",
+  -- Seller.
+  "SellerStarted",
+  "SellerStopped",
+  "AttemptedToSellItem",
 
-  "DestroyerAttemptToDestroy",
+  -- Destroyer.
+  "AttemptedToDestroyItem",
 
-  -- UI
+  -- UI.
   "MainUIClosed",
 }
 
 for _, event in pairs(events) do
-  assert(E[event] == nil)
   E[event] = ("%s_%s"):format(AddonName, event)
 end
 

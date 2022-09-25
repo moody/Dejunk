@@ -55,7 +55,7 @@ end
 -- Event Frame
 -- ============================================================================
 
-local frame = _G.CreateFrame("Frame")
+local frame = CreateFrame("Frame")
 
 frame:SetScript("OnEvent", function(self, event, ...)
   EventManager:Fire(event, ...)

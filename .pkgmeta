@@ -5,9 +5,3 @@ enable-nolib-creation: no
 manual-changelog:
   filename: CHANGELOG.md
   markup-type: markdown
-
-ignore:
-  - Dejunk.png
-  - README.md
-  - HISTORY.md
-  - scripts
