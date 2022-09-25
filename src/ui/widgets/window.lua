@@ -28,7 +28,7 @@ function Widgets:Window(options)
   frame.titleBackground:Hide()
 
   -- Make frame moveable.
-  frame:SetFrameStrata("FULLSCREEN_DIALOG")
+  frame:SetFrameStrata("HIGH")
   frame:SetMovable(true)
   frame:EnableMouse(true)
   frame:SetClampedToScreen(true)
