@@ -5,6 +5,7 @@ local Commands = Addon.Commands
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
 local Seller = Addon.Seller
 local UserInterface = Addon.UserInterface
@@ -24,7 +25,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
     -- First arg is command name.
     local key = table.remove(args, 1)
-    key = type(Commands[key]) == "function" and key or "toggle"
+    key = type(Commands[key]) == "function" and key or "help"
     Commands[key]()
   end
 end)
@@ -33,16 +34,22 @@ end)
 -- Commands
 -- ============================================================================
 
-function Commands.toggle()
+function Commands.help()
+  Addon:ForcePrint(L.COMMANDS .. ":")
+  Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_HELP)
+  Addon:ForcePrint(Colors.Gold("  /dejunk options"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
+  Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
+  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
+  Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
+  Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
+end
+
+function Commands.options()
   UserInterface:Toggle()
 end
 
-function Commands.help()
-  Addon:Print(L.COMMANDS .. ":")
-  Addon:Print("  /dejunk", Colors.Grey("- " .. L.CMD_HELP_TOGGLE))
-  Addon:Print("  /dejunk sell", Colors.Grey("- " .. L.CMD_HELP_SELL))
-  Addon:Print("  /dejunk destroy", Colors.Grey("- " .. L.CMD_HELP_DESTROY))
-  Addon:Print("  /dejunk loot", Colors.Grey("- " .. L.CMD_HELP_LOOT))
+function Commands.junk()
+  JunkFrame:Toggle()
 end
 
 function Commands.sell()

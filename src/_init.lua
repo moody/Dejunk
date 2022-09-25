@@ -107,6 +107,10 @@ function Addon:IsBusy()
   return false
 end
 
+function Addon:ForcePrint(...)
+  print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
+end
+
 function Addon:Print(...)
   if self.SavedVariables:Get().chatMessages then
     print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
