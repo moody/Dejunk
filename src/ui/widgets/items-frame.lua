@@ -4,6 +4,8 @@ local GameTooltip = GameTooltip
 local L = Addon.Locale
 local Widgets = Addon.UserInterface.Widgets
 
+local SPACING = Widgets:Padding()
+
 --[[
   Creates a fake scrolling frame for displaying items.
 
@@ -13,6 +15,7 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    numButtons? = number,
     titleText? = string,
     tooltipText = string,
     getItems = function() -> table[],
@@ -26,17 +29,12 @@ function Widgets:ItemsFrame(options)
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
   options.titleBackground = true
+  options.numButtons = options.numButtons or 8
 
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.options = options
   frame.buttons = {}
-
-  local NUM_BUTTONS = 8
-  local SPACING = self:Padding()
-  local BUTTON_HEIGHT = (
-      frame:GetHeight() - frame.titleBackground:GetHeight() - (SPACING * 2) - ((NUM_BUTTONS - 1) * SPACING)
-      ) / NUM_BUTTONS
 
   -- Title button.
   frame.titleButton = CreateFrame("Button", "$parent_TitleButton", frame)
@@ -93,25 +91,11 @@ function Widgets:ItemsFrame(options)
   frame.slider:SetThumbTexture(frame.slider.texture)
 
   -- Buttons.
-  for i = 1, NUM_BUTTONS do
-    local points = i == 1 and
-        {
-          { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", SPACING, -SPACING },
-          { "TOPRIGHT", frame.slider, "TOPLEFT", -SPACING, 0 }
-        } or
-        {
-          { "TOPLEFT", frame.buttons[#frame.buttons], "BOTTOMLEFT", 0, -SPACING },
-          { "TOPRIGHT", frame.buttons[#frame.buttons], "BOTTOMRIGHT", 0, -SPACING }
-        }
-
-    local button = self:ItemButton({
+  for i = 1, options.numButtons do
+    frame.buttons[#frame.buttons + 1] = self:ItemButton({
       name = "$parent_ItemButton" .. i,
       parent = frame,
-      points = points,
-      height = BUTTON_HEIGHT
     })
-
-    frame.buttons[#frame.buttons + 1] = button
   end
 
   -- No items text.
@@ -147,6 +131,20 @@ function Widgets:ItemsFrame(options)
       else
         button:Hide()
       end
+
+      -- Points.
+      if i == 1 then
+        button:SetPoint("TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING)
+        button:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
+      else
+        button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -SPACING)
+        button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, -SPACING)
+      end
+
+      -- Height.
+      local buttonArea = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+      local buttonSpacing = (options.numButtons - 1) * SPACING
+      button:SetHeight((buttonArea - buttonSpacing) / options.numButtons)
     end
 
     -- Update slider values.
@@ -193,10 +191,8 @@ function Widgets:ItemButton(options)
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
   -- Item icon.
-  local iconSize = frame:GetHeight() - self:Padding()
   frame.icon = frame:CreateTexture("$parent_Icon", "ARTWORK")
   frame.icon:SetPoint("LEFT", self:Padding(0.5), 0)
-  frame.icon:SetSize(iconSize, iconSize)
 
   -- Item text.
   frame.text = frame:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormal")
@@ -244,8 +240,12 @@ function Widgets:ItemButton(options)
 
   frame:SetScript("OnUpdate", function(self)
     if not self.item then return end
+    -- Icon.
+    local size = self:GetHeight() - SPACING
+    self.icon:SetSize(size, size)
     self.icon:SetTexture(self.item.texture)
     self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    -- Text.
     local quantity = self.item.quantity or 1
     self.text:SetText(self.item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
   end)
