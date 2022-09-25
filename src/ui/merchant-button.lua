@@ -1,54 +1,58 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
+local Commands = Addon.Commands
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Locale
-local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
-local Seller = Addon.Seller
-local UserInterface = Addon.UserInterface
 
 EventManager:Once(E.SavedVariablesReady, function()
-  local button = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
-  button:SetText(ADDON_NAME)
-  button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
+  frame:SetText(ADDON_NAME)
+  frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
   if Addon.IS_RETAIL then
-    button:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
+    frame:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
   else
-    button:SetPoint("TOPLEFT", 60, -28)
+    frame:SetPoint("TOPLEFT", 60, -28)
   end
 
   MerchantFrame:HookScript("OnUpdate", function()
     if SavedVariables:Get().merchantButton then
-      button:Show()
+      frame:Show()
     else
-      button:Hide()
+      frame:Hide()
     end
   end)
 
-  button:HookScript("OnUpdate", function(self)
-    local enabled = not (Lists:IsBusy() or Seller:IsBusy())
-    self:SetEnabled(enabled)
+  frame:HookScript("OnUpdate", function(self)
+    self:SetEnabled(not Addon:IsBusy())
   end)
 
-  button:HookScript("OnClick", function(self, b)
-    if b == "LeftButton" then
-      Seller:Start()
-    elseif b == "RightButton" then
-      UserInterface:Toggle()
+  frame:HookScript("OnClick", function(self, button)
+    if button == "LeftButton" then
+      Commands.sell()
+    end
+
+    if button == "RightButton" then
+      if IsShiftKeyDown() then
+        Commands.options()
+      else
+        Commands.junk()
+      end
     end
   end)
 
-  button:HookScript("OnEnter", function(self)
+  frame:HookScript("OnEnter", function(self)
     GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
     GameTooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
     GameTooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.START_SELLING))
-    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_USER_INTERFACE))
+    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_JUNK_FRAME))
+    GameTooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, Colors.White(L.TOGGLE_OPTIONS_FRAME))
     GameTooltip:Show()
   end)
 
-  button:HookScript("OnLeave", function()
+  frame:HookScript("OnLeave", function()
     GameTooltip:Hide()
   end)
 end)
