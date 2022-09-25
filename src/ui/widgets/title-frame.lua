@@ -37,7 +37,7 @@ function Widgets:TitleFrame(options)
 
   -- Title background.
   local titleHeight = max(frame.title:GetHeight(), frame.title:GetStringHeight()) + self:Padding(2)
-  frame.titleBackground = frame:CreateTexture("$parent_TitleBackground", "BACKGROUND")
+  frame.titleBackground = frame:CreateTexture("$parent_TitleBackground", "BACKGROUND", nil, 7)
   frame.titleBackground:SetColorTexture(Colors.DarkGrey:GetRGBA(0.75))
   frame.titleBackground:SetPoint("TOPLEFT")
   frame.titleBackground:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -titleHeight)
