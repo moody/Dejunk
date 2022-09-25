@@ -29,6 +29,7 @@ do -- Colors.
     Red = "FFE34F4F",
     Green = "FF4FE34F",
     Yellow = "FFE3E34F",
+    Gold = "FFFFD100",
     Grey = "FF9D9D9D",
     DarkGrey = "FF1E1E1E"
   }
