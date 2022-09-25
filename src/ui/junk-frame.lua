@@ -73,7 +73,8 @@ JunkFrame.frame = (function()
     points = {
       { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding() }
-    }
+    },
+    labelColor = Colors.Yellow
   })
 
   frame:HookScript("OnUpdate", function(self)
@@ -88,10 +89,10 @@ JunkFrame.frame = (function()
       -- Next item button.
       if MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items) then
         self.nextItemButton:SetScript("OnClick", Commands.sell)
-        self.nextItemButton.label:SetText(Colors.White(L.START_SELLING))
+        self.nextItemButton.label:SetText(L.START_SELLING)
       else
         self.nextItemButton:SetScript("OnClick", Commands.destroy)
-        self.nextItemButton.label:SetText(Colors.White(L.DESTROY_NEXT_ITEM))
+        self.nextItemButton.label:SetText(L.DESTROY_NEXT_ITEM)
       end
       self.nextItemButton:Show()
       -- Items frame.
@@ -107,7 +108,7 @@ JunkFrame.frame = (function()
     -- Disable button if busy.
     local isBusy, reason = Addon:IsBusy()
     self.nextItemButton:SetEnabled(not isBusy)
-    if isBusy then self.nextItemButton.label:SetText(Colors.White(reason)) end
+    if isBusy then self.nextItemButton.label:SetText(reason) end
   end)
 
   -- Items frame.
