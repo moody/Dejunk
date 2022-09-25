@@ -13,8 +13,7 @@ local Widgets = Addon.UserInterface.Widgets
     height? = number,
     titleText? = string,
     titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER",
-    titleBackground? = boolean
+    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
   }
 ]]
 function Widgets:TitleFrame(options)
@@ -37,13 +36,11 @@ function Widgets:TitleFrame(options)
   end
 
   -- Title background.
-  if options.titleBackground then
-    local titleHeight = max(frame.title:GetHeight(), frame.title:GetStringHeight()) + self:Padding(2)
-    frame.titleBackground = frame:CreateTexture("$parent_TitleBackground")
-    frame.titleBackground:SetColorTexture(Colors.DarkGrey:GetRGBA(0.75))
-    frame.titleBackground:SetPoint("TOPLEFT", 1, -1)
-    frame.titleBackground:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", -1, -titleHeight - 1)
-  end
+  local titleHeight = max(frame.title:GetHeight(), frame.title:GetStringHeight()) + self:Padding(2)
+  frame.titleBackground = frame:CreateTexture("$parent_TitleBackground", "BACKGROUND")
+  frame.titleBackground:SetColorTexture(Colors.DarkGrey:GetRGBA(0.75))
+  frame.titleBackground:SetPoint("TOPLEFT")
+  frame.titleBackground:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -titleHeight)
 
   return frame
 end

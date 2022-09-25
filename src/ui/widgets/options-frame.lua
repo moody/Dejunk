@@ -19,7 +19,6 @@ function Widgets:OptionsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.titleBackground = true
 
   -- Base frame.
   local frame = self:TitleFrame(options)

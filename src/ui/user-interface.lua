@@ -48,8 +48,8 @@ UserInterface.frame = (function()
     name = "$parent_OptionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT", frame.title, "BOTTOMLEFT", 0, -Widgets:Padding() },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(12) }
+      { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", Widgets:Padding(), 0 },
+      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(11) }
     },
     titleText = L.OPTIONS_TEXT
   })
@@ -133,11 +133,6 @@ UserInterface.frame = (function()
     tooltipText = L.EXCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Exclusions
   })
-
-  -- Hide when busy.
-  frame:HideWhenBusy(frame.optionsFrame)
-  frame:HideWhenBusy(frame.inclusionsFrame)
-  frame:HideWhenBusy(frame.exclusionsFrame)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
