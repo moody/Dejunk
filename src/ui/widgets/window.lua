@@ -27,6 +27,9 @@ function Widgets:Window(options)
   local frame = self:TitleFrame(options)
   frame.titleBackground:Hide()
 
+  -- Add as special frame to be hidden on certain events.
+  table.insert(UISpecialFrames, frame:GetName())
+
   -- Make frame moveable.
   frame:SetFrameStrata("HIGH")
   frame:SetMovable(true)

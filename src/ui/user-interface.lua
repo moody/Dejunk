@@ -134,8 +134,5 @@ UserInterface.frame = (function()
     list = Addon.Lists.Exclusions
   })
 
-  -- Add as special frame to be hidden on certain events.
-  table.insert(UISpecialFrames, frame:GetName())
-
   return frame
 end)()

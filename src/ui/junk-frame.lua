@@ -137,6 +137,5 @@ JunkFrame.frame = (function()
     self.title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
   end)
 
-  frame:Hide()
   return frame
 end)()
