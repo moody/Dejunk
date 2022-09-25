@@ -4,7 +4,7 @@ import sys
 
 
 LOCALE_ENTRY_PATTERN = re.compile(r"L\.([^\s|=]+)")
-LOCALE_REFERENCE_PATTERN = re.compile(r"\bL\.(\w+)\b")
+LOCALE_REFERENCE_PATTERN = re.compile(r"\b(L|Locale)\.(\w+)\b")
 
 
 def getEntries():
@@ -31,7 +31,7 @@ def getReferences():
             lineNum = 0
             for line in f.readlines():
                 lineNum += 1
-                keys = re.findall(LOCALE_REFERENCE_PATTERN, line)
+                keys = [k[1] for k in re.findall(LOCALE_REFERENCE_PATTERN, line)]
                 for key in keys:
                     if not key in references:
                         references[key] = []
