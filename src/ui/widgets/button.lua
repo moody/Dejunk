@@ -50,6 +50,7 @@ function Widgets:Button(options)
 
   frame:SetScript("OnUpdate", function(self)
     self:SetHeight(self.label:GetHeight() + Widgets:Padding(2))
+    self:SetAlpha(self:IsEnabled() and 1 or 0.5)
   end)
 
   return frame
