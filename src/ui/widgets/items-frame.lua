@@ -4,8 +4,6 @@ local GameTooltip = GameTooltip
 local L = Addon.Locale
 local Widgets = Addon.UserInterface.Widgets
 
-local SPACING = Widgets:Padding()
-
 --[[
   Creates a fake scrolling frame for displaying items.
 
@@ -25,6 +23,8 @@ local SPACING = Widgets:Padding()
   }
 ]]
 function Widgets:ItemsFrame(options)
+  local SPACING = Widgets:Padding()
+
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
@@ -241,7 +241,7 @@ function Widgets:ItemButton(options)
   frame:SetScript("OnUpdate", function(self)
     if not self.item then return end
     -- Icon.
-    local size = self:GetHeight() - SPACING
+    local size = self:GetHeight() - Widgets:Padding()
     self.icon:SetSize(size, size)
     self.icon:SetTexture(self.item.texture)
     self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
