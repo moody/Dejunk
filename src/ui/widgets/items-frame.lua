@@ -200,9 +200,24 @@ function Widgets:ItemButton(options)
   frame.text:SetJustifyH("LEFT")
   frame.text:SetWordWrap(false)
 
-  -- Sets the item that this button displays.
+  function frame:OnUpdate()
+    if not self.item then return end
+    -- Icon.
+    local size = self:GetHeight() - Widgets:Padding()
+    self.icon:SetSize(size, size)
+    self.icon:SetTexture(self.item.texture)
+    self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    -- Text.
+    local quantity = self.item.quantity or 1
+    self.text:SetText(self.item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
+  end
+
   function frame:SetItem(item)
     self.item = item
+    self:OnUpdate()
+    if GetMouseFocus() == self then
+      self:UpdateTooltip()
+    end
   end
 
   function frame:UpdateTooltip()
@@ -237,17 +252,7 @@ function Widgets:ItemButton(options)
     end
   end)
 
-  frame:SetScript("OnUpdate", function(self)
-    if not self.item then return end
-    -- Icon.
-    local size = self:GetHeight() - Widgets:Padding()
-    self.icon:SetSize(size, size)
-    self.icon:SetTexture(self.item.texture)
-    self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-    -- Text.
-    local quantity = self.item.quantity or 1
-    self.text:SetText(self.item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
-  end)
+  frame:SetScript("OnUpdate", frame.OnUpdate)
 
   return frame
 end
