@@ -222,7 +222,11 @@ function Widgets:ItemButton(options)
 
   function frame:UpdateTooltip()
     GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetHyperlink(self.item.link)
+    if self.item.bag and self.item.slot then
+      GameTooltip:SetBagItem(self.item.bag, self.item.slot)
+    else
+      GameTooltip:SetHyperlink(self.item.link)
+    end
     GameTooltip:Show()
   end
 
