@@ -77,9 +77,12 @@ L.RIGHT_CLICK = "Right-Click"
 L.SAFE_MODE_TEXT = "Safe Mode"
 L.SAFE_MODE_TOOLTIP = "Only sell up to 12 items at a time."
 L.SELLING_ALREADY_IN_PROGRESS = "Selling is already in progress."
+L.SHIFT_LEFT_CLICK = "Shift Left-Click"
+L.SHIFT_RIGHT_CLICK = "Shift Right-Click"
 L.SOLD_ITEM = "Sold: %s."
 L.START_SELLING = "Start Selling"
-L.TOGGLE_USER_INTERFACE = "Toggle User Interface"
+L.TOGGLE_JUNK_FRAME = "Toggle Junk Frame"
+L.TOGGLE_OPTIONS_FRAME = "Toggle Options Frame"
 
 -- ============================================================================
 -- Others
