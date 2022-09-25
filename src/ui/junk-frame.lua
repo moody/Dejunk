@@ -1,10 +1,12 @@
 local ADDON_NAME, Addon = ...
+local Bags = Addon.Bags
 local Colors = Addon.Colors
+local Commands = Addon.Commands
+local JunkFilter = Addon.JunkFilter
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
-local Widgets = Addon.UserInterface.Widgets
-local JunkFilter = Addon.JunkFilter
 local Lists = Addon.Lists
+local Widgets = Addon.UserInterface.Widgets
 
 -- ============================================================================
 -- JunkFrame
@@ -45,6 +47,14 @@ local function sortFunc(a, b)
   return aTotalPrice < bTotalPrice
 end
 
+local function hasSellableItems(items)
+  for _, item in ipairs(items) do
+    if Bags:IsItemSellable(item) then
+      return true
+    end
+  end
+end
+
 -- Create frame.
 JunkFrame.frame = (function()
   local frame = Widgets:Window({
@@ -53,6 +63,7 @@ JunkFrame.frame = (function()
     height = 375,
     titleText = Colors.Yellow(L.JUNK_ITEMS),
   })
+  frame:SetFrameLevel(frame:GetFrameLevel() + 1)
   frame.items = {}
 
   -- Next item button.
@@ -62,35 +73,52 @@ JunkFrame.frame = (function()
     points = {
       { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding() }
-    },
-    labelText = L.HANDLE_NEXT_ITEM,
-    onClick = function(self)
-      -- TODO: If item sellable AND merchant frame shown, sell. Otherwise destroy item.
-      Addon:Debug("Not yet implemented.")
-    end
+    }
   })
 
   frame:HookScript("OnUpdate", function(self)
-    local hasItems = #self.items > 0
-    self.nextItemButton:SetEnabled(hasItems)
-    self.nextItemButton:SetAlpha(hasItems and 1 or 0.3)
+    -- Get items.
+    JunkFilter:GetJunkItems(frame.items)
+    table.sort(frame.items, sortFunc)
+
+    -- Title.
+    self.title:SetText(Colors.Grey(("%s (%s)"):format(Colors.Yellow(L.JUNK_ITEMS), Colors.White(#self.items))))
+
+    if #self.items > 0 then
+      -- Next item button.
+      if MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items) then
+        self.nextItemButton:SetScript("OnClick", Commands.sell)
+        self.nextItemButton.label:SetText(Colors.White(L.START_SELLING))
+      else
+        self.nextItemButton:SetScript("OnClick", Commands.destroy)
+        self.nextItemButton.label:SetText(Colors.White(L.DESTROY_NEXT_ITEM))
+      end
+      self.nextItemButton:Show()
+      -- Items frame.
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame.nextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
+    else
+      -- Next item button.
+      self.nextItemButton:SetScript("OnClick", nil)
+      self.nextItemButton:Hide()
+      -- Items frame.
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding())
+    end
+
+    -- Disable button if busy.
+    local isBusy, reason = Addon:IsBusy()
+    self.nextItemButton:SetEnabled(not isBusy)
+    if isBusy then self.nextItemButton.label:SetText(Colors.White(reason)) end
   end)
 
   -- Items frame.
   frame.itemsFrame = Widgets:ItemsFrame({
     name = "$parent_ItemsFrame",
     parent = frame,
-    points = {
-      { "TOPLEFT", frame.title, "BOTTOMLEFT", 0, -Widgets:Padding() },
-      { "BOTTOMRIGHT", frame.nextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5) }
-    },
-    titleText = L.JUNK_ITEMS,
-    tooltipText = L.JUNK_FRAME_TOOLTIP,
-    getItems = function()
-      JunkFilter:GetJunkItems(frame.items)
-      table.sort(frame.items, sortFunc)
-      return frame.items
-    end,
+    points = { { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", Widgets:Padding(), 0 } },
+    numButtons = 7,
+    titleText = Colors.White(L.JUNK_ITEMS),
+    tooltipText = L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name, Lists.Exclusions.name),
+    getItems = function() return frame.items end,
     addItem = function(itemId) Lists.Inclusions:Add(itemId) end,
     removeItem = function(itemId) Lists.Exclusions:Add(itemId) end,
     removeAllItems = function()
@@ -107,10 +135,6 @@ JunkFrame.frame = (function()
     end
     self.title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
   end)
-
-  -- Hide when busy.
-  frame:HideWhenBusy(frame.nextItemButton)
-  frame:HideWhenBusy(frame.itemsFrame)
 
   frame:Hide()
   return frame
