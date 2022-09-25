@@ -37,14 +37,29 @@ function Widgets:Window(options)
   frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
   -- Close button.
-  frame.closeButton = CreateFrame("Button", "$parent_CloseButton", frame)
+  frame.closeButton = self:Frame({
+    name = "$parent_CloseButton",
+    frameType = "Button",
+    parent = frame
+  })
+  frame.closeButton:SetBackdropColor(0, 0, 0, 0)
+  frame.closeButton:SetBackdropBorderColor(0, 0, 0, 0)
+  frame.closeButton:SetPoint("TOPRIGHT", frame.titleBackground)
+  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+
   frame.closeButton.text = frame.closeButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
   frame.closeButton.text:SetText(Colors.White("X"))
   frame.closeButton:SetFontString(frame.closeButton.text)
-  frame.closeButton:SetSize(frame.closeButton.text:GetWidth(), frame.closeButton.text:GetHeight())
-  frame.closeButton:SetPoint("TOPRIGHT", -self:Padding(), -self:Padding())
-  frame.closeButton:SetScript("OnEnter", function(self) self.text:SetText(Colors.Red("X")) end)
-  frame.closeButton:SetScript("OnLeave", function(self) self.text:SetText(Colors.White("X")) end)
+  frame.closeButton:SetWidth(frame.closeButton.text:GetWidth() + self:Padding(4))
+
+  frame.closeButton:SetScript("OnEnter", function(self)
+    self:SetBackdropColor(Colors.Red:GetRGBA(0.75))
+  end)
+
+  frame.closeButton:SetScript("OnLeave", function(self)
+    self:SetBackdropColor(0, 0, 0, 0)
+  end)
+
   frame.closeButton:SetScript("OnClick", function() frame:Hide() end)
 
   return frame
