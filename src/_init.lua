@@ -40,7 +40,7 @@ do -- Colors.
       __call = function(self, text, alpha)
         alpha = (alpha or 1) * 255
         local _hex = ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
-        return WrapTextInColorCode(text, _hex)
+        return WrapTextInColorCode(text or "", _hex)
       end
     })
 
