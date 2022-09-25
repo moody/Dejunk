@@ -23,8 +23,14 @@ with the press of a button.
 ## Chat Commands
 
 ```ps1
-# Toggle the user interface.
+# Display help commands.
 /dejunk
+
+# Toggle the options frame.
+/dejunk options
+
+# Toggle the junk frame.
+/dejunk junk
 
 # Start selling items.
 /dejunk sell
@@ -34,9 +40,6 @@ with the press of a button.
 
 # Open lootable items.
 /dejunk loot
-
-# Display these commands.
-/dejunk help
 ```
 
 ## Credit
