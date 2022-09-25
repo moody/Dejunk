@@ -3,16 +3,16 @@ import re
 import sys
 
 
-LOCALE_ENTRY_PATTERN = re.compile(r'L\["(.+)"\] ')
+LOCALE_ENTRY_PATTERN = re.compile(r"L\.([^\s|=]+)")
 LOCALE_REFERENCE_PATTERN = re.compile(r"\bL\.(\w+)\b")
 
 
 def getEntries():
     entries = []
 
-    with open("locales/enUS.lua") as f:
+    with open("src/locale.lua") as f:
         for line in f.readlines():
-            if line.strip().startswith("L["):
+            if line.strip().startswith("L."):
                 m = re.match(LOCALE_ENTRY_PATTERN, line)
                 if m and m.group(1):
                     entries.append(m.group(1))
@@ -24,7 +24,7 @@ def getReferences():
     references = {}
 
     paths = ["Bindings.lua"]
-    paths.extend(str(p) for p in Path("src").rglob("*.lua"))
+    paths.extend(str(p) for p in Path("src").rglob("*.lua") if "locale" not in p.stem)
 
     for path in paths:
         with open(path) as f:
