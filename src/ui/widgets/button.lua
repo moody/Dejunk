@@ -35,19 +35,14 @@ function Widgets:Button(options)
 
   frame:SetScript("OnClick", options.onClick)
 
-  frame:SetScript("OnUpdate", function(self)
-    if GetMouseFocus() == self then
-      if IsMouseButtonDown("LeftButton") then
-        self:SetBackdropColor(Colors.DarkGrey:GetRGB())
-        self:SetBackdropBorderColor(Colors.White:GetRGB())
-      else
-        self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-        self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-      end
-    else
-      self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-      self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    end
+  frame:SetScript("OnEnter", function(self)
+    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
+    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
+  end)
+
+  frame:SetScript("OnLeave", function(self)
+    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
+    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
   end)
 
   return frame
