@@ -63,6 +63,20 @@ do -- Colors.
   end
 end
 
+do -- Sounds.
+  Addon.Sounds = {}
+
+  local sounds = {
+    Click = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON,
+    WindowOpened = SOUNDKIT.IG_CHARACTER_INFO_TAB,
+    WindowClosed = SOUNDKIT.IG_MAINMENU_CLOSE
+  }
+
+  for name, id in pairs(sounds) do
+    Addon.Sounds[name] = function() PlaySound(id) end
+  end
+end
+
 -- Events.
 Addon.Events = {}
 Addon.EventManager = {}

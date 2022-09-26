@@ -1,6 +1,7 @@
 local _, Addon = ...
 local Colors = Addon.Colors
 local GameTooltip = GameTooltip
+local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -133,6 +134,7 @@ function Widgets:OptionButton(options)
   end)
 
   frame:SetScript("OnClick", function(self)
+    Sounds.Click()
     options.set(not options.get())
   end)
 
