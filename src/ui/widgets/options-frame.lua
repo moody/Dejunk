@@ -4,7 +4,7 @@ local GameTooltip = GameTooltip
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
-  Creates a TitleFrame with the ability to add check button options.
+  Creates a TitleFrame with the ability to add boolean options.
 
   options = {
     name? = string,
@@ -16,6 +16,9 @@ local Widgets = Addon.UserInterface.Widgets
   }
 ]]
 function Widgets:OptionsFrame(options)
+  local BUTTONS_PER_ROW = 3
+  local SPACING = Widgets:Padding()
+
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
@@ -35,24 +38,17 @@ function Widgets:OptionsFrame(options)
     }
   ]]
   function frame:AddOption(options)
-    local CHECKBUTTONS_PER_ROW = 3
-    local SPACING = Widgets:Padding()
-
     -- Defaults.
     options.name = "$parent_CheckButton" .. #self.buttons + 1
     options.parent = self
-    options.width = math.floor(
-      (self:GetWidth() - (SPACING * 2) - (CHECKBUTTONS_PER_ROW - 1) * SPACING) / CHECKBUTTONS_PER_ROW
-    )
-    options.height = self.title:GetHeight() + Widgets:Padding()
 
-    -- Set `points` based on `#self.buttons` and `CHECKBUTTONS_PER_ROW`.
+    -- Set `points` based on `#self.buttons` and `BUTTONS_PER_ROW`.
     if #self.buttons == 0 then
       options.points = { { "TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING } }
     else
-      local row = #self.buttons / CHECKBUTTONS_PER_ROW
+      local row = #self.buttons / BUTTONS_PER_ROW
       if math.floor(row) == row then
-        local firstIndexOfPreviousRow = #self.buttons - (CHECKBUTTONS_PER_ROW - 1)
+        local firstIndexOfPreviousRow = #self.buttons - (BUTTONS_PER_ROW - 1)
         options.points = { { "TOPLEFT", self.buttons[firstIndexOfPreviousRow], "BOTTOMLEFT", 0, -SPACING } }
       else
         options.points = { { "TOPLEFT", self.buttons[#self.buttons], "TOPRIGHT", SPACING, 0 } }
@@ -62,6 +58,22 @@ function Widgets:OptionsFrame(options)
     -- Add button.
     self.buttons[#self.buttons + 1] = Widgets:OptionButton(options)
   end
+
+  frame:SetScript("OnUpdate", function(self)
+    -- Resize buttons.
+    local numColumns = math.ceil(#self.buttons / BUTTONS_PER_ROW)
+    local buttonAreaWidth = self:GetWidth() - (SPACING * 2)
+    local buttonAreaHeight = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+    local buttonSpacingHorizontal = (BUTTONS_PER_ROW - 1) * SPACING
+    local buttonSpacingVertical = (numColumns - 1) * SPACING
+
+    local buttonWidth = (buttonAreaWidth - buttonSpacingHorizontal) / BUTTONS_PER_ROW
+    local buttonHeight = (buttonAreaHeight - buttonSpacingVertical) / numColumns
+
+    for _, button in ipairs(self.buttons) do
+      button:SetSize(buttonWidth, buttonHeight)
+    end
+  end)
 
   return frame
 end
