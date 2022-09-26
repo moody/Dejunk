@@ -88,10 +88,10 @@ JunkFrame.frame = (function()
     if #self.items > 0 then
       -- Next item button.
       if MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items) then
-        self.nextItemButton:SetScript("OnClick", Commands.sell)
+        self.nextItemButton.onClick = Commands.sell
         self.nextItemButton.label:SetText(L.START_SELLING)
       else
-        self.nextItemButton:SetScript("OnClick", Commands.destroy)
+        self.nextItemButton.onClick = Commands.destroy
         self.nextItemButton.label:SetText(L.DESTROY_NEXT_ITEM)
       end
       self.nextItemButton:Show()
@@ -99,7 +99,7 @@ JunkFrame.frame = (function()
       self.itemsFrame:SetPoint("BOTTOMRIGHT", frame.nextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
     else
       -- Next item button.
-      self.nextItemButton:SetScript("OnClick", nil)
+      self.nextItemButton.onClick = nil
       self.nextItemButton:Hide()
       -- Items frame.
       self.itemsFrame:SetPoint("BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding())

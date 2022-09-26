@@ -7,6 +7,7 @@ local L = Addon.Locale
 local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
 local Seller = Addon.Seller
+local Sounds = Addon.Sounds
 
 -- ============================================================================
 -- Events
@@ -20,8 +21,8 @@ EventManager:On(E.Wow.MerchantShow, function()
     if savedVariables.autoRepair then
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
+        Sounds.Repair()
         RepairAllItems()
-        PlaySound(SOUNDKIT.ITEM_REPAIR)
         Addon:Print(L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(repairCost)))
       end
     end

@@ -68,6 +68,7 @@ do -- Sounds.
 
   local sounds = {
     Click = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON,
+    Repair = SOUNDKIT.ITEM_REPAIR,
     WindowOpened = SOUNDKIT.IG_CHARACTER_INFO_TAB,
     WindowClosed = SOUNDKIT.IG_MAINMENU_CLOSE
   }
