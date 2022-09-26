@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Colors = Addon.Colors
 local GameTooltip = GameTooltip
-local L = Addon.Locale
+local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -50,6 +50,7 @@ function Widgets:ItemsFrame(options)
 
   frame.titleButton:SetScript("OnClick", function(self, button)
     if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      Sounds.Click()
       options.removeAllItems()
     end
   end)
@@ -252,6 +253,7 @@ function Widgets:ItemButton(options)
 
   frame:SetScript("OnClick", function(self, button)
     if button == "RightButton" then
+      Sounds.Click()
       self:GetParent().options.removeItem(self.item.id)
     end
   end)

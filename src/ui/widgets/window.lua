@@ -1,5 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
+local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -26,6 +27,9 @@ function Widgets:Window(options)
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.titleBackground:Hide()
+
+  -- Add as special frame to be hidden on certain events.
+  table.insert(UISpecialFrames, frame:GetName())
 
   -- Make frame moveable.
   frame:SetFrameStrata("HIGH")
@@ -61,6 +65,9 @@ function Widgets:Window(options)
   end)
 
   frame.closeButton:SetScript("OnClick", function() frame:Hide() end)
+
+  frame:SetScript("OnShow", Sounds.WindowOpened)
+  frame:SetScript("OnHide", Sounds.WindowClosed)
 
   return frame
 end

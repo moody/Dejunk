@@ -7,6 +7,7 @@ local L = Addon.Locale
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
 local SavedVariables = Addon.SavedVariables
+local Sounds = Addon.Sounds
 
 EventManager:Once(E.SavedVariablesReady, function()
   local object = LDB:NewDataObject(ADDON_NAME, {
@@ -21,6 +22,7 @@ EventManager:Once(E.SavedVariablesReady, function()
 
       if button == "RightButton" then
         if IsShiftKeyDown() then
+          Sounds.Click()
           Commands.destroy()
         else
           Commands.junk()

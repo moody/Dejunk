@@ -5,6 +5,7 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Locale
 local SavedVariables = Addon.SavedVariables
+local Sounds = Addon.Sounds
 
 EventManager:Once(E.SavedVariablesReady, function()
   local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
@@ -31,6 +32,7 @@ EventManager:Once(E.SavedVariablesReady, function()
 
   frame:HookScript("OnClick", function(self, button)
     if button == "LeftButton" then
+      Sounds.Click()
       Commands.sell()
     end
 
