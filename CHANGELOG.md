@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2022-09-26
+
+### Fixed
+
+- Fixed bug with the `/dejunk loot` command
+
 ## [1.0.1] - 2022-09-26
 
 ### Added
