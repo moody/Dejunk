@@ -92,7 +92,7 @@ do -- Commands.loot()
     for _, item in ipairs(items) do
       if item.lootable then
         hasLootables = true
-        UseContainerItem(item.Bag, item.Slot)
+        UseContainerItem(item.bag, item.slot)
       end
     end
 
