@@ -45,5 +45,6 @@ E.Wow = {
   MerchantClosed = "MERCHANT_CLOSED",
   MerchantShow = "MERCHANT_SHOW",
   PlayerLogin = "PLAYER_LOGIN",
+  PlayerLogout = "PLAYER_LOGOUT",
   UIErrorMessage = "UI_ERROR_MESSAGE"
 }

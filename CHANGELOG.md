@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- SavedVariables now populate/depopulate default values on login/logout
+
 ## [1.0.2] - 2022-09-26
 
 ### Fixed
