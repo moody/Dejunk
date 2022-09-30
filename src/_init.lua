@@ -88,8 +88,8 @@ Addon.SavedVariables = {}
 -- Commands.
 Addon.Commands = {}
 
--- Bags.
-Addon.Bags = {}
+-- Items.
+Addon.Items = {}
 
 -- Lists.
 Addon.Lists = {

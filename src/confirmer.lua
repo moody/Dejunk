@@ -1,7 +1,7 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local Items = Addon.Items
 local L = Addon.Locale
 
 local soldItems = {}
@@ -63,7 +63,7 @@ end
 C_Timer.NewTicker(0, function()
   -- Confirm sold items.
   for item in pairs(soldItems) do
-    if not Bags:IsItemStillInBags(item) then
+    if not Items:IsItemStillInBags(item) then
       soldItems[item] = nil
       Addon:Print(L.SOLD_ITEM:format(getLink(item)))
     end
@@ -71,7 +71,7 @@ C_Timer.NewTicker(0, function()
 
   -- Confirm destroyed items.
   for item in pairs(destroyedItems) do
-    if not Bags:IsItemStillInBags(item) then
+    if not Items:IsItemStillInBags(item) then
       destroyedItems[item] = nil
       Addon:Print(L.DESTROYED_ITEM:format(getLink(item)))
     end

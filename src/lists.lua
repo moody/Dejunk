@@ -1,10 +1,10 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local GetItemInfo = GetItemInfo
 local GetItemInfoInstant = GetItemInfoInstant
+local Items = Addon.Items
 local L = Addon.Locale
 local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
@@ -107,7 +107,7 @@ function Mixins:Parse()
       local item = getItemById(itemId)
       if item then
         -- Only add item if it can be sold or destroyed.
-        if Bags:IsItemSellable(item) or Bags:IsItemDestroyable(item) then
+        if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
           if not self.sv[itemId] then
             Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, self.name))
           end

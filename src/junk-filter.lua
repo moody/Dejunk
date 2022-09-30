@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
+local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
 local Lists = Addon.Lists
@@ -22,7 +22,7 @@ end
 
 
 local function getJunkItems(filterFunc, items)
-  items = Bags:GetItems(items)
+  items = Items:GetItems(items)
 
   for i = #items, 1, -1 do
     local item = items[i]
@@ -55,27 +55,27 @@ function JunkFilter:GetJunkItems(items)
 end
 
 function JunkFilter:IsSellableJunkItem(item)
-  if not Bags:IsItemSellable(item) then return false end
+  if not Items:IsItemSellable(item) then return false end
   return self:IsJunkItem(item)
 end
 
 function JunkFilter:IsDestroyableJunkItem(item)
-  if not Bags:IsItemDestroyable(item) then return false end
+  if not Items:IsItemDestroyable(item) then return false end
   return self:IsJunkItem(item)
 end
 
 function JunkFilter:IsJunkItem(item)
   local savedVariables = SavedVariables:Get()
 
-  if not (Bags:IsItemSellable(item) or Bags:IsItemDestroyable(item)) then
+  if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
     return false
   end
 
-  if Bags:IsItemRefundable(item) then
+  if Items:IsItemRefundable(item) then
     return false, L.ITEM_IS_REFUNDABLE
   end
 
-  if Bags:IsItemLocked(item) then
+  if Items:IsItemLocked(item) then
     return false, L.ITEM_IS_LOCKED
   end
 

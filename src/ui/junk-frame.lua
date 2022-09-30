@@ -1,7 +1,7 @@
 local ADDON_NAME, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
 local Commands = Addon.Commands
+local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
@@ -49,7 +49,7 @@ end
 
 local function hasSellableItems(items)
   for _, item in ipairs(items) do
-    if Bags:IsItemSellable(item) then
+    if Items:IsItemSellable(item) then
       return true
     end
   end

@@ -1,10 +1,10 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local Items = Addon.Items
 
 -- Initialize cache table.
-Bags.cache = {}
+Items.cache = {}
 
 -- ============================================================================
 -- Local Functions
@@ -62,7 +62,7 @@ local function iterateBags()
 end
 
 local function updateCache()
-  for k in pairs(Bags.cache) do Bags.cache[k] = nil end
+  for k in pairs(Items.cache) do Items.cache[k] = nil end
 
   local allItemsCached = true
 
@@ -70,7 +70,7 @@ local function updateCache()
     if itemId then
       local item = getItem(bag, slot)
       if item then
-        Bags.cache[#Bags.cache + 1] = item
+        Items.cache[#Items.cache + 1] = item
       else
         allItemsCached = false
       end
@@ -110,7 +110,7 @@ end
 -- Bags
 -- ============================================================================
 
-function Bags:GetItem(bag, slot)
+function Items:GetItem(bag, slot)
   for _, item in pairs(self.cache) do
     if item.bag == bag and item.slot == slot then
       return item
@@ -118,7 +118,7 @@ function Bags:GetItem(bag, slot)
   end
 end
 
-function Bags:GetItems(items)
+function Items:GetItems(items)
   if type(items) ~= "table" then
     items = {}
   else
@@ -133,28 +133,28 @@ function Bags:GetItems(items)
   return items
 end
 
-function Bags:IsBagSlotEmpty(bag, slot)
+function Items:IsBagSlotEmpty(bag, slot)
   return GetContainerItemID(bag, slot) == nil
 end
 
-function Bags:IsItemStillInBags(item)
+function Items:IsItemStillInBags(item)
   local _, quantity, _, _, _, _, _, _, _, id = GetContainerItemInfo(item.bag, item.slot)
   return item.id == id and item.quantity == quantity
 end
 
-function Bags:IsItemLocked(item)
+function Items:IsItemLocked(item)
   local locked = select(3, GetContainerItemInfo(item.bag, item.slot))
   return locked
 end
 
-function Bags:IsItemSellable(item)
+function Items:IsItemSellable(item)
   return not item.noValue and
       item.price > 0 and
       item.quality >= Enum.ItemQuality.Poor and
       item.quality <= Enum.ItemQuality.Epic
 end
 
-function Bags:IsItemDestroyable(item)
+function Items:IsItemDestroyable(item)
   if Addon.IS_RETAIL and item.classId == Enum.ItemClass.Battlepet then
     return false
   end
@@ -163,7 +163,7 @@ function Bags:IsItemDestroyable(item)
       item.quality <= Enum.ItemQuality.Epic
 end
 
-function Bags:IsItemRefundable(item)
+function Items:IsItemRefundable(item)
   local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.bag, item.slot))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
