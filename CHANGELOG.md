@@ -5,6 +5,11 @@
 ### Changed
 
 - SavedVariables now populate/depopulate default values on login/logout
+- Made some minor UI modifications
+
+### Fixed
+
+- Fixed bug with initial slider values in the ItemsFrame
 
 ## [1.0.2] - 2022-09-26
 
