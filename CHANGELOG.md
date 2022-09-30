@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Option: `Include Unsuitable Equipment`
+
 ### Changed
 
 - SavedVariables now populate/depopulate default values on login/logout
