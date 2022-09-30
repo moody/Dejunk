@@ -23,6 +23,7 @@ local function globalDefaults()
     autoRepair = false,
     safeMode = false,
     includePoorItems = true,
+    includeUnsuitableEquipment = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
   }

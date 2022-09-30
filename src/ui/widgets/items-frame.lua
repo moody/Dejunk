@@ -28,7 +28,7 @@ function Widgets:ItemsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.numButtons = options.numButtons or 8
+  options.numButtons = options.numButtons or 7
 
   -- Base frame.
   local frame = self:TitleFrame(options)

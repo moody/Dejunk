@@ -49,7 +49,7 @@ UserInterface.frame = (function()
     parent = frame,
     points = {
       { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(11) }
+      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(10) }
     },
     titleText = L.OPTIONS_TEXT
   })
@@ -106,6 +106,12 @@ UserInterface.frame = (function()
     tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
     get = function() return SavedVariables:Get().includePoorItems end,
     set = function(value) SavedVariables:Get().includePoorItems = value end
+  })
+  frame.optionsFrame:AddOption({
+    labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
+    tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
+    get = function() return SavedVariables:Get().includeUnsuitableEquipment end,
+    set = function(value) SavedVariables:Get().includeUnsuitableEquipment = value end
   })
 
   -- Inclusions frame.

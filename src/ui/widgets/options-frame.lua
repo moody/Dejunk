@@ -17,7 +17,7 @@ local Widgets = Addon.UserInterface.Widgets
   }
 ]]
 function Widgets:OptionsFrame(options)
-  local BUTTONS_PER_ROW = 3
+  local BUTTONS_PER_ROW = 4
   local SPACING = Widgets:Padding()
 
   -- Defaults.

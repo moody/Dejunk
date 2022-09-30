@@ -67,29 +67,41 @@ end
 function JunkFilter:IsJunkItem(item)
   local savedVariables = SavedVariables:Get()
 
+  -- Check if item can be sold or destroyed.
   if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
     return false
   end
 
+  -- Refundable.
   if Items:IsItemRefundable(item) then
     return false, L.ITEM_IS_REFUNDABLE
   end
 
+  -- Locked.
   if Items:IsItemLocked(item) then
     return false, L.ITEM_IS_LOCKED
   end
 
+  -- Exclusions.
   if Lists.Exclusions:Contains(item.id) then
     return false, concat(L.LISTS, Lists.Exclusions.name)
   end
 
+  -- Inclusions.
   if Lists.Inclusions:Contains(item.id) then
     return true, concat(L.LISTS, Lists.Inclusions.name)
   end
 
+  -- Include poor items.
   if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
   end
 
+  -- Include unsuitable equipment.
+  if savedVariables.includeUnsuitableEquipment and Items:IsItemEquipment(item) and not Items:IsItemSuitable(item) then
+    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
+  end
+
+  -- No filters matched.
   return false, L.NO_FILTERS_MATCHED
 end
