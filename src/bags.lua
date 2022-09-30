@@ -16,9 +16,9 @@ local function getItem(bag, slot)
   if id == nil then return nil end
 
   -- GetItemInfo.
-  local name, _, _, _, _, _, _, _, _, _, price, classId = GetItemInfo(link)
+  local name, _, _, itemLevel, _, _, _, _, equipLoc, _, price, classId = GetItemInfo(link)
   if name == nil then
-    name, _, _, _, _, _, _, _, _, _, price, classId = GetItemInfo(id)
+    name, _, _, itemLevel, _, _, _, _, equipLoc, _, price, classId = GetItemInfo(id)
     if name == nil then return nil end
   end
 
@@ -26,6 +26,7 @@ local function getItem(bag, slot)
   return {
     bag = bag,
     slot = slot,
+    -- GetContainerItemInfo.
     texture = texture,
     quantity = quantity,
     quality = quality,
@@ -33,9 +34,14 @@ local function getItem(bag, slot)
     link = link,
     noValue = noValue,
     id = id,
+    -- GetItemInfo.
     name = name,
+    itemLevel = GetDetailedItemLevelInfo(link) or itemLevel,
     price = price,
-    classId = classId
+    classId = classId,
+    -- Other.
+    isBound = C_Item.IsBound(ItemLocation:CreateFromBagAndSlot(bag, slot)),
+    isEquippable = IsEquippableItem(link) and equipLoc ~= "INVTYPE_BAG"
   }
 end
 
@@ -166,4 +172,58 @@ end
 function Bags:IsItemRefundable(item)
   local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.bag, item.slot))
   return refundTimeRemaining and refundTimeRemaining > 0
+end
+
+do -- GetAverageItemLevel()
+  local slotIds = {
+    INVSLOT_HEAD,
+    INVSLOT_NECK,
+    INVSLOT_SHOULDER,
+    INVSLOT_BACK,
+    INVSLOT_CHEST,
+    -- INVSLOT_BODY,
+    -- INVSLOT_TABARD,
+    INVSLOT_WRIST,
+
+    INVSLOT_MAINHAND,
+    INVSLOT_OFFHAND,
+    -- INVSLOT_RANGED,
+    -- INVSLOT_AMMO,
+
+    INVSLOT_HAND,
+    INVSLOT_WAIST,
+    INVSLOT_LEGS,
+    INVSLOT_FEET,
+    INVSLOT_FINGER1,
+    INVSLOT_FINGER2,
+    INVSLOT_TRINKET1,
+    INVSLOT_TRINKET2,
+  }
+
+  if not Addon.IS_RETAIL then
+    -- slotIds[#slotIds + 1] = INVSLOT_AMMO
+    slotIds[#slotIds + 1] = INVSLOT_RANGED
+  end
+
+  function Bags:GetAverageEquippedItemLevel()
+    if Addon.IS_RETAIL then
+      local _, averageEquippedItemLevel = GetAverageItemLevel()
+      return averageEquippedItemLevel
+    end
+
+    local sumItemLevel = 0
+
+    -- Iterate all equipped items.
+    for _, slotId in pairs(slotIds) do
+      local link = GetInventoryItemLink("player", slotId)
+      if link then
+        local itemLevel = GetDetailedItemLevelInfo(link)
+        if itemLevel then
+          sumItemLevel = sumItemLevel + itemLevel
+        end
+      end
+    end
+
+    return math.floor(sumItemLevel / #slotIds)
+  end
 end

@@ -91,5 +91,12 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
   end
 
+  -- Include below average equipment.
+  if savedVariables.includeBelowAverageEquipment and item.isEquippable and item.isBound then
+    if item.itemLevel < Bags:GetAverageEquippedItemLevel() - 5 then
+      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
+    end
+  end
+
   return false, L.NO_FILTERS_MATCHED
 end
