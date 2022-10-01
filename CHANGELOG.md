@@ -4,6 +4,7 @@
 
 ### Added
 
+- Option: `Include Below Average Equipment`
 - Option: `Include Unsuitable Equipment`
 
 ### Changed
