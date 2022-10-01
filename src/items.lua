@@ -16,9 +16,9 @@ local function getItem(bag, slot)
   if id == nil then return nil end
 
   -- GetItemInfo.
-  local name, _, _, itemLevel, _, _, _, _, _, _, price, classId, subclassId = GetItemInfo(link)
+  local name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(link)
   if name == nil then
-    name, _, _, itemLevel, _, _, _, _, _, _, price, classId, subclassId = GetItemInfo(id)
+    name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(id)
     if name == nil then return nil end
   end
 
@@ -37,6 +37,7 @@ local function getItem(bag, slot)
     -- GetItemInfo.
     name = name,
     itemLevel = GetDetailedItemLevelInfo(link) or itemLevel,
+    invType = invType,
     price = price,
     classId = classId,
     subclassId = subclassId,
@@ -174,9 +175,30 @@ function Items:IsItemRefundable(item)
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 
-function Items:IsItemEquipment(item)
-  return IsEquippableItem(item.link) and
-      (item.classId == Enum.ItemClass.Armor or item.classId == Enum.ItemClass.Weapon)
+do -- Items:IsItemEquipment()
+  local invTypeExceptions = {
+    ["INVTYPE_FINGER"] = true,
+    ["INVTYPE_NECK"] = true,
+    ["INVTYPE_TRINKET"] = true,
+    ["INVTYPE_HOLDABLE"] = true
+  }
+
+  function Items:IsItemEquipment(item)
+    if not IsEquippableItem(item.link) then return false end
+
+    if item.classId == Enum.ItemClass.Armor then
+      if invTypeExceptions[item.invType] then return true end
+      return not (item.subclassId == Enum.ItemArmorSubclass.Generic or
+          item.subclassId == Enum.ItemArmorSubclass.Cosmetic)
+    end
+
+    if item.classId == Enum.ItemClass.Weapon then
+      return not (item.subclassId == Enum.ItemWeaponSubclass.Generic or
+          item.subclassId == Enum.ItemWeaponSubclass.Fishingpole)
+    end
+
+    return false
+  end
 end
 
 function Items:IsItemSuitable(item)
