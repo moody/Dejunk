@@ -330,6 +330,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
       suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
       suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
       suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
+      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Sigil] = true
     end
   end
 
