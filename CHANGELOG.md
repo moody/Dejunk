@@ -5,12 +5,14 @@
 ### Added
 
 - Option: `Include Unsuitable Equipment`
+- Command: `/dejunk keybinds`
 
 ### Changed
 
 - SavedVariables now populate/depopulate default values on login/logout
 - Made some minor UI modifications
 - Junk frame now displays individual item stack prices
+- Updated the options frame to have "Keybinds" button
 
 ### Fixed
 
