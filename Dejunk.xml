@@ -21,8 +21,8 @@
   <!-- Commands -->
   <Script file="src\commands.lua"/>
 
-  <!-- Bags -->
-  <Script file="src\bags.lua"/>
+  <!-- Items -->
+  <Script file="src\items.lua"/>
 
   <!-- Lists -->
   <Script file="src\lists.lua"/>

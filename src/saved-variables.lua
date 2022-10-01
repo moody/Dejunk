@@ -24,6 +24,7 @@ local function globalDefaults()
     safeMode = false,
     includePoorItems = true,
     includeBelowAverageEquipment = false,
+    includeUnsuitableEquipment = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
   }

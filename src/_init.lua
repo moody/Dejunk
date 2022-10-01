@@ -2,6 +2,9 @@ local ADDON_NAME, Addon = ...
 
 Addon.VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+Addon.IS_VANILLA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+Addon.IS_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 
 -- ============================================================================
 -- Tables
@@ -88,8 +91,8 @@ Addon.SavedVariables = {}
 -- Commands.
 Addon.Commands = {}
 
--- Bags.
-Addon.Bags = {}
+-- Items.
+Addon.Items = {}
 
 -- Lists.
 Addon.Lists = {

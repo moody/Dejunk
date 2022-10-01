@@ -1,10 +1,10 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
 local Commands = Addon.Commands
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local Items = Addon.Items
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
 local Seller = Addon.Seller
@@ -86,7 +86,7 @@ do -- Commands.loot()
       end
     end
 
-    local items = Bags:GetItems()
+    local items = Items:GetItems()
     local hasLootables = false
 
     for _, item in ipairs(items) do

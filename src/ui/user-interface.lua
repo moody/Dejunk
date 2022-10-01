@@ -113,6 +113,12 @@ UserInterface.frame = (function()
     get = function() return SavedVariables:Get().includeBelowAverageEquipment end,
     set = function(value) SavedVariables:Get().includeBelowAverageEquipment = value end
   })
+  frame.optionsFrame:AddOption({
+    labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
+    tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
+    get = function() return SavedVariables:Get().includeUnsuitableEquipment end,
+    set = function(value) SavedVariables:Get().includeUnsuitableEquipment = value end
+  })
 
   -- Inclusions frame.
   frame.inclusionsFrame = Widgets:ListFrame({

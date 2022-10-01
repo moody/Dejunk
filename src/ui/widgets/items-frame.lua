@@ -28,7 +28,7 @@ function Widgets:ItemsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.numButtons = options.numButtons or 8
+  options.numButtons = options.numButtons or 7
 
   -- Base frame.
   local frame = self:TitleFrame(options)
@@ -81,8 +81,8 @@ function Widgets:ItemsFrame(options)
   frame.slider:SetObeyStepOnDrag(true)
   frame.slider:SetOrientation("VERTICAL")
   frame.slider:SetValueStep(1)
-  frame.slider:SetMinMaxValues(1, 1)
-  frame.slider:SetValue(1)
+  frame.slider:SetMinMaxValues(0, 0)
+  frame.slider:SetValue(0)
 
   -- Slider thumb texture.
   frame.slider.texture = frame.slider:CreateTexture("$parent_Texture", "ARTWORK")
