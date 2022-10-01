@@ -11,6 +11,7 @@
 
 - SavedVariables now populate/depopulate default values on login/logout
 - Made some minor UI modifications
+- Junk frame now displays individual item stack prices
 
 ### Fixed
 
