@@ -43,6 +43,24 @@ UserInterface.frame = (function()
   frame.versionText:SetText(Colors.White(Addon.VERSION))
   frame.versionText:SetAlpha(0.5)
 
+  -- Keybinds button.
+  frame.keybindsButton = Widgets:Frame({
+    name = "$parent_KeybindsButton",
+    frameType = "Button",
+    parent = frame
+  })
+  frame.keybindsButton:SetBackdropColor(0, 0, 0, 0)
+  frame.keybindsButton:SetBackdropBorderColor(0, 0, 0, 0)
+  frame.keybindsButton:SetPoint("TOPRIGHT", frame.closeButton, "TOPLEFT", 0, 0)
+  frame.keybindsButton:SetPoint("BOTTOMRIGHT", frame.closeButton, "BOTTOMLEFT", 0, 0)
+  frame.keybindsButton.text = frame.keybindsButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
+  frame.keybindsButton.text:SetText(Colors.White(L.KEYBINDS))
+  frame.keybindsButton:SetFontString(frame.keybindsButton.text)
+  frame.keybindsButton:SetWidth(frame.keybindsButton.text:GetWidth() + Widgets:Padding(4))
+  frame.keybindsButton:SetScript("OnEnter", function(self) self:SetBackdropColor(Colors.Blue:GetRGBA(0.75)) end)
+  frame.keybindsButton:SetScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
+  frame.keybindsButton:SetScript("OnClick", Addon.Commands.keybinds)
+
   -- Options frame.
   frame.optionsFrame = Widgets:OptionsFrame({
     name = "$parent_OptionsFrame",
