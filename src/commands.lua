@@ -105,9 +105,9 @@ end
 
 function Commands.keybinds()
   if not KeyBindingFrame then KeyBindingFrame_LoadUI() end
+  CloseMenus()
+  CloseAllWindows()
   KeyBindingFrame:Show()
-  UserInterface:Hide()
-  JunkFrame:Hide()
 
   -- Navigate to Dejunk binding category.
   for _, button in ipairs(KeyBindingFrame.categoryList.buttons) do
