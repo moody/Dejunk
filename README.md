@@ -26,6 +26,9 @@ with the press of a button.
 # Display help commands.
 /dejunk
 
+# Open the key binding frame.
+/dejunk keybinds
+
 # Toggle the options frame.
 /dejunk options
 
