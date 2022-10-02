@@ -1,7 +1,7 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
 local Lists = Addon.Lists
@@ -68,8 +68,8 @@ local function handleNextItem()
   local item = table.remove(Seller.items)
   if not item then return Seller:Stop() end
 
-  if not Bags:IsItemStillInBags(item) then return end
-  if Bags:IsItemLocked(item) then return end
+  if not Items:IsItemStillInBags(item) then return end
+  if Items:IsItemLocked(item) then return end
 
   UseContainerItem(item.bag, item.slot)
   handleStaticPopup()

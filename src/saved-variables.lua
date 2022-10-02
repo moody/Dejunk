@@ -6,6 +6,10 @@ local E = Addon.Events
 local GLOBAL_SV = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
 local PERCHAR_SV = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
 
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
 local function globalDefaults()
   return {
     -- User interface.
@@ -19,6 +23,8 @@ local function globalDefaults()
     autoRepair = false,
     safeMode = false,
     includePoorItems = true,
+    includeBelowAverageEquipment = false,
+    includeUnsuitableEquipment = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
   }
@@ -30,9 +36,38 @@ local function perCharDefaults()
   return t
 end
 
+local function populate(t, defaults)
+  for k, v in pairs(defaults) do
+    if type(v) == "table" then
+      if type(t[k]) ~= "table" then t[k] = {} end
+      populate(t[k], v)
+    else
+      if type(t[k]) ~= type(v) then t[k] = v end
+    end
+  end
+end
+
+local function depopulate(t, defaults)
+  for k, v in pairs(t) do
+    if type(v) == "table" and type(defaults[k]) == "table" then
+      depopulate(v, defaults[k])
+      if next(v) == nil then t[k] = nil end
+    elseif defaults[k] == v then
+      t[k] = nil
+    end
+  end
+end
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+-- Initialize.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  if not _G[GLOBAL_SV] then _G[GLOBAL_SV] = globalDefaults() end
-  if not _G[PERCHAR_SV] then _G[PERCHAR_SV] = perCharDefaults() end
+  if type(_G[GLOBAL_SV]) ~= "table" then _G[GLOBAL_SV] = {} end
+  if type(_G[PERCHAR_SV]) ~= "table" then _G[PERCHAR_SV] = {} end
+  populate(_G[GLOBAL_SV], globalDefaults())
+  populate(_G[PERCHAR_SV], perCharDefaults())
   local global = _G[GLOBAL_SV]
   local perChar = _G[PERCHAR_SV]
 
@@ -59,4 +94,10 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
   EventManager:Fire(E.SavedVariablesReady)
   EventManager:Fire(E.SavedVariablesSwitched)
+end)
+
+-- Deinitialize.
+EventManager:On(E.Wow.PlayerLogout, function()
+  depopulate(_G[GLOBAL_SV], globalDefaults())
+  depopulate(_G[PERCHAR_SV], perCharDefaults())
 end)

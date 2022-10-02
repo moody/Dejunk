@@ -14,6 +14,7 @@ local Widgets = Addon.UserInterface.Widgets
     width? = number,
     height? = number,
     numButtons? = number,
+    displayPrice? = boolean,
     titleText? = string,
     tooltipText = string,
     getItems = function() -> table[],
@@ -28,7 +29,7 @@ function Widgets:ItemsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.numButtons = options.numButtons or 8
+  options.numButtons = options.numButtons or 7
 
   -- Base frame.
   local frame = self:TitleFrame(options)
@@ -81,8 +82,8 @@ function Widgets:ItemsFrame(options)
   frame.slider:SetObeyStepOnDrag(true)
   frame.slider:SetOrientation("VERTICAL")
   frame.slider:SetValueStep(1)
-  frame.slider:SetMinMaxValues(1, 1)
-  frame.slider:SetValue(1)
+  frame.slider:SetMinMaxValues(0, 0)
+  frame.slider:SetValue(0)
 
   -- Slider thumb texture.
   frame.slider.texture = frame.slider:CreateTexture("$parent_Texture", "ARTWORK")
@@ -95,6 +96,7 @@ function Widgets:ItemsFrame(options)
     frame.buttons[#frame.buttons + 1] = self:ItemButton({
       name = "$parent_ItemButton" .. i,
       parent = frame,
+      displayPrice = options.displayPrice
     })
   end
 
@@ -177,7 +179,8 @@ end
     parent? = UIObject,
     points? = table[],
     width? = number,
-    height? = number
+    height? = number,
+    displayPrice? = boolean
   }
 ]]
 function Widgets:ItemButton(options)
@@ -201,6 +204,16 @@ function Widgets:ItemButton(options)
   frame.text:SetJustifyH("LEFT")
   frame.text:SetWordWrap(false)
 
+  -- Price text.
+  if options.displayPrice then
+    frame.price = frame:CreateFontString("$parent_Price", "ARTWORK", "GameFontNormal")
+    frame.price:SetPoint("RIGHT", frame, -self:Padding(0.5), 0)
+    frame.price:SetJustifyH("RIGHT")
+    frame.price:SetWordWrap(false)
+    -- Update item text point.
+    frame.text:SetPoint("RIGHT", frame.price, "LEFT", -self:Padding(0.5), 0)
+  end
+
   function frame:OnUpdate()
     if not self.item then return end
     -- Icon.
@@ -211,6 +224,10 @@ function Widgets:ItemButton(options)
     -- Text.
     local quantity = self.item.quantity or 1
     self.text:SetText(self.item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
+    -- Price.
+    if self.price then
+      self.price:SetText(Colors.White(GetCoinTextureString(self.item.price * quantity)))
+    end
   end
 
   function frame:SetItem(item)

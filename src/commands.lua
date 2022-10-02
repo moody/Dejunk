@@ -1,10 +1,10 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
 local Commands = Addon.Commands
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
+local Items = Addon.Items
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
 local Seller = Addon.Seller
@@ -37,6 +37,7 @@ end)
 function Commands.help()
   Addon:ForcePrint(L.COMMANDS .. ":")
   Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_HELP)
+  Addon:ForcePrint(Colors.Gold("  /dejunk keybinds"), "-", L.COMMAND_DESCRIPTION_KEYBINDS)
   Addon:ForcePrint(Colors.Gold("  /dejunk options"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
   Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
   Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
@@ -86,7 +87,7 @@ do -- Commands.loot()
       end
     end
 
-    local items = Bags:GetItems()
+    local items = Items:GetItems()
     local hasLootables = false
 
     for _, item in ipairs(items) do
@@ -98,6 +99,21 @@ do -- Commands.loot()
 
     if not hasLootables then
       Addon:Print(L.NO_LOOTABLE_ITEMS_TO_OPEN)
+    end
+  end
+end
+
+function Commands.keybinds()
+  if not KeyBindingFrame then KeyBindingFrame_LoadUI() end
+  CloseMenus()
+  CloseAllWindows()
+  KeyBindingFrame:Show()
+
+  -- Navigate to Dejunk binding category.
+  for _, button in ipairs(KeyBindingFrame.categoryList.buttons) do
+    local name = button.element and button.element.name
+    if name == BINDING_CATEGORY_DEJUNK then
+      return button:Click()
     end
   end
 end

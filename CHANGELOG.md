@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0] - 2022-10-02
+
+### Added
+
+- Option: `Include Below Average Equipment`
+- Option: `Include Unsuitable Equipment`
+- Command: `/dejunk keybinds`
+
+### Changed
+
+- SavedVariables now populate/depopulate default values on login/logout
+- Made some minor UI modifications
+- Junk frame now displays individual item stack prices
+- Updated the options frame to have "Keybinds" button
+
+### Fixed
+
+- Fixed bug with initial slider values in the ItemsFrame
+
 ## [1.0.2] - 2022-09-26
 
 ### Fixed

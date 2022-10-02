@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
+local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
 local Lists = Addon.Lists
@@ -22,7 +22,7 @@ end
 
 
 local function getJunkItems(filterFunc, items)
-  items = Bags:GetItems(items)
+  items = Items:GetItems(items)
 
   for i = #items, 1, -1 do
     local item = items[i]
@@ -55,41 +55,62 @@ function JunkFilter:GetJunkItems(items)
 end
 
 function JunkFilter:IsSellableJunkItem(item)
-  if not Bags:IsItemSellable(item) then return false end
+  if not Items:IsItemSellable(item) then return false end
   return self:IsJunkItem(item)
 end
 
 function JunkFilter:IsDestroyableJunkItem(item)
-  if not Bags:IsItemDestroyable(item) then return false end
+  if not Items:IsItemDestroyable(item) then return false end
   return self:IsJunkItem(item)
 end
 
 function JunkFilter:IsJunkItem(item)
   local savedVariables = SavedVariables:Get()
 
-  if not (Bags:IsItemSellable(item) or Bags:IsItemDestroyable(item)) then
+  -- Check if item can be sold or destroyed.
+  if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
     return false
   end
 
-  if Bags:IsItemRefundable(item) then
+  -- Refundable.
+  if Items:IsItemRefundable(item) then
     return false, L.ITEM_IS_REFUNDABLE
   end
 
-  if Bags:IsItemLocked(item) then
+  -- Locked.
+  if Items:IsItemLocked(item) then
     return false, L.ITEM_IS_LOCKED
   end
 
+  -- Exclusions.
   if Lists.Exclusions:Contains(item.id) then
     return false, concat(L.LISTS, Lists.Exclusions.name)
   end
 
+  -- Inclusions.
   if Lists.Inclusions:Contains(item.id) then
     return true, concat(L.LISTS, Lists.Inclusions.name)
   end
 
+  -- Include poor items.
   if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
   end
 
+  -- Soulbound equipment filters.
+  if item.isBound and Items:IsItemEquipment(item) then
+    -- Include below average equipment.
+    if savedVariables.includeBelowAverageEquipment then
+      if item.itemLevel < Items:GetAverageEquippedItemLevel() - 15 then
+        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
+      end
+    end
+    -- Include unsuitable equipment.
+    if savedVariables.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
+      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
+    end
+  end
+
+  -- No filters matched.
   return false, L.NO_FILTERS_MATCHED
 end

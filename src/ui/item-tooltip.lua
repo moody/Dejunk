@@ -1,14 +1,14 @@
 local AddonName, Addon = ...
-local Bags = Addon.Bags
 local Colors = Addon.Colors
+local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
 local SavedVariables = Addon.SavedVariables
 
 hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
-  if not SavedVariables:Get().itemTooltips or Bags:IsBagSlotEmpty(bag, slot) then return end
+  if not SavedVariables:Get().itemTooltips or Items:IsBagSlotEmpty(bag, slot) then return end
 
-  local item = Bags:GetItem(bag, slot)
+  local item = Items:GetItem(bag, slot)
   if not item then return end
 
   local isJunk, reason = JunkFilter:IsJunkItem(item)
