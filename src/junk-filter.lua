@@ -101,7 +101,7 @@ function JunkFilter:IsJunkItem(item)
   if item.isBound and Items:IsItemEquipment(item) then
     -- Include below average equipment.
     if savedVariables.includeBelowAverageEquipment then
-      if item.itemLevel < Items:GetAverageEquippedItemLevel() - 10 then
+      if item.itemLevel < Items:GetAverageEquippedItemLevel() - 15 then
         return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
       end
     end
