@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Option: `Auto Junk Frame`
+
 ## [1.1.0] - 2022-10-02
 
 ### Added
