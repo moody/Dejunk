@@ -6,6 +6,10 @@
 
 - Option: `Auto Junk Frame`
 
+### Changed
+
+- Updated the `/dejunk loot` command to close the loot frame when called
+
 ## [1.1.0] - 2022-10-02
 
 ### Added
