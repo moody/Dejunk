@@ -102,6 +102,12 @@ UserInterface.frame = (function()
     set = function(value) SavedVariables:Get().minimapIcon.hide = not value end
   })
   frame.optionsFrame:AddOption({
+    labelText = L.AUTO_JUNK_FRAME_TEXT,
+    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
+    get = function() return SavedVariables:Get().autoJunkFrame end,
+    set = function(value) SavedVariables:Get().autoJunkFrame = value end
+  })
+  frame.optionsFrame:AddOption({
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
     get = function() return SavedVariables:Get().autoRepair end,

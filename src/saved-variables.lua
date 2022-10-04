@@ -19,6 +19,7 @@ local function globalDefaults()
     minimapIcon = { hide = false },
 
     -- Junk.
+    autoJunkFrame = false,
     autoSell = false,
     autoRepair = false,
     safeMode = false,

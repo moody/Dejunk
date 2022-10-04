@@ -6,6 +6,8 @@ local L = Addon.Locale
 -- ============================================================================
 
 L.ALL_ITEMS_REMOVED_FROM_LIST = "Removed all items from %s."
+L.AUTO_JUNK_FRAME_TEXT = "Auto Junk Frame"
+L.AUTO_JUNK_FRAME_TOOLTIP = "Automatically toggle the Junk frame upon interacting with a merchant."
 L.AUTO_REPAIR_TEXT = "Auto Repair"
 L.AUTO_REPAIR_TOOLTIP = "Automatically repair upon interacting with a merchant."
 L.AUTO_SELL_TEXT = "Auto Sell"
