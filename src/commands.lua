@@ -87,6 +87,8 @@ do -- Commands.loot()
       end
     end
 
+    CloseLoot()
+
     local items = Items:GetItems()
     local hasLootables = false
 
