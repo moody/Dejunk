@@ -36,7 +36,7 @@ function Widgets:TitleFrame(options)
     points = { { "TOPLEFT" }, { "TOPRIGHT" } }
   })
   frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-  frame.titleButton:RegisterForClicks("RightButtonUp")
+  frame.titleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   frame.titleButton:SetScript("OnClick", options.onClick)
   frame.titleButton:EnableMouse(options.tooltipText ~= nil or options.onClick ~= nil)
 
