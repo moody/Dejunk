@@ -47,7 +47,7 @@ function Widgets:OptionsFrame(options)
 
     -- Set `points` based on `#self.buttons` and `BUTTONS_PER_ROW`.
     if #self.buttons == 0 then
-      options.points = { { "TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING } }
+      options.points = { { "TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING } }
     else
       local row = #self.buttons / BUTTONS_PER_ROW
       if math.floor(row) == row then
@@ -66,7 +66,7 @@ function Widgets:OptionsFrame(options)
     -- Resize buttons.
     local numColumns = math.ceil(#self.buttons / BUTTONS_PER_ROW)
     local buttonAreaWidth = self:GetWidth() - (SPACING * 2)
-    local buttonAreaHeight = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+    local buttonAreaHeight = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
     local buttonSpacingHorizontal = (BUTTONS_PER_ROW - 1) * SPACING
     local buttonSpacingVertical = (numColumns - 1) * SPACING
 

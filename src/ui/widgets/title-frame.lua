@@ -28,42 +28,42 @@ function Widgets:TitleFrame(options)
   -- Base frame.
   local frame = self:Frame(options)
 
-  -- Title background.
-  frame.titleBackground = self:Frame({
+  -- Title button.
+  frame.titleButton = self:Frame({
     name = "$parent_TitleBackground",
     frameType = "Button",
     parent = frame,
     points = { { "TOPLEFT" }, { "TOPRIGHT" } }
   })
-  frame.titleBackground:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-  frame.titleBackground:RegisterForClicks("RightButtonUp")
-  frame.titleBackground:SetScript("OnClick", options.onClick)
-  frame.titleBackground:EnableMouse(options.tooltipText ~= nil or options.onClick ~= nil)
+  frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+  frame.titleButton:RegisterForClicks("RightButtonUp")
+  frame.titleButton:SetScript("OnClick", options.onClick)
+  frame.titleButton:EnableMouse(options.tooltipText ~= nil or options.onClick ~= nil)
 
   -- Title text.
-  frame.title = frame.titleBackground:CreateFontString("$parent_Title", "ARTWORK", options.titleTemplate)
+  frame.title = frame.titleButton:CreateFontString("$parent_Title", "ARTWORK", options.titleTemplate)
   frame.title:SetText(Colors.White(options.titleText))
   frame.title:SetPoint("LEFT", self:Padding(), 0)
   frame.title:SetPoint("RIGHT", -self:Padding(), 0)
   frame.title:SetJustifyH(options.titleJustify)
 
-  frame.titleBackground:SetFontString(frame.title)
-  frame.titleBackground:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
+  frame.titleButton:SetFontString(frame.title)
+  frame.titleButton:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
 
   -- Tooltip text.
   if options.tooltipText then
-    function frame.titleBackground:UpdateTooltip()
+    function frame.titleButton:UpdateTooltip()
       GameTooltip:SetOwner(self, "ANCHOR_TOP")
       GameTooltip:SetText(options.titleText)
       GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
       GameTooltip:Show()
     end
 
-    frame.titleBackground:SetScript("OnEnter", function(self)
+    frame.titleButton:SetScript("OnEnter", function(self)
       self:UpdateTooltip()
     end)
 
-    frame.titleBackground:SetScript("OnLeave", function()
+    frame.titleButton:SetScript("OnLeave", function()
       GameTooltip:Hide()
     end)
   end

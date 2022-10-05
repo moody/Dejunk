@@ -28,7 +28,7 @@ function Widgets:Window(options)
 
   -- Base frame.
   local frame = self:TitleFrame(options)
-  frame.titleBackground:SetBackdrop(nil)
+  frame.titleButton:SetBackdrop(nil)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
@@ -46,12 +46,12 @@ function Widgets:Window(options)
   frame.closeButton = self:Frame({
     name = "$parent_CloseButton",
     frameType = "Button",
-    parent = frame.titleBackground
+    parent = frame.titleButton
   })
   frame.closeButton:SetBackdropColor(0, 0, 0, 0)
   frame.closeButton:SetBackdropBorderColor(0, 0, 0, 0)
-  frame.closeButton:SetPoint("TOPRIGHT", frame.titleBackground)
-  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+  frame.closeButton:SetPoint("TOPRIGHT", frame.titleButton)
+  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleButton)
 
   frame.closeButton.text = frame.closeButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
   frame.closeButton.text:SetText(Colors.White("X"))

@@ -48,7 +48,7 @@ function Widgets:ItemsFrame(options)
     frameType = "Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.titleBackground, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
       { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
     },
     width = 12
@@ -114,7 +114,7 @@ function Widgets:ItemsFrame(options)
 
       -- Points.
       if i == 1 then
-        button:SetPoint("TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING)
+        button:SetPoint("TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING)
         button:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
       else
         button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -SPACING)
@@ -122,7 +122,7 @@ function Widgets:ItemsFrame(options)
       end
 
       -- Height.
-      local buttonArea = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+      local buttonArea = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
       local buttonSpacing = (options.numButtons - 1) * SPACING
       button:SetHeight((buttonArea - buttonSpacing) / options.numButtons)
     end
@@ -132,7 +132,7 @@ function Widgets:ItemsFrame(options)
     self.slider:SetMinMaxValues(0, maxVal)
     if maxVal == 0 then
       self.slider:Hide()
-      self.buttons[1]:SetPoint("TOPRIGHT", self.titleBackground, "BOTTOMRIGHT", -SPACING, -SPACING)
+      self.buttons[1]:SetPoint("TOPRIGHT", self.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING)
     else
       self.slider:Show()
       self.buttons[1]:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
