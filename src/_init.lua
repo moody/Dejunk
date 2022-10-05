@@ -109,6 +109,9 @@ Addon.Seller = {}
 -- Destroyer.
 Addon.Destroyer = {}
 
+-- Confirmer.
+Addon.Confirmer = {}
+
 -- UserInterface.
 Addon.UserInterface = {
   JunkFrame = {},
@@ -122,6 +125,7 @@ Addon.UserInterface = {
 function Addon:IsBusy()
   if self.Seller:IsBusy() then return true, self.Locale.IS_BUSY_SELLING_ITEMS end
   if self.Lists:IsBusy() then return true, self.Locale.IS_BUSY_UPDATING_LISTS end
+  if self.Confirmer:IsBusy() then return true, self.Locale.IS_BUSY_CONFIRMING_ITEMS end
   return false
 end
 

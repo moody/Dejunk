@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Confirmer = Addon.Confirmer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local Items = Addon.Items
@@ -77,3 +78,7 @@ C_Timer.NewTicker(0, function()
     end
   end
 end)
+
+function Confirmer:IsBusy()
+  return next(soldItems) ~= nil or next(destroyedItems) ~= nil
+end
