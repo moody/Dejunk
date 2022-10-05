@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Profit message after items are sold and confirmed
+
 ## [1.2.0] - 2022-10-04
 
 ### Added
