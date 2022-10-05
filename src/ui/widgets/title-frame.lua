@@ -13,34 +13,60 @@ local Widgets = Addon.UserInterface.Widgets
     height? = number,
     titleText? = string,
     titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
+    titleJustify? = "LEFT" | "RIGHT" | "CENTER",
+    tooltipText? = string,
+    onClick? = function(self, button) -> nil
   }
 ]]
 function Widgets:TitleFrame(options)
   -- Defaults.
   options.frameType = "Frame"
+  options.titleText = options.titleText or ADDON_NAME
+  options.titleJustify = options.titleJustify or "CENTER"
+  options.titleTemplate = options.titleTemplate or "GameFontNormal"
 
   -- Base frame.
   local frame = self:Frame(options)
 
-  -- Title text.
-  frame.title = frame:CreateFontString("$parent_Title", "ARTWORK", options.titleTemplate or "GameFontNormal")
-  frame.title:SetText(Colors.White(options.titleText or ADDON_NAME))
-
-  if options.titleJustify == "LEFT" then
-    frame.title:SetPoint("TOPLEFT", self:Padding(), -self:Padding())
-  elseif options.titleJustify == "RIGHT" then
-    frame.title:SetPoint("TOPRIGHT", -self:Padding(), -self:Padding())
-  else
-    frame.title:SetPoint("TOP", 0, -self:Padding())
-  end
-
   -- Title background.
-  local titleHeight = max(frame.title:GetHeight(), frame.title:GetStringHeight()) + self:Padding(2)
-  frame.titleBackground = frame:CreateTexture("$parent_TitleBackground", "BACKGROUND", nil, 7)
-  frame.titleBackground:SetColorTexture(Colors.DarkGrey:GetRGBA(0.75))
-  frame.titleBackground:SetPoint("TOPLEFT")
-  frame.titleBackground:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, -titleHeight)
+  frame.titleBackground = self:Frame({
+    name = "$parent_TitleBackground",
+    frameType = "Button",
+    parent = frame,
+    points = { { "TOPLEFT" }, { "TOPRIGHT" } }
+  })
+  frame.titleBackground:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+  frame.titleBackground:RegisterForClicks("RightButtonUp")
+  frame.titleBackground:SetScript("OnClick", options.onClick)
+  frame.titleBackground:EnableMouse(options.tooltipText ~= nil or options.onClick ~= nil)
+
+  -- Title text.
+  frame.title = frame.titleBackground:CreateFontString("$parent_Title", "ARTWORK", options.titleTemplate)
+  frame.title:SetText(Colors.White(options.titleText))
+  frame.title:SetPoint("LEFT", self:Padding(), 0)
+  frame.title:SetPoint("RIGHT", -self:Padding(), 0)
+  frame.title:SetJustifyH(options.titleJustify)
+
+  frame.titleBackground:SetFontString(frame.title)
+  frame.titleBackground:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
+
+  -- Tooltip text.
+  if options.tooltipText then
+    function frame.titleBackground:UpdateTooltip()
+      GameTooltip:SetOwner(self, "ANCHOR_TOP")
+      GameTooltip:SetText(options.titleText)
+      GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
+      GameTooltip:Show()
+    end
+
+    frame.titleBackground:SetScript("OnEnter", function(self)
+      self:UpdateTooltip()
+    end)
+
+    frame.titleBackground:SetScript("OnLeave", function()
+      GameTooltip:Hide()
+    end)
+  end
 
   return frame
 end

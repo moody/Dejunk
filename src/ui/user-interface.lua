@@ -38,8 +38,8 @@ UserInterface.frame = (function()
   })
 
   -- Version text.
-  frame.versionText = frame:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
-  frame.versionText:SetPoint("TOP", frame, 0, -Widgets:Padding(1.5))
+  frame.versionText = frame.titleBackground:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
+  frame.versionText:SetPoint("CENTER")
   frame.versionText:SetText(Colors.White(Addon.VERSION))
   frame.versionText:SetAlpha(0.5)
 
@@ -47,7 +47,7 @@ UserInterface.frame = (function()
   frame.keybindsButton = Widgets:Frame({
     name = "$parent_KeybindsButton",
     frameType = "Button",
-    parent = frame
+    parent = frame.titleBackground
   })
   frame.keybindsButton:SetBackdropColor(0, 0, 0, 0)
   frame.keybindsButton:SetBackdropBorderColor(0, 0, 0, 0)

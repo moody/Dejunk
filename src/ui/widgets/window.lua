@@ -23,10 +23,12 @@ function Widgets:Window(options)
   options.titleText = options.titleText or ADDON_NAME
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
+  options.tooltipText = nil
+  options.onClick = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
-  frame.titleBackground:Hide()
+  frame.titleBackground:SetBackdrop(nil)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
@@ -44,7 +46,7 @@ function Widgets:Window(options)
   frame.closeButton = self:Frame({
     name = "$parent_CloseButton",
     frameType = "Button",
-    parent = frame
+    parent = frame.titleBackground
   })
   frame.closeButton:SetBackdropColor(0, 0, 0, 0)
   frame.closeButton:SetBackdropBorderColor(0, 0, 0, 0)

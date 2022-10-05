@@ -16,7 +16,7 @@ local Widgets = Addon.UserInterface.Widgets
     numButtons? = number,
     displayPrice? = boolean,
     titleText? = string,
-    tooltipText = string,
+    tooltipText? = string,
     getItems = function() -> table[],
     addItem = function(itemId: string) -> nil,
     removeItem = function(itemId: string) -> nil,
@@ -30,39 +30,17 @@ function Widgets:ItemsFrame(options)
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
   options.numButtons = options.numButtons or 7
+  options.onClick = function(_, button)
+    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      Sounds.Click()
+      options.removeAllItems()
+    end
+  end
 
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.options = options
   frame.buttons = {}
-
-  -- Title button.
-  frame.titleButton = CreateFrame("Button", "$parent_TitleButton", frame)
-  frame.titleButton:SetPoint("TOPLEFT", frame.titleBackground)
-  frame.titleButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
-  frame.titleButton:RegisterForClicks("RightButtonUp")
-
-  function frame.titleButton:UpdateTooltip()
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetText(options.titleText)
-    GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end
-
-  frame.titleButton:SetScript("OnClick", function(self, button)
-    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
-      Sounds.Click()
-      options.removeAllItems()
-    end
-  end)
-
-  frame.titleButton:SetScript("OnEnter", function(self)
-    self:UpdateTooltip()
-  end)
-
-  frame.titleButton:SetScript("OnLeave", function()
-    GameTooltip:Hide()
-  end)
 
   -- Slider.
   frame.slider = self:Frame({

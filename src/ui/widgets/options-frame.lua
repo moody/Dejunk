@@ -23,6 +23,8 @@ function Widgets:OptionsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
+  options.tooltipText = nil
+  options.onClick = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
