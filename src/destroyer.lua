@@ -4,24 +4,10 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
-local Lists = Addon.Lists
-local Seller = Addon.Seller
 
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
-
-local function canStartDestroying()
-  if Seller:IsBusy() then
-    return false, L.CANNOT_DESTROY_WHILE_SELLING
-  end
-
-  if Lists:IsBusy() then
-    return false, L.CANNOT_DESTROY_WHILE_LISTS_UPDATING
-  end
-
-  return true
-end
 
 -- Sorts items by most expensive to least expensive.
 local function sortByTotalPrice(a, b)
@@ -35,8 +21,8 @@ end
 -- ============================================================================
 
 function Destroyer:Start()
-  local canStart, reason = canStartDestroying()
-  if not canStart then return Addon:Print(reason) end
+  -- Don't start if busy.
+  if Addon:IsBusy() then return end
 
   -- Get items.
   local items = JunkFilter:GetDestroyableJunkItems()
