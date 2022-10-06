@@ -54,7 +54,7 @@ function Widgets:TitleFrame(options)
   if options.tooltipText then
     function frame.titleButton:UpdateTooltip()
       GameTooltip:SetOwner(self, "ANCHOR_TOP")
-      GameTooltip:SetText(options.titleText)
+      GameTooltip:SetText(options.titleText, 1, 1, 1)
       GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
       GameTooltip:Show()
     end
