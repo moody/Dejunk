@@ -11,15 +11,13 @@ local Widgets = Addon.UserInterface.Widgets
     width? = number,
     height? = number,
     titleText? = string,
+    titleTemplate? = string,
+    titleJustify? = "LEFT" | "RIGHT" | "CENTER",
     tooltipText? = string
   }
 ]]
 function Widgets:ScrollableTitleFrame(options)
   local SPACING = Widgets:Padding()
-
-  -- Defaults.
-  options.titleTemplate = nil
-  options.titleJustify = "CENTER"
 
   -- Base frame.
   local frame = Widgets:TitleFrame(options)
