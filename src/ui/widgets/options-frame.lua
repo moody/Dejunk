@@ -24,10 +24,10 @@ function Widgets:OptionsFrame(options)
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
   options.tooltipText = nil
-  options.onClick = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
+  frame.titleButton:EnableMouse(false)
   frame.buttons = {}
 
   --[[

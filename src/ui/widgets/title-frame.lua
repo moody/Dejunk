@@ -14,8 +14,7 @@ local Widgets = Addon.UserInterface.Widgets
     titleText? = string,
     titleTemplate? = string,
     titleJustify? = "LEFT" | "RIGHT" | "CENTER",
-    tooltipText? = string,
-    onClick? = function(self, button) -> nil
+    tooltipText? = string
   }
 ]]
 function Widgets:TitleFrame(options)
@@ -37,8 +36,6 @@ function Widgets:TitleFrame(options)
   })
   frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
   frame.titleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-  frame.titleButton:SetScript("OnClick", options.onClick)
-  frame.titleButton:EnableMouse(options.tooltipText ~= nil or options.onClick ~= nil)
 
   -- Title text.
   frame.title = frame.titleButton:CreateFontString("$parent_Title", "ARTWORK", options.titleTemplate)

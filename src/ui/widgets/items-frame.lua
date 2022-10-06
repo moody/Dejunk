@@ -30,17 +30,18 @@ function Widgets:ItemsFrame(options)
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
   options.numButtons = options.numButtons or 7
-  options.onClick = function(_, button)
-    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
-      Sounds.Click()
-      options.removeAllItems()
-    end
-  end
 
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.options = options
   frame.buttons = {}
+
+  frame.titleButton:SetScript("OnClick", function(_, button)
+    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      Sounds.Click()
+      options.removeAllItems()
+    end
+  end)
 
   -- Slider.
   frame.slider = self:Frame({

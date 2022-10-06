@@ -24,11 +24,11 @@ function Widgets:Window(options)
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
   options.tooltipText = nil
-  options.onClick = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.titleButton:SetBackdrop(nil)
+  frame.titleButton:EnableMouse(false)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
