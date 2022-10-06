@@ -44,31 +44,14 @@ function Widgets:ItemsFrame(options)
   end)
 
   -- Slider.
-  frame.slider = self:Frame({
+  frame.slider = self:Slider({
     name = "$parent_Slider",
-    frameType = "Slider",
     parent = frame,
     points = {
       { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
       { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
-    },
-    width = 12
+    }
   })
-
-  frame.slider:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-  frame.slider:SetBackdropBorderColor(Colors.DarkGrey:GetRGBA(0.5))
-
-  frame.slider:SetObeyStepOnDrag(true)
-  frame.slider:SetOrientation("VERTICAL")
-  frame.slider:SetValueStep(1)
-  frame.slider:SetMinMaxValues(0, 0)
-  frame.slider:SetValue(0)
-
-  -- Slider thumb texture.
-  frame.slider.texture = frame.slider:CreateTexture("$parent_Texture", "ARTWORK")
-  frame.slider.texture:SetColorTexture(Colors.White:GetRGBA(0.25))
-  frame.slider.texture:SetSize(frame.slider:GetWidth(), frame.slider:GetWidth() * 2)
-  frame.slider:SetThumbTexture(frame.slider.texture)
 
   -- Buttons.
   for i = 1, options.numButtons do
