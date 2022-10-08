@@ -35,6 +35,9 @@ with the press of a button.
 # Toggle the junk frame.
 /dejunk junk
 
+# Toggle the transport frame.
+/dejunk transport {inclusions|exclusions}
+
 # Start selling items.
 /dejunk sell
 
