@@ -1,4 +1,4 @@
-local ADDON_NAME, Addon = ...
+local _, Addon = ...
 local Colors = Addon.Colors
 local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
@@ -17,13 +17,12 @@ local Widgets = Addon.UserInterface.Widgets
 ]]
 function Widgets:Window(options)
   -- Defaults.
-  options.points = options.points or { { "CENTER" } }
-  options.width = options.width or 675
-  options.height = options.height or 500
-  options.titleText = options.titleText or ADDON_NAME
+  options.points = Addon:IfNil(options.points, { { "CENTER" } })
+  options.width = Addon:IfNil(options.width, 675)
+  options.height = Addon:IfNil(options.height, 500)
+  options.onUpdateTooltip = nil
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
-  options.tooltipText = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
