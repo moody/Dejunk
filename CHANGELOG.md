@@ -6,6 +6,10 @@
 
 - Profit message after items are sold and confirmed
 
+### Changed
+
+- Added an `onUpdateTooltip` option to `Widgets:Frame()` to allow for dynamic tooltips
+
 ## [1.2.0] - 2022-10-04
 
 ### Added
