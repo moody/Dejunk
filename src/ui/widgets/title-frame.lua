@@ -11,18 +11,21 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     titleText? = string,
     titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER",
-    tooltipText? = string
+    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
   }
 ]]
 function Widgets:TitleFrame(options)
   -- Defaults.
   options.frameType = "Frame"
-  options.titleText = options.titleText or ADDON_NAME
-  options.titleJustify = options.titleJustify or "CENTER"
-  options.titleTemplate = options.titleTemplate or "GameFontNormal"
+  options.titleText = Addon:IfNil(options.titleText, ADDON_NAME)
+  options.titleTemplate = Addon:IfNil(options.titleTemplate, "GameFontNormal")
+  options.titleJustify = Addon:IfNil(options.titleJustify, "CENTER")
+
+  local onUpdateTooltip = options.onUpdateTooltip
+  options.onUpdateTooltip = nil
 
   -- Base frame.
   local frame = self:Frame(options)
@@ -32,7 +35,8 @@ function Widgets:TitleFrame(options)
     name = "$parent_TitleBackground",
     frameType = "Button",
     parent = frame,
-    points = { { "TOPLEFT" }, { "TOPRIGHT" } }
+    points = { { "TOPLEFT" }, { "TOPRIGHT" } },
+    onUpdateTooltip = onUpdateTooltip
   })
   frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
   frame.titleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -46,24 +50,6 @@ function Widgets:TitleFrame(options)
 
   frame.titleButton:SetFontString(frame.title)
   frame.titleButton:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
-
-  -- Tooltip text.
-  if options.tooltipText then
-    function frame.titleButton:UpdateTooltip()
-      GameTooltip:SetOwner(self, "ANCHOR_TOP")
-      GameTooltip:SetText(options.titleText, 1, 1, 1)
-      GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
-      GameTooltip:Show()
-    end
-
-    frame.titleButton:SetScript("OnEnter", function(self)
-      self:UpdateTooltip()
-    end)
-
-    frame.titleButton:SetScript("OnLeave", function()
-      GameTooltip:Hide()
-    end)
-  end
 
   return frame
 end
