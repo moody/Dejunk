@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local GameTooltip = GameTooltip
 local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
@@ -21,9 +20,9 @@ function Widgets:OptionsFrame(options)
   local SPACING = Widgets:Padding()
 
   -- Defaults.
+  options.onUpdateTooltip = nil
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.tooltipText = nil
 
   -- Base frame.
   local frame = self:TitleFrame(options)
@@ -34,8 +33,9 @@ function Widgets:OptionsFrame(options)
     -- Adds an option button to the frame.
 
     options = {
+      onUpdateTooltip? = function(self, tooltip) -> nil,
       labelText = string,
-      tooltipText = string,
+      tooltipText? = string,
       get = function() -> boolean,
       set = function(value: boolean) -> nil
     }
@@ -89,9 +89,10 @@ end
     parent? = UIObject,
     points? = table[],
     width? = number,
-    height = number,
+    height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     labelText = string,
-    tooltipText = string,
+    tooltipText? = string,
     get = function() -> boolean,
     set = function(value: boolean) -> nil
   }
@@ -99,6 +100,13 @@ end
 function Widgets:OptionButton(options)
   -- Defaults.
   options.frameType = "Button"
+
+  if options.tooltipText then
+    options.onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(options.labelText)
+      tooltip:AddLine(options.tooltipText)
+    end
+  end
 
   -- Base frame.
   local frame = self:Frame(options)
@@ -112,27 +120,14 @@ function Widgets:OptionButton(options)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(), 0)
   frame.label:SetWordWrap(false)
 
-  function frame:UpdateTooltip()
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetText(options.labelText, 1, 1, 1)
-    GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end
-
-  frame:SetScript("OnEnter", function(self)
-    -- Add highlight.
+  frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-    -- Show tooltip.
-    self:UpdateTooltip()
   end)
 
-  frame:SetScript("OnLeave", function(self)
-    -- Remove highlight.
+  frame:HookScript("OnLeave", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    -- Hide tooltip.
-    GameTooltip:Hide()
   end)
 
   frame:SetScript("OnClick", function(self)
