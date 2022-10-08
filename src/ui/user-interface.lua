@@ -133,7 +133,11 @@ UserInterface.frame = (function()
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT,
-    tooltipText = L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TOOLTIP,
+    onUpdateTooltip = function(self, tooltip)
+      local itemLevel = Colors.White(Addon.Items:GetAverageEquippedItemLevel())
+      tooltip:SetText(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
+      tooltip:AddLine(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TOOLTIP:format(itemLevel))
+    end,
     get = function() return SavedVariables:Get().includeBelowAverageEquipment end,
     set = function(value) SavedVariables:Get().includeBelowAverageEquipment = value end
   })
