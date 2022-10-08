@@ -18,9 +18,10 @@ local Widgets = Addon.UserInterface.Widgets
 function Widgets:Slider(options)
   -- Defaults.
   options.frameType = "Slider"
-  options.width = options.width or 12
-  options.orientation = options.orientation or "VERTICAL"
-  options.valueStep = options.valueStep or 1
+  options.onUpdateTooltip = nil
+  options.width = Addon:IfNil(options.width, 12)
+  options.orientation = Addon:IfNil(options.orientation, "VERTICAL")
+  options.valueStep = Addon:IfNil(options.valueStep, 1)
 
   -- Base frame.
   local frame = self:Frame(options)
