@@ -10,17 +10,17 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     titleText? = string,
     titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER",
-    tooltipText? = string
+    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
   }
 ]]
 function Widgets:ScrollableTitleFrame(options)
-  local SPACING = Widgets:Padding()
+  local SPACING = self:Padding()
 
   -- Base frame.
-  local frame = Widgets:TitleFrame(options)
+  local frame = self:TitleFrame(options)
 
   -- Scroll frame.
   frame.scrollFrame = CreateFrame("ScrollFrame", "$parent_ScrollFrame", frame)
