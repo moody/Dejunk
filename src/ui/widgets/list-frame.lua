@@ -3,7 +3,7 @@ local L = Addon.Locale
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
-  Creates a fake scrolling frame for displaying list items.
+  Creates an ItemsFrame for displaying a list.
 
   options = {
     name? = string,
@@ -11,14 +11,18 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
-    titleText? = string,
-    tooltipText = string,
+    numButtons? = number,
+    displayPrice? = boolean,
+    titleText = string,
+    descriptionText = string,
     list = table
   }
 ]]
 function Widgets:ListFrame(options)
-  -- Defaults.
-  options.tooltipText = options.tooltipText .. "|n|n" .. L.LIST_FRAME_TOOLTIP
+  function options.onUpdateTooltip(self, tooltip)
+    tooltip:SetText(options.titleText)
+    tooltip:AddLine(options.descriptionText .. "|n|n" .. L.LIST_FRAME_TOOLTIP)
+  end
 
   function options.getItems()
     return options.list:GetItems()
