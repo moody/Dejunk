@@ -126,7 +126,7 @@ Addon.Tooltip = {
   SetText = function(_, text) GameTooltip:SetText(Addon.Colors.White(text)) end,
   AddLine = function(_, text) GameTooltip:AddLine(Addon.Colors.Gold(text), nil, nil, nil, true) end,
   AddDoubleLine = function(_, leftText, rightText)
-    GameTooltip:AddDoubleLine(Addon.Colors.Gold(leftText), Addon.Colors.White(rightText))
+    GameTooltip:AddDoubleLine(Addon.Colors.Yellow(leftText), Addon.Colors.White(rightText))
   end
 }
 
