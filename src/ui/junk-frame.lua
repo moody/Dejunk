@@ -137,7 +137,9 @@ JunkFrame.frame = (function()
     titleText = Colors.White(L.JUNK_ITEMS),
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.JUNK_ITEMS)
-      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name, Lists.Exclusions.name))
+      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name))
+      tooltip:AddLine(" ")
+      tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.Exclusions.name))
     end,
     getItems = function() return frame.items end,
     addItem = function(itemId) Lists.Inclusions:Add(itemId) end,

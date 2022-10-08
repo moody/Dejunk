@@ -5,6 +5,7 @@ local L = Addon.Locale
 -- English
 -- ============================================================================
 
+L.ADD_ALL_TO_LIST = "Add All to %s"
 L.ALL_ITEMS_REMOVED_FROM_LIST = "Removed all items from %s."
 L.AUTO_JUNK_FRAME_TEXT = "Auto Junk Frame"
 L.AUTO_JUNK_FRAME_TOOLTIP = "Automatically toggle the Junk frame upon interacting with a merchant."
@@ -60,7 +61,7 @@ L.ITEM_IS_NOT_JUNK = "This item is not junk."
 L.ITEM_IS_REFUNDABLE = "Item is refundable."
 L.ITEM_NOT_ON_LIST = "%s is not on %s."
 L.ITEM_REMOVED_FROM_LIST = "%s removed from %s."
-L.JUNK_FRAME_TOOLTIP = "Junk items you currently possess will be listed in this frame.|n|nTo add an item to %s, drop it into the frame below. To add an item to %s, highlight an entry and Right-Click.|n|nTo add all items to %s, hold Ctrl + Alt and Right-Click this title."
+L.JUNK_FRAME_TOOLTIP = "Junk items you currently possess will be listed in this frame.|n|nTo add an item to %s, drop it into the frame below. To add an item to %s, highlight an entry and Right-Click."
 L.JUNK_ITEMS = "Junk Items"
 L.KEYBINDS = "Keybinds"
 L.LEFT_CLICK = "Left-Click"
