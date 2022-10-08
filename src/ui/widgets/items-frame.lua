@@ -13,10 +13,10 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     numButtons? = number,
     displayPrice? = boolean,
     titleText? = string,
-    tooltipText? = string,
     getItems = function() -> table[],
     addItem = function(itemId: string) -> nil,
     removeItem = function(itemId: string) -> nil,
@@ -29,7 +29,7 @@ function Widgets:ItemsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.numButtons = options.numButtons or 7
+  options.numButtons = Addon:IfNil(options.numButtons, 7)
 
   -- Base frame.
   local frame = self:TitleFrame(options)
