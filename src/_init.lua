@@ -115,6 +115,7 @@ Addon.Confirmer = {}
 -- UserInterface.
 Addon.UserInterface = {
   JunkFrame = {},
+  TransportFrame = {},
   Widgets = {}
 }
 
