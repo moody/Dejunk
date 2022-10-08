@@ -21,7 +21,11 @@ local Widgets = Addon.UserInterface.Widgets
 function Widgets:ListFrame(options)
   function options.onUpdateTooltip(self, tooltip)
     tooltip:SetText(options.titleText)
-    tooltip:AddLine(options.descriptionText .. "|n|n" .. L.LIST_FRAME_TOOLTIP)
+    tooltip:AddLine(options.descriptionText)
+    tooltip:AddLine(" ")
+    tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.REMOVE_ALL_ITEMS)
   end
 
   function options.getItems()
