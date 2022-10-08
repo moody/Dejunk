@@ -153,7 +153,7 @@ UserInterface.frame = (function()
       { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Red(L.INCLUSIONS_TEXT),
-    tooltipText = L.INCLUSIONS_DESCRIPTION,
+    descriptionText = L.INCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Inclusions
   })
 
@@ -166,7 +166,7 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Green(L.EXCLUSIONS_TEXT),
-    tooltipText = L.EXCLUSIONS_DESCRIPTION,
+    descriptionText = L.EXCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Exclusions
   })
 
