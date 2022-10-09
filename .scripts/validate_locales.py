@@ -3,7 +3,7 @@ import re
 import sys
 
 
-LOCALE_ENTRY_PATTERN = re.compile(r"L\.([^\s|=]+)")
+LOCALE_ENTRY_PATTERN = re.compile(r"L\[\"(.+)\"\]")
 LOCALE_REFERENCE_PATTERN = re.compile(r"\b(L|Locale)\.(\w+)\b")
 
 
@@ -12,7 +12,7 @@ def getEntries():
 
     with open("src/locale.lua") as f:
         for line in f.readlines():
-            if line.strip().startswith("L."):
+            if line.strip().startswith("L["):
                 m = re.match(LOCALE_ENTRY_PATTERN, line)
                 if m and m.group(1):
                     entries.append(m.group(1))
