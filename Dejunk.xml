@@ -46,12 +46,16 @@
   <Script file="src\ui\widgets\items-frame.lua"/>
   <Script file="src\ui\widgets\list-frame.lua"/>
   <Script file="src\ui\widgets\options-frame.lua"/>
+  <Script file="src\ui\widgets\slider.lua"/>
   <Script file="src\ui\widgets\title-frame.lua"/>
+  <Script file="src\ui\widgets\text-frame.lua"/>
+  <Script file="src\ui\widgets\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\window.lua"/>
 
   <!-- UI -->
   <Script file="src\ui\user-interface.lua"/>
   <Script file="src\ui\junk-frame.lua"/>
+  <Script file="src\ui\transport-frame.lua"/>
   <Script file="src\ui\merchant-button.lua"/>
   <Script file="src\ui\minimap-icon.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>

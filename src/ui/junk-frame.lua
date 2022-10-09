@@ -132,10 +132,15 @@ JunkFrame.frame = (function()
   frame.itemsFrame = Widgets:ItemsFrame({
     name = "$parent_ItemsFrame",
     parent = frame,
-    points = { { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", Widgets:Padding(), 0 } },
+    points = { { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 } },
     displayPrice = true,
     titleText = Colors.White(L.JUNK_ITEMS),
-    tooltipText = L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name, Lists.Exclusions.name),
+    onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(L.JUNK_ITEMS)
+      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name))
+      tooltip:AddLine(" ")
+      tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.Exclusions.name))
+    end,
     getItems = function() return frame.items end,
     addItem = function(itemId) Lists.Inclusions:Add(itemId) end,
     removeItem = function(itemId) Lists.Exclusions:Add(itemId) end,

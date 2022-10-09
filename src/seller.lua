@@ -4,7 +4,6 @@ local EventManager = Addon.EventManager
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
-local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
 local Seller = Addon.Seller
 local Sounds = Addon.Sounds
@@ -77,31 +76,16 @@ local function handleNextItem()
   EventManager:Fire(E.AttemptedToSellItem, item)
 end
 
-local function canStartSelling()
-  if not (MerchantFrame and MerchantFrame:IsShown()) then
-    return false, L.CANNOT_SELL_WITHOUT_MERCHANT
-  end
-
-  if Seller:IsBusy() then
-    return false, L.SELLING_ALREADY_IN_PROGRESS
-  end
-
-  if Lists:IsBusy() then
-    return false, L.CANNOT_SELL_WHILE_LISTS_UPDATING
-  end
-
-  return true
-end
-
 -- ============================================================================
 -- Seller
 -- ============================================================================
 
 function Seller:Start(auto)
-  local canStart, reason = canStartSelling()
-  if not canStart then
-    if not auto then Addon:Print(reason) end
-    return
+  -- Don't start if busy.
+  if Addon:IsBusy() then return end
+  -- Don't start without merchant.
+  if not (MerchantFrame and MerchantFrame:IsShown()) then
+    return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
   -- Get filtered items.

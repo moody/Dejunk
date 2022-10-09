@@ -1,9 +1,11 @@
 local _, Addon = ...
 local L = Addon.Locale
+local Sounds = Addon.Sounds
+local TransportFrame = Addon.UserInterface.TransportFrame
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
-  Creates a fake scrolling frame for displaying list items.
+  Creates an ItemsFrame for displaying a list.
 
   options = {
     name? = string,
@@ -11,14 +13,23 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
-    titleText? = string,
-    tooltipText = string,
+    numButtons? = number,
+    displayPrice? = boolean,
+    titleText = string,
+    descriptionText = string,
     list = table
   }
 ]]
 function Widgets:ListFrame(options)
-  -- Defaults.
-  options.tooltipText = options.tooltipText .. "|n|n" .. L.LIST_FRAME_TOOLTIP
+  function options.onUpdateTooltip(self, tooltip)
+    tooltip:SetText(options.titleText)
+    tooltip:AddLine(options.descriptionText)
+    tooltip:AddLine(" ")
+    tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_TRANSPORT_FRAME)
+    tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.REMOVE_ALL_ITEMS)
+  end
 
   function options.getItems()
     return options.list:GetItems()
@@ -37,5 +48,14 @@ function Widgets:ListFrame(options)
   end
 
   -- Base frame.
-  return self:ItemsFrame(options)
+  local frame = self:ItemsFrame(options)
+
+  frame.titleButton:HookScript("OnClick", function(self, button)
+    if button == "LeftButton" then
+      Sounds.Click()
+      TransportFrame:Toggle(options.list)
+    end
+  end)
+
+  return frame
 end

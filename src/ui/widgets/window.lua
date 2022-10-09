@@ -1,4 +1,4 @@
-local ADDON_NAME, Addon = ...
+local _, Addon = ...
 local Colors = Addon.Colors
 local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
@@ -17,16 +17,17 @@ local Widgets = Addon.UserInterface.Widgets
 ]]
 function Widgets:Window(options)
   -- Defaults.
-  options.points = options.points or { { "CENTER" } }
-  options.width = options.width or 675
-  options.height = options.height or 500
-  options.titleText = options.titleText or ADDON_NAME
+  options.points = Addon:IfNil(options.points, { { "CENTER" } })
+  options.width = Addon:IfNil(options.width, 675)
+  options.height = Addon:IfNil(options.height, 500)
+  options.onUpdateTooltip = nil
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
 
   -- Base frame.
   local frame = self:TitleFrame(options)
-  frame.titleBackground:Hide()
+  frame.titleButton:SetBackdrop(nil)
+  frame.titleButton:EnableMouse(false)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
@@ -44,12 +45,12 @@ function Widgets:Window(options)
   frame.closeButton = self:Frame({
     name = "$parent_CloseButton",
     frameType = "Button",
-    parent = frame
+    parent = frame.titleButton
   })
   frame.closeButton:SetBackdropColor(0, 0, 0, 0)
   frame.closeButton:SetBackdropBorderColor(0, 0, 0, 0)
-  frame.closeButton:SetPoint("TOPRIGHT", frame.titleBackground)
-  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
+  frame.closeButton:SetPoint("TOPRIGHT", frame.titleButton)
+  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleButton)
 
   frame.closeButton.text = frame.closeButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
   frame.closeButton.text:SetText(Colors.White("X"))

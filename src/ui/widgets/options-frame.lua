@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local GameTooltip = GameTooltip
 local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
@@ -21,19 +20,22 @@ function Widgets:OptionsFrame(options)
   local SPACING = Widgets:Padding()
 
   -- Defaults.
+  options.onUpdateTooltip = nil
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
 
   -- Base frame.
   local frame = self:TitleFrame(options)
+  frame.titleButton:EnableMouse(false)
   frame.buttons = {}
 
   --[[
     -- Adds an option button to the frame.
 
     options = {
+      onUpdateTooltip? = function(self, tooltip) -> nil,
       labelText = string,
-      tooltipText = string,
+      tooltipText? = string,
       get = function() -> boolean,
       set = function(value: boolean) -> nil
     }
@@ -45,7 +47,7 @@ function Widgets:OptionsFrame(options)
 
     -- Set `points` based on `#self.buttons` and `BUTTONS_PER_ROW`.
     if #self.buttons == 0 then
-      options.points = { { "TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING } }
+      options.points = { { "TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING } }
     else
       local row = #self.buttons / BUTTONS_PER_ROW
       if math.floor(row) == row then
@@ -64,7 +66,7 @@ function Widgets:OptionsFrame(options)
     -- Resize buttons.
     local numColumns = math.ceil(#self.buttons / BUTTONS_PER_ROW)
     local buttonAreaWidth = self:GetWidth() - (SPACING * 2)
-    local buttonAreaHeight = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+    local buttonAreaHeight = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
     local buttonSpacingHorizontal = (BUTTONS_PER_ROW - 1) * SPACING
     local buttonSpacingVertical = (numColumns - 1) * SPACING
 
@@ -87,9 +89,10 @@ end
     parent? = UIObject,
     points? = table[],
     width? = number,
-    height = number,
+    height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     labelText = string,
-    tooltipText = string,
+    tooltipText? = string,
     get = function() -> boolean,
     set = function(value: boolean) -> nil
   }
@@ -97,6 +100,13 @@ end
 function Widgets:OptionButton(options)
   -- Defaults.
   options.frameType = "Button"
+
+  if options.tooltipText then
+    options.onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(options.labelText)
+      tooltip:AddLine(options.tooltipText)
+    end
+  end
 
   -- Base frame.
   local frame = self:Frame(options)
@@ -110,27 +120,14 @@ function Widgets:OptionButton(options)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(), 0)
   frame.label:SetWordWrap(false)
 
-  function frame:UpdateTooltip()
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetText(options.labelText, 1, 1, 1)
-    GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end
-
-  frame:SetScript("OnEnter", function(self)
-    -- Add highlight.
+  frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-    -- Show tooltip.
-    self:UpdateTooltip()
   end)
 
-  frame:SetScript("OnLeave", function(self)
-    -- Remove highlight.
+  frame:HookScript("OnLeave", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    -- Hide tooltip.
-    GameTooltip:Hide()
   end)
 
   frame:SetScript("OnClick", function(self)

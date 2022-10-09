@@ -38,8 +38,8 @@ UserInterface.frame = (function()
   })
 
   -- Version text.
-  frame.versionText = frame:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
-  frame.versionText:SetPoint("TOP", frame, 0, -Widgets:Padding(1.5))
+  frame.versionText = frame.titleButton:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
+  frame.versionText:SetPoint("CENTER")
   frame.versionText:SetText(Colors.White(Addon.VERSION))
   frame.versionText:SetAlpha(0.5)
 
@@ -47,7 +47,7 @@ UserInterface.frame = (function()
   frame.keybindsButton = Widgets:Frame({
     name = "$parent_KeybindsButton",
     frameType = "Button",
-    parent = frame
+    parent = frame.titleButton
   })
   frame.keybindsButton:SetBackdropColor(0, 0, 0, 0)
   frame.keybindsButton:SetBackdropBorderColor(0, 0, 0, 0)
@@ -66,7 +66,7 @@ UserInterface.frame = (function()
     name = "$parent_OptionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT", frame.titleBackground, "BOTTOMLEFT", Widgets:Padding(), 0 },
+      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
       { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(10) }
     },
     titleText = L.OPTIONS_TEXT
@@ -133,7 +133,11 @@ UserInterface.frame = (function()
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT,
-    tooltipText = L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TOOLTIP,
+    onUpdateTooltip = function(self, tooltip)
+      local itemLevel = Colors.White(Addon.Items:GetAverageEquippedItemLevel())
+      tooltip:SetText(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
+      tooltip:AddLine(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TOOLTIP:format(itemLevel))
+    end,
     get = function() return SavedVariables:Get().includeBelowAverageEquipment end,
     set = function(value) SavedVariables:Get().includeBelowAverageEquipment = value end
   })
@@ -153,7 +157,7 @@ UserInterface.frame = (function()
       { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Red(L.INCLUSIONS_TEXT),
-    tooltipText = L.INCLUSIONS_DESCRIPTION,
+    descriptionText = L.INCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Inclusions
   })
 
@@ -166,7 +170,7 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() }
     },
     titleText = Colors.Green(L.EXCLUSIONS_TEXT),
-    tooltipText = L.EXCLUSIONS_DESCRIPTION,
+    descriptionText = L.EXCLUSIONS_DESCRIPTION,
     list = Addon.Lists.Exclusions
   })
 

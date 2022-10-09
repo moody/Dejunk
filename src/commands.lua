@@ -7,7 +7,9 @@ local EventManager = Addon.EventManager
 local Items = Addon.Items
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
+local Lists = Addon.Lists
 local Seller = Addon.Seller
+local TransportFrame = Addon.UserInterface.TransportFrame
 local UserInterface = Addon.UserInterface
 
 -- ============================================================================
@@ -21,12 +23,12 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
     -- Split message into args.
     local args = {}
-    for arg in msg:gmatch("%S+") do args[#args + 1] = arg end
+    for arg in msg:gmatch("%S+") do args[#args + 1] = strlower(arg) end
 
     -- First arg is command name.
     local key = table.remove(args, 1)
     key = type(Commands[key]) == "function" and key or "help"
-    Commands[key]()
+    Commands[key](SafeUnpack(args))
   end
 end)
 
@@ -40,6 +42,12 @@ function Commands.help()
   Addon:ForcePrint(Colors.Gold("  /dejunk keybinds"), "-", L.COMMAND_DESCRIPTION_KEYBINDS)
   Addon:ForcePrint(Colors.Gold("  /dejunk options"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
   Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
+  Addon:ForcePrint(
+    Colors.Gold("  /dejunk transport"),
+    Colors.Grey(("{%s||%s}"):format(Colors.Gold("inclusions"), Colors.Gold("exclusions"))),
+    "-",
+    L.COMMAND_DESCRIPTION_TRANSPORT
+  )
   Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
   Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
   Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
@@ -119,3 +127,16 @@ function Commands.keybinds()
     end
   end
 end
+
+function Commands.transport(listName)
+  if listName == "inclusions" then
+    TransportFrame:Toggle(Lists.Inclusions)
+  elseif listName == "exclusions" then
+    TransportFrame:Toggle(Lists.Exclusions)
+  else
+    Commands.help()
+  end
+end
+
+Commands.import = Commands.transport
+Commands.export = Commands.transport

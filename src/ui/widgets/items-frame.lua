@@ -13,10 +13,10 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
     numButtons? = number,
     displayPrice? = boolean,
     titleText? = string,
-    tooltipText = string,
     getItems = function() -> table[],
     addItem = function(itemId: string) -> nil,
     removeItem = function(itemId: string) -> nil,
@@ -29,67 +29,29 @@ function Widgets:ItemsFrame(options)
   -- Defaults.
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
-  options.numButtons = options.numButtons or 7
+  options.numButtons = Addon:IfNil(options.numButtons, 7)
 
   -- Base frame.
   local frame = self:TitleFrame(options)
   frame.options = options
   frame.buttons = {}
 
-  -- Title button.
-  frame.titleButton = CreateFrame("Button", "$parent_TitleButton", frame)
-  frame.titleButton:SetPoint("TOPLEFT", frame.titleBackground)
-  frame.titleButton:SetPoint("BOTTOMRIGHT", frame.titleBackground)
-  frame.titleButton:RegisterForClicks("RightButtonUp")
-
-  function frame.titleButton:UpdateTooltip()
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetText(options.titleText)
-    GameTooltip:AddLine(options.tooltipText, 1, 0.82, 0, true)
-    GameTooltip:Show()
-  end
-
-  frame.titleButton:SetScript("OnClick", function(self, button)
+  frame.titleButton:SetScript("OnClick", function(_, button)
     if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
       Sounds.Click()
       options.removeAllItems()
     end
   end)
 
-  frame.titleButton:SetScript("OnEnter", function(self)
-    self:UpdateTooltip()
-  end)
-
-  frame.titleButton:SetScript("OnLeave", function()
-    GameTooltip:Hide()
-  end)
-
   -- Slider.
-  frame.slider = self:Frame({
+  frame.slider = self:Slider({
     name = "$parent_Slider",
-    frameType = "Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.titleBackground, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
       { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
-    },
-    width = 12
+    }
   })
-
-  frame.slider:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-  frame.slider:SetBackdropBorderColor(Colors.DarkGrey:GetRGBA(0.5))
-
-  frame.slider:SetObeyStepOnDrag(true)
-  frame.slider:SetOrientation("VERTICAL")
-  frame.slider:SetValueStep(1)
-  frame.slider:SetMinMaxValues(0, 0)
-  frame.slider:SetValue(0)
-
-  -- Slider thumb texture.
-  frame.slider.texture = frame.slider:CreateTexture("$parent_Texture", "ARTWORK")
-  frame.slider.texture:SetColorTexture(Colors.White:GetRGBA(0.25))
-  frame.slider.texture:SetSize(frame.slider:GetWidth(), frame.slider:GetWidth() * 2)
-  frame.slider:SetThumbTexture(frame.slider.texture)
 
   -- Buttons.
   for i = 1, options.numButtons do
@@ -136,7 +98,7 @@ function Widgets:ItemsFrame(options)
 
       -- Points.
       if i == 1 then
-        button:SetPoint("TOPLEFT", self.titleBackground, "BOTTOMLEFT", SPACING, -SPACING)
+        button:SetPoint("TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING)
         button:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
       else
         button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -SPACING)
@@ -144,7 +106,7 @@ function Widgets:ItemsFrame(options)
       end
 
       -- Height.
-      local buttonArea = self:GetHeight() - self.titleBackground:GetHeight() - (SPACING * 2)
+      local buttonArea = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
       local buttonSpacing = (options.numButtons - 1) * SPACING
       button:SetHeight((buttonArea - buttonSpacing) / options.numButtons)
     end
@@ -154,7 +116,7 @@ function Widgets:ItemsFrame(options)
     self.slider:SetMinMaxValues(0, maxVal)
     if maxVal == 0 then
       self.slider:Hide()
-      self.buttons[1]:SetPoint("TOPRIGHT", self.titleBackground, "BOTTOMRIGHT", -SPACING, -SPACING)
+      self.buttons[1]:SetPoint("TOPRIGHT", self.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING)
     else
       self.slider:Show()
       self.buttons[1]:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)

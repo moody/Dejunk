@@ -6,6 +6,7 @@ local EventManager = Addon.EventManager
 local L = Addon.Locale
 local SavedVariables = Addon.SavedVariables
 local Sounds = Addon.Sounds
+local Tooltip = Addon.Tooltip
 
 EventManager:Once(E.SavedVariablesReady, function()
   local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
@@ -46,15 +47,15 @@ EventManager:Once(E.SavedVariablesReady, function()
   end)
 
   frame:HookScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT")
-    GameTooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
-    GameTooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.START_SELLING))
-    GameTooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_JUNK_FRAME))
-    GameTooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, Colors.White(L.TOGGLE_OPTIONS_FRAME))
-    GameTooltip:Show()
+    Tooltip:SetOwner(self, "ANCHOR_TOPLEFT")
+    Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
+    Tooltip:AddDoubleLine(L.LEFT_CLICK, L.START_SELLING)
+    Tooltip:AddDoubleLine(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME)
+    Tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME)
+    Tooltip:Show()
   end)
 
   frame:HookScript("OnLeave", function()
-    GameTooltip:Hide()
+    Tooltip:Hide()
   end)
 end)

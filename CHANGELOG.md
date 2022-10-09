@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.0] - 2022-10-09
+
+### Added
+
+- Profit message after items are sold and confirmed
+- Transport frame, which allows importing and exporting item IDs for the Inclusions and Exclusions lists
+  - The frame can be opened via command or by clicking a list's title within the options frame
+- Command: `/dejunk transport {inclusions|exclusions}`
+
+### Changed
+
+- Added an `onUpdateTooltip` option to `Widgets:Frame()` to allow for dynamic tooltips
+- Modified the tooltip for the `Include Below Average Equipment` option to include the player's equipped item level
+
 ## [1.2.0] - 2022-10-04
 
 ### Added

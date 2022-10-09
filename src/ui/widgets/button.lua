@@ -19,7 +19,8 @@ local Sounds = Addon.Sounds
 function Widgets:Button(options)
   -- Defaults.
   options.frameType = "Button"
-  options.labelColor = options.labelColor or Colors.Gold
+  options.onUpdateTooltip = nil
+  options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
 
   -- Base frame.
   local frame = self:Frame(options)

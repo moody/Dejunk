@@ -1,15 +1,27 @@
 local _, Addon = ...
+local Confirmer = Addon.Confirmer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local Items = Addon.Items
 local L = Addon.Locale
 
+local profit = 0
+local profitReady = false
 local soldItems = {}
 local destroyedItems = {}
 
 -- ============================================================================
 -- Events
 -- ============================================================================
+
+EventManager:On(E.SellerStarted, function()
+  profit = 0
+  profitReady = false
+end)
+
+EventManager:On(E.SellerStopped, function()
+  profitReady = true
+end)
 
 EventManager:On(E.AttemptedToSellItem, function(item)
   soldItems[item] = true
@@ -65,7 +77,16 @@ C_Timer.NewTicker(0, function()
   for item in pairs(soldItems) do
     if not Items:IsItemStillInBags(item) then
       soldItems[item] = nil
+      profit = profit + item.price * item.quantity
       Addon:Print(L.SOLD_ITEM:format(getLink(item)))
+    end
+  end
+
+  -- Print profit.
+  if profitReady and next(soldItems) == nil then
+    profitReady = false
+    if profit > 0 then
+      Addon:Print(L.PROFIT:format(GetCoinTextureString(profit)))
     end
   end
 
@@ -77,3 +98,7 @@ C_Timer.NewTicker(0, function()
     end
   end
 end)
+
+function Confirmer:IsBusy()
+  return next(soldItems) ~= nil or next(destroyedItems) ~= nil
+end

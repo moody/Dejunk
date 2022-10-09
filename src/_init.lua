@@ -109,19 +109,41 @@ Addon.Seller = {}
 -- Destroyer.
 Addon.Destroyer = {}
 
+-- Confirmer.
+Addon.Confirmer = {}
+
 -- UserInterface.
 Addon.UserInterface = {
   JunkFrame = {},
+  TransportFrame = {},
   Widgets = {}
+}
+
+-- Tooltip.
+Addon.Tooltip = {
+  Show = function() GameTooltip:Show() end,
+  Hide = function() GameTooltip:Hide() end,
+  SetOwner = function(_, ...) GameTooltip:SetOwner(...) end,
+  SetText = function(_, text) GameTooltip:SetText(Addon.Colors.White(text)) end,
+  AddLine = function(_, text) GameTooltip:AddLine(Addon.Colors.Gold(text), nil, nil, nil, true) end,
+  AddDoubleLine = function(_, leftText, rightText)
+    GameTooltip:AddDoubleLine(Addon.Colors.Yellow(leftText), Addon.Colors.White(rightText))
+  end
 }
 
 -- ============================================================================
 -- Functions
 -- ============================================================================
 
+function Addon:IfNil(value, default)
+  if value == nil then return default end
+  return value
+end
+
 function Addon:IsBusy()
   if self.Seller:IsBusy() then return true, self.Locale.IS_BUSY_SELLING_ITEMS end
   if self.Lists:IsBusy() then return true, self.Locale.IS_BUSY_UPDATING_LISTS end
+  if self.Confirmer:IsBusy() then return true, self.Locale.IS_BUSY_CONFIRMING_ITEMS end
   return false
 end
 

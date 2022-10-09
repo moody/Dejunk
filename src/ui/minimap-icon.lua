@@ -31,10 +31,10 @@ EventManager:Once(E.SavedVariablesReady, function()
     end,
 
     OnTooltipShow = function(tooltip)
-      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Addon.VERSION)
-      tooltip:AddDoubleLine(L.LEFT_CLICK, Colors.White(L.TOGGLE_OPTIONS_FRAME))
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.White(L.TOGGLE_JUNK_FRAME))
-      tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, Colors.White(L.DESTROY_NEXT_ITEM))
+      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
+      tooltip:AddDoubleLine(Colors.Yellow(L.LEFT_CLICK), Colors.White(L.TOGGLE_OPTIONS_FRAME))
+      tooltip:AddDoubleLine(Colors.Yellow(L.RIGHT_CLICK), Colors.White(L.TOGGLE_JUNK_FRAME))
+      tooltip:AddDoubleLine(Colors.Yellow(L.SHIFT_RIGHT_CLICK), Colors.White(L.DESTROY_NEXT_ITEM))
     end
   })
   LDBIcon:Register(ADDON_NAME, object, SavedVariables:GetGlobal().minimapIcon)
