@@ -239,7 +239,7 @@ do -- Items:GetAverageEquippedItemLevel()
   function Items:GetAverageEquippedItemLevel()
     if Addon.IS_RETAIL then
       local _, averageEquippedItemLevel = GetAverageItemLevel()
-      return averageEquippedItemLevel
+      return math.floor(averageEquippedItemLevel)
     end
 
     local sumItemLevel = 0
