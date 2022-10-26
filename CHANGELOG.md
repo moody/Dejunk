@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Updated code for compatibility with Dragonflight
+- Modified the size and location of the Merchant Button (now appears at the bottom right corner)
+
+### Fixed
+
+- Static popup handling for tradeable items in Wrath
+
 ## [1.3.0] - 2022-10-09
 
 ### Added
