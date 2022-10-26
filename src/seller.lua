@@ -49,7 +49,7 @@ end)
 -- ============================================================================
 
 local function handleStaticPopup()
-  if not Addon.IS_RETAIL then return end
+  if Addon.IS_VANILLA then return end
 
   local popup
   for i = 1, STATICPOPUP_NUMDIALOGS do
