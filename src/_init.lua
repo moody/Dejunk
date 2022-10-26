@@ -91,6 +91,9 @@ Addon.SavedVariables = {}
 -- Commands.
 Addon.Commands = {}
 
+-- Container.
+Addon.Container = {}
+
 -- Items.
 Addon.Items = {}
 

@@ -21,6 +21,9 @@
   <!-- Commands -->
   <Script file="src\commands.lua"/>
 
+  <!-- Container -->
+  <Script file="src\container.lua"/>
+
   <!-- Items -->
   <Script file="src\items.lua"/>
 

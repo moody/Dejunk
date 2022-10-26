@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Container = Addon.Container
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local Items = Addon.Items
@@ -10,45 +11,60 @@ Items.cache = {}
 -- Local Functions
 -- ============================================================================
 
+local getContainerItem
+do
+  local t = {}
+
+  function getContainerItem(bag, slot)
+    local item = Container.GetContainerItemInfo(bag, slot)
+    if type(item) ~= "table" then return nil end
+
+    for k in pairs(t) do t[k] = nil end
+    for k in pairs(item) do
+      t[k] = item[k]
+      item[k] = nil
+    end
+
+    item.bag = bag
+    item.slot = slot
+    item.texture = t.iconFileID
+    item.quantity = t.stackCount
+    item.quality = t.quality
+    item.lootable = t.hasLoot
+    item.link = t.hyperlink
+    item.noValue = t.hasNoValue
+    item.id = t.itemID
+
+    return item
+  end
+end
+
 local function getItem(bag, slot)
-  -- GetContainerItemInfo.
-  local texture, quantity, _, quality, _, lootable, link, _, noValue, id = GetContainerItemInfo(bag, slot)
-  if id == nil then return nil end
+  local item = getContainerItem(bag, slot)
+  if item == nil then return nil end
 
   -- GetItemInfo.
-  local name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(link)
+  local name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
   if name == nil then
-    name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(id)
+    name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
     if name == nil then return nil end
   end
 
-  -- Build item.
-  return {
-    bag = bag,
-    slot = slot,
-    -- GetContainerItemInfo.
-    texture = texture,
-    quantity = quantity,
-    quality = quality,
-    lootable = lootable,
-    link = link,
-    noValue = noValue,
-    id = id,
-    -- GetItemInfo.
-    name = name,
-    itemLevel = GetDetailedItemLevelInfo(link) or itemLevel,
-    invType = invType,
-    price = price,
-    classId = classId,
-    subclassId = subclassId,
-    -- Other.
-    isBound = C_Item.IsBound(ItemLocation:CreateFromBagAndSlot(bag, slot))
-  }
+  item.name = name
+  item.itemLevel = GetDetailedItemLevelInfo(item.link) or itemLevel
+  item.invType = invType
+  item.price = price
+  item.classId = classId
+  item.subclassId = subclassId
+  item.location = ItemLocation:CreateFromBagAndSlot(bag, slot)
+  item.isBound = C_Item.IsBound(item.location)
+
+  return item
 end
 
 local function iterateBags()
   local bag, slot = BACKPACK_CONTAINER, 0
-  local numSlots = GetContainerNumSlots(bag)
+  local numSlots = Container.GetContainerNumSlots(bag)
 
   return function()
     slot = slot + 1
@@ -60,11 +76,11 @@ local function iterateBags()
       repeat
         bag = bag + 1
         if bag > NUM_BAG_SLOTS then return nil end
-        numSlots = GetContainerNumSlots(bag)
+        numSlots = Container.GetContainerNumSlots(bag)
       until numSlots > 0
     end
 
-    return bag, slot, GetContainerItemID(bag, slot)
+    return bag, slot, Container.GetContainerItemID(bag, slot)
   end
 end
 
@@ -141,17 +157,15 @@ function Items:GetItems(items)
 end
 
 function Items:IsBagSlotEmpty(bag, slot)
-  return GetContainerItemID(bag, slot) == nil
+  return Container.GetContainerItemID(bag, slot) == nil
 end
 
 function Items:IsItemStillInBags(item)
-  local _, quantity, _, _, _, _, _, _, _, id = GetContainerItemInfo(item.bag, item.slot)
-  return item.id == id and item.quantity == quantity
+  return item.id == Container.GetContainerItemID(item.bag, item.slot)
 end
 
 function Items:IsItemLocked(item)
-  local locked = select(3, GetContainerItemInfo(item.bag, item.slot))
-  return locked
+  return C_Item.IsLocked(item.location)
 end
 
 function Items:IsItemSellable(item)
@@ -171,7 +185,7 @@ function Items:IsItemDestroyable(item)
 end
 
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, GetContainerItemPurchaseInfo(item.bag, item.slot))
+  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 

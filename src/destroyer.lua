@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Container = Addon.Container
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
@@ -34,7 +35,7 @@ function Destroyer:Start()
 
   -- Delete item.
   ClearCursor()
-  PickupContainerItem(item.bag, item.slot)
+  Container.PickupContainerItem(item.bag, item.slot)
   DeleteCursorItem()
 
   EventManager:Fire(E.AttemptedToDestroyItem, item)

@@ -1,6 +1,7 @@
 local _, Addon = ...
 local Colors = Addon.Colors
 local Commands = Addon.Commands
+local Container = Addon.Container
 local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
@@ -103,7 +104,7 @@ do -- Commands.loot()
     for _, item in ipairs(items) do
       if item.lootable then
         hasLootables = true
-        UseContainerItem(item.bag, item.slot)
+        Container.UseContainerItem(item.bag, item.slot)
       end
     end
 
