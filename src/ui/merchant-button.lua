@@ -9,15 +9,12 @@ local Sounds = Addon.Sounds
 local Tooltip = Addon.Tooltip
 
 EventManager:Once(E.SavedVariablesReady, function()
-  local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "OptionsButtonTemplate")
+  local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "UIPanelButtonTemplate")
   frame:SetText(ADDON_NAME)
+  frame:SetWidth(frame:GetTextWidth() + 32)
+  frame:SetHeight(frame:GetTextHeight() + 12)
+  frame:SetPoint("TOPRIGHT", MerchantFrame, "BOTTOMRIGHT", 0, 0)
   frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-
-  if Addon.IS_RETAIL then
-    frame:SetPoint("TOPRIGHT", MerchantFrameLootFilter, "TOPLEFT", -4, 0)
-  else
-    frame:SetPoint("TOPLEFT", 60, -28)
-  end
 
   MerchantFrame:HookScript("OnUpdate", function()
     if SavedVariables:Get().merchantButton then
