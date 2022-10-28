@@ -16,13 +16,37 @@ local Widgets = Addon.UserInterface.Widgets
 -- ============================================================================
 
 do -- Auto Junk Frame.
-  EventManager:On(E.Wow.MerchantShow, function()
+  local function onShow()
     if SavedVariables:Get().autoJunkFrame then JunkFrame:Show() end
-  end)
+  end
 
-  EventManager:On(E.Wow.MerchantClosed, function()
+  local function onHide()
     if SavedVariables:Get().autoJunkFrame then JunkFrame:Hide() end
-  end)
+  end
+
+  -- Merchant.
+  EventManager:On(E.Wow.MerchantShow, onShow)
+  EventManager:On(E.Wow.MerchantClosed, onHide)
+
+  -- Bags.
+  local function onBag()
+    for i = 0, NUM_BAG_FRAMES do
+      if IsBagOpen(i) then return onShow() end
+    end
+
+    onHide()
+  end
+
+  hooksecurefunc("OpenBag", onBag)
+  hooksecurefunc("OpenAllBags", onBag)
+  hooksecurefunc("CloseBag", onBag)
+  hooksecurefunc("CloseAllBags", onBag)
+  hooksecurefunc("ToggleBag", onBag)
+  hooksecurefunc("ToggleAllBags", onBag)
+
+  hooksecurefunc("OpenBackpack", onBag)
+  hooksecurefunc("CloseBackpack", onBag)
+  hooksecurefunc("ToggleBackpack", onBag)
 end
 
 -- ============================================================================
