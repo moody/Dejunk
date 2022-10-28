@@ -216,6 +216,7 @@ do -- Items:IsItemEquipment()
 end
 
 function Items:IsItemSuitable(item)
+  if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
 end
 
