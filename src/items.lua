@@ -185,7 +185,7 @@ function Items:IsItemDestroyable(item)
 end
 
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot))
+  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 
