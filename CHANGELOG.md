@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Updated option `Auto Junk Frame` to also apply when opening/closing bags
+
 ## [1.3.1] - 2022-10-26
 
 ### Changed
