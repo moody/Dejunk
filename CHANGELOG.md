@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Updated code for compatibility with Dragonflight beta
+
 ## [1.3.1] - 2022-10-26
 
 ### Changed
