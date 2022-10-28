@@ -4,7 +4,12 @@
 
 ### Changed
 
+- Updated option `Auto Junk Frame` to also apply when opening/closing bags
 - Updated code for compatibility with Dragonflight beta
+
+### Fixed
+
+- Cloaks are no longer considered unsuitable equipment for non-cloth characters in Retail ([#143](https://github.com/moody/Dejunk/issues/143))
 
 ## [1.3.1] - 2022-10-26
 
