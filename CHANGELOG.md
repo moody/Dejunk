@@ -10,6 +10,7 @@
 ### Fixed
 
 - Cloaks are no longer considered unsuitable equipment for non-cloth characters in Retail ([#143](https://github.com/moody/Dejunk/issues/143))
+- The `/dejunk keybinds` command and UI button now navigate to the new Dragonflight keybinding UI ([#145](https://github.com/moody/Dejunk/issues/145))
 
 ## [1.3.1] - 2022-10-26
 
