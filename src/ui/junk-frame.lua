@@ -29,9 +29,13 @@ do -- Auto Junk Frame.
   EventManager:On(E.Wow.MerchantClosed, onHide)
 
   -- Bags.
-  local function onBag()
+  local function onBag(id)
+    if type(id) == "number" and IsBagOpen(id) then
+      return onShow()
+    end
+
     for i = 0, NUM_BAG_FRAMES do
-      if IsBagOpen(i) then return onShow() end
+      if IsBagOpen(i) then return end
     end
 
     onHide()
