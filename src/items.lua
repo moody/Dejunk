@@ -6,6 +6,7 @@ local Items = Addon.Items
 
 -- Initialize cache table.
 Items.cache = {}
+Items.location = ItemLocation:CreateEmpty()
 
 -- ============================================================================
 -- Local Functions
@@ -56,8 +57,6 @@ local function getItem(bag, slot)
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
-  item.location = ItemLocation:CreateFromBagAndSlot(bag, slot)
-  item.isBound = C_Item.IsBound(item.location)
 
   return item
 end
@@ -165,7 +164,13 @@ function Items:IsItemStillInBags(item)
 end
 
 function Items:IsItemLocked(item)
-  return C_Item.IsLocked(item.location)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  return C_Item.IsLocked(self.location)
+end
+
+function Items:IsItemBound(item)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  return C_Item.IsBound(self.location)
 end
 
 function Items:IsItemSellable(item)
