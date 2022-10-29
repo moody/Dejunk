@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Unified the functionality of the merchant and minimap buttons
 - Updated option `Auto Junk Frame` to also apply when opening/closing bags
 - Updated code for compatibility with Dragonflight beta
 
