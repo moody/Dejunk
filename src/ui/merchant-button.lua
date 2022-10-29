@@ -30,25 +30,21 @@ EventManager:Once(E.SavedVariablesReady, function()
 
   frame:HookScript("OnClick", function(self, button)
     if button == "LeftButton" then
-      Sounds.Click()
-      Commands.sell()
+      if IsShiftKeyDown() then Commands.sell() else Commands.junk() end
     end
 
     if button == "RightButton" then
-      if IsShiftKeyDown() then
-        Commands.options()
-      else
-        Commands.junk()
-      end
+      if IsShiftKeyDown() then Commands.destroy() else Commands.options() end
     end
   end)
 
   frame:HookScript("OnEnter", function(self)
     Tooltip:SetOwner(self, "ANCHOR_TOPLEFT")
     Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
-    Tooltip:AddDoubleLine(L.LEFT_CLICK, L.START_SELLING)
-    Tooltip:AddDoubleLine(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME)
-    Tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME)
+    Tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME)
+    Tooltip:AddDoubleLine(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME)
+    Tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.START_SELLING)
+    Tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.DESTROY_NEXT_ITEM)
     Tooltip:Show()
   end)
 

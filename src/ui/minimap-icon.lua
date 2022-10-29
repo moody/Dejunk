@@ -17,23 +17,19 @@ EventManager:Once(E.SavedVariablesReady, function()
 
     OnClick = function(_, button)
       if button == "LeftButton" then
-        Commands.options()
+        if IsShiftKeyDown() then Commands.sell() else Commands.junk() end
       end
 
       if button == "RightButton" then
-        if IsShiftKeyDown() then
-          Sounds.Click()
-          Commands.destroy()
-        else
-          Commands.junk()
-        end
+        if IsShiftKeyDown() then Commands.destroy() else Commands.options() end
       end
     end,
 
     OnTooltipShow = function(tooltip)
       tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
-      tooltip:AddDoubleLine(Colors.Yellow(L.LEFT_CLICK), Colors.White(L.TOGGLE_OPTIONS_FRAME))
-      tooltip:AddDoubleLine(Colors.Yellow(L.RIGHT_CLICK), Colors.White(L.TOGGLE_JUNK_FRAME))
+      tooltip:AddDoubleLine(Colors.Yellow(L.LEFT_CLICK), Colors.White(L.TOGGLE_JUNK_FRAME))
+      tooltip:AddDoubleLine(Colors.Yellow(L.RIGHT_CLICK), Colors.White(L.TOGGLE_OPTIONS_FRAME))
+      tooltip:AddDoubleLine(Colors.Yellow(L.SHIFT_LEFT_CLICK), Colors.White(L.START_SELLING))
       tooltip:AddDoubleLine(Colors.Yellow(L.SHIFT_RIGHT_CLICK), Colors.White(L.DESTROY_NEXT_ITEM))
     end
   })
