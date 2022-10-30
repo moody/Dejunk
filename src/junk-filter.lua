@@ -110,7 +110,12 @@ function JunkFilter:IsJunkItem(item)
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
     end
   end
-
+  
+  -- Include transmog known
+  if savedVariables.includeTransmogKnown and Items:PlayerHasTransmog(item)and Items:IsItemEquipment(item) then
+    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_TRANSMOG_KNOWN_TEXT)
+  end
+  
   -- No filters matched.
   return false, L.NO_FILTERS_MATCHED
 end
