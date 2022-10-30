@@ -115,16 +115,23 @@ do -- Commands.loot()
 end
 
 function Commands.keybinds()
-  if not KeyBindingFrame then KeyBindingFrame_LoadUI() end
   CloseMenus()
   CloseAllWindows()
-  KeyBindingFrame:Show()
 
-  -- Navigate to Dejunk binding category.
-  for _, button in ipairs(KeyBindingFrame.categoryList.buttons) do
-    local name = button.element and button.element.name
-    if name == BINDING_CATEGORY_DEJUNK then
-      return button:Click()
+  if Addon.IS_RETAIL then
+    -- Open the settings panel.
+    local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
+    SettingsPanel:OpenToCategory(keybindingsCategoryId)
+  else
+    -- Open the keybinding frame.
+    if not KeyBindingFrame then KeyBindingFrame_LoadUI() end
+    KeyBindingFrame:Show()
+    -- Navigate to Dejunk binding category.
+    for _, button in ipairs(KeyBindingFrame.categoryList.buttons) do
+      local name = button.element and button.element.name
+      if name == BINDING_CATEGORY_DEJUNK then
+        return button:Click()
+      end
     end
   end
 end

@@ -98,7 +98,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Soulbound equipment filters.
-  if item.isBound and Items:IsItemEquipment(item) then
+  if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
     -- Include below average equipment.
     if savedVariables.includeBelowAverageEquipment then
       if item.itemLevel < Items:GetAverageEquippedItemLevel() - 15 then

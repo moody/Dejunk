@@ -6,6 +6,7 @@ local Items = Addon.Items
 
 -- Initialize cache table.
 Items.cache = {}
+Items.location = ItemLocation:CreateEmpty()
 
 -- ============================================================================
 -- Local Functions
@@ -56,8 +57,6 @@ local function getItem(bag, slot)
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
-  item.location = ItemLocation:CreateFromBagAndSlot(bag, slot)
-  item.isBound = C_Item.IsBound(item.location)
 
   return item
 end
@@ -165,7 +164,17 @@ function Items:IsItemStillInBags(item)
 end
 
 function Items:IsItemLocked(item)
-  return C_Item.IsLocked(item.location)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  local success, isLocked = pcall(C_Item.IsLocked, self.location)
+  if success then return isLocked end
+  return true
+end
+
+function Items:IsItemBound(item)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  local success, isBound = pcall(C_Item.IsBound, self.location)
+  if success then return isBound end
+  return false
 end
 
 function Items:IsItemSellable(item)
@@ -185,7 +194,7 @@ function Items:IsItemDestroyable(item)
 end
 
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot))
+  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 
@@ -216,6 +225,7 @@ do -- Items:IsItemEquipment()
 end
 
 function Items:IsItemSuitable(item)
+  if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
 end
 
