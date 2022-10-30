@@ -147,7 +147,13 @@ UserInterface.frame = (function()
     get = function() return SavedVariables:Get().includeUnsuitableEquipment end,
     set = function(value) SavedVariables:Get().includeUnsuitableEquipment = value end
   })
-
+  frame.optionsFrame:AddOption({
+    labelText = L.INCLUDE_TRANSMOG_KNOWN_TEXT,
+    tooltipText = L.INCLUDE_TRANSMOG_KNOWN_TOOLTIP,
+    get = function() return SavedVariables:Get().includeTransmogKnown end,
+    set = function(value) SavedVariables:Get().includeTransmogKnown = value end
+  })
+    
   -- Inclusions frame.
   frame.inclusionsFrame = Widgets:ListFrame({
     name = "$parent_InclusionsFrame",
