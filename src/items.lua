@@ -165,12 +165,16 @@ end
 
 function Items:IsItemLocked(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
-  return C_Item.IsLocked(self.location)
+  local success, isLocked = pcall(C_Item.IsLocked, self.location)
+  if success then return isLocked end
+  return true
 end
 
 function Items:IsItemBound(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
-  return C_Item.IsBound(self.location)
+  local success, isBound = pcall(C_Item.IsBound, self.location)
+  if success then return isBound end
+  return false
 end
 
 function Items:IsItemSellable(item)
