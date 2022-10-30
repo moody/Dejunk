@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.3] - 2022-10-30
+
+### Fixed
+
+- Protected function errors in Retail ([#153](https://github.com/moody/Dejunk/issues/153))
+
 ## [1.3.2] - 2022-10-29
 
 ### Changed
