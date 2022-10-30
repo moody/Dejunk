@@ -41,16 +41,21 @@ do -- Auto Junk Frame.
     onHide()
   end
 
-  hooksecurefunc("OpenBag", onBag)
-  hooksecurefunc("OpenAllBags", onBag)
-  hooksecurefunc("CloseBag", onBag)
-  hooksecurefunc("CloseAllBags", onBag)
-  hooksecurefunc("ToggleBag", onBag)
-  hooksecurefunc("ToggleAllBags", onBag)
-
-  hooksecurefunc("OpenBackpack", onBag)
-  hooksecurefunc("CloseBackpack", onBag)
-  hooksecurefunc("ToggleBackpack", onBag)
+  if Addon.IS_RETAIL then
+    local callback = function(_, t) onBag(t:GetBagID()) end
+    EventRegistry:RegisterCallback("ContainerFrame.OpenBag", callback)
+    EventRegistry:RegisterCallback("ContainerFrame.CloseBag", callback)
+  else
+    hooksecurefunc("OpenBag", onBag)
+    hooksecurefunc("OpenAllBags", onBag)
+    hooksecurefunc("CloseBag", onBag)
+    hooksecurefunc("CloseAllBags", onBag)
+    hooksecurefunc("ToggleBag", onBag)
+    hooksecurefunc("ToggleAllBags", onBag)
+    hooksecurefunc("OpenBackpack", onBag)
+    hooksecurefunc("CloseBackpack", onBag)
+    hooksecurefunc("ToggleBackpack", onBag)
+  end
 end
 
 -- ============================================================================
