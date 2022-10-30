@@ -224,6 +224,11 @@ do -- Items:IsItemEquipment()
   end
 end
 
+function Items:PlayerHasTransmog(item)
+local itemID = item.id
+  return C_TransmogCollection.PlayerHasTransmog(itemID)
+end
+
 function Items:IsItemSuitable(item)
   if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
