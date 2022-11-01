@@ -1,6 +1,7 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local Commands = Addon.Commands
+local Destroyer = Addon.Destroyer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local Items = Addon.Items
@@ -9,6 +10,7 @@ local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon.Locale
 local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
+local Seller = Addon.Seller
 local Widgets = Addon.UserInterface.Widgets
 
 -- ============================================================================
@@ -170,13 +172,32 @@ JunkFrame.frame = (function()
     titleText = Colors.White(L.JUNK_ITEMS),
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.JUNK_ITEMS)
-      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name, Lists.Exclusions.name))
+      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name))
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.Exclusions.name))
     end,
+    itemButtonOnUpdateTooltip = function(self, tooltip)
+      tooltip:SetBagItem(self.item.bag, self.item.slot)
+      tooltip:AddLine(" ")
+      tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.DESTROY)
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.Exclusions.name))
+    end,
+    itemButtonOnClick = function(self, button)
+      if button == "LeftButton" then
+        if IsShiftKeyDown() then
+          Destroyer:HandleItem(self.item)
+        else
+          Seller:HandleItem(self.item)
+        end
+      end
+
+      if button == "RightButton" then
+        Lists.Exclusions:Add(self.item.id)
+      end
+    end,
     getItems = function() return frame.items end,
     addItem = function(itemId) Lists.Inclusions:Add(itemId) end,
-    removeItem = function(itemId) Lists.Exclusions:Add(itemId) end,
     removeAllItems = function()
       for _, item in pairs(frame.items) do
         Lists.Exclusions:Add(item.id)
