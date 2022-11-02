@@ -5,7 +5,6 @@ local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Locale
 local SavedVariables = Addon.SavedVariables
-local Sounds = Addon.Sounds
 local Tooltip = Addon.Tooltip
 
 EventManager:Once(E.SavedVariablesReady, function()

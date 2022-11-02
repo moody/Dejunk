@@ -1,6 +1,5 @@
 local _, Addon = ...
 local L = Addon.Locale
-local Sounds = Addon.Sounds
 local TransportFrame = Addon.UserInterface.TransportFrame
 local Widgets = Addon.UserInterface.Widgets
 
@@ -67,7 +66,6 @@ function Widgets:ListFrame(options)
 
   frame.titleButton:HookScript("OnClick", function(self, button)
     if button == "LeftButton" then
-      Sounds.Click()
       TransportFrame:Toggle(options.list)
     end
   end)

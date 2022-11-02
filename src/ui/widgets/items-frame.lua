@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -37,7 +36,6 @@ function Widgets:ItemsFrame(options)
 
   frame.titleButton:SetScript("OnClick", function(_, button)
     if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
-      Sounds.Click()
       options.removeAllItems()
     end
   end)

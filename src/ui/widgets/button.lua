@@ -1,7 +1,6 @@
 local _, Addon = ...
 local Widgets = Addon.UserInterface.Widgets
 local Colors = Addon.Colors
-local Sounds = Addon.Sounds
 
 --[[
   Creates a basic button.
@@ -39,10 +38,7 @@ function Widgets:Button(options)
 
   -- OnClick.
   frame:SetScript("OnClick", function(self, button)
-    if self.onClick then
-      Sounds.Click()
-      self.onClick(self, button)
-    end
+    if self.onClick then self.onClick(self, button) end
   end)
 
   -- OnEnter.
