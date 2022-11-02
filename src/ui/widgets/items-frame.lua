@@ -221,7 +221,7 @@ function Widgets:ItemButton(options)
       if button == "LeftButton" then
         self:GetParent():AddCursorItem()
       end
-    else
+    elseif options.onClick then
       options.onClick(self, button)
     end
   end)
