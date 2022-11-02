@@ -6,6 +6,10 @@
 
 - Additional tooltips and `OnClick` handling for List Frame and Junk Frame item buttons ([#144](https://github.com/moody/Dejunk/issues/144))
 
+### Changed
+
+- Removed sound effects
+
 ## [1.3.3] - 2022-10-30
 
 ### Fixed
