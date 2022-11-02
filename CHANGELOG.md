@@ -9,6 +9,7 @@
 ### Changed
 
 - Removed sound effects
+- Reverted change to Merchant Button point ([#155](https://github.com/moody/Dejunk/issues/155))
 
 ## [1.3.3] - 2022-10-30
 
