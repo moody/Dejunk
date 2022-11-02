@@ -12,7 +12,7 @@ EventManager:Once(E.SavedVariablesReady, function()
   frame:SetText(ADDON_NAME)
   frame:SetWidth(frame:GetTextWidth() + 32)
   frame:SetHeight(frame:GetTextHeight() + 12)
-  frame:SetPoint("TOPRIGHT", MerchantFrame, "BOTTOMRIGHT", 0, 0)
+  frame:SetPoint("TOPLEFT", 60, -28)
   frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
   MerchantFrame:HookScript("OnUpdate", function()
