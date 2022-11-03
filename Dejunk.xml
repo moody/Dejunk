@@ -62,6 +62,7 @@
   <Script file="src\ui\merchant-button.lua"/>
   <Script file="src\ui\minimap-icon.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>
+  <Script file="src\ui\popup.lua"/>
 
   <!-- Bindings -->
   <Script file="Bindings.lua"/>

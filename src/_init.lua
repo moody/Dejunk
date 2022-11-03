@@ -104,7 +104,8 @@ Addon.Confirmer = {}
 Addon.UserInterface = {
   JunkFrame = {},
   TransportFrame = {},
-  Widgets = {}
+  Widgets = {},
+  Popup = {}
 }
 
 do -- Tooltip.

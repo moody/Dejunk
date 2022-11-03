@@ -24,7 +24,7 @@ local function globalDefaults()
     autoRepair = false,
     safeMode = false,
     includePoorItems = true,
-    includeBelowAverageEquipment = false,
+    includeBelowItemLevel = { enabled = false, value = 0 },
     includeUnsuitableEquipment = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
