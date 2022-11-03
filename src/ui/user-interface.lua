@@ -67,7 +67,7 @@ UserInterface.frame = (function()
     parent = frame,
     points = {
       { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(10) }
+      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(8) }
     },
     titleText = L.OPTIONS_TEXT
   })
