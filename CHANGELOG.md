@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.0] - 2022-11-03
+
+### Added
+
+- Option: `Include Below Item Level`
+- Additional tooltips and `OnClick` handling for List Frame and Junk Frame item buttons ([#144](https://github.com/moody/Dejunk/issues/144))
+
+### Changed
+
+- Updated option buttons to contain a checkbox visual
+- Reverted change to Merchant Button point ([#155](https://github.com/moody/Dejunk/issues/155))
+
+### Removed
+
+- Option: `Include Below Average Equipment`
+- UI sound effects
+
 ## [1.3.3] - 2022-10-30
 
 ### Fixed

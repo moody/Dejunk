@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -113,12 +112,19 @@ function Widgets:OptionButton(options)
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
+  -- Check box.
+  frame.checkBox = self:Frame({
+    name = "$parent_CheckBox",
+    parent = frame
+  })
+
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
-  frame.label:SetPoint("LEFT", frame, self:Padding(), 0)
+  frame.label:SetPoint("LEFT", frame.checkBox, "RIGHT", self:Padding(0.5), 0)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(), 0)
   frame.label:SetWordWrap(false)
+  frame.label:SetJustifyH("LEFT")
 
   frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
@@ -131,12 +137,22 @@ function Widgets:OptionButton(options)
   end)
 
   frame:SetScript("OnClick", function(self)
-    Sounds.Click()
     options.set(not options.get())
   end)
 
   frame:SetScript("OnUpdate", function(self)
-    self:SetAlpha(options.get() and 1 or 0.3)
+    -- Check box.
+    local size = self.label:GetStringHeight()
+    self.checkBox:SetSize(size, size)
+    self.checkBox:SetPoint("LEFT", Widgets:Padding(), 0)
+
+    if options.get() then
+      self.checkBox:SetBackdropColor(Colors.Yellow:GetRGBA(0.5))
+      self.checkBox:SetBackdropBorderColor(Colors.Yellow:GetRGB())
+    else
+      self.checkBox:SetBackdropColor(0, 0, 0, 0)
+      self.checkBox:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+    end
   end)
 
   return frame

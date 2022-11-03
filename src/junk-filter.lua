@@ -99,10 +99,12 @@ function JunkFilter:IsJunkItem(item)
 
   -- Soulbound equipment filters.
   if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
-    -- Include below average equipment.
-    if savedVariables.includeBelowAverageEquipment then
-      if item.itemLevel < Items:GetAverageEquippedItemLevel() - 15 then
-        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
+    -- Include below item level.
+    if savedVariables.includeBelowItemLevel.enabled then
+      local value = savedVariables.includeBelowItemLevel.value
+      if item.itemLevel < value then
+        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
+        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
     end
     -- Include unsuitable equipment.

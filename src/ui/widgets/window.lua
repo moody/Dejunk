@@ -1,6 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -66,9 +65,6 @@ function Widgets:Window(options)
   end)
 
   frame.closeButton:SetScript("OnClick", function() frame:Hide() end)
-
-  frame:SetScript("OnShow", Sounds.WindowOpened)
-  frame:SetScript("OnHide", Sounds.WindowClosed)
 
   return frame
 end

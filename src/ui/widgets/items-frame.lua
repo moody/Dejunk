@@ -1,7 +1,5 @@
 local _, Addon = ...
 local Colors = Addon.Colors
-local GameTooltip = GameTooltip
-local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -13,13 +11,14 @@ local Widgets = Addon.UserInterface.Widgets
     points? = table[],
     width? = number,
     height? = number,
+    titleText? = string,
     onUpdateTooltip? = function(self, tooltip) -> nil,
+    itemButtonOnUpdateTooltip? = function(self, tooltip) -> nil,
+    itemButtonOnClick? = function(self, button) -> nil,
     numButtons? = number,
     displayPrice? = boolean,
-    titleText? = string,
     getItems = function() -> table[],
     addItem = function(itemId: string) -> nil,
-    removeItem = function(itemId: string) -> nil,
     removeAllItems = function() -> nil
   }
 ]]
@@ -33,12 +32,10 @@ function Widgets:ItemsFrame(options)
 
   -- Base frame.
   local frame = self:TitleFrame(options)
-  frame.options = options
   frame.buttons = {}
 
   frame.titleButton:SetScript("OnClick", function(_, button)
     if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
-      Sounds.Click()
       options.removeAllItems()
     end
   end)
@@ -58,7 +55,9 @@ function Widgets:ItemsFrame(options)
     frame.buttons[#frame.buttons + 1] = self:ItemButton({
       name = "$parent_ItemButton" .. i,
       parent = frame,
-      displayPrice = options.displayPrice
+      displayPrice = options.displayPrice,
+      onUpdateTooltip = options.itemButtonOnUpdateTooltip,
+      onClick = options.itemButtonOnClick
     })
   end
 
@@ -142,16 +141,21 @@ end
     points? = table[],
     width? = number,
     height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
+    onClick? = function(self, button) -> nil,
     displayPrice? = boolean
   }
 ]]
 function Widgets:ItemButton(options)
   -- Defaults.
   options.frameType = "Button"
+  options.onUpdateTooltip = Addon:IfNil(options.onUpdateTooltip, function(self, tooltip)
+    tooltip:SetHyperlink(self.item.link)
+  end)
 
   -- Base frame.
   local frame = self:Frame(options)
-  frame:RegisterForClicks("RightButtonUp")
+  frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
@@ -200,40 +204,23 @@ function Widgets:ItemButton(options)
     end
   end
 
-  function frame:UpdateTooltip()
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    if self.item.bag and self.item.slot then
-      GameTooltip:SetBagItem(self.item.bag, self.item.slot)
-    else
-      GameTooltip:SetHyperlink(self.item.link)
-    end
-    GameTooltip:Show()
-  end
-
-  frame:SetScript("OnEnter", function(self)
-    -- Add highlight.
+  frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-    -- Show tooltip.
-    self:UpdateTooltip()
   end)
 
-  frame:SetScript("OnLeave", function(self)
-    -- Remove highlight.
+  frame:HookScript("OnLeave", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
     self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    -- Hide tooltip.
-    GameTooltip:Hide()
-  end)
-
-  frame:SetScript("OnMouseDown", function(self)
-    self:GetParent():AddCursorItem()
   end)
 
   frame:SetScript("OnClick", function(self, button)
-    if button == "RightButton" then
-      Sounds.Click()
-      self:GetParent().options.removeItem(self.item.id)
+    if CursorHasItem() then
+      if button == "LeftButton" then
+        self:GetParent():AddCursorItem()
+      end
+    elseif options.onClick then
+      options.onClick(self, button)
     end
   end)
 

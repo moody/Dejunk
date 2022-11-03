@@ -66,21 +66,6 @@ do -- Colors.
   end
 end
 
-do -- Sounds.
-  Addon.Sounds = {}
-
-  local sounds = {
-    Click = SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON,
-    Repair = SOUNDKIT.ITEM_REPAIR,
-    WindowOpened = SOUNDKIT.IG_CHARACTER_INFO_TAB,
-    WindowClosed = SOUNDKIT.IG_MAINMENU_CLOSE
-  }
-
-  for name, id in pairs(sounds) do
-    Addon.Sounds[name] = function() PlaySound(id) end
-  end
-end
-
 -- Events.
 Addon.Events = {}
 Addon.EventManager = {}
@@ -119,20 +104,38 @@ Addon.Confirmer = {}
 Addon.UserInterface = {
   JunkFrame = {},
   TransportFrame = {},
-  Widgets = {}
+  Widgets = {},
+  Popup = {}
 }
 
--- Tooltip.
-Addon.Tooltip = {
-  Show = function() GameTooltip:Show() end,
-  Hide = function() GameTooltip:Hide() end,
-  SetOwner = function(_, ...) GameTooltip:SetOwner(...) end,
-  SetText = function(_, text) GameTooltip:SetText(Addon.Colors.White(text)) end,
-  AddLine = function(_, text) GameTooltip:AddLine(Addon.Colors.Gold(text), nil, nil, nil, true) end,
-  AddDoubleLine = function(_, leftText, rightText)
+do -- Tooltip.
+  local cache = {}
+
+  Addon.Tooltip = setmetatable({}, {
+    __index = function(_, k)
+      local v = GameTooltip[k]
+      if type(v) == "function" then
+        if cache[k] == nil then
+          cache[k] = function(_, ...) v(GameTooltip, ...) end
+        end
+        return cache[k]
+      end
+      return v
+    end
+  })
+
+  function Addon.Tooltip:SetText(text)
+    GameTooltip:SetText(Addon.Colors.White(text))
+  end
+
+  function Addon.Tooltip:AddLine(text)
+    GameTooltip:AddLine(Addon.Colors.Gold(text), nil, nil, nil, true)
+  end
+
+  function Addon.Tooltip:AddDoubleLine(leftText, rightText)
     GameTooltip:AddDoubleLine(Addon.Colors.Yellow(leftText), Addon.Colors.White(rightText))
   end
-}
+end
 
 -- ============================================================================
 -- Functions

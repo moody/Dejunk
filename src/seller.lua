@@ -7,7 +7,6 @@ local JunkFilter = Addon.JunkFilter
 local L = Addon.Locale
 local SavedVariables = Addon.SavedVariables
 local Seller = Addon.Seller
-local Sounds = Addon.Sounds
 
 -- ============================================================================
 -- Events
@@ -21,8 +20,8 @@ EventManager:On(E.Wow.MerchantShow, function()
     if savedVariables.autoRepair then
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
-        Sounds.Repair()
         RepairAllItems()
+        PlaySound(SOUNDKIT.ITEM_REPAIR)
         Addon:Print(L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(repairCost)))
       end
     end
@@ -64,10 +63,7 @@ local function handleStaticPopup()
   end
 end
 
-local function handleNextItem()
-  local item = table.remove(Seller.items)
-  if not item then return Seller:Stop() end
-
+local function handleItem(item)
   if not Items:IsItemStillInBags(item) then return end
   if Items:IsItemLocked(item) then return end
 
@@ -75,6 +71,12 @@ local function handleNextItem()
   handleStaticPopup()
 
   EventManager:Fire(E.AttemptedToSellItem, item)
+end
+
+local function tickerCallback()
+  local item = table.remove(Seller.items)
+  if not item then return Seller:Stop() end
+  handleItem(item)
 end
 
 -- ============================================================================
@@ -106,7 +108,7 @@ function Seller:Start(auto)
   -- Start ticker.
   local home, world = select(3, GetNetStats())
   local latency = max(max(home, world) * 0.001, 0.2)
-  self.ticker = C_Timer.NewTicker(latency, handleNextItem)
+  self.ticker = C_Timer.NewTicker(latency, tickerCallback)
   EventManager:Fire(E.SellerStarted)
 end
 
@@ -115,6 +117,16 @@ function Seller:Stop()
     self.ticker:Cancel()
     EventManager:Fire(E.SellerStopped)
   end
+end
+
+function Seller:HandleItem(item)
+  if Addon:IsBusy() then return end
+
+  if not (MerchantFrame and MerchantFrame:IsShown()) then
+    return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
+
+  handleItem(item)
 end
 
 function Seller:IsBusy()

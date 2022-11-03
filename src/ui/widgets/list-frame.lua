@@ -1,6 +1,5 @@
 local _, Addon = ...
 local L = Addon.Locale
-local Sounds = Addon.Sounds
 local TransportFrame = Addon.UserInterface.TransportFrame
 local Widgets = Addon.UserInterface.Widgets
 
@@ -21,6 +20,8 @@ local Widgets = Addon.UserInterface.Widgets
   }
 ]]
 function Widgets:ListFrame(options)
+  local otherList = options.list == Addon.Lists.Inclusions and Addon.Lists.Exclusions or Addon.Lists.Inclusions
+
   function options.onUpdateTooltip(self, tooltip)
     tooltip:SetText(options.titleText)
     tooltip:AddLine(options.descriptionText)
@@ -31,16 +32,29 @@ function Widgets:ListFrame(options)
     tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.REMOVE_ALL_ITEMS)
   end
 
+  function options.itemButtonOnUpdateTooltip(self, tooltip)
+    tooltip:SetHyperlink(self.item.link)
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
+    tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.ADD_TO_LIST:format(otherList.name))
+  end
+
+  function options.itemButtonOnClick(self, button)
+    if button == "RightButton" then
+      if IsShiftKeyDown() then
+        otherList:Add(self.item.id)
+      else
+        options.list:Remove(self.item.id)
+      end
+    end
+  end
+
   function options.getItems()
     return options.list:GetItems()
   end
 
   function options.addItem(itemId)
     return options.list:Add(itemId)
-  end
-
-  function options.removeItem(itemId)
-    return options.list:Remove(itemId)
   end
 
   function options.removeAllItems()
@@ -52,7 +66,6 @@ function Widgets:ListFrame(options)
 
   frame.titleButton:HookScript("OnClick", function(self, button)
     if button == "LeftButton" then
-      Sounds.Click()
       TransportFrame:Toggle(options.list)
     end
   end)

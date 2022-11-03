@@ -1,6 +1,7 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local L = Addon.Locale
+local Popup = Addon.UserInterface.Popup
 local SavedVariables = Addon.SavedVariables
 local UserInterface = Addon.UserInterface
 local Widgets = Addon.UserInterface.Widgets
@@ -67,7 +68,7 @@ UserInterface.frame = (function()
     parent = frame,
     points = {
       { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(10) }
+      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(8) }
     },
     titleText = L.OPTIONS_TEXT
   })
@@ -132,14 +133,28 @@ UserInterface.frame = (function()
     set = function(value) SavedVariables:Get().includePoorItems = value end
   })
   frame.optionsFrame:AddOption({
-    labelText = L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT,
+    labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
     onUpdateTooltip = function(self, tooltip)
-      local itemLevel = Colors.White(Addon.Items:GetAverageEquippedItemLevel())
-      tooltip:SetText(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TEXT)
-      tooltip:AddLine(L.INCLUDE_BELOW_AVERAGE_EQUIPMENT_TOOLTIP:format(itemLevel))
+      local itemLevel = Colors.White(SavedVariables:Get().includeBelowItemLevel.value)
+      tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
+      tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
     end,
-    get = function() return SavedVariables:Get().includeBelowAverageEquipment end,
-    set = function(value) SavedVariables:Get().includeBelowAverageEquipment = value end
+    get = function() return SavedVariables:Get().includeBelowItemLevel.enabled end,
+    set = function(value)
+      if value then
+        local sv = SavedVariables:Get()
+        Popup:GetInteger({
+          text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
+          initialValue = sv.includeBelowItemLevel.value,
+          onAccept = function(self, value)
+            sv.includeBelowItemLevel.enabled = true
+            sv.includeBelowItemLevel.value = value
+          end
+        })
+      else
+        SavedVariables:Get().includeBelowItemLevel.enabled = value
+      end
+    end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,

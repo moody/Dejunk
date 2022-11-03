@@ -1,6 +1,5 @@
 local _, Addon = ...
 local L = Addon.Locale
-local Sounds = Addon.Sounds
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -35,14 +34,12 @@ function Widgets:TextFrame(options)
   frame.titleButton:SetScript("OnClick", function(_, button)
     -- Select all.
     if button == "LeftButton" then
-      Sounds.Click()
       frame.editBox:SetFocus()
       frame.editBox:HighlightText()
       frame.editBox:SetCursorPosition(frame.editBox:GetNumLetters())
     end
     -- Clear.
     if button == "RightButton" then
-      Sounds.Click()
       frame.editBox:SetText("")
       frame.editBox:ClearFocus()
     end
