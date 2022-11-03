@@ -21,6 +21,7 @@ EventManager:On(E.Wow.MerchantShow, function()
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
         RepairAllItems()
+        PlaySound(SOUNDKIT.ITEM_REPAIR)
         Addon:Print(L.REPAIRED_ALL_ITEMS:format(GetCoinTextureString(repairCost)))
       end
     end
