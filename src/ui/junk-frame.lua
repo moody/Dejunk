@@ -30,33 +30,48 @@ do -- Auto Junk Frame.
   EventManager:On(E.Wow.MerchantShow, onShow)
   EventManager:On(E.Wow.MerchantClosed, onHide)
 
-  -- Bags.
-  local function onBag(id)
-    if type(id) == "number" and IsBagOpen(id) then
-      return onShow()
+  do -- Bag frames.
+    local hookedFrames = {}
+
+    local function frameOnHide()
+      for frame in pairs(hookedFrames) do
+        if frame:IsVisible() then return end
+      end
+      onHide()
     end
 
-    for i = 0, NUM_BAG_FRAMES do
-      if IsBagOpen(i) then return end
+    local function hookFrame(frame)
+      if type(frame) ~= "table" or hookedFrames[frame] then return end
+      if frame:IsVisible() then onShow() end
+      frame:HookScript("OnShow", onShow)
+      frame:HookScript("OnHide", frameOnHide)
+      hookedFrames[frame] = true
     end
 
-    onHide()
-  end
+    local hookAdiBags
+    do
+      local i = 1
+      hookAdiBags = function()
+        local f = _G["AdiBagsContainer" .. i]
+        if type(f) == "table" then
+          if f.isBank then
+            i = i + 1
+          else
+            hookFrame(f)
+          end
+        end
+      end
+    end
 
-  if Addon.IS_RETAIL then
-    local callback = function(_, t) onBag(t:GetBagID()) end
-    EventRegistry:RegisterCallback("ContainerFrame.OpenBag", callback)
-    EventRegistry:RegisterCallback("ContainerFrame.CloseBag", callback)
-  else
-    hooksecurefunc("OpenBag", onBag)
-    hooksecurefunc("OpenAllBags", onBag)
-    hooksecurefunc("CloseBag", onBag)
-    hooksecurefunc("CloseAllBags", onBag)
-    hooksecurefunc("ToggleBag", onBag)
-    hooksecurefunc("ToggleAllBags", onBag)
-    hooksecurefunc("OpenBackpack", onBag)
-    hooksecurefunc("CloseBackpack", onBag)
-    hooksecurefunc("ToggleBackpack", onBag)
+    C_Timer.NewTicker(0.01, function()
+      -- Hook base container frames.
+      for i = 0, NUM_BAG_FRAMES do hookFrame(_G["ContainerFrame" .. i]) end
+      -- Hook third-party addon frames.
+      hookAdiBags()
+      hookFrame(_G.ARKINV_Frame1)
+      hookFrame(_G.BagnonInventoryFrame1)
+      hookFrame(_G.ElvUI_ContainerFrame)
+    end)
   end
 end
 
