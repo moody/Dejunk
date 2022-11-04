@@ -17,7 +17,8 @@ local Widgets = Addon.UserInterface.Widgets
 -- Events
 -- ============================================================================
 
-do -- Auto Junk Frame.
+-- Auto Junk Frame.
+EventManager:Once(E.SavedVariablesReady, function()
   local function onShow()
     if SavedVariables:Get().autoJunkFrame then JunkFrame:Show() end
   end
@@ -73,7 +74,7 @@ do -- Auto Junk Frame.
       hookFrame(_G.ElvUI_ContainerFrame)
     end)
   end
-end
+end)
 
 -- ============================================================================
 -- JunkFrame
