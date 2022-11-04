@@ -5,6 +5,7 @@
 ### Fixed
 
 - Option: `Auto Junk Frame` support for AdiBags, ArkInventory, Bagnon, and ElvUI ([#158](https://github.com/moody/Dejunk/issues/158))
+- Potential error related to accessing saved variables before they are ready ([#159](https://github.com/moody/Dejunk/issues/159))
 
 ## [1.4.0] - 2022-11-03
 
