@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Option: `Auto Junk Frame` support for AdiBags, ArkInventory, Bagnon, and ElvUI ([#158](https://github.com/moody/Dejunk/issues/158))
+
 ## [1.4.0] - 2022-11-03
 
 ### Added
