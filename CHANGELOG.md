@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Updated the merchant button to support ElvUI
+
 ## [1.4.1] - 2022-11-04
 
 ### Fixed
