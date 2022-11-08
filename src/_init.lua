@@ -105,7 +105,8 @@ Addon.UserInterface = {
   JunkFrame = {},
   TransportFrame = {},
   Widgets = {},
-  Popup = {}
+  Popup = {},
+  MinimapIcon = {}
 }
 
 do -- Tooltip.

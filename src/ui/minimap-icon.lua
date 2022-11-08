@@ -6,6 +6,7 @@ local EventManager = Addon.EventManager
 local L = Addon.Locale
 local LDB = Addon.Libs.LDB
 local LDBIcon = Addon.Libs.LDBIcon
+local MinimapIcon = Addon.UserInterface.MinimapIcon
 local SavedVariables = Addon.SavedVariables
 
 EventManager:Once(E.SavedVariablesReady, function()
@@ -34,12 +35,12 @@ EventManager:Once(E.SavedVariablesReady, function()
   })
   LDBIcon:Register(ADDON_NAME, object, SavedVariables:GetGlobal().minimapIcon)
 
-  -- Update visibility.
-  C_Timer.NewTicker(0, function()
-    if SavedVariables:Get().minimapIcon.hide then
-      LDBIcon:Hide(ADDON_NAME)
-    else
-      LDBIcon:Show(ADDON_NAME)
-    end
-  end)
+  function MinimapIcon:IsEnabled()
+    return not SavedVariables:GetGlobal().minimapIcon.hide
+  end
+
+  function MinimapIcon:SetEnabled(enabled)
+    SavedVariables:GetGlobal().minimapIcon.hide = not enabled
+    LDBIcon:Refresh(ADDON_NAME)
+  end
 end)

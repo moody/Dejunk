@@ -6,6 +6,10 @@
 
 - Updated the merchant button to support ElvUI
 
+### Fixed
+
+- Issues with minimap icon positioning ([#163](https://github.com/moody/Dejunk/issues/163))
+
 ## [1.4.1] - 2022-11-04
 
 ### Fixed

@@ -1,6 +1,7 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local L = Addon.Locale
+local MinimapIcon = Addon.UserInterface.MinimapIcon
 local Popup = Addon.UserInterface.Popup
 local SavedVariables = Addon.SavedVariables
 local UserInterface = Addon.UserInterface
@@ -99,8 +100,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.MINIMAP_ICON_TEXT,
     tooltipText = L.MINIMAP_ICON_TOOLTIP,
-    get = function() return not SavedVariables:Get().minimapIcon.hide end,
-    set = function(value) SavedVariables:Get().minimapIcon.hide = not value end
+    get = function() return MinimapIcon:IsEnabled() end,
+    set = function(value) MinimapIcon:SetEnabled(value) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
