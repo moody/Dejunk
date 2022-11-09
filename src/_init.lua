@@ -10,9 +10,6 @@ Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 -- Tables
 -- ============================================================================
 
--- Colors.
-Addon.Colors = {}
-
 -- Events.
 Addon.Events = {}
 Addon.EventManager = {}
@@ -99,16 +96,20 @@ do -- Addon:IsBusy()
   end
 end
 
-function Addon:ForcePrint(...)
-  print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
-end
+do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
+  local Colors = Addon:GetModule("Colors")
 
-function Addon:Print(...)
-  if self.SavedVariables:Get().chatMessages then
-    print(self.Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
+  function Addon:ForcePrint(...)
+    print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
   end
-end
 
-function Addon:Debug(...)
-  print(self.Colors.Red("[Debug]"), ...)
+  function Addon:Print(...)
+    if self.SavedVariables:Get().chatMessages then
+      print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
+    end
+  end
+
+  function Addon:Debug(...)
+    print(Colors.Red("[Debug]"), ...)
+  end
 end

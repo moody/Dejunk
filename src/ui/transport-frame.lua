@@ -1,5 +1,5 @@
 local ADDON_NAME, Addon = ...
-local Colors = Addon.Colors
+local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local TransportFrame = Addon.UserInterface.TransportFrame
 local Widgets = Addon.UserInterface.Widgets

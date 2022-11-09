@@ -1,5 +1,5 @@
 local _, Addon = ...
-local Colors = Addon.Colors
+local Colors = Addon:GetModule("Colors")
 
 local colors = {
   White = "FFFFFFFF",

@@ -1,6 +1,6 @@
 local _, Addon = ...
+local Colors = Addon:GetModule("Colors")
 local Widgets = Addon.UserInterface.Widgets
-local Colors = Addon.Colors
 
 --[[
   Creates a basic button.
