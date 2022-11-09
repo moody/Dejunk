@@ -5,7 +5,7 @@ local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
 local SavedVariables = Addon:GetModule("SavedVariables")
-local UserInterface = Addon.UserInterface
+local UserInterface = Addon:GetModule("UserInterface")
 local Widgets = Addon:GetModule("Widgets")
 
 -- ============================================================================

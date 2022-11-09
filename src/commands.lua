@@ -11,7 +11,7 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local Seller = Addon:GetModule("Seller")
 local TransportFrame = Addon:GetModule("TransportFrame")
-local UserInterface = Addon.UserInterface
+local UserInterface = Addon:GetModule("UserInterface")
 
 -- ============================================================================
 -- Events
