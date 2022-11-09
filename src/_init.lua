@@ -16,9 +16,6 @@ Addon.Lists = {
   Exclusions = {}
 }
 
--- JunkFilter.
-Addon.JunkFilter = {}
-
 -- Seller.
 Addon.Seller = {}
 
