@@ -10,7 +10,7 @@ local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local SavedVariables = Addon:GetModule("SavedVariables")
-local Seller = Addon.Seller
+local Seller = Addon:GetModule("Seller")
 local Widgets = Addon.UserInterface.Widgets
 
 -- ============================================================================

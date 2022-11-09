@@ -16,9 +16,6 @@ Addon.Lists = {
   Exclusions = {}
 }
 
--- Seller.
-Addon.Seller = {}
-
 -- Destroyer.
 Addon.Destroyer = {}
 
@@ -68,9 +65,10 @@ end
 
 do -- Addon:IsBusy()
   local L = Addon:GetModule("Locale")
+  local Seller = Addon:GetModule("Seller")
 
   function Addon:IsBusy()
-    if self.Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
+    if Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
     if self.Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
     if self.Confirmer:IsBusy() then return true, L.IS_BUSY_CONFIRMING_ITEMS end
     return false

@@ -8,7 +8,7 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local SavedVariables = Addon:GetModule("SavedVariables")
-local Seller = Addon.Seller
+local Seller = Addon:GetModule("Seller")
 
 local MAX_PARSE_ATTEMPTS = 50
 local parseAttempts = {
