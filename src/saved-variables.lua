@@ -1,7 +1,7 @@
 local _, Addon = ...
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 local GLOBAL_SV = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
 local PERCHAR_SV = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"

@@ -4,7 +4,7 @@ local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 -- ============================================================================
 -- Local Functions

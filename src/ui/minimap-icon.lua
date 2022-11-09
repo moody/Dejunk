@@ -7,7 +7,7 @@ local L = Addon:GetModule("Locale")
 local LDB = Addon:GetLibrary("LDB")
 local LDBIcon = Addon:GetLibrary("LDBIcon")
 local MinimapIcon = Addon.UserInterface.MinimapIcon
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 EventManager:Once(E.SavedVariablesReady, function()
   local object = LDB:NewDataObject(ADDON_NAME, {

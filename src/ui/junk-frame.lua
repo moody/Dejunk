@@ -9,7 +9,7 @@ local JunkFilter = Addon.JunkFilter
 local JunkFrame = Addon.UserInterface.JunkFrame
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon.Seller
 local Widgets = Addon.UserInterface.Widgets
 

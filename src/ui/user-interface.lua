@@ -3,7 +3,7 @@ local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon.UserInterface.MinimapIcon
 local Popup = Addon.UserInterface.Popup
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 local UserInterface = Addon.UserInterface
 local Widgets = Addon.UserInterface.Widgets
 

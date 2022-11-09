@@ -5,7 +5,7 @@ local EventManager = Addon:GetModule("EventManager")
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon.Seller
 
 -- ============================================================================

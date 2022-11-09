@@ -4,7 +4,7 @@ local Commands = Addon.Commands
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 local Tooltip = Addon.Tooltip
 
 EventManager:Once(E.Wow.MerchantShow, function()

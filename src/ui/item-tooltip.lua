@@ -3,7 +3,7 @@ local Colors = Addon:GetModule("Colors")
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon.SavedVariables
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
   if not SavedVariables:Get().itemTooltips or Items:IsBagSlotEmpty(bag, slot) then return end
