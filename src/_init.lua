@@ -23,48 +23,8 @@ Addon.Locale = setmetatable({}, {
   end
 })
 
-do -- Colors.
-  Addon.Colors = {}
-
-  local colors = {
-    White = "FFFFFFFF",
-    Blue = "FF4FAFE3",
-    Red = "FFE34F4F",
-    Green = "FF4FE34F",
-    Yellow = "FFE3E34F",
-    Gold = "FFFFD100",
-    Grey = "FF9D9D9D",
-    DarkGrey = "FF1E1E1E"
-  }
-
-  for name, hex in pairs(colors) do
-    local color = CreateColorFromHexString(hex)
-
-    local t = setmetatable({}, {
-      __call = function(self, text, alpha)
-        alpha = (alpha or 1) * 255
-        local _hex = ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
-        return WrapTextInColorCode(text or "", _hex)
-      end
-    })
-
-    function t:GetRGB()
-      return color:GetRGB()
-    end
-
-    function t:GetRGBA(alpha)
-      local r, g, b, a = color:GetRGBA()
-      return r, g, b, alpha or a
-    end
-
-    function t:GetHex(alpha)
-      alpha = (alpha or 1) * 255
-      return ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
-    end
-
-    Addon.Colors[name] = t
-  end
-end
+-- Colors.
+Addon.Colors = {}
 
 -- Events.
 Addon.Events = {}
@@ -109,34 +69,8 @@ Addon.UserInterface = {
   MinimapIcon = {}
 }
 
-do -- Tooltip.
-  local cache = {}
-
-  Addon.Tooltip = setmetatable({}, {
-    __index = function(_, k)
-      local v = GameTooltip[k]
-      if type(v) == "function" then
-        if cache[k] == nil then
-          cache[k] = function(_, ...) v(GameTooltip, ...) end
-        end
-        return cache[k]
-      end
-      return v
-    end
-  })
-
-  function Addon.Tooltip:SetText(text)
-    GameTooltip:SetText(Addon.Colors.White(text))
-  end
-
-  function Addon.Tooltip:AddLine(text)
-    GameTooltip:AddLine(Addon.Colors.Gold(text), nil, nil, nil, true)
-  end
-
-  function Addon.Tooltip:AddDoubleLine(leftText, rightText)
-    GameTooltip:AddDoubleLine(Addon.Colors.Yellow(leftText), Addon.Colors.White(rightText))
-  end
-end
+-- Tooltip.
+Addon.Tooltip = {}
 
 -- ============================================================================
 -- Functions
