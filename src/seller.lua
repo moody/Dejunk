@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Container = Addon.Container
-local E = Addon.Events
-local EventManager = Addon.EventManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")

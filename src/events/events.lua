@@ -1,5 +1,5 @@
 local AddonName, Addon = ...
-local E = Addon.Events
+local E = Addon:GetModule("Events")
 
 -- ============================================================================
 -- Addon Events

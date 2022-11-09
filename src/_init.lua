@@ -10,10 +10,6 @@ Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 -- Tables
 -- ============================================================================
 
--- Events.
-Addon.Events = {}
-Addon.EventManager = {}
-
 -- SavedVariables.
 Addon.SavedVariables = {}
 

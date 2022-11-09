@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
-local E = Addon.Events
-local EventManager = Addon.EventManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local GetItemInfo = GetItemInfo
 local GetItemInfoInstant = GetItemInfoInstant
 local Items = Addon.Items
