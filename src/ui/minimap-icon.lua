@@ -4,8 +4,8 @@ local Commands = Addon.Commands
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local L = Addon.Locale
-local LDB = Addon.Libs.LDB
-local LDBIcon = Addon.Libs.LDBIcon
+local LDB = Addon:GetLibrary("LDB")
+local LDBIcon = Addon:GetLibrary("LDBIcon")
 local MinimapIcon = Addon.UserInterface.MinimapIcon
 local SavedVariables = Addon.SavedVariables
 

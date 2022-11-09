@@ -10,12 +10,6 @@ Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 -- Tables
 -- ============================================================================
 
--- Libs.
-Addon.Libs = {
-  LDB = LibStub("LibDataBroker-1.1"),
-  LDBIcon = LibStub("LibDBIcon-1.0")
-}
-
 -- Locale.
 Addon.Locale = {}
 
