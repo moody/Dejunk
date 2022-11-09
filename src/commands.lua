@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
-local Container = Addon.Container
+local Container = Addon:GetModule("Container")
 local Destroyer = Addon.Destroyer
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")

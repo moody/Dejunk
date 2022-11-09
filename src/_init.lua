@@ -10,9 +10,6 @@ Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 -- Tables
 -- ============================================================================
 
--- Container.
-Addon.Container = {}
-
 -- Items.
 Addon.Items = {}
 
