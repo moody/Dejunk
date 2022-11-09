@@ -18,6 +18,7 @@ do -- Addon:GetModule()
   local modules = {}
 
   function Addon:GetModule(key)
+    key = key:upper()
     if type(modules[key]) ~= "table" then modules[key] = {} end
     return modules[key]
   end
