@@ -1,7 +1,7 @@
 local _, Addon = ...
 local L = Addon:GetModule("Locale")
 local TransportFrame = Addon:GetModule("TransportFrame")
-local Widgets = Addon.UserInterface.Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates an ItemsFrame for displaying a list.

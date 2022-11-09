@@ -11,7 +11,7 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
-local Widgets = Addon.UserInterface.Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- ============================================================================
 -- Events

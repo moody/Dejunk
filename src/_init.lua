@@ -18,7 +18,6 @@ Addon.Lists = {
 
 -- UserInterface.
 Addon.UserInterface = {
-  Widgets = {},
   Popup = {},
   MinimapIcon = {}
 }

@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
-local Widgets = Addon.UserInterface.Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates a fake scrolling frame for displaying items.
