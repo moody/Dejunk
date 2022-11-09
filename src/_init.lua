@@ -72,6 +72,26 @@ Addon.Tooltip = {}
 -- Functions
 -- ============================================================================
 
+do -- Addon:GetModule()
+  local modules = {}
+
+  function Addon:GetModule(key)
+    if type(modules[key]) ~= "table" then modules[key] = {} end
+    return modules[key]
+  end
+end
+
+do -- Addon:GetLibrary()
+  local libraries = {
+    LDB = LibStub("LibDataBroker-1.1"),
+    LDBIcon = LibStub("LibDBIcon-1.0")
+  }
+
+  function Addon:GetLibrary(key)
+    return libraries[key] or error("Invalid library: " .. key)
+  end
+end
+
 function Addon:IfNil(value, default)
   if value == nil then return default end
   return value
