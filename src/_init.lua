@@ -10,9 +10,6 @@ Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
 -- Tables
 -- ============================================================================
 
--- Locale.
-Addon.Locale = {}
-
 -- Colors.
 Addon.Colors = {}
 
@@ -91,11 +88,15 @@ function Addon:IfNil(value, default)
   return value
 end
 
-function Addon:IsBusy()
-  if self.Seller:IsBusy() then return true, self.Locale.IS_BUSY_SELLING_ITEMS end
-  if self.Lists:IsBusy() then return true, self.Locale.IS_BUSY_UPDATING_LISTS end
-  if self.Confirmer:IsBusy() then return true, self.Locale.IS_BUSY_CONFIRMING_ITEMS end
-  return false
+do -- Addon:IsBusy()
+  local L = Addon:GetModule("Locale")
+
+  function Addon:IsBusy()
+    if self.Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
+    if self.Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
+    if self.Confirmer:IsBusy() then return true, L.IS_BUSY_CONFIRMING_ITEMS end
+    return false
+  end
 end
 
 function Addon:ForcePrint(...)

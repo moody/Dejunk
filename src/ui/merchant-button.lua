@@ -3,7 +3,7 @@ local Colors = Addon.Colors
 local Commands = Addon.Commands
 local E = Addon.Events
 local EventManager = Addon.EventManager
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local SavedVariables = Addon.SavedVariables
 local Tooltip = Addon.Tooltip
 

@@ -2,7 +2,7 @@ local _, Addon = ...
 local Colors = Addon.Colors
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
 

@@ -2,7 +2,7 @@ local AddonName, Addon = ...
 local Colors = Addon.Colors
 local Items = Addon.Items
 local JunkFilter = Addon.JunkFilter
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local SavedVariables = Addon.SavedVariables
 
 hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)

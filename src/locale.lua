@@ -1,5 +1,5 @@
 local _, Addon = ...
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 
 setmetatable(L, {
   __index = function(t, k)

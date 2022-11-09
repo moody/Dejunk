@@ -1,6 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon.UserInterface.MinimapIcon
 local Popup = Addon.UserInterface.Popup
 local SavedVariables = Addon.SavedVariables

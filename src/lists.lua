@@ -5,7 +5,7 @@ local EventManager = Addon.EventManager
 local GetItemInfo = GetItemInfo
 local GetItemInfoInstant = GetItemInfoInstant
 local Items = Addon.Items
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local SavedVariables = Addon.SavedVariables
 local Seller = Addon.Seller
@@ -194,8 +194,8 @@ end
 -- ============================================================================
 
 -- Add required values to each list.
-Lists.Inclusions.name = Addon.Colors.Red(Addon.Locale.INCLUSIONS_TEXT)
-Lists.Exclusions.name = Addon.Colors.Green(Addon.Locale.EXCLUSIONS_TEXT)
+Lists.Inclusions.name = Colors.Red(L.INCLUSIONS_TEXT)
+Lists.Exclusions.name = Colors.Green(L.EXCLUSIONS_TEXT)
 
 for list in Lists:Iterate() do
   -- Tables.

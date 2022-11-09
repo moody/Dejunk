@@ -1,5 +1,6 @@
 local _, Addon = ...
 local Colors = Addon.Colors
+local L = Addon:GetModule("Locale")
 local Widgets = Addon.UserInterface.Widgets
 
 --[[
@@ -64,7 +65,7 @@ function Widgets:ItemsFrame(options)
   -- No items text.
   frame.noItemsText = frame:CreateFontString("$parent_NoItemsText", "ARTWORK", "GameFontNormal")
   frame.noItemsText:SetPoint("CENTER")
-  frame.noItemsText:SetText(Colors.White(Addon.Locale.NO_ITEMS))
+  frame.noItemsText:SetText(Colors.White(L.NO_ITEMS))
   frame.noItemsText:SetAlpha(0.3)
 
   function frame:AddCursorItem()

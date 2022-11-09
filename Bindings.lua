@@ -1,7 +1,7 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon.Colors
 local Commands = Addon.Commands
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 
 -- ============================================================================

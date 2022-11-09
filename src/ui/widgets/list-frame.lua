@@ -1,5 +1,5 @@
 local _, Addon = ...
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 local TransportFrame = Addon.UserInterface.TransportFrame
 local Widgets = Addon.UserInterface.Widgets
 

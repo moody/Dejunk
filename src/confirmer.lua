@@ -3,7 +3,7 @@ local Confirmer = Addon.Confirmer
 local E = Addon.Events
 local EventManager = Addon.EventManager
 local Items = Addon.Items
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
 
 local profit = 0
 local profitReady = false
