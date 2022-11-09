@@ -1,5 +1,5 @@
 local _, Addon = ...
-local Confirmer = Addon.Confirmer
+local Confirmer = Addon:GetModule("Confirmer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
