@@ -18,7 +18,6 @@ Addon.Lists = {
 
 -- UserInterface.
 Addon.UserInterface = {
-  TransportFrame = {},
   Widgets = {},
   Popup = {},
   MinimapIcon = {}

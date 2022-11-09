@@ -10,7 +10,7 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists
 local Seller = Addon:GetModule("Seller")
-local TransportFrame = Addon.UserInterface.TransportFrame
+local TransportFrame = Addon:GetModule("TransportFrame")
 local UserInterface = Addon.UserInterface
 
 -- ============================================================================
