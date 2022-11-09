@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
-local Tooltip = Addon.Tooltip
+local Tooltip = Addon:GetModule("Tooltip")
 
 local cache = {}
 

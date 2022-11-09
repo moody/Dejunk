@@ -5,7 +5,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local SavedVariables = Addon:GetModule("SavedVariables")
-local Tooltip = Addon.Tooltip
+local Tooltip = Addon:GetModule("Tooltip")
 
 EventManager:Once(E.Wow.MerchantShow, function()
   local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "UIPanelButtonTemplate")
