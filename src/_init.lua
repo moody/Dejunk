@@ -17,11 +17,7 @@ Addon.Libs = {
 }
 
 -- Locale.
-Addon.Locale = setmetatable({}, {
-  __index = function(t, k)
-    return rawget(t, k) or k
-  end
-})
+Addon.Locale = {}
 
 -- Colors.
 Addon.Colors = {}
