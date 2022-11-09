@@ -6,7 +6,7 @@ local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local LDB = Addon:GetLibrary("LDB")
 local LDBIcon = Addon:GetLibrary("LDBIcon")
-local MinimapIcon = Addon.UserInterface.MinimapIcon
+local MinimapIcon = Addon:GetModule("MinimapIcon")
 local SavedVariables = Addon:GetModule("SavedVariables")
 
 EventManager:Once(E.SavedVariablesReady, function()

@@ -17,9 +17,7 @@ Addon.Lists = {
 }
 
 -- UserInterface.
-Addon.UserInterface = {
-  MinimapIcon = {}
-}
+Addon.UserInterface = {}
 
 -- ============================================================================
 -- Functions
