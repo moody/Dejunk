@@ -3,7 +3,7 @@ local Container = Addon:GetModule("Container")
 local Destroyer = Addon.Destroyer
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Items = Addon.Items
+local Items = Addon:GetModule("Items")
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")
 

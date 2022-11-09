@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
-local Items = Addon.Items
+local Items = Addon:GetModule("Items")
 local JunkFilter = Addon.JunkFilter
 local L = Addon:GetModule("Locale")
 local Lists = Addon.Lists

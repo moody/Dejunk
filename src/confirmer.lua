@@ -2,7 +2,7 @@ local _, Addon = ...
 local Confirmer = Addon.Confirmer
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Items = Addon.Items
+local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 
 local profit = 0

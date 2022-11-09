@@ -2,7 +2,7 @@ local _, Addon = ...
 local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Items = Addon.Items
+local Items = Addon:GetModule("Items")
 
 -- Initialize cache table.
 Items.cache = {}
