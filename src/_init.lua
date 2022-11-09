@@ -16,9 +16,6 @@ Addon.Lists = {
   Exclusions = {}
 }
 
--- Destroyer.
-Addon.Destroyer = {}
-
 -- Confirmer.
 Addon.Confirmer = {}
 
