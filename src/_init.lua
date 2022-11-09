@@ -1,20 +1,14 @@
 local ADDON_NAME, Addon = ...
 
+-- ============================================================================
+-- Consts
+-- ============================================================================
+
 Addon.VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
 Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 Addon.IS_VANILLA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 Addon.IS_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
-
--- ============================================================================
--- Tables
--- ============================================================================
-
--- Lists.
-Addon.Lists = {
-  Inclusions = {},
-  Exclusions = {}
-}
 
 -- ============================================================================
 -- Functions
@@ -48,11 +42,12 @@ end
 do -- Addon:IsBusy()
   local Confirmer = Addon:GetModule("Confirmer")
   local L = Addon:GetModule("Locale")
+  local Lists = Addon:GetModule("Lists")
   local Seller = Addon:GetModule("Seller")
 
   function Addon:IsBusy()
     if Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
-    if self.Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
+    if Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
     if Confirmer:IsBusy() then return true, L.IS_BUSY_CONFIRMING_ITEMS end
     return false
   end

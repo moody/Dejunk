@@ -20,7 +20,7 @@ local Widgets = Addon:GetModule("Widgets")
   }
 ]]
 function Widgets:ListFrame(options)
-  local otherList = options.list == Addon.Lists.Inclusions and Addon.Lists.Exclusions or Addon.Lists.Inclusions
+  local otherList = options.list:GetSibling()
 
   function options.onUpdateTooltip(self, tooltip)
     tooltip:SetText(options.titleText)

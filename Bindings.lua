@@ -2,7 +2,7 @@ local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
-local Lists = Addon.Lists
+local Lists = Addon:GetModule("Lists")
 
 -- ============================================================================
 -- Binding Strings

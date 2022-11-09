@@ -2,6 +2,7 @@ local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
 local SavedVariables = Addon:GetModule("SavedVariables")
@@ -175,7 +176,7 @@ UserInterface.frame = (function()
     },
     titleText = Colors.Red(L.INCLUSIONS_TEXT),
     descriptionText = L.INCLUSIONS_DESCRIPTION,
-    list = Addon.Lists.Inclusions
+    list = Lists.Inclusions
   })
 
   -- Exclusions frame.
@@ -188,7 +189,7 @@ UserInterface.frame = (function()
     },
     titleText = Colors.Green(L.EXCLUSIONS_TEXT),
     descriptionText = L.EXCLUSIONS_DESCRIPTION,
-    list = Addon.Lists.Exclusions
+    list = Lists.Exclusions
   })
 
   return frame
