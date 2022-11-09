@@ -1,6 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors")
-local Commands = Addon.Commands
+local Commands = Addon:GetModule("Commands")
 local Destroyer = Addon.Destroyer
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")

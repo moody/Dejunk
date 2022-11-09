@@ -1,5 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors")
+local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon.UserInterface.MinimapIcon
 local Popup = Addon.UserInterface.Popup
@@ -61,7 +62,7 @@ UserInterface.frame = (function()
   frame.keybindsButton:SetWidth(frame.keybindsButton.text:GetWidth() + Widgets:Padding(4))
   frame.keybindsButton:SetScript("OnEnter", function(self) self:SetBackdropColor(Colors.Blue:GetRGBA(0.75)) end)
   frame.keybindsButton:SetScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
-  frame.keybindsButton:SetScript("OnClick", Addon.Commands.keybinds)
+  frame.keybindsButton:SetScript("OnClick", Commands.keybinds)
 
   -- Options frame.
   frame.optionsFrame = Widgets:OptionsFrame({
