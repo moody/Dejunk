@@ -1,7 +1,7 @@
 local _, Addon = ...
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Popup = Addon.UserInterface.Popup
+local Popup = Addon:GetModule("Popup")
 
 Popup.keys = {}
 
