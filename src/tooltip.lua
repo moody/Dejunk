@@ -4,7 +4,7 @@ local Tooltip = Addon:GetModule("Tooltip")
 
 local cache = {}
 
-Tooltip = setmetatable({}, {
+setmetatable(Tooltip, {
   __index = function(_, k)
     local v = GameTooltip[k]
     if type(v) == "function" then
