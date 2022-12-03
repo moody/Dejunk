@@ -5,6 +5,7 @@
 ### Changed
 
 - Updated the merchant button to support ElvUI
+- Reverted behavior of option `Auto Junk Frame` to no longer apply to bags
 
 ### Fixed
 
