@@ -19,61 +19,12 @@ local Widgets = Addon:GetModule("Widgets")
 
 -- Auto Junk Frame.
 EventManager:Once(E.SavedVariablesReady, function()
-  local function onShow()
+  EventManager:On(E.Wow.MerchantShow, function()
     if SavedVariables:Get().autoJunkFrame then JunkFrame:Show() end
-  end
-
-  local function onHide()
+  end)
+  EventManager:On(E.Wow.MerchantClosed, function()
     if SavedVariables:Get().autoJunkFrame then JunkFrame:Hide() end
-  end
-
-  -- Merchant.
-  EventManager:On(E.Wow.MerchantShow, onShow)
-  EventManager:On(E.Wow.MerchantClosed, onHide)
-
-  do -- Bag frames.
-    local hookedFrames = {}
-
-    local function frameOnHide()
-      for frame in pairs(hookedFrames) do
-        if frame:IsVisible() then return end
-      end
-      onHide()
-    end
-
-    local function hookFrame(frame)
-      if type(frame) ~= "table" or hookedFrames[frame] then return end
-      if frame:IsVisible() then onShow() end
-      frame:HookScript("OnShow", onShow)
-      frame:HookScript("OnHide", frameOnHide)
-      hookedFrames[frame] = true
-    end
-
-    local hookAdiBags
-    do
-      local i = 1
-      hookAdiBags = function()
-        local f = _G["AdiBagsContainer" .. i]
-        if type(f) == "table" then
-          if f.isBank then
-            i = i + 1
-          else
-            hookFrame(f)
-          end
-        end
-      end
-    end
-
-    C_Timer.NewTicker(0.01, function()
-      -- Hook base container frames.
-      for i = 0, NUM_BAG_FRAMES do hookFrame(_G["ContainerFrame" .. i]) end
-      -- Hook third-party addon frames.
-      hookAdiBags()
-      hookFrame(_G.ARKINV_Frame1)
-      hookFrame(_G.BagnonInventoryFrame1)
-      hookFrame(_G.ElvUI_ContainerFrame)
-    end)
-  end
+  end)
 end)
 
 -- ============================================================================
