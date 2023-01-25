@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Option: `Exclude Unbound Equipment`
+
 ### Changed
 
 - Updated the merchant button to support ElvUI
