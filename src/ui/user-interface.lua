@@ -130,6 +130,12 @@ UserInterface.frame = (function()
     set = function(value) SavedVariables:Get().safeMode = value end
   })
   frame.optionsFrame:AddOption({
+    labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
+    tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
+    get = function() return SavedVariables:Get().excludeUnboundEquipment end,
+    set = function(value) SavedVariables:Get().excludeUnboundEquipment = value end
+  })
+  frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_POOR_ITEMS_TEXT,
     tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
     get = function() return SavedVariables:Get().includePoorItems end,

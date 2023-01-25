@@ -92,6 +92,11 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.LISTS, Lists.Inclusions.name)
   end
 
+  -- Exclude unbound equipment.
+  if savedVariables.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+  end
+
   -- Include poor items.
   if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)

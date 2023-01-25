@@ -23,6 +23,7 @@ local function globalDefaults()
     autoSell = false,
     autoRepair = false,
     safeMode = false,
+    excludeUnboundEquipment = true,
     includePoorItems = true,
     includeBelowItemLevel = { enabled = false, value = 0 },
     includeUnsuitableEquipment = false,
