@@ -15,7 +15,7 @@ local Widgets = Addon:GetModule("Widgets")
   }
 ]]
 function Widgets:OptionsFrame(options)
-  local BUTTONS_PER_ROW = 5
+  local BUTTONS_PER_ROW = 4
   local SPACING = Widgets:Padding()
 
   -- Defaults.
