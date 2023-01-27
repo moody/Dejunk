@@ -5,6 +5,7 @@
 ### Added
 
 - Option: `Exclude Unbound Equipment`
+- Option: `Include Artifact Relics` ([#106](https://github.com/moody/Dejunk/issues/106))
 
 ### Changed
 
