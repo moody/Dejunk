@@ -111,7 +111,7 @@ do
 
   local function refreshTicker()
     if ticker then ticker:Cancel() end
-    ticker = C_Timer.NewTicker(0.25, updateCache, 1)
+    ticker = C_Timer.NewTicker(0.01, updateCache, 1)
   end
 
   EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
