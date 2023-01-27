@@ -27,6 +27,7 @@ local function globalDefaults()
     includePoorItems = true,
     includeBelowItemLevel = { enabled = false, value = 0 },
     includeUnsuitableEquipment = false,
+    includeArtifactRelics = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
   }

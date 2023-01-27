@@ -36,8 +36,8 @@ end
 UserInterface.frame = (function()
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_ParentFrame",
-    width = 650,
-    height = 500,
+    width = 780,
+    height = 600,
     titleText = Colors.Blue(ADDON_NAME),
   })
 
@@ -71,7 +71,7 @@ UserInterface.frame = (function()
     parent = frame,
     points = {
       { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(8) }
+      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(12) }
     },
     titleText = L.OPTIONS_TEXT
   })
@@ -171,6 +171,12 @@ UserInterface.frame = (function()
     get = function() return SavedVariables:Get().includeUnsuitableEquipment end,
     set = function(value) SavedVariables:Get().includeUnsuitableEquipment = value end
   })
+  frame.optionsFrame:AddOption({
+    labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
+    tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
+    get = function() return SavedVariables:Get().includeArtifactRelics end,
+    set = function(value) SavedVariables:Get().includeArtifactRelics = value end
+  })
 
   -- Inclusions frame.
   frame.inclusionsFrame = Widgets:ListFrame({
@@ -182,7 +188,8 @@ UserInterface.frame = (function()
     },
     titleText = Colors.Red(L.INCLUSIONS_TEXT),
     descriptionText = L.INCLUSIONS_DESCRIPTION,
-    list = Lists.Inclusions
+    list = Lists.Inclusions,
+    numButtons = 9
   })
 
   -- Exclusions frame.
@@ -195,7 +202,8 @@ UserInterface.frame = (function()
     },
     titleText = Colors.Green(L.EXCLUSIONS_TEXT),
     descriptionText = L.EXCLUSIONS_DESCRIPTION,
-    list = Lists.Exclusions
+    list = Lists.Exclusions,
+    numButtons = 9
   })
 
   return frame

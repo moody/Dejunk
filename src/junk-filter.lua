@@ -118,6 +118,11 @@ function JunkFilter:IsJunkItem(item)
     end
   end
 
+  -- Include artifact relics.
+  if savedVariables.includeArtifactRelics and Items:IsArtifactRelic(item) then
+    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  end
+
   -- No filters matched.
   return false, L.NO_FILTERS_MATCHED
 end
