@@ -9,7 +9,7 @@ local Lists = Addon:GetModule("Lists")
 -- ============================================================================
 
 -- Category.
-BINDING_CATEGORY_DEJUNK = Colors.Blue(ADDON_NAME)
+BINDING_CATEGORY_DEJUNK = "|cFF4FAFE3Dejunk|r"
 
 -- Headers.
 BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL

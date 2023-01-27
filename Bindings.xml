@@ -1,32 +1,32 @@
 <Bindings>
   <!-- General -->
-  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" header="DEJUNK_HEADER_GENERAL" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" header="DEJUNK_HEADER_GENERAL" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_ToggleOptionsFrame()
   </Binding>
-  <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_ToggleJunkFrame()
   </Binding>
-  <Binding name="DEJUNK_START_SELLING" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_START_SELLING" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_StartSelling()
   </Binding>
-  <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_DestroyNextItem()
   </Binding>
-  <Binding name="DEJUNK_OPEN_LOOTABLES" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_OPEN_LOOTABLES" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_OpenLootables()
   </Binding>
 
   <!-- Lists -->
-  <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_AddToList("Inclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_REM_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_RemoveFromList("Inclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_ADD_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_AddToList("Exclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
+  <Binding name="DEJUNK_REM_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_RemoveFromList("Exclusions")
   </Binding>
 </Bindings>

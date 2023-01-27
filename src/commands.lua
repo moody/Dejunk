@@ -121,7 +121,7 @@ function Commands.keybinds()
   if Addon.IS_RETAIL then
     -- Open the settings panel.
     local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
-    SettingsPanel:OpenToCategory(keybindingsCategoryId)
+    Settings.OpenToCategory(keybindingsCategoryId)
   else
     -- Open the keybinding frame.
     if not KeyBindingFrame then KeyBindingFrame_LoadUI() end
