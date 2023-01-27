@@ -1,19 +1,21 @@
 local _, Addon = ...
-local Colors = Addon.Colors
-local E = Addon.Events
-local EventManager = Addon.EventManager
-local GetItemInfo = GetItemInfo
-local GetItemInfoInstant = GetItemInfoInstant
-local Items = Addon.Items
-local L = Addon.Locale
-local Lists = Addon.Lists
-local SavedVariables = Addon.SavedVariables
-local Seller = Addon.Seller
+local Colors = Addon:GetModule("Colors")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
+local SavedVariables = Addon:GetModule("SavedVariables")
+local Seller = Addon:GetModule("Seller")
 
 local MAX_PARSE_ATTEMPTS = 50
 local parseAttempts = {
   -- ["itemId"] = count
 }
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
 
 local function getItemById(itemId)
   local name, link, quality, _, _, _, _, _, _, texture, price, classId = GetItemInfo(itemId)
@@ -35,6 +37,17 @@ end
 -- ============================================================================
 
 local Mixins = {}
+
+function Mixins:Reload()
+  self.sv = self.getSv()
+  for k in pairs(self.toAdd) do self.toAdd[k] = nil end
+  for k in pairs(self.items) do self.items[k] = nil end
+  for k in pairs(self.sv) do self.toAdd[k] = true end
+end
+
+function Mixins:GetSibling()
+  return self.getSibling()
+end
 
 function Mixins:Contains(itemId)
   return not not self.sv[tostring(itemId)]
@@ -152,27 +165,39 @@ end
 -- ============================================================================
 
 EventManager:On(E.SavedVariablesSwitched, function()
-  local savedVariables = SavedVariables:Get()
-
-  -- Inclusions.
-  Lists.Inclusions.sv = savedVariables.inclusions
-  for k in pairs(Lists.Inclusions.items) do Lists.Inclusions.items[k] = nil end
-  for k in pairs(savedVariables.inclusions) do Lists.Inclusions.toAdd[k] = true end
-
-  -- Exclusions.
-  Lists.Exclusions.sv = savedVariables.exclusions
-  for k in pairs(Lists.Exclusions.items) do Lists.Exclusions.items[k] = nil end
-  for k in pairs(savedVariables.exclusions) do Lists.Exclusions.toAdd[k] = true end
+  for list in Lists:Iterate() do list:Reload() end
 end)
 
 EventManager:On(E.ListItemAdded, function(list, item)
-  local other = list == Lists.Inclusions and Lists.Exclusions or Lists.Inclusions
-  if other:Contains(item.id) then other:Remove(item.id) end
+  local sibling = list:GetSibling()
+  if sibling:Contains(item.id) then sibling:Remove(item.id) end
 end)
 
 -- ============================================================================
 -- Lists
 -- ============================================================================
+
+do -- Lists.Inclusions, Lists.Exclusions
+  local function createList(data)
+    local list = data
+    list.toAdd = {}
+    list.items = {}
+    for k, v in pairs(Mixins) do list[k] = v end
+    return list
+  end
+
+  Lists.Inclusions = createList({
+    name = Colors.Red(L.INCLUSIONS_TEXT),
+    getSv = function() return SavedVariables:Get().inclusions end,
+    getSibling = function() return Lists.Exclusions end
+  })
+
+  Lists.Exclusions = createList({
+    name = Colors.Green(L.EXCLUSIONS_TEXT),
+    getSv = function() return SavedVariables:Get().exclusions end,
+    getSibling = function() return Lists.Inclusions end
+  })
+end
 
 do -- Lists:Iterate()
   local lists = { [Lists.Inclusions] = true, [Lists.Exclusions] = true }
@@ -192,20 +217,6 @@ end
 -- ============================================================================
 -- Initialize
 -- ============================================================================
-
--- Add required values to each list.
-Lists.Inclusions.name = Addon.Colors.Red(Addon.Locale.INCLUSIONS_TEXT)
-Lists.Exclusions.name = Addon.Colors.Green(Addon.Locale.EXCLUSIONS_TEXT)
-
-for list in Lists:Iterate() do
-  -- Tables.
-  list.toAdd = {}
-  list.items = {}
-  -- Mixins.
-  for funcName, func in pairs(Mixins) do
-    list[funcName] = func
-  end
-end
 
 -- Attempt to parse lists every 0.1 seconds.
 C_Timer.NewTicker(0.1, function()

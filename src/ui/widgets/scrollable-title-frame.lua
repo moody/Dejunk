@@ -1,5 +1,5 @@
 local _, Addon = ...
-local Widgets = Addon.UserInterface.Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates a TitleFrame with an embedded scroll frame and slider.

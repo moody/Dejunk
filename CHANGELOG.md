@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.5.0] - 2023-01-27
+
+### Added
+
+- Option: `Exclude Unbound Equipment`
+- Option: `Include Artifact Relics` ([#106](https://github.com/moody/Dejunk/issues/106))
+
+### Changed
+
+- Updated the merchant button to support ElvUI
+- Reverted behavior of option `Auto Junk Frame` to no longer apply to bags
+
+### Fixed
+
+- Issues with minimap icon positioning ([#163](https://github.com/moody/Dejunk/issues/163))
+- Issues with bag item caching
+- Taint with keybinding UI ([#166](https://github.com/moody/Dejunk/issues/166))
+
 ## [1.4.1] - 2022-11-04
 
 ### Fixed

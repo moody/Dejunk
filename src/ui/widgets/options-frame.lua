@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Colors = Addon.Colors
-local Widgets = Addon.UserInterface.Widgets
+local Colors = Addon:GetModule("Colors")
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates a TitleFrame with the ability to add boolean options.
@@ -15,7 +15,7 @@ local Widgets = Addon.UserInterface.Widgets
   }
 ]]
 function Widgets:OptionsFrame(options)
-  local BUTTONS_PER_ROW = 4
+  local BUTTONS_PER_ROW = 5
   local SPACING = Widgets:Padding()
 
   -- Defaults.

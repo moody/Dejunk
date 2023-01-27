@@ -1,7 +1,7 @@
 local _, Addon = ...
-local SavedVariables = Addon.SavedVariables
-local EventManager = Addon.EventManager
-local E = Addon.Events
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 local GLOBAL_SV = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
 local PERCHAR_SV = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
@@ -23,9 +23,11 @@ local function globalDefaults()
     autoSell = false,
     autoRepair = false,
     safeMode = false,
+    excludeUnboundEquipment = Addon.IS_RETAIL,
     includePoorItems = true,
     includeBelowItemLevel = { enabled = false, value = 0 },
     includeUnsuitableEquipment = false,
+    includeArtifactRelics = false,
     inclusions = { --[[ ["itemId"] = true, ... ]] },
     exclusions = { --[[ ["itemId"] = true, ... ]] },
   }

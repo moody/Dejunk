@@ -1,7 +1,7 @@
 local _, Addon = ...
-local L = Addon.Locale
-local TransportFrame = Addon.UserInterface.TransportFrame
-local Widgets = Addon.UserInterface.Widgets
+local L = Addon:GetModule("Locale")
+local TransportFrame = Addon:GetModule("TransportFrame")
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates an ItemsFrame for displaying a list.
@@ -20,7 +20,7 @@ local Widgets = Addon.UserInterface.Widgets
   }
 ]]
 function Widgets:ListFrame(options)
-  local otherList = options.list == Addon.Lists.Inclusions and Addon.Lists.Exclusions or Addon.Lists.Inclusions
+  local otherList = options.list:GetSibling()
 
   function options.onUpdateTooltip(self, tooltip)
     tooltip:SetText(options.titleText)

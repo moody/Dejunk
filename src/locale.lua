@@ -1,5 +1,11 @@
 local _, Addon = ...
-local L = Addon.Locale
+local L = Addon:GetModule("Locale")
+
+setmetatable(L, {
+  __index = function(t, k)
+    return rawget(t, k) or k
+  end
+})
 
 -- ============================================================================
 -- English
@@ -9,7 +15,7 @@ L["ADD_ALL_TO_LIST"] = "Add All to %s"
 L["ADD_TO_LIST"] = "Add to %s"
 L["ALL_ITEMS_REMOVED_FROM_LIST"] = "Removed all items from %s."
 L["AUTO_JUNK_FRAME_TEXT"] = "Auto Junk Frame"
-L["AUTO_JUNK_FRAME_TOOLTIP"] = "Automatically toggle the Junk frame upon interacting with a merchant or toggling your bags."
+L["AUTO_JUNK_FRAME_TOOLTIP"] = "Automatically toggle the Junk frame upon interacting with a merchant."
 L["AUTO_REPAIR_TEXT"] = "Auto Repair"
 L["AUTO_REPAIR_TOOLTIP"] = "Automatically repair upon interacting with a merchant."
 L["AUTO_SELL_TEXT"] = "Auto Sell"
@@ -39,6 +45,8 @@ L["CTRL_ALT_RIGHT_CLICK"] = "Ctrl+Alt Right-Click"
 L["DESTROY_NEXT_ITEM"] = "Destroy Next Item"
 L["DESTROY"] = "Destroy"
 L["DESTROYED_ITEM"] = "Destroyed: %s."
+L["EXCLUDE_UNBOUND_EQUIPMENT_TEXT"] = "Exclude Unbound Equipment"
+L["EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP"] = "Exclude equipment that is not bound."
 L["EXCLUSIONS_DESCRIPTION"] = "Items on this list will never be sold or destroyed."
 L["EXCLUSIONS_TEXT"] = "Exclusions"
 L["EXPORT"] = "Export"
@@ -46,6 +54,8 @@ L["FAILED_TO_DESTROY_ITEM"] = "Failed to destroy %s."
 L["FAILED_TO_SELL_ITEM"] = "Failed to sell %s."
 L["GENERAL"] = "General"
 L["IMPORT"] = "Import"
+L["INCLUDE_ARTIFACT_RELICS_TEXT"] = "Include Artifact Relics"
+L["INCLUDE_ARTIFACT_RELICS_TOOLTIP"] = "Include artifact relic gems."
 L["INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP"] = "Enter an item level:"
 L["INCLUDE_BELOW_ITEM_LEVEL_TEXT"] = "Include Below Item Level"
 L["INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP"] = "Include soulbound equipment with an item level below a set value (%s).|n|nThe value can be changed when enabling this option.|n|nDoes not apply to generic items, cosmetic items, or fishing poles."

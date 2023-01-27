@@ -1,11 +1,11 @@
 local _, Addon = ...
-local Container = Addon.Container
-local Destroyer = Addon.Destroyer
-local E = Addon.Events
-local EventManager = Addon.EventManager
-local Items = Addon.Items
-local JunkFilter = Addon.JunkFilter
-local L = Addon.Locale
+local Container = Addon:GetModule("Container")
+local Destroyer = Addon:GetModule("Destroyer")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
+local JunkFilter = Addon:GetModule("JunkFilter")
+local L = Addon:GetModule("Locale")
 
 -- ============================================================================
 -- Local Functions

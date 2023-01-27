@@ -1,6 +1,6 @@
 local _, Addon = ...
-local L = Addon.Locale
-local Widgets = Addon.UserInterface.Widgets
+local L = Addon:GetModule("Locale")
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates a ScrollableTitleFrame with an edit box.

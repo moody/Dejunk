@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Widgets = Addon.UserInterface.Widgets
-local Tooltip = Addon.Tooltip
+local Tooltip = Addon:GetModule("Tooltip")
+local Widgets = Addon:GetModule("Widgets")
 
 --[[
   Creates a basic frame with a backdrop.

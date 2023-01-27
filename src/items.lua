@@ -1,8 +1,8 @@
 local _, Addon = ...
-local Container = Addon.Container
-local E = Addon.Events
-local EventManager = Addon.EventManager
-local Items = Addon.Items
+local Container = Addon:GetModule("Container")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
 
 -- Initialize cache table.
 Items.cache = {}
@@ -109,22 +109,18 @@ end
 do
   local ticker
 
-  EventManager:Once(E.Wow.PlayerLogin, function()
+  local function refreshTicker()
     if ticker then ticker:Cancel() end
-    updateCache()
-  end)
+    ticker = C_Timer.NewTicker(0.01, updateCache, 1)
+  end
 
-  EventManager:On(E.Wow.BagUpdateDelayed, function()
-    if ticker then ticker:Cancel() end
-    updateCache()
-  end)
+  EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
+
+  EventManager:On(E.Wow.BagUpdate, refreshTicker)
+  EventManager:On(E.Wow.BagUpdateDelayed, refreshTicker)
 
   EventManager:On(E.BagsUpdated, function(allItemsCached)
-    -- If not all cached, start a new ticker to try again.
-    if not allItemsCached then
-      if ticker then ticker:Cancel() end
-      ticker = C_Timer.NewTicker(0.25, updateCache, 1)
-    end
+    if not allItemsCached then refreshTicker() end
   end)
 end
 
@@ -227,6 +223,10 @@ end
 function Items:IsItemSuitable(item)
   if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
+end
+
+function Items:IsArtifactRelic(item)
+  return item.classId == Enum.ItemClass.Gem and item.subclassId == Enum.ItemGemSubclass.Artifactrelic
 end
 
 -- ============================================================================

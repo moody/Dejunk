@@ -1,10 +1,10 @@
 local _, Addon = ...
-local Colors = Addon.Colors
-local Items = Addon.Items
-local JunkFilter = Addon.JunkFilter
-local L = Addon.Locale
-local Lists = Addon.Lists
-local SavedVariables = Addon.SavedVariables
+local Colors = Addon:GetModule("Colors")
+local Items = Addon:GetModule("Items")
+local JunkFilter = Addon:GetModule("JunkFilter")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
+local SavedVariables = Addon:GetModule("SavedVariables")
 
 -- ============================================================================
 -- Local Functions
@@ -92,6 +92,11 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.LISTS, Lists.Inclusions.name)
   end
 
+  -- Exclude unbound equipment.
+  if savedVariables.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+  end
+
   -- Include poor items.
   if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
@@ -111,6 +116,11 @@ function JunkFilter:IsJunkItem(item)
     if savedVariables.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
     end
+  end
+
+  -- Include artifact relics.
+  if savedVariables.includeArtifactRelics and Items:IsArtifactRelic(item) then
+    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 
   -- No filters matched.

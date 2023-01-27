@@ -1,17 +1,17 @@
 local _, Addon = ...
-local Colors = Addon.Colors
-local Commands = Addon.Commands
-local Container = Addon.Container
-local Destroyer = Addon.Destroyer
-local E = Addon.Events
-local EventManager = Addon.EventManager
-local Items = Addon.Items
-local JunkFrame = Addon.UserInterface.JunkFrame
-local L = Addon.Locale
-local Lists = Addon.Lists
-local Seller = Addon.Seller
-local TransportFrame = Addon.UserInterface.TransportFrame
-local UserInterface = Addon.UserInterface
+local Colors = Addon:GetModule("Colors")
+local Commands = Addon:GetModule("Commands")
+local Container = Addon:GetModule("Container")
+local Destroyer = Addon:GetModule("Destroyer")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
+local JunkFrame = Addon:GetModule("JunkFrame")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
+local Seller = Addon:GetModule("Seller")
+local TransportFrame = Addon:GetModule("TransportFrame")
+local UserInterface = Addon:GetModule("UserInterface")
 
 -- ============================================================================
 -- Events
@@ -121,7 +121,7 @@ function Commands.keybinds()
   if Addon.IS_RETAIL then
     -- Open the settings panel.
     local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
-    SettingsPanel:OpenToCategory(keybindingsCategoryId)
+    Settings.OpenToCategory(keybindingsCategoryId)
   else
     -- Open the keybinding frame.
     if not KeyBindingFrame then KeyBindingFrame_LoadUI() end

@@ -1,15 +1,15 @@
 local ADDON_NAME, Addon = ...
-local Colors = Addon.Colors
-local Commands = Addon.Commands
-local L = Addon.Locale
-local Lists = Addon.Lists
+local Colors = Addon:GetModule("Colors")
+local Commands = Addon:GetModule("Commands")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 
 -- ============================================================================
 -- Binding Strings
 -- ============================================================================
 
 -- Category.
-BINDING_CATEGORY_DEJUNK = Colors.Blue(ADDON_NAME)
+BINDING_CATEGORY_DEJUNK = "|cFF4FAFE3Dejunk|r"
 
 -- Headers.
 BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL

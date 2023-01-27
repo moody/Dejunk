@@ -1,5 +1,5 @@
 local _, Addon = ...
-local Container = Addon.Container
+local Container = Addon:GetModule("Container")
 
 local function exists(k)
   return type(C_Container) == "table" and type(C_Container[k]) == "function"

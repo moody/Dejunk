@@ -1,5 +1,5 @@
 local _, Addon = ...
-local EventManager = Addon.EventManager
+local EventManager = Addon:GetModule("EventManager")
 
 local handlers = {
   -- ["EVENT_KEY"] = {
@@ -61,6 +61,6 @@ frame:SetScript("OnEvent", function(self, event, ...)
   EventManager:Fire(event, ...)
 end)
 
-for _, event in pairs(Addon.Events.Wow) do
+for _, event in pairs(Addon:GetModule("Events").Wow) do
   frame:RegisterEvent(event)
 end
