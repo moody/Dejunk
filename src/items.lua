@@ -109,22 +109,18 @@ end
 do
   local ticker
 
-  EventManager:Once(E.Wow.PlayerLogin, function()
+  local function refreshTicker()
     if ticker then ticker:Cancel() end
-    updateCache()
-  end)
+    ticker = C_Timer.NewTicker(0.25, updateCache, 1)
+  end
 
-  EventManager:On(E.Wow.BagUpdateDelayed, function()
-    if ticker then ticker:Cancel() end
-    updateCache()
-  end)
+  EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
+
+  EventManager:On(E.Wow.BagUpdate, refreshTicker)
+  EventManager:On(E.Wow.BagUpdateDelayed, refreshTicker)
 
   EventManager:On(E.BagsUpdated, function(allItemsCached)
-    -- If not all cached, start a new ticker to try again.
-    if not allItemsCached then
-      if ticker then ticker:Cancel() end
-      ticker = C_Timer.NewTicker(0.25, updateCache, 1)
-    end
+    if not allItemsCached then refreshTicker() end
   end)
 end
 
