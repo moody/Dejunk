@@ -15,6 +15,7 @@
 
 - Issues with minimap icon positioning ([#163](https://github.com/moody/Dejunk/issues/163))
 - Issues with bag item caching
+- Taint with keybinding UI ([#166](https://github.com/moody/Dejunk/issues/166))
 
 ## [1.4.1] - 2022-11-04
 
