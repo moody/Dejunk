@@ -78,7 +78,7 @@ JunkFrame.frame = (function()
       { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
-    labelColor = Colors.Green,
+    labelColor = Colors.Yellow,
     labelText = L.START_SELLING,
     onClick = Commands.sell
   })
