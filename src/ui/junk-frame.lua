@@ -79,7 +79,7 @@ JunkFrame.frame = (function()
       { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
-    labelColor = Colors.Yellow,
+    labelColor = Colors.Green,
     labelText = L.START_SELLING,
     onClick = Commands.sell
   })
@@ -94,7 +94,17 @@ JunkFrame.frame = (function()
     },
     labelColor = Colors.Red,
     labelText = L.DESTROY_NEXT_ITEM,
-    onClick = Commands.destroy
+    onClick = Commands.destroy,
+    onUpdateTooltip = function(self, tooltip)
+      local items = self:GetParent().items
+      if items and items[1] then
+        if IsShiftKeyDown() then
+          tooltip:SetBagItem(items[1].bag, items[1].slot)
+        else
+          tooltip:SetText(items[1].link)
+        end
+      end
+    end
   })
 
   frame:HookScript("OnUpdate", function(self)
@@ -107,7 +117,7 @@ JunkFrame.frame = (function()
     -- Update button state.
     if #self.items > 0 then
       self.startSellingButton:Show()
-      self.startSellingButton:SetEnabled(hasSellableItems(self.items))
+      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
 
       self.destroyNextItemButton:Show()
       self.destroyNextItemButton:SetEnabled(true)
