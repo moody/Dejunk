@@ -10,6 +10,7 @@
 ### Fixed
 
 - Issue with frame levels
+- Support for reagent bag in retail ([#165](https://github.com/moody/Dejunk/issues/165))
 
 ## [1.5.0] - 2023-01-27
 
