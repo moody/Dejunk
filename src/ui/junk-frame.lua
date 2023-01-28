@@ -68,7 +68,6 @@ JunkFrame.frame = (function()
     height = 375,
     titleText = Colors.Yellow(L.JUNK_ITEMS),
   })
-  frame:SetFrameLevel(frame:GetFrameLevel() + 1)
   frame.items = {}
 
   -- Start selling button.
