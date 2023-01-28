@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Split the dual-functionality of the Junk Frame button into two distinct buttons: `Start Selling` & `Destroy Next Item`
+
 ## [1.5.0] - 2023-01-27
 
 ### Added
