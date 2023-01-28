@@ -51,21 +51,6 @@ end
 -- Initialize
 -- ============================================================================
 
-local function sortFunc(a, b)
-  local aTotalPrice = a.price * a.quantity
-  local bTotalPrice = b.price * b.quantity
-  if aTotalPrice == bTotalPrice then
-    if a.quality == b.quality then
-      if a.name == b.name then
-        return a.quantity < b.quantity
-      end
-      return a.name < b.name
-    end
-    return a.quality < b.quality
-  end
-  return aTotalPrice < bTotalPrice
-end
-
 local function hasSellableItems(items)
   for _, item in ipairs(items) do
     if Items:IsItemSellable(item) then
@@ -114,8 +99,7 @@ JunkFrame.frame = (function()
 
   frame:HookScript("OnUpdate", function(self)
     -- Get items.
-    JunkFilter:GetJunkItems(frame.items)
-    table.sort(frame.items, sortFunc)
+    JunkFilter:GetJunkItems(self.items)
 
     -- Title.
     self.title:SetText(Colors.Grey(("%s (%s)"):format(Colors.Yellow(L.JUNK_ITEMS), Colors.White(#self.items))))
@@ -128,11 +112,11 @@ JunkFrame.frame = (function()
       self.destroyNextItemButton:Show()
       self.destroyNextItemButton:SetEnabled(true)
 
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame.destroyNextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", self.destroyNextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
     else
       self.startSellingButton:Hide()
       self.destroyNextItemButton:Hide()
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding())
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", self, -Widgets:Padding(), Widgets:Padding())
     end
 
     -- Disable buttons if busy.
