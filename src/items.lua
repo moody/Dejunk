@@ -3,6 +3,7 @@ local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
+local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 
 -- Initialize cache table.
 Items.cache = {}

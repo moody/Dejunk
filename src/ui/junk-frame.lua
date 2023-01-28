@@ -51,27 +51,13 @@ end
 -- Initialize
 -- ============================================================================
 
-local function sortFunc(a, b)
-  local aTotalPrice = a.price * a.quantity
-  local bTotalPrice = b.price * b.quantity
-  if aTotalPrice == bTotalPrice then
-    if a.quality == b.quality then
-      if a.name == b.name then
-        return a.quantity < b.quantity
-      end
-      return a.name < b.name
-    end
-    return a.quality < b.quality
-  end
-  return aTotalPrice < bTotalPrice
-end
-
 local function hasSellableItems(items)
   for _, item in ipairs(items) do
     if Items:IsItemSellable(item) then
       return true
     end
   end
+  return false
 end
 
 -- Create frame.
@@ -82,52 +68,71 @@ JunkFrame.frame = (function()
     height = 375,
     titleText = Colors.Yellow(L.JUNK_ITEMS),
   })
-  frame:SetFrameLevel(frame:GetFrameLevel() + 1)
   frame.items = {}
 
-  -- Next item button.
-  frame.nextItemButton = Widgets:Button({
-    name = "$parent_NextItemButton",
+  -- Start selling button.
+  frame.startSellingButton = Widgets:Button({
+    name = "$parent_StartSellingButton",
     parent = frame,
     points = {
       { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
+      { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
+    },
+    labelColor = Colors.Yellow,
+    labelText = L.START_SELLING,
+    onClick = Commands.sell
+  })
+
+  -- Destroy next item button.
+  frame.destroyNextItemButton = Widgets:Button({
+    name = "$parent_DestroyNextItemButton",
+    parent = frame,
+    points = {
+      { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding() }
     },
-    labelColor = Colors.Yellow
+    labelColor = Colors.Red,
+    labelText = L.DESTROY_NEXT_ITEM,
+    onClick = Commands.destroy,
+    onUpdateTooltip = function(self, tooltip)
+      local items = self:GetParent().items
+      if items and items[1] then
+        if IsShiftKeyDown() then
+          tooltip:SetBagItem(items[1].bag, items[1].slot)
+        else
+          tooltip:SetText(items[1].link)
+        end
+      end
+    end
   })
 
   frame:HookScript("OnUpdate", function(self)
     -- Get items.
-    JunkFilter:GetJunkItems(frame.items)
-    table.sort(frame.items, sortFunc)
+    JunkFilter:GetJunkItems(self.items)
 
     -- Title.
     self.title:SetText(Colors.Grey(("%s (%s)"):format(Colors.Yellow(L.JUNK_ITEMS), Colors.White(#self.items))))
 
+    -- Update button state.
     if #self.items > 0 then
-      -- Next item button.
-      if MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items) then
-        self.nextItemButton.onClick = Commands.sell
-        self.nextItemButton.label:SetText(L.START_SELLING)
-      else
-        self.nextItemButton.onClick = Commands.destroy
-        self.nextItemButton.label:SetText(L.DESTROY_NEXT_ITEM)
-      end
-      self.nextItemButton:Show()
-      -- Items frame.
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame.nextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
+      self.startSellingButton:Show()
+      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
+
+      self.destroyNextItemButton:Show()
+      self.destroyNextItemButton:SetEnabled(true)
+
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", self.destroyNextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
     else
-      -- Next item button.
-      self.nextItemButton.onClick = nil
-      self.nextItemButton:Hide()
-      -- Items frame.
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding())
+      self.startSellingButton:Hide()
+      self.destroyNextItemButton:Hide()
+      self.itemsFrame:SetPoint("BOTTOMRIGHT", self, -Widgets:Padding(), Widgets:Padding())
     end
 
-    -- Disable button if busy.
-    local isBusy, reason = Addon:IsBusy()
-    self.nextItemButton:SetEnabled(not isBusy)
-    if isBusy then self.nextItemButton.label:SetText(reason) end
+    -- Disable buttons if busy.
+    if Addon:IsBusy() then
+      self.startSellingButton:SetEnabled(false)
+      self.destroyNextItemButton:SetEnabled(false)
+    end
   end)
 
   -- Items frame.

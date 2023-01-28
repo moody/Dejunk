@@ -20,6 +20,20 @@ do
   end
 end
 
+local function itemSortFunc(a, b)
+  local aTotalPrice = a.price * a.quantity
+  local bTotalPrice = b.price * b.quantity
+  if aTotalPrice == bTotalPrice then
+    if a.quality == b.quality then
+      if a.name == b.name then
+        return a.quantity < b.quantity
+      end
+      return a.name < b.name
+    end
+    return a.quality < b.quality
+  end
+  return aTotalPrice < bTotalPrice
+end
 
 local function getJunkItems(filterFunc, items)
   items = Items:GetItems(items)
@@ -34,6 +48,8 @@ local function getJunkItems(filterFunc, items)
       table.remove(items, i)
     end
   end
+
+  table.sort(items, itemSortFunc)
 
   return items
 end
