@@ -5,6 +5,7 @@
 ### Changed
 
 - Split the dual-functionality of the Junk Frame button into two distinct buttons: `Start Selling` & `Destroy Next Item`
+- Added tooltips to the Junk Frame's `Destroy Next Item` button: mousing over the button will display the name of the next item to be destroyed, and holding shift will display the item's tooltip
 
 ## [1.5.0] - 2023-01-27
 
