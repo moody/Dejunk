@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Support for Global and Character lists (i.e. both are now active at all times)
+- New keybindings to support Global and Character lists
+- Added buttons to the list frames:
+  - `Switch View` switches the view between Global and Character lists
+  - `Transport` toggles the Transport frame for the displayed list
+
+### Changed
+
+- Active lists are no longer tied to `Options > Character Specific Settings`
+- Holding `Shift` when dropping an item into the Junk frame will add it to `Inclusions (Global)`
+- Command `/dejunk transport {inclusions|exclusions}` now requires an additional argument: `/dejunk transport {inclusions|exclusions} {global|character}`
+
 ## [1.5.1] - 2023-01-27
 
 ### Changed
