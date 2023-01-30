@@ -83,7 +83,7 @@ function Widgets:ListFrame(options)
     name = "$parent_TransportButton",
     parent = frame.titleButton,
     points = { { "TOPRIGHT" }, { "BOTTOMRIGHT" } },
-    texture = "Interface\\AddOns\\Dejunk\\assets\\transport-icon",
+    texture = Addon:GetAsset("transport-icon"),
     textureSize = frame.title:GetStringHeight(),
     onClick = function() TransportFrame:Toggle(options.list) end,
     onUpdateTooltip = function(self, tooltip)
@@ -100,7 +100,7 @@ function Widgets:ListFrame(options)
       { "TOPRIGHT", frame.transportButton, "TOPLEFT", 0, 0 },
       { "BOTTOMRIGHT", frame.transportButton, "BOTTOMLEFT", 0, 0 }
     },
-    texture = "Interface\\AddOns\\Dejunk\\assets\\switch-icon",
+    texture = Addon:GetAsset("switch-icon"),
     textureSize = frame.title:GetStringHeight(),
     onClick = function() frame:SwitchList() end,
     onUpdateTooltip = function(self, tooltip)

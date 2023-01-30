@@ -35,6 +35,10 @@ do -- Addon:GetLibrary()
   end
 end
 
+function Addon:GetAsset(fileName)
+  return ("Interface\\AddOns\\%s\\assets\\%s"):format(ADDON_NAME, fileName)
+end
+
 function Addon:IfNil(value, default)
   if value == nil then return default end
   return value
