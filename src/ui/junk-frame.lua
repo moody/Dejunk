@@ -111,7 +111,7 @@ JunkFrame.frame = (function()
     JunkFilter:GetJunkItems(self.items)
 
     -- Title.
-    self.title:SetText(Colors.Grey(("%s (%s)"):format(Colors.Yellow(L.JUNK_ITEMS), Colors.White(#self.items))))
+    self.title:SetText(Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#self.items))))
 
     -- Update button state.
     if #self.items > 0 then
