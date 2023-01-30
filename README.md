@@ -19,8 +19,8 @@ with the press of a button.
 
 - Automate the process of selling junk items at a merchant
 - Destroy junk items with the press of a button
-- Customize a list of junk items to always sell or destroy (Inclusions)
-- Customize a list of junk items to never sell or destroy (Exclusions)
+- Customize lists of junk items to always sell or destroy (Inclusions)
+- Customize lists of junk items to never sell or destroy (Exclusions)
 - Set up keybindings or use chat commands for most operations
 
 ## Chat Commands
@@ -39,7 +39,7 @@ with the press of a button.
 /dejunk junk
 
 # Toggle the transport frame.
-/dejunk transport {inclusions|exclusions}
+/dejunk transport {inclusions|exclusions} {global|character}
 
 # Start selling items.
 /dejunk sell
@@ -56,6 +56,7 @@ with the press of a button.
 ### Art
 
 - [Cash icon](https://game-icons.net/1x1/lorc/cash.html) by [Lorc](http://lorcblog.blogspot.com/) under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/).
+- [FontAwesome](https://fontawesome.com/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 
 ### Libraries
 
