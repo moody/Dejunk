@@ -144,16 +144,16 @@ JunkFrame.frame = (function()
     titleText = Colors.White(L.JUNK_ITEMS),
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.JUNK_ITEMS)
-      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.Inclusions.name))
+      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.PerCharInclusions.name, Lists.GlobalInclusions.name))
       tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.Exclusions.name))
+      tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.PerCharExclusions.name))
     end,
     itemButtonOnUpdateTooltip = function(self, tooltip)
       tooltip:SetBagItem(self.item.bag, self.item.slot)
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
       tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.DESTROY)
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.Exclusions.name))
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
     end,
     itemButtonOnClick = function(self, button)
       if button == "LeftButton" then
@@ -165,14 +165,20 @@ JunkFrame.frame = (function()
       end
 
       if button == "RightButton" then
-        Lists.Exclusions:Add(self.item.id)
+        Lists.PerCharExclusions:Add(self.item.id)
       end
     end,
     getItems = function() return frame.items end,
-    addItem = function(itemId) Lists.Inclusions:Add(itemId) end,
+    addItem = function(itemId)
+      if IsShiftKeyDown() then
+        Lists.GlobalInclusions:Add(itemId)
+      else
+        Lists.PerCharInclusions:Add(itemId)
+      end
+    end,
     removeAllItems = function()
       for _, item in pairs(frame.items) do
-        Lists.Exclusions:Add(item.id)
+        Lists.PerCharExclusions:Add(item.id)
       end
     end
   })

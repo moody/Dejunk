@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local TransportFrame = Addon:GetModule("TransportFrame")
 local Widgets = Addon:GetModule("Widgets")
@@ -14,21 +15,20 @@ local Widgets = Addon:GetModule("Widgets")
     height? = number,
     numButtons? = number,
     displayPrice? = boolean,
-    titleText = string,
-    descriptionText = string,
     list = table
   }
 ]]
 function Widgets:ListFrame(options)
-  local otherList = options.list:GetSibling()
+  -- Defaults.
+  options.titleText = options.list.name
 
   function options.onUpdateTooltip(self, tooltip)
-    tooltip:SetText(options.titleText)
-    tooltip:AddLine(options.descriptionText)
+    tooltip:SetText(options.list.name)
+    tooltip:AddLine(options.list.description)
     tooltip:AddLine(" ")
     tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine(L.LEFT_CLICK, L.TOGGLE_TRANSPORT_FRAME)
+    tooltip:AddDoubleLine(L.LEFT_CLICK, L.LIST_FRAME_SWITCH_BUTTON_TEXT)
     tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.REMOVE_ALL_ITEMS)
   end
 
@@ -36,13 +36,13 @@ function Widgets:ListFrame(options)
     tooltip:SetHyperlink(self.item.link)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
-    tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.ADD_TO_LIST:format(otherList.name))
+    tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.ADD_TO_LIST:format(options.list:GetSibling().name))
   end
 
   function options.itemButtonOnClick(self, button)
     if button == "RightButton" then
       if IsShiftKeyDown() then
-        otherList:Add(self.item.id)
+        options.list:GetSibling():Add(self.item.id)
       else
         options.list:Remove(self.item.id)
       end
@@ -63,12 +63,88 @@ function Widgets:ListFrame(options)
 
   -- Base frame.
   local frame = self:ItemsFrame(options)
+  frame.title:SetJustifyH("LEFT")
 
+  function frame:SwitchList()
+    options.list = options.list:GetPartner()
+    self.title:SetText(options.list.name)
+  end
+
+  -- Hook OnClick.
   frame.titleButton:HookScript("OnClick", function(self, button)
     if button == "LeftButton" then
-      TransportFrame:Toggle(options.list)
+      frame:SwitchList()
+      self:UpdateTooltip()
     end
   end)
+
+  -- Transport button.
+  frame.transportButton = self:ListFrameIconButton({
+    name = "$parent_TransportButton",
+    parent = frame.titleButton,
+    points = { { "TOPRIGHT" }, { "BOTTOMRIGHT" } },
+    texture = "Interface\\AddOns\\Dejunk\\assets\\transport-icon",
+    textureSize = frame.title:GetStringHeight(),
+    onClick = function() TransportFrame:Toggle(options.list) end,
+    onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(L.TRANSPORT)
+      tooltip:AddLine(L.LIST_FRAME_TRANSPORT_BUTTON_TOOLTIP)
+    end
+  })
+
+  -- Switch button.
+  frame.switchButton = self:ListFrameIconButton({
+    name = "$parent_SwitchButton",
+    parent = frame.titleButton,
+    points = {
+      { "TOPRIGHT", frame.transportButton, "TOPLEFT", 0, 0 },
+      { "BOTTOMRIGHT", frame.transportButton, "BOTTOMLEFT", 0, 0 }
+    },
+    texture = "Interface\\AddOns\\Dejunk\\assets\\switch-icon",
+    textureSize = frame.title:GetStringHeight(),
+    onClick = function() frame:SwitchList() end,
+    onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(L.LIST_FRAME_SWITCH_BUTTON_TEXT)
+      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP)
+    end
+  })
+
+  return frame
+end
+
+--[[
+  Creates a button Frame with an icon.
+
+  options = {
+    name? = string,
+    parent? = UIObject,
+    points? = table[],
+    height? = number,
+    onUpdateTooltip? = function(self, tooltip) -> nil,
+    texture = string,
+    textureSize = number,
+    onClick? = function(self, button) -> nil
+  }
+]]
+function Widgets:ListFrameIconButton(options)
+  -- Defaults.
+  options.frameType = "Button"
+
+  -- Base frame.
+  local frame = self:Frame(options)
+  frame:SetBackdropColor(0, 0, 0, 0)
+  frame:SetBackdropBorderColor(0, 0, 0, 0)
+  frame:SetWidth(options.textureSize + self:Padding(4))
+
+  -- Texture.
+  frame.texture = frame:CreateTexture("$parent_Texture", "ARTWORK")
+  frame.texture:SetTexture(options.texture)
+  frame.texture:SetSize(options.textureSize, options.textureSize)
+  frame.texture:SetPoint("CENTER")
+
+  frame:HookScript("OnEnter", function(self) self:SetBackdropColor(Colors.Yellow:GetRGBA(0.75)) end)
+  frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
+  frame:SetScript("OnClick", options.onClick)
 
   return frame
 end

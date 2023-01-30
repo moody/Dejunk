@@ -98,14 +98,20 @@ function JunkFilter:IsJunkItem(item)
     return false, L.ITEM_IS_LOCKED
   end
 
-  -- Exclusions.
-  if Lists.Exclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.Exclusions.name)
+  -- PerChar lists.
+  if Lists.PerCharExclusions:Contains(item.id) then
+    return false, concat(L.LISTS, Lists.PerCharExclusions.name)
+  end
+  if Lists.PerCharInclusions:Contains(item.id) then
+    return true, concat(L.LISTS, Lists.PerCharInclusions.name)
   end
 
-  -- Inclusions.
-  if Lists.Inclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.Inclusions.name)
+  -- Global lists.
+  if Lists.GlobalExclusions:Contains(item.id) then
+    return false, concat(L.LISTS, Lists.GlobalExclusions.name)
+  end
+  if Lists.GlobalInclusions:Contains(item.id) then
+    return true, concat(L.LISTS, Lists.GlobalInclusions.name)
   end
 
   -- Exclude unbound equipment.
