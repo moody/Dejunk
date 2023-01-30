@@ -121,7 +121,6 @@ L["START_SELLING"] = "Start Selling"
 L["TOGGLE_JUNK_FRAME"] = "Toggle Junk Frame"
 L["TOGGLE_OPTIONS_FRAME"] = "Toggle Options Frame"
 L["TRANSPORT_FRAME_TOOLTIP"] = "Use this frame to transport item IDs into or out of the target list.|n|nWhen importing, item IDs must be separated by a semi-colon (e.g. 4983;58907;67410)."
-L["TRANSPORT_LIST"] = "Transport (%s)"
 L["TRANSPORT"] = "Transport"
 
 -- ============================================================================
