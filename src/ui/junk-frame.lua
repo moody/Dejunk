@@ -97,11 +97,7 @@ JunkFrame.frame = (function()
     onUpdateTooltip = function(self, tooltip)
       local items = self:GetParent().items
       if items and items[1] then
-        if IsShiftKeyDown() then
-          tooltip:SetBagItem(items[1].bag, items[1].slot)
-        else
-          tooltip:SetText(items[1].link)
-        end
+        tooltip:SetBagItem(items[1].bag, items[1].slot)
       end
     end
   })
