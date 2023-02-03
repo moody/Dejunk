@@ -155,8 +155,8 @@ JunkFrame.frame = (function()
       tooltip:SetBagItem(self.item.bag, self.item.slot)
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
-      tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.DESTROY)
       tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
+      tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), Colors.Red(L.DESTROY))
     end,
     itemButtonOnClick = function(self, button)
       if button == "LeftButton" then
