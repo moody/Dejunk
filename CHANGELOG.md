@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.6.0] - 2023-02-03
 
 ### Added
 
@@ -13,8 +13,8 @@
 ### Changed
 
 - Active lists are no longer tied to `Options > Character Specific Settings`
-- Holding `Shift` when dropping an item into the Junk frame will add it to `Inclusions (Global)`
 - Command `/dejunk transport {inclusions|exclusions}` now requires an additional argument: `/dejunk transport {inclusions|exclusions} {global|character}`
+- Holding `Shift` when dropping an item into the Junk frame will add it to `Inclusions (Global)`
 - Mousing over the `Destroy Next Item` button on the Junk frame now displays the item's tooltip by default
 
 ## [1.5.1] - 2023-01-27
