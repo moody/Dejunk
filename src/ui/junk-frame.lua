@@ -140,7 +140,11 @@ JunkFrame.frame = (function()
     titleText = Colors.White(L.JUNK_ITEMS),
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.JUNK_ITEMS)
-      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.PerCharInclusions.name, Lists.GlobalInclusions.name))
+      tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
+        Lists.PerCharInclusions.name,
+        Lists.GlobalInclusions.name,
+        Colors.White(L.SHIFT_KEY)
+      ))
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(
         Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK),
