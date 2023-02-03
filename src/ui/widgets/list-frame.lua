@@ -105,10 +105,13 @@ function Widgets:ListFrame(options)
     },
     texture = Addon:GetAsset("switch-icon"),
     textureSize = frame.title:GetStringHeight(),
-    onClick = function() frame:SwitchList() end,
+    onClick = function(self)
+      frame:SwitchList()
+      self:UpdateTooltip()
+    end,
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.LIST_FRAME_SWITCH_BUTTON_TEXT)
-      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP)
+      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP:format(options.list:GetPartner().name))
     end
   })
 
