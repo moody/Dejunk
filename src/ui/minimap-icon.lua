@@ -9,11 +9,15 @@ local LDBIcon = Addon:GetLibrary("LDBIcon")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local SavedVariables = Addon:GetModule("SavedVariables")
 
+local function addDoubleLine(tooltip, leftLine, rightLine)
+  tooltip:AddDoubleLine(Colors.Yellow(leftLine), Colors.White(rightLine))
+end
+
 EventManager:Once(E.SavedVariablesReady, function()
   local object = LDB:NewDataObject(ADDON_NAME, {
     type = "data source",
     text = ADDON_NAME,
-    icon = "Interface\\AddOns\\Dejunk\\Dejunk_Icon",
+    icon = Addon:GetAsset("dejunk-icon"),
 
     OnClick = function(_, button)
       if button == "LeftButton" then
@@ -27,10 +31,10 @@ EventManager:Once(E.SavedVariablesReady, function()
 
     OnTooltipShow = function(tooltip)
       tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
-      tooltip:AddDoubleLine(Colors.Yellow(L.LEFT_CLICK), Colors.White(L.TOGGLE_JUNK_FRAME))
-      tooltip:AddDoubleLine(Colors.Yellow(L.RIGHT_CLICK), Colors.White(L.TOGGLE_OPTIONS_FRAME))
-      tooltip:AddDoubleLine(Colors.Yellow(L.SHIFT_LEFT_CLICK), Colors.White(L.START_SELLING))
-      tooltip:AddDoubleLine(Colors.Yellow(L.SHIFT_RIGHT_CLICK), Colors.White(L.DESTROY_NEXT_ITEM))
+      addDoubleLine(tooltip, L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME)
+      addDoubleLine(tooltip, L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME)
+      addDoubleLine(tooltip, Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING)
+      addDoubleLine(tooltip, Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), L.DESTROY_NEXT_ITEM)
     end
   })
   LDBIcon:Register(ADDON_NAME, object, SavedVariables:GetGlobal().minimapIcon)

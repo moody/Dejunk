@@ -42,7 +42,7 @@ TransportFrame.frame = (function()
 
   frame:HookScript("OnUpdate", function(self)
     if not self.list then return end
-    self.title:SetText(Colors.Yellow(L.TRANSPORT_LIST:format(self.list.name)))
+    self.title:SetText(Colors.Yellow("%s (%s)"):format(L.TRANSPORT, self.list.name))
   end)
 
   -- Import button.

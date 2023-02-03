@@ -17,16 +17,29 @@
   </Binding>
 
   <!-- Lists -->
-  <Binding name="DEJUNK_ADD_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("Inclusions")
+  <Binding name="DEJUNK_ADD_PERCHAR_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("PerCharInclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("Inclusions")
+  <Binding name="DEJUNK_REM_PERCHAR_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("PerCharInclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("Exclusions")
+  <Binding name="DEJUNK_ADD_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("PerCharExclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("Exclusions")
+  <Binding name="DEJUNK_REM_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("PerCharExclusions")
+  </Binding>
+
+  <Binding name="DEJUNK_ADD_GLOBAL_INCLUSIONS" HEADER="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("GlobalInclusions")
+  </Binding>
+  <Binding name="DEJUNK_REM_GLOBAL_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("GlobalInclusions")
+  </Binding>
+  <Binding name="DEJUNK_ADD_GLOBAL_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("GlobalExclusions")
+  </Binding>
+  <Binding name="DEJUNK_REM_GLOBAL_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("GlobalExclusions")
   </Binding>
 </Bindings>

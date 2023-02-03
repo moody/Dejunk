@@ -189,9 +189,7 @@ UserInterface.frame = (function()
       { "TOPLEFT", frame.optionsFrame, "BOTTOMLEFT", 0, -Widgets:Padding(0.5) },
       { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
-    titleText = Colors.Red(L.INCLUSIONS_TEXT),
-    descriptionText = L.INCLUSIONS_DESCRIPTION,
-    list = Lists.Inclusions,
+    list = Lists.PerCharInclusions,
     numButtons = 8
   })
 
@@ -203,9 +201,7 @@ UserInterface.frame = (function()
       { "TOPRIGHT", frame.optionsFrame, "BOTTOMRIGHT", 0, -Widgets:Padding(0.5) },
       { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() }
     },
-    titleText = Colors.Green(L.EXCLUSIONS_TEXT),
-    descriptionText = L.EXCLUSIONS_DESCRIPTION,
-    list = Lists.Exclusions,
+    list = Lists.PerCharExclusions,
     numButtons = 8
   })
 

@@ -46,6 +46,7 @@ function Commands.help()
   Addon:ForcePrint(
     Colors.Gold("  /dejunk transport"),
     Colors.Grey(("{%s||%s}"):format(Colors.Gold("inclusions"), Colors.Gold("exclusions"))),
+    Colors.Grey(("{%s||%s}"):format(Colors.Gold("global"), Colors.Gold("character"))),
     "-",
     L.COMMAND_DESCRIPTION_TRANSPORT
   )
@@ -136,14 +137,11 @@ function Commands.keybinds()
   end
 end
 
-function Commands.transport(listName)
-  if listName == "inclusions" then
-    TransportFrame:Toggle(Lists.Inclusions)
-  elseif listName == "exclusions" then
-    TransportFrame:Toggle(Lists.Exclusions)
-  else
-    Commands.help()
-  end
+function Commands.transport(listName, listType)
+  local list = nil
+  if listName == "inclusions" then list = listType == "global" and Lists.GlobalInclusions or Lists.PerCharInclusions end
+  if listName == "exclusions" then list = listType == "global" and Lists.GlobalExclusions or Lists.PerCharExclusions end
+  if list then TransportFrame:Toggle(list) else Commands.help() end
 end
 
 Commands.import = Commands.transport

@@ -1,5 +1,4 @@
-local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors")
+local _, Addon = ...
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -14,6 +13,7 @@ BINDING_CATEGORY_DEJUNK = "|cFF4FAFE3Dejunk|r"
 -- Headers.
 BINDING_HEADER_DEJUNK_HEADER_GENERAL = L.GENERAL
 BINDING_HEADER_DEJUNK_HEADER_LISTS = L.LISTS
+BINDING_HEADER_DEJUNK_HEADER_BLANK1 = ""
 
 -- General.
 BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_OPTIONS_FRAME
@@ -23,10 +23,14 @@ BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
 BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLE_ITEMS
 
 -- Lists.
-BINDING_NAME_DEJUNK_ADD_INCLUSIONS = L.BINDINGS_ADD_TO_LIST:format(Lists.Inclusions.name)
-BINDING_NAME_DEJUNK_REM_INCLUSIONS = L.BINDINGS_REMOVE_FROM_LIST:format(Lists.Inclusions.name)
-BINDING_NAME_DEJUNK_ADD_EXCLUSIONS = L.BINDINGS_ADD_TO_LIST:format(Lists.Exclusions.name)
-BINDING_NAME_DEJUNK_REM_EXCLUSIONS = L.BINDINGS_REMOVE_FROM_LIST:format(Lists.Exclusions.name)
+BINDING_NAME_DEJUNK_ADD_GLOBAL_INCLUSIONS = L.ADD_TO_LIST:format(Lists.GlobalInclusions.name)
+BINDING_NAME_DEJUNK_REM_GLOBAL_INCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.GlobalInclusions.name)
+BINDING_NAME_DEJUNK_ADD_PERCHAR_INCLUSIONS = L.ADD_TO_LIST:format(Lists.PerCharInclusions.name)
+BINDING_NAME_DEJUNK_REM_PERCHAR_INCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.PerCharInclusions.name)
+BINDING_NAME_DEJUNK_ADD_GLOBAL_EXCLUSIONS = L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+BINDING_NAME_DEJUNK_REM_GLOBAL_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.GlobalExclusions.name)
+BINDING_NAME_DEJUNK_ADD_PERCHAR_EXCLUSIONS = L.ADD_TO_LIST:format(Lists.PerCharExclusions.name)
+BINDING_NAME_DEJUNK_REM_PERCHAR_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.PerCharExclusions.name)
 
 -- ============================================================================
 -- Binding Functions

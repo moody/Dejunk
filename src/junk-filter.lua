@@ -10,14 +10,8 @@ local SavedVariables = Addon:GetModule("SavedVariables")
 -- Local Functions
 -- ============================================================================
 
-local concat
-do
-  local cache = {}
-  concat = function(...)
-    for k in pairs(cache) do cache[k] = nil end
-    for i = 1, select("#", ...) do cache[#cache + 1] = select(i, ...) end
-    return table.concat(cache, Colors.Grey(" > "))
-  end
+local function concat(...)
+  return Addon:Concat(" > ", ...)
 end
 
 local function itemSortFunc(a, b)
@@ -98,14 +92,20 @@ function JunkFilter:IsJunkItem(item)
     return false, L.ITEM_IS_LOCKED
   end
 
-  -- Exclusions.
-  if Lists.Exclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.Exclusions.name)
+  -- PerChar lists.
+  if Lists.PerCharExclusions:Contains(item.id) then
+    return false, concat(L.LISTS, Lists.PerCharExclusions.name)
+  end
+  if Lists.PerCharInclusions:Contains(item.id) then
+    return true, concat(L.LISTS, Lists.PerCharInclusions.name)
   end
 
-  -- Inclusions.
-  if Lists.Inclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.Inclusions.name)
+  -- Global lists.
+  if Lists.GlobalExclusions:Contains(item.id) then
+    return false, concat(L.LISTS, Lists.GlobalExclusions.name)
+  end
+  if Lists.GlobalInclusions:Contains(item.id) then
+    return true, concat(L.LISTS, Lists.GlobalInclusions.name)
   end
 
   -- Exclude unbound equipment.

@@ -38,11 +38,8 @@ end
 
 local Mixins = {}
 
-function Mixins:Reload()
-  self.sv = self.getSv()
-  for k in pairs(self.toAdd) do self.toAdd[k] = nil end
-  for k in pairs(self.items) do self.items[k] = nil end
-  for k in pairs(self.sv) do self.toAdd[k] = true end
+function Mixins:GetPartner()
+  return self.getPartner()
 end
 
 function Mixins:GetSibling()
@@ -164,8 +161,11 @@ end
 -- Events
 -- ============================================================================
 
-EventManager:On(E.SavedVariablesSwitched, function()
-  for list in Lists:Iterate() do list:Reload() end
+EventManager:Once(E.SavedVariablesReady, function()
+  for list in Lists:Iterate() do
+    list.sv = list.getSv()
+    for k in pairs(list.sv) do list.toAdd[k] = true end
+  end
 end)
 
 EventManager:On(E.ListItemAdded, function(list, item)
@@ -177,7 +177,7 @@ end)
 -- Lists
 -- ============================================================================
 
-do -- Lists.Inclusions, Lists.Exclusions
+do
   local function createList(data)
     local list = data
     list.toAdd = {}
@@ -186,21 +186,50 @@ do -- Lists.Inclusions, Lists.Exclusions
     return list
   end
 
-  Lists.Inclusions = createList({
-    name = Colors.Red(L.INCLUSIONS_TEXT),
-    getSv = function() return SavedVariables:Get().inclusions end,
-    getSibling = function() return Lists.Exclusions end
+  -- PerCharInclusions.
+  Lists.PerCharInclusions = createList({
+    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
+    description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
+    getSv = function() return SavedVariables:GetPerChar().inclusions end,
+    getPartner = function() return Lists.GlobalInclusions end,
+    getSibling = function() return Lists.PerCharExclusions end
   })
 
-  Lists.Exclusions = createList({
-    name = Colors.Green(L.EXCLUSIONS_TEXT),
-    getSv = function() return SavedVariables:Get().exclusions end,
-    getSibling = function() return Lists.Inclusions end
+  -- PerCharExclusions.
+  Lists.PerCharExclusions = createList({
+    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
+    description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
+    getSv = function() return SavedVariables:GetPerChar().exclusions end,
+    getPartner = function() return Lists.GlobalExclusions end,
+    getSibling = function() return Lists.PerCharInclusions end
+  })
+
+  -- GlobalInclusions.
+  Lists.GlobalInclusions = createList({
+    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
+    description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
+    getSv = function() return SavedVariables:GetGlobal().inclusions end,
+    getPartner = function() return Lists.PerCharInclusions end,
+    getSibling = function() return Lists.GlobalExclusions end
+  })
+
+  -- GlobalExclusions.
+  Lists.GlobalExclusions = createList({
+    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
+    description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
+    getSv = function() return SavedVariables:GetGlobal().exclusions end,
+    getPartner = function() return Lists.PerCharExclusions end,
+    getSibling = function() return Lists.GlobalInclusions end
   })
 end
 
 do -- Lists:Iterate()
-  local lists = { [Lists.Inclusions] = true, [Lists.Exclusions] = true }
+  local lists = {
+    [Lists.GlobalInclusions] = true,
+    [Lists.PerCharInclusions] = true,
+    [Lists.GlobalExclusions] = true,
+    [Lists.PerCharExclusions] = true
+  }
   function Lists:Iterate()
     return next, lists
   end
