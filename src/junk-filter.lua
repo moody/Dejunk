@@ -10,14 +10,8 @@ local SavedVariables = Addon:GetModule("SavedVariables")
 -- Local Functions
 -- ============================================================================
 
-local concat
-do
-  local cache = {}
-  concat = function(...)
-    for k in pairs(cache) do cache[k] = nil end
-    for i = 1, select("#", ...) do cache[#cache + 1] = select(i, ...) end
-    return table.concat(cache, Colors.Grey(" > "))
-  end
+local function concat(...)
+  return Addon:Concat(" > ", ...)
 end
 
 local function itemSortFunc(a, b)

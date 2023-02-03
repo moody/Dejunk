@@ -29,14 +29,17 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.LEFT_CLICK, L.LIST_FRAME_SWITCH_BUTTON_TEXT)
-    tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.REMOVE_ALL_ITEMS)
+    tooltip:AddDoubleLine(Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
   end
 
   function options.itemButtonOnUpdateTooltip(self, tooltip)
     tooltip:SetHyperlink(self.item.link)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
-    tooltip:AddDoubleLine(L.SHIFT_RIGHT_CLICK, L.ADD_TO_LIST:format(options.list:GetSibling().name))
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
+      L.ADD_TO_LIST:format(options.list:GetSibling().name)
+    )
   end
 
   function options.itemButtonOnClick(self, button)

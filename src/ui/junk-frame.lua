@@ -142,13 +142,16 @@ JunkFrame.frame = (function()
       tooltip:SetText(L.JUNK_ITEMS)
       tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(Lists.PerCharInclusions.name, Lists.GlobalInclusions.name))
       tooltip:AddLine(" ")
-      tooltip:AddDoubleLine(L.CTRL_ALT_RIGHT_CLICK, L.ADD_ALL_TO_LIST:format(Lists.PerCharExclusions.name))
+      tooltip:AddDoubleLine(
+        Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK),
+        L.ADD_ALL_TO_LIST:format(Lists.PerCharExclusions.name)
+      )
     end,
     itemButtonOnUpdateTooltip = function(self, tooltip)
       tooltip:SetBagItem(self.item.bag, self.item.slot)
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
-      tooltip:AddDoubleLine(L.SHIFT_LEFT_CLICK, L.DESTROY)
+      tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.DESTROY)
       tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
     end,
     itemButtonOnClick = function(self, button)
