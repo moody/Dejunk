@@ -23,6 +23,7 @@
   <Script file="src\seller.lua"/>
   <Script file="src\destroyer.lua"/>
   <Script file="src\confirmer.lua"/>
+  <Script file="src\looter.lua"/>
 
   <Script file="src\ui\widgets\_init.lua"/>
   <Script file="src\ui\widgets\button.lua"/>
