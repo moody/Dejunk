@@ -39,6 +39,13 @@ function Addon:GetAsset(fileName)
   return ("Interface\\AddOns\\%s\\assets\\%s"):format(ADDON_NAME, fileName)
 end
 
+-- Returns latency in seconds.
+function Addon:GetLatency(minLatency)
+  local _, _, home, world = GetNetStats()
+  local latency = max(home, world) * 0.001
+  return max(latency, minLatency or 0.2)
+end
+
 do -- Addon:Concat()
   local Colors = Addon:GetModule("Colors")
   local cache = {}

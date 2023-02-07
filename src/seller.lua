@@ -106,9 +106,7 @@ function Seller:Start(auto)
   end
 
   -- Start ticker.
-  local home, world = select(3, GetNetStats())
-  local latency = max(max(home, world) * 0.001, 0.2)
-  self.ticker = C_Timer.NewTicker(latency, tickerCallback)
+  self.ticker = C_Timer.NewTicker(Addon:GetLatency(), tickerCallback)
   EventManager:Fire(E.SellerStarted)
 end
 
