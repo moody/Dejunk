@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Frequency of errors when opening a large amount of lootable items
+
 ## [1.6.0] - 2023-02-03
 
 ### Added
