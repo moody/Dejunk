@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Small visual changes to the tooltips for the Minimap and Merchant buttons
+
 ### Fixed
 
 - Frequency of errors when opening a large amount of lootable items
