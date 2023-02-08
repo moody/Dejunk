@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ability to add items to the Global Exclusions list via the Junk frame
+
 ### Changed
 
 - Small visual changes to the tooltips for the Minimap and Merchant buttons
