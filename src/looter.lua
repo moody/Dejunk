@@ -49,9 +49,7 @@ end
 -- ============================================================================
 
 function Looter:Start()
-  if self.ticker and not self.ticker:IsCancelled() then
-    return Addon:Print(L.OPEN_LOOTABLE_ITEMS_IN_PROGRESS)
-  end
+  if self.ticker and not self.ticker:IsCancelled() then return end
 
   if not canLootItems() then
     return Addon:Print(L.CANNOT_OPEN_LOOTABLE_ITEMS)
