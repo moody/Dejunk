@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.1] - 2023-02-18
+
+### Added
+
+- Ability to add items to the Global Exclusions list via the Junk frame
+
+### Changed
+
+- Small visual changes to the tooltips for the Minimap and Merchant buttons
+
+### Fixed
+
+- Frequency of errors when opening a large amount of lootable items
+
 ## [1.6.0] - 2023-02-03
 
 ### Added

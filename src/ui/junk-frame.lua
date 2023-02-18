@@ -150,6 +150,10 @@ JunkFrame.frame = (function()
         Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK),
         L.ADD_ALL_TO_LIST:format(Lists.PerCharExclusions.name)
       )
+      tooltip:AddDoubleLine(
+        Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.SHIFT_KEY, L.RIGHT_CLICK),
+        L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
+      )
     end,
     itemButtonOnUpdateTooltip = function(self, tooltip)
       tooltip:SetBagItem(self.item.bag, self.item.slot)
@@ -157,32 +161,30 @@ JunkFrame.frame = (function()
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
       tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
       tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), Colors.Red(L.DESTROY))
+      tooltip:AddDoubleLine(
+        Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
+        L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+      )
     end,
     itemButtonOnClick = function(self, button)
       if button == "LeftButton" then
-        if IsShiftKeyDown() then
-          Destroyer:HandleItem(self.item)
-        else
-          Seller:HandleItem(self.item)
-        end
+        local handler = IsShiftKeyDown() and Destroyer or Seller
+        handler:HandleItem(self.item)
       end
 
       if button == "RightButton" then
-        Lists.PerCharExclusions:Add(self.item.id)
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
+        list:Add(self.item.id)
       end
     end,
     getItems = function() return frame.items end,
     addItem = function(itemId)
-      if IsShiftKeyDown() then
-        Lists.GlobalInclusions:Add(itemId)
-      else
-        Lists.PerCharInclusions:Add(itemId)
-      end
+      local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.PerCharInclusions
+      list:Add(itemId)
     end,
     removeAllItems = function()
-      for _, item in pairs(frame.items) do
-        Lists.PerCharExclusions:Add(item.id)
-      end
+      local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
+      for _, item in pairs(frame.items) do list:Add(item.id) end
     end
   })
 

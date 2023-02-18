@@ -40,12 +40,24 @@ function Widgets:ListFrame(options)
       Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetSibling().name)
     )
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", L.CONTROL_KEY, L.RIGHT_CLICK),
+      L.ADD_TO_LIST:format(options.list:GetPartner():GetSibling().name)
+    )
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK),
+      L.ADD_TO_LIST:format(options.list:GetPartner().name)
+    )
   end
 
   function options.itemButtonOnClick(self, button)
     if button == "RightButton" then
       if IsShiftKeyDown() then
         options.list:GetSibling():Add(self.item.id)
+      elseif IsControlKeyDown() then
+        options.list:GetPartner():GetSibling():Add(self.item.id)
+      elseif IsAltKeyDown() then
+        options.list:GetPartner():Add(self.item.id)
       else
         options.list:Remove(self.item.id)
       end

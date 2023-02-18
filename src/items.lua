@@ -226,7 +226,7 @@ function Items:IsItemSuitable(item)
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
 end
 
-function Items:IsArtifactRelic(item)
+function Items:IsItemArtifactRelic(item)
   return item.classId == Enum.ItemClass.Gem and item.subclassId == Enum.ItemGemSubclass.Artifactrelic
 end
 

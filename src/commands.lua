@@ -1,14 +1,13 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
-local Container = Addon:GetModule("Container")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Items = Addon:GetModule("Items")
 local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
+local Looter = Addon:GetModule("Looter")
 local Seller = Addon:GetModule("Seller")
 local TransportFrame = Addon:GetModule("TransportFrame")
 local UserInterface = Addon:GetModule("UserInterface")
@@ -71,48 +70,8 @@ function Commands.destroy()
   Destroyer:Start()
 end
 
-do -- Commands.loot()
-  local frames = {
-    "BankFrame",
-    "MerchantFrame",
-    "TradeFrame",
-
-    -- Classic
-    "AuctionFrame",
-
-    -- Retail
-    "AuctionHouseFrame",
-    "AzeriteRespecFrame",
-    "GuildBankFrame",
-    "ScrappingMachineFrame",
-    "VoidStorageFrame"
-  }
-
-  function Commands.loot()
-    -- Stop if a frame is open which modifies the behavior of `UseContainerItem`.
-    for _, key in pairs(frames) do
-      local frame = _G[key]
-      if frame and frame:IsShown() then
-        return Addon:Print(L.CANNOT_OPEN_LOOTABLE_ITEMS)
-      end
-    end
-
-    CloseLoot()
-
-    local items = Items:GetItems()
-    local hasLootables = false
-
-    for _, item in ipairs(items) do
-      if item.lootable then
-        hasLootables = true
-        Container.UseContainerItem(item.bag, item.slot)
-      end
-    end
-
-    if not hasLootables then
-      Addon:Print(L.NO_LOOTABLE_ITEMS_TO_OPEN)
-    end
-  end
+function Commands.loot()
+  Looter:Start()
 end
 
 function Commands.keybinds()
