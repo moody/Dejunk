@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Typo in locale entry ([#180](https://github.com/moody/Dejunk/issues/180))
+
 ## [1.6.1] - 2023-02-18
 
 ### Added
