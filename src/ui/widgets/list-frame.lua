@@ -42,11 +42,11 @@ function Widgets:ListFrame(options)
     )
     tooltip:AddDoubleLine(
       Addon:Concat("+", L.CONTROL_KEY, L.RIGHT_CLICK),
-      L.ADD_TO_LIST:format(options.list:GetPartner():GetOpposite().name)
+      L.ADD_TO_LIST:format(options.list:GetSibling():GetOpposite().name)
     )
     tooltip:AddDoubleLine(
       Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK),
-      L.ADD_TO_LIST:format(options.list:GetPartner().name)
+      L.ADD_TO_LIST:format(options.list:GetSibling().name)
     )
   end
 
@@ -55,9 +55,9 @@ function Widgets:ListFrame(options)
       if IsShiftKeyDown() then
         options.list:GetOpposite():Add(self.item.id)
       elseif IsControlKeyDown() then
-        options.list:GetPartner():GetOpposite():Add(self.item.id)
+        options.list:GetSibling():GetOpposite():Add(self.item.id)
       elseif IsAltKeyDown() then
-        options.list:GetPartner():Add(self.item.id)
+        options.list:GetSibling():Add(self.item.id)
       else
         options.list:Remove(self.item.id)
       end
@@ -81,7 +81,7 @@ function Widgets:ListFrame(options)
   frame.title:SetJustifyH("LEFT")
 
   function frame:SwitchList()
-    options.list = options.list:GetPartner()
+    options.list = options.list:GetSibling()
     self.title:SetText(options.list.name)
   end
 
@@ -123,7 +123,7 @@ function Widgets:ListFrame(options)
     end,
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.LIST_FRAME_SWITCH_BUTTON_TEXT)
-      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP:format(options.list:GetPartner().name))
+      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP:format(options.list:GetSibling().name))
     end
   })
 
