@@ -42,8 +42,8 @@ function Mixins:GetPartner()
   return self.getPartner()
 end
 
-function Mixins:GetSibling()
-  return self.getSibling()
+function Mixins:GetOpposite()
+  return self.getOpposite()
 end
 
 function Mixins:Contains(itemId)
@@ -169,8 +169,8 @@ EventManager:Once(E.SavedVariablesReady, function()
 end)
 
 EventManager:On(E.ListItemAdded, function(list, item)
-  local sibling = list:GetSibling()
-  if sibling:Contains(item.id) then sibling:Remove(item.id) end
+  local opposite = list:GetOpposite()
+  if opposite:Contains(item.id) then opposite:Remove(item.id) end
 end)
 
 -- ============================================================================
@@ -192,7 +192,7 @@ do
     description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
     getSv = function() return SavedVariables:GetPerChar().inclusions end,
     getPartner = function() return Lists.GlobalInclusions end,
-    getSibling = function() return Lists.PerCharExclusions end
+    getOpposite = function() return Lists.PerCharExclusions end
   })
 
   -- PerCharExclusions.
@@ -201,7 +201,7 @@ do
     description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
     getSv = function() return SavedVariables:GetPerChar().exclusions end,
     getPartner = function() return Lists.GlobalExclusions end,
-    getSibling = function() return Lists.PerCharInclusions end
+    getOpposite = function() return Lists.PerCharInclusions end
   })
 
   -- GlobalInclusions.
@@ -210,7 +210,7 @@ do
     description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
     getSv = function() return SavedVariables:GetGlobal().inclusions end,
     getPartner = function() return Lists.PerCharInclusions end,
-    getSibling = function() return Lists.GlobalExclusions end
+    getOpposite = function() return Lists.GlobalExclusions end
   })
 
   -- GlobalExclusions.
@@ -219,7 +219,7 @@ do
     description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
     getSv = function() return SavedVariables:GetGlobal().exclusions end,
     getPartner = function() return Lists.PerCharExclusions end,
-    getSibling = function() return Lists.GlobalInclusions end
+    getOpposite = function() return Lists.GlobalInclusions end
   })
 end
 

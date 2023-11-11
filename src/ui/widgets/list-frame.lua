@@ -38,11 +38,11 @@ function Widgets:ListFrame(options)
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
     tooltip:AddDoubleLine(
       Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
-      L.ADD_TO_LIST:format(options.list:GetSibling().name)
+      L.ADD_TO_LIST:format(options.list:GetOpposite().name)
     )
     tooltip:AddDoubleLine(
       Addon:Concat("+", L.CONTROL_KEY, L.RIGHT_CLICK),
-      L.ADD_TO_LIST:format(options.list:GetPartner():GetSibling().name)
+      L.ADD_TO_LIST:format(options.list:GetPartner():GetOpposite().name)
     )
     tooltip:AddDoubleLine(
       Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK),
@@ -53,9 +53,9 @@ function Widgets:ListFrame(options)
   function options.itemButtonOnClick(self, button)
     if button == "RightButton" then
       if IsShiftKeyDown() then
-        options.list:GetSibling():Add(self.item.id)
+        options.list:GetOpposite():Add(self.item.id)
       elseif IsControlKeyDown() then
-        options.list:GetPartner():GetSibling():Add(self.item.id)
+        options.list:GetPartner():GetOpposite():Add(self.item.id)
       elseif IsAltKeyDown() then
         options.list:GetPartner():Add(self.item.id)
       else
