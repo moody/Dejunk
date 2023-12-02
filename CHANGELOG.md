@@ -5,6 +5,8 @@
 ### Fixed
 
 - Typo in locale entry ([#180](https://github.com/moody/Dejunk/issues/180))
+- Keybinds button error in Classic
+- Loot command errors
 
 ## [1.6.1] - 2023-02-18
 
