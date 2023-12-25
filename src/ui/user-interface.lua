@@ -129,6 +129,14 @@ UserInterface.frame = (function()
     get = function() return SavedVariables:Get().safeMode end,
     set = function(value) SavedVariables:Get().safeMode = value end
   })
+  if not Addon.IS_VANILLA then
+    frame.optionsFrame:AddOption({
+      labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
+      tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
+      get = function() return SavedVariables:Get().excludeEquipmentSets end,
+      set = function(value) SavedVariables:Get().excludeEquipmentSets = value end
+    })
+  end
   frame.optionsFrame:AddOption({
     labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
     tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,

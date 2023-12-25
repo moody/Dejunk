@@ -23,6 +23,7 @@ local function globalDefaults()
     autoSell = false,
     autoRepair = false,
     safeMode = false,
+    excludeEquipmentSets = not Addon.IS_VANILLA,
     excludeUnboundEquipment = Addon.IS_RETAIL,
     includePoorItems = true,
     includeBelowItemLevel = { enabled = false, value = 0 },

@@ -108,6 +108,11 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.LISTS, Lists.GlobalInclusions.name)
   end
 
+  -- Exclude equipment sets.
+  if not Addon.IS_VANILLA and savedVariables.excludeEquipmentSets and Items:IsItemEquipmentSet(item) then
+    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
+  end
+
   -- Exclude unbound equipment.
   if savedVariables.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)

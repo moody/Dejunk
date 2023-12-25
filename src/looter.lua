@@ -32,7 +32,7 @@ do
   canLootItems = function()
     for _, key in pairs(frames) do
       local frame = _G[key]
-      if frame and frame:IsShown() then
+      if frame and frame.IsShown and frame:IsShown() then
         return false
       end
     end

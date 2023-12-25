@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.7.0] - 2023-12-25
+
+### Added
+
+- Option: `Exclude Equipment Sets` ([#181](https://github.com/moody/Dejunk/issues/181))
+- Ability to sell/destroy heirloom quality items ([#187](https://github.com/moody/Dejunk/issues/187))
+- New `itemId` param for global list functions ([#186](https://github.com/moody/Dejunk/issues/186))
+
+### Fixed
+
+- Typo in locale entry ([#180](https://github.com/moody/Dejunk/issues/180))
+- Keybinds button error in Classic
+- Loot command errors
+
 ## [1.6.1] - 2023-02-18
 
 ### Added

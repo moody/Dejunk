@@ -4,7 +4,7 @@ local ADDON_NAME, Addon = ...
 -- Consts
 -- ============================================================================
 
-Addon.VERSION = GetAddOnMetadata(ADDON_NAME, "Version")
+Addon.VERSION = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 Addon.IS_VANILLA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 Addon.IS_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC

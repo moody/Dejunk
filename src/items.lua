@@ -174,11 +174,17 @@ function Items:IsItemBound(item)
   return false
 end
 
+function Items:IsItemJunkable(item)
+  return item.quality == Enum.ItemQuality.Poor or
+      item.quality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard) or
+      item.quality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good) or
+      item.quality == Enum.ItemQuality.Rare or
+      item.quality == Enum.ItemQuality.Epic or
+      item.quality == Enum.ItemQuality.Heirloom
+end
+
 function Items:IsItemSellable(item)
-  return not item.noValue and
-      item.price > 0 and
-      item.quality >= Enum.ItemQuality.Poor and
-      item.quality <= Enum.ItemQuality.Epic
+  return not item.noValue and item.price > 0 and self:IsItemJunkable(item)
 end
 
 function Items:IsItemDestroyable(item)
@@ -186,8 +192,7 @@ function Items:IsItemDestroyable(item)
     return false
   end
 
-  return item.quality >= Enum.ItemQuality.Poor and
-      item.quality <= Enum.ItemQuality.Epic
+  return self:IsItemJunkable(item)
 end
 
 function Items:IsItemRefundable(item)
@@ -219,6 +224,28 @@ do -- Items:IsItemEquipment()
 
     return false
   end
+end
+
+function Items:IsItemEquipmentSet(item)
+  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
+    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
+      if itemLocation and itemLocation ~= 1 then
+        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
+
+        -- In Wrath, `voidStorage` is not returned.
+        if Addon.IS_WRATH then
+          bag = slot
+          slot = voidStorage
+        end
+
+        if item.bag == bag and item.slot == slot then
+          return true
+        end
+      end
+    end
+  end
+
+  return false
 end
 
 function Items:IsItemSuitable(item)
