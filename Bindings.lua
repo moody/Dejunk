@@ -43,18 +43,20 @@ DejunkBindings_StartSelling = Commands.sell
 DejunkBindings_DestroyNextItem = Commands.destroy
 DejunkBindings_OpenLootables = Commands.loot
 
-function DejunkBindings_AddToList(listKey)
-  local name, link = GameTooltip:GetItem()
-  if name and link then
-    local id = GetItemInfoFromHyperlink(link)
-    Lists[listKey]:Add(id)
+function DejunkBindings_AddToList(listKey, itemId)
+  if not itemId then
+    local name, link = GameTooltip:GetItem()
+    if name and link then itemId = GetItemInfoFromHyperlink(link) end
   end
+
+  if itemId then Lists[listKey]:Add(itemId) end
 end
 
-function DejunkBindings_RemoveFromList(listKey)
-  local name, link = GameTooltip:GetItem()
-  if name and link then
-    local id = GetItemInfoFromHyperlink(link)
-    Lists[listKey]:Remove(id)
+function DejunkBindings_RemoveFromList(listKey, itemId)
+  if not itemId then
+    local name, link = GameTooltip:GetItem()
+    if name and link then itemId = GetItemInfoFromHyperlink(link) end
   end
+
+  if itemId then Lists[listKey]:Remove(itemId) end
 end
