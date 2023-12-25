@@ -174,11 +174,17 @@ function Items:IsItemBound(item)
   return false
 end
 
+function Items:IsItemJunkable(item)
+  return item.quality == Enum.ItemQuality.Poor or
+      item.quality == Enum.ItemQuality.Common or
+      item.quality == Enum.ItemQuality.Uncommon or
+      item.quality == Enum.ItemQuality.Rare or
+      item.quality == Enum.ItemQuality.Epic or
+      item.quality == Enum.ItemQuality.Heirloom
+end
+
 function Items:IsItemSellable(item)
-  return not item.noValue and
-      item.price > 0 and
-      item.quality >= Enum.ItemQuality.Poor and
-      item.quality <= Enum.ItemQuality.Epic
+  return not item.noValue and item.price > 0 and self:IsItemJunkable(item)
 end
 
 function Items:IsItemDestroyable(item)
@@ -186,8 +192,7 @@ function Items:IsItemDestroyable(item)
     return false
   end
 
-  return item.quality >= Enum.ItemQuality.Poor and
-      item.quality <= Enum.ItemQuality.Epic
+  return self:IsItemJunkable(item)
 end
 
 function Items:IsItemRefundable(item)
