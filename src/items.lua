@@ -176,8 +176,8 @@ end
 
 function Items:IsItemJunkable(item)
   return item.quality == Enum.ItemQuality.Poor or
-      item.quality == Enum.ItemQuality.Common or
-      item.quality == Enum.ItemQuality.Uncommon or
+      item.quality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard) or
+      item.quality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good) or
       item.quality == Enum.ItemQuality.Rare or
       item.quality == Enum.ItemQuality.Epic or
       item.quality == Enum.ItemQuality.Heirloom
