@@ -226,6 +226,28 @@ do -- Items:IsItemEquipment()
   end
 end
 
+function Items:IsItemEquipmentSet(item)
+  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
+    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
+      if itemLocation and itemLocation ~= 1 then
+        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
+
+        -- In Wrath, `voidStorage` is not returned.
+        if Addon.IS_WRATH then
+          bag = slot
+          slot = voidStorage
+        end
+
+        if item.bag == bag and item.slot == slot then
+          return true
+        end
+      end
+    end
+  end
+
+  return false
+end
+
 function Items:IsItemSuitable(item)
   if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
