@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Ability to sell/destroy heirloom quality items ([#187](https://github.com/moody/Dejunk/issues/187))
+- New `itemId` param for global list functions ([#186](https://github.com/moody/Dejunk/issues/186))
+
 ### Fixed
 
 - Typo in locale entry ([#180](https://github.com/moody/Dejunk/issues/180))
