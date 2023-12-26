@@ -4,6 +4,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
+local TickerManager = Addon:GetModule("TickerManager")
 
 local profit = 0
 local profitReady = false
@@ -27,7 +28,7 @@ EventManager:On(E.AttemptedToSellItem, function(item)
   soldItems[item] = true
 
   -- If not confirmed after 5 seconds, item may not have been sold.
-  C_Timer.After(5, function()
+  TickerManager:After(5, function()
     if soldItems[item] then
       soldItems[item] = nil
       Addon:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item.link))
@@ -39,7 +40,7 @@ EventManager:On(E.AttemptedToDestroyItem, function(item)
   destroyedItems[item] = true
 
   -- If not confirmed after 5 seconds, item may not have been destroyed.
-  C_Timer.After(5, function()
+  TickerManager:After(5, function()
     if destroyedItems[item] then
       destroyedItems[item] = nil
       Addon:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item.link))
@@ -72,7 +73,7 @@ local function getLink(item)
   return item.quantity > 1 and (item.link .. "x" .. item.quantity) or item.link
 end
 
-C_Timer.NewTicker(0, function()
+TickerManager:NewTicker(0, function()
   -- Confirm sold items.
   for item in pairs(soldItems) do
     if not Items:IsItemStillInBags(item) then
