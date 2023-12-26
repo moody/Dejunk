@@ -1,8 +1,9 @@
 local _, Addon = ...
+local Container = Addon:GetModule("Container")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Looter = Addon:GetModule("Looter")
-local Container = Addon:GetModule("Container")
+local TickerManager = Addon:GetModule("TickerManager")
 
 -- ============================================================================
 -- Local Functions
@@ -70,7 +71,7 @@ function Looter:Start()
 
   -- Start ticker.
   self.autoLootDefault = GetCVar("autoLootDefault")
-  self.ticker = C_Timer.NewTicker(Addon:GetLatency(1), tickerCallback)
+  self.ticker = TickerManager:NewTicker(Addon:GetLatency(1), tickerCallback)
   self:OnCallback()
 end
 
