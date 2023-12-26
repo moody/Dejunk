@@ -4,6 +4,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+local TickerManager = Addon:GetModule("TickerManager")
 
 -- Initialize cache table.
 Items.cache = {}
@@ -111,8 +112,11 @@ do
   local ticker
 
   local function refreshTicker()
-    if ticker then ticker:Cancel() end
-    ticker = C_Timer.NewTicker(0.01, updateCache, 1)
+    if ticker then
+      ticker:Restart()
+    else
+      ticker = TickerManager:NewTicker(0.01, updateCache, 1)
+    end
   end
 
   EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
