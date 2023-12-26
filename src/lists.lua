@@ -7,6 +7,7 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
+local TickerManager = Addon:GetModule("TickerManager")
 
 local MAX_PARSE_ATTEMPTS = 50
 local parseAttempts = {
@@ -248,7 +249,7 @@ end
 -- ============================================================================
 
 -- Attempt to parse lists every 0.1 seconds.
-C_Timer.NewTicker(0.1, function()
+TickerManager:NewTicker(0.1, function()
   if Seller:IsBusy() then return end
   for list in Lists:Iterate() do list:Parse() end
 end)
