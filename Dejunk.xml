@@ -10,6 +10,7 @@
   <Script file="src\locale.lua"/>
   <Script file="src\colors.lua"/>
   <Script file="src\tooltip.lua"/>
+  <Script file="src\ticker-manager.lua"/>
 
   <Script file="src\events\events.lua"/>
   <Script file="src\events\event-manager.lua"/>
