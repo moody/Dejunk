@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Refactored code to no longer use `C_Timer` functions
+
 ## [1.7.0] - 2023-12-25
 
 ### Added
