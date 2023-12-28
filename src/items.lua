@@ -1,6 +1,7 @@
 local _, Addon = ...
 local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
+local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
@@ -13,28 +14,6 @@ Items.location = ItemLocation:CreateEmpty()
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
-
-local function isEquipmentSetItem(item)
-  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
-    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
-      if itemLocation and itemLocation ~= 1 then
-        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
-
-        -- In Wrath, `voidStorage` is not returned.
-        if Addon.IS_WRATH then
-          bag = slot
-          slot = voidStorage
-        end
-
-        if item.bag == bag and item.slot == slot then
-          return true
-        end
-      end
-    end
-  end
-
-  return false
-end
 
 local getContainerItem
 do
@@ -81,7 +60,7 @@ local function getItem(bag, slot)
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
-  item.isEquipmentSet = isEquipmentSetItem(item)
+  item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
 
   return item
 end
@@ -109,6 +88,8 @@ local function iterateBags()
 end
 
 local function updateCache()
+  EquipmentSetsCache:Refresh()
+
   for k in pairs(Items.cache) do Items.cache[k] = nil end
 
   local allItemsCached = true
