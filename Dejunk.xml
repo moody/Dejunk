@@ -19,6 +19,7 @@
   <Script file="src\commands.lua"/>
   <Script file="src\container.lua"/>
   <Script file="src\items.lua"/>
+  <Script file="src\equipment-sets-cache.lua"/>
   <Script file="src\lists.lua"/>
   <Script file="src\junk-filter.lua"/>
   <Script file="src\seller.lua"/>
