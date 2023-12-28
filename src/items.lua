@@ -14,6 +14,28 @@ Items.location = ItemLocation:CreateEmpty()
 -- Local Functions
 -- ============================================================================
 
+local function isEquipmentSetItem(item)
+  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
+    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
+      if itemLocation and itemLocation ~= 1 then
+        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
+
+        -- In Wrath, `voidStorage` is not returned.
+        if Addon.IS_WRATH then
+          bag = slot
+          slot = voidStorage
+        end
+
+        if item.bag == bag and item.slot == slot then
+          return true
+        end
+      end
+    end
+  end
+
+  return false
+end
+
 local getContainerItem
 do
   local t = {}
@@ -59,6 +81,7 @@ local function getItem(bag, slot)
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
+  item.isEquipmentSet = isEquipmentSetItem(item)
 
   return item
 end
@@ -123,6 +146,7 @@ do
 
   EventManager:On(E.Wow.BagUpdate, refreshTicker)
   EventManager:On(E.Wow.BagUpdateDelayed, refreshTicker)
+  EventManager:On(E.Wow.EquipmentSetsChanged, refreshTicker)
 
   EventManager:On(E.BagsUpdated, function(allItemsCached)
     if not allItemsCached then refreshTicker() end
@@ -228,28 +252,6 @@ do -- Items:IsItemEquipment()
 
     return false
   end
-end
-
-function Items:IsItemEquipmentSet(item)
-  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
-    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
-      if itemLocation and itemLocation ~= 1 then
-        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
-
-        -- In Wrath, `voidStorage` is not returned.
-        if Addon.IS_WRATH then
-          bag = slot
-          slot = voidStorage
-        end
-
-        if item.bag == bag and item.slot == slot then
-          return true
-        end
-      end
-    end
-  end
-
-  return false
 end
 
 function Items:IsItemSuitable(item)

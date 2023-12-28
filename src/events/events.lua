@@ -41,6 +41,7 @@ end
 E.Wow = {
   BagUpdate = "BAG_UPDATE",
   BagUpdateDelayed = "BAG_UPDATE_DELAYED",
+  EquipmentSetsChanged = "EQUIPMENT_SETS_CHANGED",
   ItemUnlocked = "ITEM_UNLOCKED",
   MerchantClosed = "MERCHANT_CLOSED",
   MerchantShow = "MERCHANT_SHOW",
