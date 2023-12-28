@@ -1,5 +1,6 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
+local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 -- ============================================================================
@@ -13,7 +14,7 @@ do
     local level = prevLevel + 1
     prevLevel = level
     -- Delay to avoid overwrites from existing values in `{character}/layout-local.txt`.
-    C_Timer.After(1, function() frame:SetFrameLevel(level) end)
+    TickerManager:After(1, function() frame:SetFrameLevel(level) end)
   end
 end
 

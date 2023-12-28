@@ -7,13 +7,14 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
+local TickerManager = Addon:GetModule("TickerManager")
 
 -- ============================================================================
 -- Events
 -- ============================================================================
 
 EventManager:On(E.Wow.MerchantShow, function()
-  C_Timer.After(0.1, function()
+  TickerManager:After(0.1, function()
     local savedVariables = SavedVariables:Get()
 
     -- Auto repair.
@@ -106,7 +107,7 @@ function Seller:Start(auto)
   end
 
   -- Start ticker.
-  self.ticker = C_Timer.NewTicker(Addon:GetLatency(), tickerCallback)
+  self.ticker = TickerManager:NewTicker(Addon:GetLatency(), tickerCallback)
   EventManager:Fire(E.SellerStarted)
 end
 

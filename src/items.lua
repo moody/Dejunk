@@ -1,9 +1,11 @@
 local _, Addon = ...
 local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
+local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+local TickerManager = Addon:GetModule("TickerManager")
 
 -- Initialize cache table.
 Items.cache = {}
@@ -58,6 +60,7 @@ local function getItem(bag, slot)
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
+  item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
 
   return item
 end
@@ -85,6 +88,8 @@ local function iterateBags()
 end
 
 local function updateCache()
+  EquipmentSetsCache:Refresh()
+
   for k in pairs(Items.cache) do Items.cache[k] = nil end
 
   local allItemsCached = true
@@ -111,14 +116,18 @@ do
   local ticker
 
   local function refreshTicker()
-    if ticker then ticker:Cancel() end
-    ticker = C_Timer.NewTicker(0.01, updateCache, 1)
+    if ticker then
+      ticker:Restart()
+    else
+      ticker = TickerManager:NewTicker(0.01, updateCache, 1)
+    end
   end
 
   EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
 
   EventManager:On(E.Wow.BagUpdate, refreshTicker)
   EventManager:On(E.Wow.BagUpdateDelayed, refreshTicker)
+  EventManager:On(E.Wow.EquipmentSetsChanged, refreshTicker)
 
   EventManager:On(E.BagsUpdated, function(allItemsCached)
     if not allItemsCached then refreshTicker() end
@@ -224,28 +233,6 @@ do -- Items:IsItemEquipment()
 
     return false
   end
-end
-
-function Items:IsItemEquipmentSet(item)
-  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
-    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
-      if itemLocation and itemLocation ~= 1 then
-        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
-
-        -- In Wrath, `voidStorage` is not returned.
-        if Addon.IS_WRATH then
-          bag = slot
-          slot = voidStorage
-        end
-
-        if item.bag == bag and item.slot == slot then
-          return true
-        end
-      end
-    end
-  end
-
-  return false
 end
 
 function Items:IsItemSuitable(item)

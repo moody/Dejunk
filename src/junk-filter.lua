@@ -109,7 +109,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude equipment sets.
-  if not Addon.IS_VANILLA and savedVariables.excludeEquipmentSets and Items:IsItemEquipmentSet(item) then
+  if not Addon.IS_VANILLA and savedVariables.excludeEquipmentSets and item.isEquipmentSet then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 

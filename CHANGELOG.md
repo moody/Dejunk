@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Refactored code to no longer use `C_Timer` functions
+
+### Fixed
+
+- Performance issues related to the new `Exclude Equipment Sets` option ([#190](https://github.com/moody/Dejunk/issues/190))
+
 ## [1.7.0] - 2023-12-25
 
 ### Added
