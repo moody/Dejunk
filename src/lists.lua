@@ -9,7 +9,10 @@ local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
 local TickerManager = Addon:GetModule("TickerManager")
 
-local MAX_PARSE_ATTEMPTS = 50
+local PARSE_DELAY_SECONDS = 0.1
+local PARSE_DURATION_SECONDS = 5
+local MAX_PARSE_ATTEMPTS = floor(PARSE_DURATION_SECONDS / PARSE_DELAY_SECONDS)
+
 local parseAttempts = {
   -- ["itemId"] = count
 }
@@ -135,12 +138,11 @@ function Mixins:Parse()
         -- Remove from parsing.
         parseAttempts[itemId] = nil
         self.toAdd[itemId] = nil
-      else
+      elseif not self.sv[itemId] then
         -- Retry parsing until max attempts reached.
         local attempts = (parseAttempts[itemId] or 0) + 1
         if attempts >= MAX_PARSE_ATTEMPTS then
           parseAttempts[itemId] = nil
-          self.sv[itemId] = nil
           self.toAdd[itemId] = nil
           Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
         else
@@ -245,11 +247,10 @@ function Lists:IsBusy()
 end
 
 -- ============================================================================
--- Initialize
+-- Ticker to parse the lists.
 -- ============================================================================
 
--- Attempt to parse lists every 0.1 seconds.
-TickerManager:NewTicker(0.1, function()
+TickerManager:NewTicker(PARSE_DELAY_SECONDS, function()
   if Seller:IsBusy() then return end
   for list in Lists:Iterate() do list:Parse() end
 end)
