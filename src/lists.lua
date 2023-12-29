@@ -11,7 +11,7 @@ local TickerManager = Addon:GetModule("TickerManager")
 
 local PARSE_DELAY_SECONDS = 0.1
 local PARSE_DURATION_SECONDS = 5
-local MAX_PARSE_ATTEMPTS = floor(PARSE_DURATION_SECONDS / PARSE_DELAY_SECONDS)
+local MAX_PARSE_ATTEMPTS = math.ceil(PARSE_DURATION_SECONDS / PARSE_DELAY_SECONDS)
 
 local parseAttempts = {
   -- ["itemId"] = count
