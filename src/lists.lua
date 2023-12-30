@@ -166,7 +166,6 @@ end)
 do -- Create the lists.
   local function createList(data)
     local list = data
-    list.toAdd = {}
     list.items = {}
     for k, v in pairs(Mixins) do list[k] = v end
     return list
