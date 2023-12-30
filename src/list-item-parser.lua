@@ -55,7 +55,6 @@ local itemCache = {}
 function ListItemParser:Parse(list, itemId)
   if not newListItemQueue[list] then newListItemQueue[list] = {} end
   newListItemQueue[list][tostring(itemId)] = true
-  Addon:Debug("ListItemParser:Parse()", list.name, itemId)
 end
 
 --- Initiates parsing for the given list and item ID,
@@ -65,7 +64,6 @@ end
 function ListItemParser:ParseExisting(list, itemId)
   if not existingListItemQueue[list] then existingListItemQueue[list] = {} end
   existingListItemQueue[list][tostring(itemId)] = true
-  Addon:Debug("ListItemParser:ParseExisting()", list.name, itemId)
 end
 
 --- Returns `true` if any item IDs are currently queued for parsing.
