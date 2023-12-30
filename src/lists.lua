@@ -220,8 +220,3 @@ do -- Lists:Iterate()
     return next, lists
   end
 end
-
---- TODO: replace uses with ListItemParser:IsParsing() directly.
-function Lists:IsBusy()
-  return ListItemParser:IsParsing()
-end

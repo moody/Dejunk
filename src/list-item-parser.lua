@@ -68,7 +68,7 @@ end
 
 --- Returns `true` if any item IDs are currently queued for parsing.
 --- @return boolean
-function ListItemParser:IsParsing()
+function ListItemParser:IsBusy()
   for _, itemIds in pairs(newListItemQueue) do
     if next(itemIds) then return true end
   end
