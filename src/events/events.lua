@@ -14,8 +14,14 @@ local events = {
   "SavedVariablesSwitched",
 
   -- Lists.
+  "ExistingListItemFailedToParse",
+  "ExistingListItemParsed",
   "ListItemAdded",
+  "ListItemCannotBeParsed",
+  "ListItemFailedToParse",
+  "ListItemParsed",
   "ListItemRemoved",
+  "ListParsingComplete",
   "ListRemovedAll",
 
   -- Seller.

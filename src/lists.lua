@@ -4,37 +4,9 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
+local ListItemParser = Addon:GetModule("ListItemParser")
 local Lists = Addon:GetModule("Lists")
 local SavedVariables = Addon:GetModule("SavedVariables")
-local Seller = Addon:GetModule("Seller")
-local TickerManager = Addon:GetModule("TickerManager")
-
-local PARSE_DELAY_SECONDS = 0.1
-local PARSE_DURATION_SECONDS = 5
-local MAX_PARSE_ATTEMPTS = floor(PARSE_DURATION_SECONDS / PARSE_DELAY_SECONDS)
-
-local parseAttempts = {
-  -- ["itemId"] = count
-}
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
-local function getItemById(itemId)
-  local name, link, quality, _, _, _, _, _, _, texture, price, classId = GetItemInfo(itemId)
-  if link == nil then return nil end
-
-  return {
-    id = itemId,
-    name = name,
-    link = link,
-    quality = quality,
-    texture = texture,
-    price = price,
-    classId = classId
-  }
-end
 
 -- ============================================================================
 -- Mixins
@@ -63,7 +35,7 @@ function Mixins:Add(itemId)
       Addon:Print(L.ITEM_ALREADY_ON_LIST:format(self.items[index].link, self.name))
     end
   else
-    self.toAdd[itemId] = true
+    ListItemParser:Parse(self, itemId)
   end
 end
 
@@ -106,84 +78,94 @@ function Mixins:GetItems()
   return self.items
 end
 
-function Mixins:Parse()
-  if not next(self.toAdd) then return end
-
-  -- Parse items.
-  for itemId in pairs(self.toAdd) do
-    -- Instantly fail if item doesn't exist.
-    if not GetItemInfoInstant(itemId) then
-      self.sv[itemId] = nil
-      self.toAdd[itemId] = nil
-      Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId)))
-    else
-      -- Attempt to parse the item.
-      local item = getItemById(itemId)
-      if item then
-        -- Only add item if it can be sold or destroyed.
-        if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-          if not self.sv[itemId] then
-            Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, self.name))
-          end
-          self.sv[itemId] = true
-          self.items[#self.items + 1] = item
-          EventManager:Fire(E.ListItemAdded, self, item)
-        else
-          if not self.sv[itemId] then
-            Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link))
-          end
-          self.sv[itemId] = nil
-        end
-
-        -- Remove from parsing.
-        parseAttempts[itemId] = nil
-        self.toAdd[itemId] = nil
-      elseif not self.sv[itemId] then
-        -- Retry parsing until max attempts reached.
-        local attempts = (parseAttempts[itemId] or 0) + 1
-        if attempts >= MAX_PARSE_ATTEMPTS then
-          parseAttempts[itemId] = nil
-          self.toAdd[itemId] = nil
-          Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
-        else
-          parseAttempts[itemId] = attempts
-        end
-      end
-    end
-  end
-
-  -- Sort the list once all items have been parsed.
-  if not next(self.toAdd) then
-    table.sort(self.items, function(a, b)
-      return a.quality == b.quality and a.name < b.name or a.quality < b.quality
-    end)
-  end
+function Mixins:Sort()
+  table.sort(self.items, function(a, b)
+    return a.quality == b.quality and a.name < b.name or a.quality < b.quality
+  end)
 end
 
 -- ============================================================================
 -- Events
 -- ============================================================================
 
+-- Listen for `SavedVariablesReady` to initialize lists with existing data.
 EventManager:Once(E.SavedVariablesReady, function()
   for list in Lists:Iterate() do
     list.sv = list.getSv()
-    for k in pairs(list.sv) do list.toAdd[k] = true end
+    for itemId in pairs(list.sv) do
+      ListItemParser:ParseExisting(list, itemId)
+    end
   end
 end)
 
+-- Listen for `ListItemAdded` to remove the item from the opposite list if necessary.
 EventManager:On(E.ListItemAdded, function(list, item)
   local opposite = list:GetOpposite()
   if opposite:Contains(item.id) then opposite:Remove(item.id) end
 end)
 
+do -- Listen for item parsed events.
+  local function addListItem(list, item)
+    list.sv[tostring(item.id)] = true
+    list.items[#list.items + 1] = item
+    EventManager:Fire(E.ListItemAdded, list, item)
+  end
+
+  -- Listen for `ListItemParsed` to add the item to the list and print a message.
+  -- If the item cannot be sold or destroyed, then an error message is printed.
+  EventManager:On(E.ListItemParsed, function(list, item)
+    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
+      addListItem(list, item)
+      Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name))
+    else
+      list.sv[tostring(item.id)] = nil
+      Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link))
+    end
+  end)
+
+  -- Listen for `ExistingListItemParsed` to add the item to the list without printing a message.
+  -- This event is intended for item IDs already saved in the list's SavedVariables. As such,
+  -- messages are not necessary nor desired.
+  EventManager:On(E.ExistingListItemParsed, function(list, item)
+    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
+      addListItem(list, item)
+    else
+      list.sv[tostring(item.id)] = nil
+    end
+  end)
+end
+
+-- Listen for `ListItemFailedToParse` to print an error message.
+EventManager:On(E.ListItemFailedToParse, function(list, itemId)
+  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
+end)
+
+-- Listen for `ExistingListItemFailedToParse` to print an error message,
+-- as well as to remove the item ID from the list's SavedVariables.
+EventManager:On(E.ExistingListItemFailedToParse, function(list, itemId)
+  list.sv[tostring(itemId)] = nil
+  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
+end)
+
+-- Listen for `ListItemCannotBeParsed` to print an error message,
+-- as well as to ensure removal of the item ID from the list's SavedVariables.
+EventManager:On(E.ListItemCannotBeParsed, function(list, itemId)
+  list.sv[tostring(itemId)] = nil
+  Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId)))
+end)
+
+-- Listen for `ListParsingComplete` to sort the list after parsing.
+EventManager:On(E.ListParsingComplete, function(list)
+  list:Sort()
+end)
+
 -- ============================================================================
--- Lists
+-- Initialize
 -- ============================================================================
 
-do
+do -- Create the lists.
   local function createList(data)
     local list = data
-    list.toAdd = {}
     list.items = {}
     for k, v in pairs(Mixins) do list[k] = v end
     return list
@@ -237,20 +219,3 @@ do -- Lists:Iterate()
     return next, lists
   end
 end
-
-function Lists:IsBusy()
-  for list in self:Iterate() do
-    if next(list.toAdd) ~= nil then return true end
-  end
-
-  return false
-end
-
--- ============================================================================
--- Ticker to parse the lists.
--- ============================================================================
-
-TickerManager:NewTicker(PARSE_DELAY_SECONDS, function()
-  if Seller:IsBusy() then return end
-  for list in Lists:Iterate() do list:Parse() end
-end)
