@@ -65,12 +65,12 @@ end
 do -- Addon:IsBusy()
   local Confirmer = Addon:GetModule("Confirmer")
   local L = Addon:GetModule("Locale")
-  local Lists = Addon:GetModule("Lists")
+  local ListItemParser = Addon:GetModule("ListItemParser")
   local Seller = Addon:GetModule("Seller")
 
   function Addon:IsBusy()
     if Seller:IsBusy() then return true, L.IS_BUSY_SELLING_ITEMS end
-    if Lists:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
+    if ListItemParser:IsBusy() then return true, L.IS_BUSY_UPDATING_LISTS end
     if Confirmer:IsBusy() then return true, L.IS_BUSY_CONFIRMING_ITEMS end
     return false
   end

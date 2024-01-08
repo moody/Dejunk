@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.7.2] - 2024-01-08
+
+### Fixed
+
+- Issue causing items to be permanently removed from lists if not parsed within 5 seconds of logging in ([#193](https://github.com/moody/Dejunk/issues/193))
+
 ## [1.7.1] - 2023-12-28
 
 ### Changed
