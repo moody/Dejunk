@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.7.3] - 2024-02-09
+
+- Bump TOC versions
+
 ## [1.7.2] - 2024-01-08
 
 ### Fixed
