@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- Allow any delimiter when importing ([#197](https://github.com/moody/Dejunk/issues/197))
+
 ## [1.7.3] - 2024-02-09
 
 - Bump TOC versions
