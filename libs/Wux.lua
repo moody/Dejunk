@@ -1,11 +1,11 @@
 -- =============================================================================
--- Wux: 0.1.0 - https://github.com/moody/Wux
+-- Wux: 0.1.1 - https://github.com/moody/Wux
 -- =============================================================================
 
 local _, Addon = ...
-
---- @type Wux
 Addon.Wux = {}
+
+--- @class Wux
 local Wux = Addon.Wux
 
 -- =============================================================================
@@ -19,23 +19,6 @@ local Wux = Addon.Wux
 --- @alias WuxReducer<T> fun(state?: T, action: WuxAction): T Function to return a new state based on the given action.
 
 --- @alias WuxListener<T> fun(state: T) Function to react to state changes.
-
---- @class WuxStore
---- @field GetState fun(self: WuxStore): table
---- @field Dispatch fun(self: WuxStore, action: WuxAction)
---- @field Subscribe fun(self: WuxStore, listener: WuxListener<table>): fun()
-
---- @class Wux
---- @field Coalesce fun(self: Wux, ...: any): any
---- @field ShallowCopy fun(self: Wux, t: table): table
---- @field DeepCopy fun(self: Wux, t: table): table
---- @field Values fun(self: Wux, t: table): any[]
---- @field ForEach fun(self: Wux, arr: any[], callback: fun(value: any, index: integer))
---- @field Filter fun(self: Wux, arr: any[], callback: fun(value: any, index: integer): boolean): any[]
---- @field Map fun(self: Wux, arr: any[], callback: fun(value: any, index: integer): any): any[]
---- @field Reduce fun(self: Wux, arr: any[], callback: (fun(accumulator: any, value: any, index: integer): any), initialValue?: any): any
---- @field CombineReducers fun(self: Wux, reducers: { [string]: WuxReducer }): WuxReducer<table>
---- @field CreateStore fun(self: Wux, reducer: WuxReducer, initialState?: table): WuxStore
 
 -- =============================================================================
 -- Local Functions
@@ -190,7 +173,7 @@ end
 --- @param initialState? table
 --- @return WuxStore
 function Wux:CreateStore(reducer, initialState)
-  --- @type WuxStore
+  --- @class WuxStore
   local Store = {}
 
   --- @type WuxListener[]
