@@ -16,6 +16,10 @@
   <Script file="src\events\events.lua"/>
   <Script file="src\events\event-manager.lua"/>
 
+  <Script file="src\store\actions.lua"/>
+  <Script file="src\store\reducers.lua"/>
+  <Script file="src\store\state-manager.lua"/>
+
   <Script file="src\saved-variables.lua"/>
   <Script file="src\commands.lua"/>
   <Script file="src\container.lua"/>

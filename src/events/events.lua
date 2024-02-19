@@ -13,6 +13,10 @@ local events = {
   "SavedVariablesReady",
   "SavedVariablesSwitched",
 
+  -- Store.
+  "StoreCreated",
+  "StateUpdated",
+
   -- Lists.
   "ExistingListItemFailedToParse",
   "ExistingListItemParsed",
