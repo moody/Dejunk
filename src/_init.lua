@@ -78,14 +78,14 @@ end
 
 do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
   local Colors = Addon:GetModule("Colors")
-  local SavedVariables = Addon:GetModule("SavedVariables")
+  local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
   function Addon:ForcePrint(...)
     print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
   end
 
   function Addon:Print(...)
-    if SavedVariables:Get().chatMessages then
+    if StateManager:GetCurrentState().chatMessages then
       print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
     end
   end

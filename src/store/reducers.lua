@@ -48,7 +48,18 @@ PERCHAR_DEFAULT_STATE.characterSpecificSettings = false
 
 --- @type WuxReducer<GlobalState>
 Reducers.globalReducer = Wux:CombineReducers({
-  -- TODO: add reducers.
+  -- Chat messages.
+  chatMessages = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.chatMessages)
+
+    if action.type == "global/chatMessages/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- TODO: add more reducers.
 })
 
 -- ============================================================================
@@ -63,6 +74,17 @@ Reducers.percharReducer = Wux:CombineReducers({
 
     if action.type == "perchar/characterSpecificSettings/toggle" then
       state = not state
+    end
+
+    return state
+  end,
+
+  -- Chat messages.
+  chatMessages = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.chatMessages)
+
+    if action.type == "perchar/chatMessages/set" then
+      state = action.payload
     end
 
     return state

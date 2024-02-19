@@ -86,8 +86,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.CHAT_MESSAGES_TEXT,
     tooltipText = L.CHAT_MESSAGES_TOOLTIP,
-    get = function() return SavedVariables:Get().chatMessages end,
-    set = function(value) SavedVariables:Get().chatMessages = value end
+    get = function() return StateManager:GetCurrentState().chatMessages end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
