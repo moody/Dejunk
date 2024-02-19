@@ -1,4 +1,5 @@
 local ADDON_NAME, Addon = ...
+local Actions = Addon:GetModule("Actions") --- @type Actions
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
@@ -6,6 +7,7 @@ local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
 local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local UserInterface = Addon:GetModule("UserInterface")
 local Widgets = Addon:GetModule("Widgets")
 
@@ -78,8 +80,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.CHARACTER_SPECIFIC_SETTINGS_TEXT,
     tooltipText = L.CHARACTER_SPECIFIC_SETTINGS_TOOLTIP,
-    get = function() return SavedVariables:GetPerChar().characterSpecificSettings end,
-    set = function() SavedVariables:Switch() end
+    get = function() return StateManager:GetPercharState().characterSpecificSettings end,
+    set = function() StateManager:GetStore():Dispatch(Actions:ToggleCharacterSpecificSettings()) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.CHAT_MESSAGES_TEXT,
