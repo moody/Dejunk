@@ -13,7 +13,6 @@ local DEFAULT_STATE = {
   chatMessages = true,
   itemTooltips = true,
   merchantButton = true,
-  minimapIcon = { hide = false },
 
   -- Junk.
   autoJunkFrame = false,
@@ -36,6 +35,7 @@ local DEFAULT_STATE = {
 --- Global default state.
 --- @class GlobalState : DefaultState
 local GLOBAL_DEFAULT_STATE = Wux:DeepCopy(DEFAULT_STATE)
+GLOBAL_DEFAULT_STATE.minimapIcon = { hide = false }
 
 -- Per character default state.
 --- @class PercharState : DefaultState
@@ -54,6 +54,18 @@ Reducers.globalReducer = Wux:CombineReducers({
 
     if action.type == "global/chatMessages/set" then
       state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Minimap icon.
+  minimapIcon = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
+
+    if action.type == "global/minimapIcon/patch" then
+      state = Wux:ShallowCopy(state)
+      for k, v in pairs(action.payload) do state[k] = v end
     end
 
     return state

@@ -19,7 +19,11 @@ end
 -- Global
 -- ============================================================================
 
--- TODO: add actions.
+--- @param value table
+--- @return WuxAction
+function Actions:PatchMinimapIcon(value)
+  return { type = "global/minimapIcon/patch", payload = value }
+end
 
 -- ============================================================================
 -- Per Character
