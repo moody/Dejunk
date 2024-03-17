@@ -15,6 +15,15 @@ function Actions:SetChatMessages(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetItemTooltips(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/itemTooltips/set", payload = value }
+  else
+    return { type = "global/itemTooltips/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

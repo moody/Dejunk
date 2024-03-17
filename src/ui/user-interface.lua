@@ -92,8 +92,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
     tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
-    get = function() return SavedVariables:Get().itemTooltips end,
-    set = function(value) SavedVariables:Get().itemTooltips = value end
+    get = function() return StateManager:GetCurrentState().itemTooltips end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemTooltips(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.MERCHANT_BUTTON_TEXT,

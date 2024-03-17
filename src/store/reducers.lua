@@ -59,6 +59,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Item tooltips.
+  itemTooltips = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemTooltips)
+
+    if action.type == "global/itemTooltips/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
   -- Minimap icon.
   minimapIcon = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
@@ -96,6 +107,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.chatMessages)
 
     if action.type == "perchar/chatMessages/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Item tooltips.
+  itemTooltips = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemTooltips)
+
+    if action.type == "perchar/itemTooltips/set" then
       state = action.payload
     end
 
