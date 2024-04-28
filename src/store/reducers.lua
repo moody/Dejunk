@@ -16,8 +16,8 @@ local DEFAULT_STATE = {
 
   -- Junk.
   autoJunkFrame = false,
-  autoSell = false,
   autoRepair = false,
+  autoSell = false,
   safeMode = false,
 
   excludeEquipmentSets = not Addon.IS_VANILLA,
@@ -97,6 +97,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoRepair)
 
     if action.type == "global/autoRepair/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Auto sell.
+  autoSell = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoSell)
+
+    if action.type == "global/autoSell/set" then
       state = action.payload
     end
 
@@ -194,6 +205,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoRepair)
 
     if action.type == "perchar/autoRepair/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Auto sell.
+  autoSell = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoSell)
+
+    if action.type == "perchar/autoSell/set" then
       state = action.payload
     end
 

@@ -51,6 +51,15 @@ function Actions:SetAutoRepair(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetAutoSell(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/autoSell/set", payload = value }
+  else
+    return { type = "global/autoSell/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

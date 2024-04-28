@@ -17,7 +17,6 @@ local TickerManager = Addon:GetModule("TickerManager")
 EventManager:On(E.Wow.MerchantShow, function()
   TickerManager:After(0.1, function()
     local currentState = StateManager:GetCurrentState()
-    local savedVariables = SavedVariables:Get()
 
     -- Auto repair.
     if currentState.autoRepair then
@@ -30,7 +29,7 @@ EventManager:On(E.Wow.MerchantShow, function()
     end
 
     -- Auto sell.
-    if savedVariables.autoSell then
+    if currentState.autoSell then
       Seller:Start(true)
     end
   end)

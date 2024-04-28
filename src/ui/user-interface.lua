@@ -122,8 +122,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_SELL_TEXT,
     tooltipText = L.AUTO_SELL_TOOLTIP,
-    get = function() return SavedVariables:Get().autoSell end,
-    set = function(value) SavedVariables:Get().autoSell = value end
+    get = function() return StateManager:GetCurrentState().autoSell end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoSell(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.SAFE_MODE_TEXT,
