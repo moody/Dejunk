@@ -110,8 +110,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return SavedVariables:Get().autoJunkFrame end,
-    set = function(value) SavedVariables:Get().autoJunkFrame = value end
+    get = function() return StateManager:GetCurrentState().autoJunkFrame end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoJunkFrame(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_REPAIR_TEXT,

@@ -33,6 +33,15 @@ function Actions:SetMerchantButton(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetAutoJunkFrame(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/autoJunkFrame/set", payload = value }
+  else
+    return { type = "global/autoJunkFrame/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================
