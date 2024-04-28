@@ -5,8 +5,8 @@ local StateManager = Addon:GetModule("StateManager") --- @class StateManager
 local Reducers = Addon:GetModule("Reducers") --- @type Reducers
 local Wux = Addon.Wux --- @type Wux
 
-local GLOBAL_SV_KEY = "__DEJUNK_GLOBAL_STORE_TEST__"
-local PERCHAR_SV_KEY = "__DEJUNK_PERCHAR_STORE_TEST__"
+local GLOBAL_SV_KEY = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
+local PERCHAR_SV_KEY = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
 
 -- ============================================================================
 -- Local Functions
