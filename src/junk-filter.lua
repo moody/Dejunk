@@ -116,7 +116,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude unbound equipment.
-  if savedVariables.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+  if currentState.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
   end
 

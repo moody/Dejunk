@@ -78,6 +78,15 @@ function Actions:SetExcludeEquipmentSets(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetExcludeUnboundEquipment(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/excludeUnboundEquipment/set", payload = value }
+  else
+    return { type = "global/excludeUnboundEquipment/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

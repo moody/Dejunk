@@ -142,8 +142,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
     tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
-    get = function() return SavedVariables:Get().excludeUnboundEquipment end,
-    set = function(value) SavedVariables:Get().excludeUnboundEquipment = value end
+    get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_POOR_ITEMS_TEXT,
