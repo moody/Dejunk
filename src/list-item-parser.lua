@@ -1,6 +1,7 @@
 local _, Addon = ...
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
 local ListItemParser = Addon:GetModule("ListItemParser")
 local Seller = Addon:GetModule("Seller")
 local TickerManager = Addon:GetModule("TickerManager")
