@@ -24,6 +24,15 @@ function Actions:SetItemTooltips(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetMerchantButton(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/merchantButton/set", payload = value }
+  else
+    return { type = "global/merchantButton/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

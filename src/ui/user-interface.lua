@@ -98,8 +98,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.MERCHANT_BUTTON_TEXT,
     tooltipText = L.MERCHANT_BUTTON_TOOLTIP,
-    get = function() return SavedVariables:Get().merchantButton end,
-    set = function(value) SavedVariables:Get().merchantButton = value end
+    get = function() return StateManager:GetCurrentState().merchantButton end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.MINIMAP_ICON_TEXT,
