@@ -148,8 +148,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_POOR_ITEMS_TEXT,
     tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
-    get = function() return SavedVariables:Get().includePoorItems end,
-    set = function(value) SavedVariables:Get().includePoorItems = value end
+    get = function() return StateManager:GetCurrentState().includePoorItems end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludePoorItems(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,

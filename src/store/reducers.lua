@@ -147,6 +147,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Include poor items.
+  includePoorItems = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includePoorItems)
+
+    if action.type == "global/includePoorItems/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
   -- Minimap icon.
   minimapIcon = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
@@ -282,6 +293,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeUnboundEquipment)
 
     if action.type == "perchar/excludeUnboundEquipment/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Include poor items.
+  includePoorItems = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includePoorItems)
+
+    if action.type == "perchar/includePoorItems/set" then
       state = action.payload
     end
 

@@ -87,6 +87,15 @@ function Actions:SetExcludeUnboundEquipment(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetIncludePoorItems(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/includePoorItems/set", payload = value }
+  else
+    return { type = "global/includePoorItems/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

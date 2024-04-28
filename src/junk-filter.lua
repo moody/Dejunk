@@ -121,7 +121,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Include poor items.
-  if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
+  if currentState.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
   end
 
