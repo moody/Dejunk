@@ -142,7 +142,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Include artifact relics.
-  if Addon.IS_RETAIL and savedVariables.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
+  if Addon.IS_RETAIL and currentState.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 

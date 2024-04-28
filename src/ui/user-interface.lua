@@ -186,8 +186,8 @@ UserInterface.frame = (function()
     frame.optionsFrame:AddOption({
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
-      get = function() return SavedVariables:Get().includeArtifactRelics end,
-      set = function(value) SavedVariables:Get().includeArtifactRelics = value end
+      get = function() return StateManager:GetCurrentState().includeArtifactRelics end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
     })
   end
 

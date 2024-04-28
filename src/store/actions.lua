@@ -105,6 +105,15 @@ function Actions:SetIncludeUnsuitableEquipment(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetIncludeArtifactRelics(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/includeArtifactRelics/set", payload = value }
+  else
+    return { type = "global/includeArtifactRelics/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================
