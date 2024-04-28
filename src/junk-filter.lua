@@ -4,7 +4,6 @@ local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
-local SavedVariables = Addon:GetModule("SavedVariables")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
@@ -77,7 +76,6 @@ end
 
 function JunkFilter:IsJunkItem(item)
   local currentState = StateManager:GetCurrentState()
-  local savedVariables = SavedVariables:Get()
 
   -- Check if item can be sold or destroyed.
   if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
@@ -128,8 +126,8 @@ function JunkFilter:IsJunkItem(item)
   -- Soulbound equipment filters.
   if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
     -- Include below item level.
-    if savedVariables.includeBelowItemLevel.enabled then
-      local value = savedVariables.includeBelowItemLevel.value
+    if currentState.includeBelowItemLevel.enabled then
+      local value = currentState.includeBelowItemLevel.value
       if item.itemLevel < value then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
         return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)

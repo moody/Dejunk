@@ -6,6 +6,7 @@ local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 -- Common
 -- ============================================================================
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetChatMessages(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -15,6 +16,7 @@ function Actions:SetChatMessages(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetItemTooltips(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -24,6 +26,7 @@ function Actions:SetItemTooltips(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetMerchantButton(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -33,6 +36,7 @@ function Actions:SetMerchantButton(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetAutoJunkFrame(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -42,6 +46,7 @@ function Actions:SetAutoJunkFrame(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetAutoRepair(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -51,6 +56,7 @@ function Actions:SetAutoRepair(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetAutoSell(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -60,6 +66,7 @@ function Actions:SetAutoSell(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetSafeMode(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -69,6 +76,7 @@ function Actions:SetSafeMode(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetExcludeEquipmentSets(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -78,6 +86,7 @@ function Actions:SetExcludeEquipmentSets(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetExcludeUnboundEquipment(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -87,6 +96,7 @@ function Actions:SetExcludeUnboundEquipment(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetIncludePoorItems(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -96,6 +106,17 @@ function Actions:SetIncludePoorItems(value)
   end
 end
 
+--- @param value table
+--- @return WuxAction
+function Actions:PatchIncludeBelowItemLevel(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/includeBelowItemLevel/patch", payload = value }
+  else
+    return { type = "global/includeBelowItemLevel/patch", payload = value }
+  end
+end
+
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetIncludeUnsuitableEquipment(value)
   if StateManager:IsCharacterSpecificSettings() then
@@ -105,6 +126,7 @@ function Actions:SetIncludeUnsuitableEquipment(value)
   end
 end
 
+--- @param value boolean
 --- @return WuxAction
 function Actions:SetIncludeArtifactRelics(value)
   if StateManager:IsCharacterSpecificSettings() then

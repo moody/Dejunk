@@ -154,24 +154,23 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
     onUpdateTooltip = function(self, tooltip)
-      local itemLevel = Colors.White(SavedVariables:Get().includeBelowItemLevel.value)
+      local itemLevel = Colors.White(StateManager:GetCurrentState().includeBelowItemLevel.value)
       tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
       tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
     end,
-    get = function() return SavedVariables:Get().includeBelowItemLevel.enabled end,
+    get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
     set = function(value)
       if value then
-        local sv = SavedVariables:Get()
+        local currentState = StateManager:GetCurrentState()
         Popup:GetInteger({
           text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
-          initialValue = sv.includeBelowItemLevel.value,
+          initialValue = currentState.includeBelowItemLevel.value,
           onAccept = function(self, value)
-            sv.includeBelowItemLevel.enabled = true
-            sv.includeBelowItemLevel.value = value
+            StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = true, value = value }))
           end
         })
       else
-        SavedVariables:Get().includeBelowItemLevel.enabled = value
+        StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value }))
       end
     end
   })

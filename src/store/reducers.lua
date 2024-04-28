@@ -158,6 +158,18 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Include below item level.
+  includeBelowItemLevel = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeBelowItemLevel)
+
+    if action.type == "global/includeBelowItemLevel/patch" then
+      state = Wux:ShallowCopy(state)
+      for k, v in pairs(action.payload) do state[k] = v end
+    end
+
+    return state
+  end,
+
   -- Include unsuitable equipment.
   includeUnsuitableEquipment = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeUnsuitableEquipment)
@@ -327,6 +339,18 @@ Reducers.percharReducer = Wux:CombineReducers({
 
     if action.type == "perchar/includePoorItems/set" then
       state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Include below item level.
+  includeBelowItemLevel = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeBelowItemLevel)
+
+    if action.type == "perchar/includeBelowItemLevel/patch" then
+      state = Wux:ShallowCopy(state)
+      for k, v in pairs(action.payload) do state[k] = v end
     end
 
     return state
