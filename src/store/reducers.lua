@@ -114,6 +114,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Safe mode.
+  safeMode = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.safeMode)
+
+    if action.type == "global/safeMode/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
   -- Minimap icon.
   minimapIcon = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
@@ -216,6 +227,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoSell)
 
     if action.type == "perchar/autoSell/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Safe mode.
+  safeMode = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.safeMode)
+
+    if action.type == "perchar/safeMode/set" then
       state = action.payload
     end
 

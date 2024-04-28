@@ -60,6 +60,15 @@ function Actions:SetAutoSell(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetSafeMode(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/safeMode/set", payload = value }
+  else
+    return { type = "global/safeMode/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

@@ -128,8 +128,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.SAFE_MODE_TEXT,
     tooltipText = L.SAFE_MODE_TOOLTIP,
-    get = function() return SavedVariables:Get().safeMode end,
-    set = function(value) SavedVariables:Get().safeMode = value end
+    get = function() return StateManager:GetCurrentState().safeMode end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
   })
   if not Addon.IS_VANILLA then
     frame.optionsFrame:AddOption({

@@ -5,7 +5,6 @@ local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local TickerManager = Addon:GetModule("TickerManager")
@@ -103,7 +102,7 @@ function Seller:Start(auto)
   end
 
   -- Safe mode.
-  if SavedVariables:Get().safeMode then
+  if StateManager:GetCurrentState().safeMode then
     while #self.items > 12 do table.remove(self.items) end
   end
 
