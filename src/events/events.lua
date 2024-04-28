@@ -9,10 +9,6 @@ local events = {
   -- Bags.
   "BagsUpdated",
 
-  -- SavedVariables.
-  "SavedVariablesReady",
-  "SavedVariablesSwitched",
-
   -- Store.
   "StoreCreated",
   "StateUpdated",

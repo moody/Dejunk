@@ -6,7 +6,6 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
-local SavedVariables = Addon:GetModule("SavedVariables")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local UserInterface = Addon:GetModule("UserInterface")
 local Widgets = Addon:GetModule("Widgets")

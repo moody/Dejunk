@@ -20,7 +20,6 @@
   <Script file="src\store\reducers.lua"/>
   <Script file="src\store\state-manager.lua"/>
 
-  <Script file="src\saved-variables.lua"/>
   <Script file="src\commands.lua"/>
   <Script file="src\container.lua"/>
   <Script file="src\items.lua"/>
