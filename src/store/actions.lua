@@ -42,6 +42,15 @@ function Actions:SetAutoJunkFrame(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetAutoRepair(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/autoRepair/set", payload = value }
+  else
+    return { type = "global/autoRepair/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

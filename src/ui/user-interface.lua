@@ -116,8 +116,8 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
-    get = function() return SavedVariables:Get().autoRepair end,
-    set = function(value) SavedVariables:Get().autoRepair = value end
+    get = function() return StateManager:GetCurrentState().autoRepair end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoRepair(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_SELL_TEXT,

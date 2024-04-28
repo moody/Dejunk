@@ -92,6 +92,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Auto repair.
+  autoRepair = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoRepair)
+
+    if action.type == "global/autoRepair/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
   -- Minimap icon.
   minimapIcon = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
@@ -172,6 +183,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoJunkFrame)
 
     if action.type == "perchar/autoJunkFrame/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Auto repair.
+  autoRepair = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoRepair)
+
+    if action.type == "perchar/autoRepair/set" then
       state = action.payload
     end
 

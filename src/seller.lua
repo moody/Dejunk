@@ -7,6 +7,7 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local TickerManager = Addon:GetModule("TickerManager")
 
 -- ============================================================================
@@ -15,10 +16,11 @@ local TickerManager = Addon:GetModule("TickerManager")
 
 EventManager:On(E.Wow.MerchantShow, function()
   TickerManager:After(0.1, function()
+    local currentState = StateManager:GetCurrentState()
     local savedVariables = SavedVariables:Get()
 
     -- Auto repair.
-    if savedVariables.autoRepair then
+    if currentState.autoRepair then
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
         RepairAllItems()
