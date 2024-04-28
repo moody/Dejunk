@@ -96,6 +96,15 @@ function Actions:SetIncludePoorItems(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetIncludeUnsuitableEquipment(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/includeUnsuitableEquipment/set", payload = value }
+  else
+    return { type = "global/includeUnsuitableEquipment/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================

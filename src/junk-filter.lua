@@ -136,7 +136,7 @@ function JunkFilter:IsJunkItem(item)
       end
     end
     -- Include unsuitable equipment.
-    if savedVariables.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
+    if currentState.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
     end
   end
