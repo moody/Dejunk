@@ -6,7 +6,7 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local Lists = Addon:GetModule("Lists")
-local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
 -- Mixins
@@ -88,8 +88,8 @@ end
 -- Events
 -- ============================================================================
 
--- Listen for `SavedVariablesReady` to initialize lists with existing data.
-EventManager:Once(E.SavedVariablesReady, function()
+-- Listen for `StoreCreated` to initialize lists with existing data.
+EventManager:Once(E.StoreCreated, function()
   for list in Lists:Iterate() do
     list.sv = list.getSv()
     for itemId in pairs(list.sv) do
@@ -175,7 +175,7 @@ do -- Create the lists.
   Lists.PerCharInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
-    getSv = function() return SavedVariables:GetPerChar().inclusions end,
+    getSv = function() return StateManager:GetPercharState().inclusions end,
     getSibling = function() return Lists.GlobalInclusions end,
     getOpposite = function() return Lists.PerCharExclusions end
   })
@@ -184,7 +184,7 @@ do -- Create the lists.
   Lists.PerCharExclusions = createList({
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
-    getSv = function() return SavedVariables:GetPerChar().exclusions end,
+    getSv = function() return StateManager:GetPercharState().exclusions end,
     getSibling = function() return Lists.GlobalExclusions end,
     getOpposite = function() return Lists.PerCharInclusions end
   })
@@ -193,7 +193,7 @@ do -- Create the lists.
   Lists.GlobalInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
-    getSv = function() return SavedVariables:GetGlobal().inclusions end,
+    getSv = function() return StateManager:GetGlobalState().inclusions end,
     getSibling = function() return Lists.PerCharInclusions end,
     getOpposite = function() return Lists.GlobalExclusions end
   })
@@ -202,7 +202,7 @@ do -- Create the lists.
   Lists.GlobalExclusions = createList({
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
-    getSv = function() return SavedVariables:GetGlobal().exclusions end,
+    getSv = function() return StateManager:GetGlobalState().exclusions end,
     getSibling = function() return Lists.PerCharExclusions end,
     getOpposite = function() return Lists.GlobalInclusions end
   })

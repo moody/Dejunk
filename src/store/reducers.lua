@@ -82,6 +82,16 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Inclusions.
+  inclusions = function(state, action)
+    return Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.inclusions)
+  end,
+
+  -- Exclusions.
+  exclusions = function(state, action)
+    return Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.exclusions)
+  end,
+
   -- TODO: add more reducers.
 })
 
@@ -122,6 +132,16 @@ Reducers.percharReducer = Wux:CombineReducers({
     end
 
     return state
+  end,
+
+  -- Inclusions.
+  inclusions = function(state, action)
+    return Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.inclusions)
+  end,
+
+  -- Exclusions.
+  exclusions = function(state, action)
+    return Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.exclusions)
   end,
 
   -- TODO: add more reducers.
