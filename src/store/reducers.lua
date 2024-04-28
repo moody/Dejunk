@@ -125,6 +125,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Exclude equipment sets.
+  excludeEquipmentSets = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeEquipmentSets)
+
+    if action.type == "global/excludeEquipmentSets/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
   -- Minimap icon.
   minimapIcon = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
@@ -238,6 +249,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.safeMode)
 
     if action.type == "perchar/safeMode/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Exclude equipment sets.
+  excludeEquipmentSets = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeEquipmentSets)
+
+    if action.type == "perchar/excludeEquipmentSets/set" then
       state = action.payload
     end
 

@@ -5,6 +5,7 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
 -- Local Functions
@@ -75,6 +76,7 @@ function JunkFilter:IsDestroyableJunkItem(item)
 end
 
 function JunkFilter:IsJunkItem(item)
+  local currentState = StateManager:GetCurrentState()
   local savedVariables = SavedVariables:Get()
 
   -- Check if item can be sold or destroyed.
@@ -109,7 +111,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude equipment sets.
-  if not Addon.IS_VANILLA and savedVariables.excludeEquipmentSets and item.isEquipmentSet then
+  if not Addon.IS_VANILLA and currentState.excludeEquipmentSets and item.isEquipmentSet then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 

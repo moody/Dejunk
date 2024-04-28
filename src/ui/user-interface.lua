@@ -135,8 +135,8 @@ UserInterface.frame = (function()
     frame.optionsFrame:AddOption({
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
-      get = function() return SavedVariables:Get().excludeEquipmentSets end,
-      set = function(value) SavedVariables:Get().excludeEquipmentSets = value end
+      get = function() return StateManager:GetCurrentState().excludeEquipmentSets end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeEquipmentSets(value)) end
     })
   end
   frame.optionsFrame:AddOption({

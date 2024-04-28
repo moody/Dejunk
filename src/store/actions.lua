@@ -69,6 +69,15 @@ function Actions:SetSafeMode(value)
   end
 end
 
+--- @return WuxAction
+function Actions:SetExcludeEquipmentSets(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/excludeEquipmentSets/set", payload = value }
+  else
+    return { type = "global/excludeEquipmentSets/set", payload = value }
+  end
+end
+
 -- ============================================================================
 -- Global
 -- ============================================================================
