@@ -3,6 +3,49 @@ local Actions = Addon:GetModule("Actions") --- @class Actions
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
+-- Global
+-- ============================================================================
+
+--- @param value table
+--- @return WuxAction
+function Actions:PatchMinimapIcon(value)
+  return { type = "global/minimapIcon/patch", payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetGlobalInclusions(value)
+  return { type = "global/inclusions/set", payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetGlobalExclusions(value)
+  return { type = "global/exclusions/set", payload = value }
+end
+
+-- ============================================================================
+-- Per Character
+-- ============================================================================
+
+--- @return WuxAction
+function Actions:ToggleCharacterSpecificSettings()
+  return { type = "perchar/characterSpecificSettings/toggle" }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetPercharInclusions(value)
+  return { type = "perchar/inclusions/set", payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetPercharExclusions(value)
+  return { type = "perchar/exclusions/set", payload = value }
+end
+
+-- ============================================================================
 -- Common
 -- ============================================================================
 
@@ -134,23 +177,4 @@ function Actions:SetIncludeArtifactRelics(value)
   else
     return { type = "global/includeArtifactRelics/set", payload = value }
   end
-end
-
--- ============================================================================
--- Global
--- ============================================================================
-
---- @param value table
---- @return WuxAction
-function Actions:PatchMinimapIcon(value)
-  return { type = "global/minimapIcon/patch", payload = value }
-end
-
--- ============================================================================
--- Per Character
--- ============================================================================
-
---- @return WuxAction
-function Actions:ToggleCharacterSpecificSettings()
-  return { type = "perchar/characterSpecificSettings/toggle" }
 end

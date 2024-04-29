@@ -206,15 +206,25 @@ Reducers.globalReducer = Wux:CombineReducers({
 
   -- Inclusions.
   inclusions = function(state, action)
-    return Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.inclusions)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.inclusions)
+
+    if action.type == "global/inclusions/set" then
+      state = Wux:ShallowCopy(action.payload)
+    end
+
+    return state
   end,
 
   -- Exclusions.
   exclusions = function(state, action)
-    return Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.exclusions)
-  end,
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.exclusions)
 
-  -- TODO: add more reducers.
+    if action.type == "global/exclusions/set" then
+      state = Wux:ShallowCopy(action.payload)
+    end
+
+    return state
+  end,
 })
 
 -- ============================================================================
@@ -380,15 +390,25 @@ Reducers.percharReducer = Wux:CombineReducers({
 
   -- Inclusions.
   inclusions = function(state, action)
-    return Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.inclusions)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.inclusions)
+
+    if action.type == "perchar/inclusions/set" then
+      state = Wux:ShallowCopy(action.payload)
+    end
+
+    return state
   end,
 
   -- Exclusions.
   exclusions = function(state, action)
-    return Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.exclusions)
-  end,
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.exclusions)
 
-  -- TODO: add more reducers.
+    if action.type == "perchar/exclusions/set" then
+      state = Wux:ShallowCopy(action.payload)
+    end
+
+    return state
+  end,
 })
 
 -- ============================================================================
