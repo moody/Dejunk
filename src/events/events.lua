@@ -14,15 +14,10 @@ local events = {
   "StateUpdated",
 
   -- Lists.
-  "ExistingListItemFailedToParse",
-  "ExistingListItemParsed",
-  "ListItemAdded",
   "ListItemCannotBeParsed",
   "ListItemFailedToParse",
   "ListItemParsed",
-  "ListItemRemoved",
   "ListParsingComplete",
-  "ListRemovedAll",
 
   -- Seller.
   "SellerStarted",

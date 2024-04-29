@@ -107,53 +107,31 @@ EventManager:Once(E.StoreCreated, function()
   end
 end)
 
--- Listen for `ListItemAdded` to remove the item from the opposite list if necessary.
-EventManager:On(E.ListItemAdded, function(list, item)
-  local opposite = list:GetOpposite()
-  if opposite:Contains(item.id) then opposite:Remove(item.id) end
-end)
-
-do -- Listen for item parsed events.
-  local function addListItem(list, item)
+-- Listen for `ListItemParsed` to add the item to the list and print a message.
+-- If the item cannot be sold or destroyed, then an error message is printed.
+EventManager:On(E.ListItemParsed, function(list, item, silent)
+  if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
+    -- Add item.
     list.items[#list.items + 1] = item
     list.itemIds[tostring(item.id)] = true
-    EventManager:Fire(E.ListItemAdded, list, item)
+    -- Remove from opposite list.
+    local opposite = list:GetOpposite()
+    if opposite:Contains(item.id) then opposite:Remove(item.id) end
+    -- Print.
+    if not silent then Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name)) end
+  else
+    if not silent then Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link)) end
   end
-
-  -- Listen for `ListItemParsed` to add the item to the list and print a message.
-  -- If the item cannot be sold or destroyed, then an error message is printed.
-  EventManager:On(E.ListItemParsed, function(list, item)
-    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-      addListItem(list, item)
-      Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name))
-    else
-      Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link))
-    end
-  end)
-
-  -- Listen for `ExistingListItemParsed` to add the item to the list without printing a message.
-  -- This event is intended for item IDs already saved in the list's SavedVariables. As such,
-  -- messages are not necessary nor desired.
-  EventManager:On(E.ExistingListItemParsed, function(list, item)
-    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-      addListItem(list, item)
-    end
-  end)
-end
-
--- Listen for `ListItemFailedToParse` to print an error message.
-EventManager:On(E.ListItemFailedToParse, function(list, itemId)
-  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
 end)
 
--- Listen for `ExistingListItemFailedToParse` to print an error message.
-EventManager:On(E.ExistingListItemFailedToParse, function(list, itemId)
-  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
+-- Listen for `ListItemFailedToParse` to print an error message.
+EventManager:On(E.ListItemFailedToParse, function(list, itemId, silent)
+  if not silent then Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId))) end
 end)
 
 -- Listen for `ListItemCannotBeParsed` to print an error message.
-EventManager:On(E.ListItemCannotBeParsed, function(list, itemId)
-  Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId)))
+EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
+  if not silent then Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId))) end
 end)
 
 -- Listen for `ListParsingComplete` to save and sort the list after parsing.

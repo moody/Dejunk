@@ -9,20 +9,17 @@ local TickerManager = Addon:GetModule("TickerManager")
 local PARSE_DELAY_SECONDS = 0.1
 
 --- @class ParsingOptions
---- @field parsedEvent string
---- @field failedToParseEvent string
+--- @field silent boolean
 --- @field maxParseAttempts number
 
 --- @type table<string, ParsingOptions>
 local PARSING_OPTIONS = {
   NEW_LIST_ITEM = {
-    parsedEvent = E.ListItemParsed,
-    failedToParseEvent = E.ListItemFailedToParse,
+    silent = false,
     maxParseAttempts = math.ceil(5 / PARSE_DELAY_SECONDS) -- Fail after 5 seconds.
   },
   EXISTING_LIST_ITEM = {
-    parsedEvent = E.ExistingListItemParsed,
-    failedToParseEvent = E.ExistingListItemFailedToParse,
+    silent = true,
     maxParseAttempts = math.ceil(30 / PARSE_DELAY_SECONDS) -- Fail after 30 seconds.
   }
 }
@@ -152,18 +149,18 @@ local function parse(list, itemIds, options)
   for itemId in pairs(itemIds) do
     if not GetItemInfoInstant(itemId) then
       itemIds[itemId] = nil
-      EventManager:Fire(E.ListItemCannotBeParsed, list, itemId)
+      EventManager:Fire(E.ListItemCannotBeParsed, list, itemId, options.silent)
     else
       local item = getItemById(itemId)
       if item then
         itemIds[itemId] = nil
-        EventManager:Fire(options.parsedEvent, list, item)
+        EventManager:Fire(E.ListItemParsed, list, item, options.silent)
       else
         local parseAttempts = incrementParseAttempts(list, itemId)
         if parseAttempts >= options.maxParseAttempts then
           resetParseAttempts(list, itemId)
           itemIds[itemId] = nil
-          EventManager:Fire(options.failedToParseEvent, list, itemId)
+          EventManager:Fire(E.ListItemFailedToParse, list, itemId, options.silent)
         end
       end
     end
