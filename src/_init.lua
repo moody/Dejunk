@@ -91,6 +91,6 @@ do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
   end
 
   function Addon:Debug(...)
-    print(Colors.Red("[Debug]"), ...)
+    print(date("%H:%M:%S"), Colors.Red("[Debug]"), ...)
   end
 end
