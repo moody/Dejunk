@@ -269,37 +269,37 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   -- Warrior.
   if class == "WARRIOR" then
     -- Armor.
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Plate] = true
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Shield] = true
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe2H] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = Addon.IS_VANILLA or Addon.IS_CATA
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Dagger] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace2H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      -- Armor.
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
-      -- Weapons.
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = true
-    end
   end
 
   -- Paladin.
   if class == "PALADIN" then
     -- Armor.
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Libram] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Plate] = true
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Shield] = true
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
@@ -309,18 +309,13 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Libram] = true
-    end
   end
 
   -- Hunter.
   if class == "HUNTER" then
     -- Armor.
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
@@ -333,40 +328,25 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      -- Armor.
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
-      -- Weapons.
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = true
-    end
   end
 
   -- Rogue.
   if class == "ROGUE" then
     -- Armor
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
     -- Weapons
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = not Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = Addon.IS_VANILLA or Addon.IS_CATA
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Dagger] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      -- Armor.
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      -- Weapons.
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = true
-    end
-    -- Special case for one-handed axes.
-    if not Addon.IS_VANILLA then
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
-    end
   end
 
   -- Priest.
@@ -380,10 +360,11 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Wand] = true
   end
 
-  -- Death knight.
+  -- Death Knight.
   if class == "DEATHKNIGHT" then
     -- Armor.
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Plate] = true
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe2H] = true
@@ -392,21 +373,17 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
-    -- Wrath.
-    if Addon.IS_WRATH then
-      -- Armor.
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Sigil] = true
-    end
   end
 
   -- Shaman.
   if class == "SHAMAN" then
     -- Armor.
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Shield] = true
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Totem] = Addon.IS_VANILLA
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe2H] = true
@@ -415,12 +392,6 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace2H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Totem] = true
-    end
   end
 
   -- Mage/Warlock.
@@ -450,27 +421,22 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   -- Druid.
   if class == "DRUID" then
     -- Armor.
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Idol] = Addon.IS_VANILLA
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
+    suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     -- Weapons.
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Dagger] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace1H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace2H] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    -- Classic.
-    if Addon.IS_CLASSIC then
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = true
-      suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Idol] = true
-    end
-    -- Not Vanilla.
-    if not Addon.IS_VANILLA then
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bearclaw] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Catclaw] = true
-      suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = true
-    end
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bearclaw] = not Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Catclaw] = not Addon.IS_VANILLA
+    suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = not Addon.IS_VANILLA
   end
 
-  -- Demon hunter.
+  -- Demon Hunter.
   if class == "DEMONHUNTER" then
     -- Armor.
     suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
