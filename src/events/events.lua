@@ -9,20 +9,15 @@ local events = {
   -- Bags.
   "BagsUpdated",
 
-  -- SavedVariables.
-  "SavedVariablesReady",
-  "SavedVariablesSwitched",
+  -- Store.
+  "StoreCreated",
+  "StateUpdated",
 
   -- Lists.
-  "ExistingListItemFailedToParse",
-  "ExistingListItemParsed",
-  "ListItemAdded",
   "ListItemCannotBeParsed",
   "ListItemFailedToParse",
   "ListItemParsed",
-  "ListItemRemoved",
   "ListParsingComplete",
-  "ListRemovedAll",
 
   -- Seller.
   "SellerStarted",

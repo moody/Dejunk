@@ -199,10 +199,6 @@ function Widgets:ItemButton(options)
 
   function frame:SetItem(item)
     self.item = item
-    self:OnUpdate()
-    if GetMouseFocus() == self then
-      self:UpdateTooltip()
-    end
   end
 
   frame:HookScript("OnEnter", function(self)

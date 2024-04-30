@@ -4,7 +4,7 @@ local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local Tooltip = Addon:GetModule("Tooltip")
 
 EventManager:Once(E.Wow.MerchantShow, function()
@@ -26,7 +26,7 @@ EventManager:Once(E.Wow.MerchantShow, function()
   end, frame)
 
   MerchantFrame:HookScript("OnUpdate", function()
-    if SavedVariables:Get().merchantButton then frame:Show() else frame:Hide() end
+    if StateManager:GetCurrentState().merchantButton then frame:Show() else frame:Hide() end
   end)
 
   frame:HookScript("OnUpdate", function(self)

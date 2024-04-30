@@ -20,6 +20,8 @@ end
 
 --- Refreshes the cache.
 function EquipmentSetsCache:Refresh()
+  if Addon.IS_VANILLA then return end
+
   for k in pairs(cache) do cache[k] = nil end
 
   for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
@@ -27,8 +29,8 @@ function EquipmentSetsCache:Refresh()
       if itemLocation and itemLocation ~= 1 then
         local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
 
-        -- In Wrath, `voidStorage` is not returned.
-        if Addon.IS_WRATH then
+        -- In Cataclysm, `voidStorage` is not returned.
+        if Addon.IS_CATA then
           bag = slot
           slot = voidStorage
         end

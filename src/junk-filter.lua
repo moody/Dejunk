@@ -4,7 +4,7 @@ local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
-local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
 -- Local Functions
@@ -75,7 +75,7 @@ function JunkFilter:IsDestroyableJunkItem(item)
 end
 
 function JunkFilter:IsJunkItem(item)
-  local savedVariables = SavedVariables:Get()
+  local currentState = StateManager:GetCurrentState()
 
   -- Check if item can be sold or destroyed.
   if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
@@ -109,38 +109,38 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude equipment sets.
-  if not Addon.IS_VANILLA and savedVariables.excludeEquipmentSets and item.isEquipmentSet then
+  if not Addon.IS_VANILLA and currentState.excludeEquipmentSets and item.isEquipmentSet then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 
   -- Exclude unbound equipment.
-  if savedVariables.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+  if currentState.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
   end
 
   -- Include poor items.
-  if savedVariables.includePoorItems and item.quality == Enum.ItemQuality.Poor then
+  if currentState.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
   end
 
   -- Soulbound equipment filters.
   if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
     -- Include below item level.
-    if savedVariables.includeBelowItemLevel.enabled then
-      local value = savedVariables.includeBelowItemLevel.value
+    if currentState.includeBelowItemLevel.enabled then
+      local value = currentState.includeBelowItemLevel.value
       if item.itemLevel < value then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
         return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
     end
     -- Include unsuitable equipment.
-    if savedVariables.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
+    if currentState.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
     end
   end
 
   -- Include artifact relics.
-  if Addon.IS_RETAIL and savedVariables.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
+  if Addon.IS_RETAIL and currentState.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 

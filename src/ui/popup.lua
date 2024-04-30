@@ -9,7 +9,7 @@ Popup.keys = {}
 -- Events
 -- ============================================================================
 
-EventManager:On(E.SavedVariablesSwitched, function()
+EventManager:On(E.StateUpdated, function()
   for i = 1, STATICPOPUP_NUMDIALOGS do
     local popup = _G["StaticPopup" .. i]
     if popup and popup:IsShown() and Popup.keys[popup.which] then

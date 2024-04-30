@@ -1,11 +1,12 @@
 local ADDON_NAME, Addon = ...
+local Actions = Addon:GetModule("Actions") --- @type Actions
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
-local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local UserInterface = Addon:GetModule("UserInterface")
 local Widgets = Addon:GetModule("Widgets")
 
@@ -78,26 +79,26 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.CHARACTER_SPECIFIC_SETTINGS_TEXT,
     tooltipText = L.CHARACTER_SPECIFIC_SETTINGS_TOOLTIP,
-    get = function() return SavedVariables:GetPerChar().characterSpecificSettings end,
-    set = function() SavedVariables:Switch() end
+    get = function() return StateManager:GetPercharState().characterSpecificSettings end,
+    set = function() StateManager:GetStore():Dispatch(Actions:ToggleCharacterSpecificSettings()) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.CHAT_MESSAGES_TEXT,
     tooltipText = L.CHAT_MESSAGES_TOOLTIP,
-    get = function() return SavedVariables:Get().chatMessages end,
-    set = function(value) SavedVariables:Get().chatMessages = value end
+    get = function() return StateManager:GetCurrentState().chatMessages end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
     tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
-    get = function() return SavedVariables:Get().itemTooltips end,
-    set = function(value) SavedVariables:Get().itemTooltips = value end
+    get = function() return StateManager:GetCurrentState().itemTooltips end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemTooltips(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.MERCHANT_BUTTON_TEXT,
     tooltipText = L.MERCHANT_BUTTON_TOOLTIP,
-    get = function() return SavedVariables:Get().merchantButton end,
-    set = function(value) SavedVariables:Get().merchantButton = value end
+    get = function() return StateManager:GetCurrentState().merchantButton end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.MINIMAP_ICON_TEXT,
@@ -108,84 +109,83 @@ UserInterface.frame = (function()
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return SavedVariables:Get().autoJunkFrame end,
-    set = function(value) SavedVariables:Get().autoJunkFrame = value end
+    get = function() return StateManager:GetCurrentState().autoJunkFrame end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoJunkFrame(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
-    get = function() return SavedVariables:Get().autoRepair end,
-    set = function(value) SavedVariables:Get().autoRepair = value end
+    get = function() return StateManager:GetCurrentState().autoRepair end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoRepair(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.AUTO_SELL_TEXT,
     tooltipText = L.AUTO_SELL_TOOLTIP,
-    get = function() return SavedVariables:Get().autoSell end,
-    set = function(value) SavedVariables:Get().autoSell = value end
+    get = function() return StateManager:GetCurrentState().autoSell end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoSell(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.SAFE_MODE_TEXT,
     tooltipText = L.SAFE_MODE_TOOLTIP,
-    get = function() return SavedVariables:Get().safeMode end,
-    set = function(value) SavedVariables:Get().safeMode = value end
+    get = function() return StateManager:GetCurrentState().safeMode end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
   })
   if not Addon.IS_VANILLA then
     frame.optionsFrame:AddOption({
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
-      get = function() return SavedVariables:Get().excludeEquipmentSets end,
-      set = function(value) SavedVariables:Get().excludeEquipmentSets = value end
+      get = function() return StateManager:GetCurrentState().excludeEquipmentSets end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeEquipmentSets(value)) end
     })
   end
   frame.optionsFrame:AddOption({
     labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
     tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
-    get = function() return SavedVariables:Get().excludeUnboundEquipment end,
-    set = function(value) SavedVariables:Get().excludeUnboundEquipment = value end
+    get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_POOR_ITEMS_TEXT,
     tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
-    get = function() return SavedVariables:Get().includePoorItems end,
-    set = function(value) SavedVariables:Get().includePoorItems = value end
+    get = function() return StateManager:GetCurrentState().includePoorItems end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludePoorItems(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
     onUpdateTooltip = function(self, tooltip)
-      local itemLevel = Colors.White(SavedVariables:Get().includeBelowItemLevel.value)
+      local itemLevel = Colors.White(StateManager:GetCurrentState().includeBelowItemLevel.value)
       tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
       tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
     end,
-    get = function() return SavedVariables:Get().includeBelowItemLevel.enabled end,
+    get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
     set = function(value)
       if value then
-        local sv = SavedVariables:Get()
+        local currentState = StateManager:GetCurrentState()
         Popup:GetInteger({
           text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
-          initialValue = sv.includeBelowItemLevel.value,
+          initialValue = currentState.includeBelowItemLevel.value,
           onAccept = function(self, value)
-            sv.includeBelowItemLevel.enabled = true
-            sv.includeBelowItemLevel.value = value
+            StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = true, value = value }))
           end
         })
       else
-        SavedVariables:Get().includeBelowItemLevel.enabled = value
+        StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value }))
       end
     end
   })
   frame.optionsFrame:AddOption({
     labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
     tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
-    get = function() return SavedVariables:Get().includeUnsuitableEquipment end,
-    set = function(value) SavedVariables:Get().includeUnsuitableEquipment = value end
+    get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
   })
 
   if Addon.IS_RETAIL then
     frame.optionsFrame:AddOption({
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
-      get = function() return SavedVariables:Get().includeArtifactRelics end,
-      set = function(value) SavedVariables:Get().includeArtifactRelics = value end
+      get = function() return StateManager:GetCurrentState().includeArtifactRelics end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
     })
   end
 

@@ -7,8 +7,7 @@ local ADDON_NAME, Addon = ...
 Addon.VERSION = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 Addon.IS_VANILLA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-Addon.IS_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
-Addon.IS_CLASSIC = Addon.IS_VANILLA or Addon.IS_WRATH
+Addon.IS_CATA = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 
 -- ============================================================================
 -- Functions
@@ -78,19 +77,19 @@ end
 
 do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
   local Colors = Addon:GetModule("Colors")
-  local SavedVariables = Addon:GetModule("SavedVariables")
+  local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
   function Addon:ForcePrint(...)
     print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
   end
 
   function Addon:Print(...)
-    if SavedVariables:Get().chatMessages then
+    if StateManager:GetCurrentState().chatMessages then
       print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
     end
   end
 
   function Addon:Debug(...)
-    print(Colors.Red("[Debug]"), ...)
+    print(date("%H:%M:%S"), Colors.Red("[Debug]"), ...)
   end
 end

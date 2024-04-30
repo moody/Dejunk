@@ -5,8 +5,8 @@ local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
-local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local TickerManager = Addon:GetModule("TickerManager")
 
 -- ============================================================================
@@ -15,10 +15,10 @@ local TickerManager = Addon:GetModule("TickerManager")
 
 EventManager:On(E.Wow.MerchantShow, function()
   TickerManager:After(0.1, function()
-    local savedVariables = SavedVariables:Get()
+    local currentState = StateManager:GetCurrentState()
 
     -- Auto repair.
-    if savedVariables.autoRepair then
+    if currentState.autoRepair then
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
         RepairAllItems()
@@ -28,7 +28,7 @@ EventManager:On(E.Wow.MerchantShow, function()
     end
 
     -- Auto sell.
-    if savedVariables.autoSell then
+    if currentState.autoSell then
       Seller:Start(true)
     end
   end)
@@ -102,7 +102,7 @@ function Seller:Start(auto)
   end
 
   -- Safe mode.
-  if SavedVariables:Get().safeMode then
+  if StateManager:GetCurrentState().safeMode then
     while #self.items > 12 do table.remove(self.items) end
   end
 

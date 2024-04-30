@@ -9,8 +9,8 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
-local SavedVariables = Addon:GetModule("SavedVariables")
 local Seller = Addon:GetModule("Seller")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local Widgets = Addon:GetModule("Widgets")
 
 -- ============================================================================
@@ -18,12 +18,12 @@ local Widgets = Addon:GetModule("Widgets")
 -- ============================================================================
 
 -- Auto Junk Frame.
-EventManager:Once(E.SavedVariablesReady, function()
+EventManager:Once(E.StoreCreated, function()
   EventManager:On(E.Wow.MerchantShow, function()
-    if SavedVariables:Get().autoJunkFrame then JunkFrame:Show() end
+    if StateManager:GetCurrentState().autoJunkFrame then JunkFrame:Show() end
   end)
   EventManager:On(E.Wow.MerchantClosed, function()
-    if SavedVariables:Get().autoJunkFrame then JunkFrame:Hide() end
+    if StateManager:GetCurrentState().autoJunkFrame then JunkFrame:Hide() end
   end)
 end)
 

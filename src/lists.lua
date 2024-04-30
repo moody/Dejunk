@@ -1,4 +1,5 @@
 local _, Addon = ...
+local Actions = Addon:GetModule("Actions") --- @type Actions
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -6,7 +7,15 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local Lists = Addon:GetModule("Lists")
-local SavedVariables = Addon:GetModule("SavedVariables")
+local StateManager = Addon:GetModule("StateManager") --- @type StateManager
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local function compareByQuality(a, b)
+  return a.quality == b.quality and a.name < b.name or a.quality < b.quality
+end
 
 -- ============================================================================
 -- Mixins
@@ -23,7 +32,7 @@ function Mixins:GetOpposite()
 end
 
 function Mixins:Contains(itemId)
-  return not not self.sv[tostring(itemId)]
+  return self.itemIds[tostring(itemId)] == true
 end
 
 function Mixins:Add(itemId)
@@ -42,14 +51,16 @@ end
 function Mixins:Remove(itemId)
   itemId = tostring(itemId)
 
-  if self.sv[itemId] then
-    self.sv[itemId] = nil
+  if self:Contains(itemId) then
+    self.itemIds[itemId] = nil
 
     local index = self:GetIndex(itemId)
     if index ~= -1 then
       local item = table.remove(self.items, index)
       Addon:Print(L.ITEM_REMOVED_FROM_LIST:format(item.link, self.name))
     end
+
+    self.save(self.itemIds)
   else
     local link = select(2, GetItemInfo(itemId))
     if link then Addon:Print(L.ITEM_NOT_ON_LIST:format(link, self.name)) end
@@ -69,94 +80,64 @@ function Mixins:GetIndex(itemId)
 end
 
 function Mixins:RemoveAll()
-  if next(self.sv) then Addon:Print(L.ALL_ITEMS_REMOVED_FROM_LIST:format(self.name)) end
-  for k in pairs(self.sv) do self.sv[k] = nil end
-  for k in pairs(self.items) do self.items[k] = nil end
+  if #self.items > 0 or next(self.itemIds) then
+    for k in pairs(self.items) do self.items[k] = nil end
+    for k in pairs(self.itemIds) do self.itemIds[k] = nil end
+
+    self.save(self.itemIds)
+
+    Addon:Print(L.ALL_ITEMS_REMOVED_FROM_LIST:format(self.name))
+  end
 end
 
 function Mixins:GetItems()
   return self.items
 end
 
-function Mixins:Sort()
-  table.sort(self.items, function(a, b)
-    return a.quality == b.quality and a.name < b.name or a.quality < b.quality
-  end)
-end
-
 -- ============================================================================
 -- Events
 -- ============================================================================
 
--- Listen for `SavedVariablesReady` to initialize lists with existing data.
-EventManager:Once(E.SavedVariablesReady, function()
+-- Listen for `StoreCreated` to initialize lists with existing data.
+EventManager:Once(E.StoreCreated, function()
   for list in Lists:Iterate() do
-    list.sv = list.getSv()
-    for itemId in pairs(list.sv) do
+    for itemId in pairs(list.load()) do
       ListItemParser:ParseExisting(list, itemId)
     end
   end
 end)
 
--- Listen for `ListItemAdded` to remove the item from the opposite list if necessary.
-EventManager:On(E.ListItemAdded, function(list, item)
-  local opposite = list:GetOpposite()
-  if opposite:Contains(item.id) then opposite:Remove(item.id) end
-end)
-
-do -- Listen for item parsed events.
-  local function addListItem(list, item)
-    list.sv[tostring(item.id)] = true
+-- Listen for `ListItemParsed` to add the item to the list and print a message.
+-- If the item cannot be sold or destroyed, then an error message is printed.
+EventManager:On(E.ListItemParsed, function(list, item, silent)
+  if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
+    -- Add item.
     list.items[#list.items + 1] = item
-    EventManager:Fire(E.ListItemAdded, list, item)
+    list.itemIds[tostring(item.id)] = true
+    -- Remove from opposite list.
+    local opposite = list:GetOpposite()
+    if opposite:Contains(item.id) then opposite:Remove(item.id) end
+    -- Print.
+    if not silent then Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name)) end
+  else
+    if not silent then Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link)) end
   end
-
-  -- Listen for `ListItemParsed` to add the item to the list and print a message.
-  -- If the item cannot be sold or destroyed, then an error message is printed.
-  EventManager:On(E.ListItemParsed, function(list, item)
-    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-      addListItem(list, item)
-      Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name))
-    else
-      list.sv[tostring(item.id)] = nil
-      Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link))
-    end
-  end)
-
-  -- Listen for `ExistingListItemParsed` to add the item to the list without printing a message.
-  -- This event is intended for item IDs already saved in the list's SavedVariables. As such,
-  -- messages are not necessary nor desired.
-  EventManager:On(E.ExistingListItemParsed, function(list, item)
-    if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-      addListItem(list, item)
-    else
-      list.sv[tostring(item.id)] = nil
-    end
-  end)
-end
+end)
 
 -- Listen for `ListItemFailedToParse` to print an error message.
-EventManager:On(E.ListItemFailedToParse, function(list, itemId)
-  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
+EventManager:On(E.ListItemFailedToParse, function(list, itemId, silent)
+  if not silent then Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId))) end
 end)
 
--- Listen for `ExistingListItemFailedToParse` to print an error message,
--- as well as to remove the item ID from the list's SavedVariables.
-EventManager:On(E.ExistingListItemFailedToParse, function(list, itemId)
-  list.sv[tostring(itemId)] = nil
-  Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId)))
+-- Listen for `ListItemCannotBeParsed` to print an error message.
+EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
+  if not silent then Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId))) end
 end)
 
--- Listen for `ListItemCannotBeParsed` to print an error message,
--- as well as to ensure removal of the item ID from the list's SavedVariables.
-EventManager:On(E.ListItemCannotBeParsed, function(list, itemId)
-  list.sv[tostring(itemId)] = nil
-  Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId)))
-end)
-
--- Listen for `ListParsingComplete` to sort the list after parsing.
+-- Listen for `ListParsingComplete` to save and sort the list after parsing.
 EventManager:On(E.ListParsingComplete, function(list)
-  list:Sort()
+  list.save(list.itemIds)
+  table.sort(list.items, compareByQuality)
 end)
 
 -- ============================================================================
@@ -167,6 +148,7 @@ do -- Create the lists.
   local function createList(data)
     local list = data
     list.items = {}
+    list.itemIds = {}
     for k, v in pairs(Mixins) do list[k] = v end
     return list
   end
@@ -175,7 +157,8 @@ do -- Create the lists.
   Lists.PerCharInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
-    getSv = function() return SavedVariables:GetPerChar().inclusions end,
+    load = function() return StateManager:GetPercharState().inclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharInclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalInclusions end,
     getOpposite = function() return Lists.PerCharExclusions end
   })
@@ -184,7 +167,8 @@ do -- Create the lists.
   Lists.PerCharExclusions = createList({
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
-    getSv = function() return SavedVariables:GetPerChar().exclusions end,
+    load = function() return StateManager:GetPercharState().exclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharExclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalExclusions end,
     getOpposite = function() return Lists.PerCharInclusions end
   })
@@ -193,7 +177,8 @@ do -- Create the lists.
   Lists.GlobalInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
-    getSv = function() return SavedVariables:GetGlobal().inclusions end,
+    load = function() return StateManager:GetGlobalState().inclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalInclusions(itemIds)) end,
     getSibling = function() return Lists.PerCharInclusions end,
     getOpposite = function() return Lists.GlobalExclusions end
   })
@@ -202,7 +187,8 @@ do -- Create the lists.
   Lists.GlobalExclusions = createList({
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
-    getSv = function() return SavedVariables:GetGlobal().exclusions end,
+    load = function() return StateManager:GetGlobalState().exclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalExclusions(itemIds)) end,
     getSibling = function() return Lists.PerCharExclusions end,
     getOpposite = function() return Lists.GlobalInclusions end
   })

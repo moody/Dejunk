@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.8.0] - 2024-04-30
+
+### Changed
+
+- Allow any delimiter when importing ([#197](https://github.com/moody/Dejunk/issues/197))
+- Refactored SavedVariables code
+- Updated for Cataclysm Classic
+
 ## [1.7.3] - 2024-02-09
 
 - Bump TOC versions
