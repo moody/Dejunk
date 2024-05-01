@@ -1,5 +1,5 @@
 local _, Addon = ...
-local Tooltip = Addon:GetModule("Tooltip")
+local Tooltip = Addon:GetModule("Tooltip") ---@type Tooltip
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
@@ -13,7 +13,7 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @field points? table[]
 --- @field width? integer
 --- @field height? integer
---- @field onUpdateTooltip? fun(self: table, tooltip: table)
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 
 -- =============================================================================
 -- Widgets - Frame
