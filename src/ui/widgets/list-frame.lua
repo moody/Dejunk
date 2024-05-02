@@ -4,20 +4,25 @@ local L = Addon:GetModule("Locale") ---@type Locale
 local TransportFrame = Addon:GetModule("TransportFrame")
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates an ItemsFrame for displaying a list.
+-- =============================================================================
+-- EmmyLua Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    numButtons? = number,
-    displayPrice? = boolean,
-    list = table
-  }
-]]
+--- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
+--- @field list table
+
+--- @class ListFrameIconButtonWidgetOptions : FrameWidgetOptions
+--- @field texture string
+--- @field textureSize number
+--- @field onClick? fun(self: ListFrameIconButtonWidget, button: string)
+
+-- =============================================================================
+-- Widgets - List Frame
+-- =============================================================================
+
+--- Creates an ItemsFrame for displaying a List.
+--- @param options ListFrameWidgetOptions
+--- @return ListFrameWidget frame
 function Widgets:ListFrame(options)
   -- Defaults.
   options.titleText = options.list.name
@@ -77,7 +82,7 @@ function Widgets:ListFrame(options)
   end
 
   -- Base frame.
-  local frame = self:ItemsFrame(options)
+  local frame = self:ItemsFrame(options) ---@class ListFrameWidget : ItemsFrameWidget
   frame.title:SetJustifyH("LEFT")
 
   function frame:SwitchList()
@@ -130,26 +135,19 @@ function Widgets:ListFrame(options)
   return frame
 end
 
---[[
-  Creates a button Frame with an icon.
+-- =============================================================================
+-- Widgets - List Frame Icon Button
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    texture = string,
-    textureSize = number,
-    onClick? = function(self, button) -> nil
-  }
-]]
+--- Creates a button Frame with an icon.
+--- @param options ListFrameIconButtonWidgetOptions
+--- @return ListFrameIconButtonWidget frame
 function Widgets:ListFrameIconButton(options)
   -- Defaults.
   options.frameType = "Button"
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class ListFrameIconButtonWidget : FrameWidget
   frame:SetBackdropColor(0, 0, 0, 0)
   frame:SetBackdropBorderColor(0, 0, 0, 0)
   frame:SetWidth(options.textureSize + self:Padding(4))
