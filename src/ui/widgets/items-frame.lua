@@ -3,26 +3,30 @@ local Colors = Addon:GetModule("Colors") ---@type Colors
 local L = Addon:GetModule("Locale") ---@type Locale
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a fake scrolling frame for displaying items.
+-- =============================================================================
+-- EmmyLua Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    titleText? = string,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    itemButtonOnUpdateTooltip? = function(self, tooltip) -> nil,
-    itemButtonOnClick? = function(self, button) -> nil,
-    numButtons? = number,
-    displayPrice? = boolean,
-    getItems = function() -> table[],
-    addItem = function(itemId: string) -> nil,
-    removeAllItems = function() -> nil
-  }
-]]
+--- @class ItemsFrameWidgetOptions : TitleFrameWidgetOptions
+--- @field itemButtonOnUpdateTooltip? fun(self: ItemButtonWidget, tooltip: Tooltip)
+--- @field itemButtonOnClick? fun(self: ItemButtonWidget, button: string)
+--- @field numButtons? integer
+--- @field displayPrice? boolean
+--- @field getItems fun(): table[]
+--- @field addItem fun(itemId: string)
+--- @field removeAllItems fun()
+
+--- @class ItemButtonWidgetOptions : FrameWidgetOptions
+--- @field onClick? fun(self: ItemButtonWidget, button: string)
+--- @field displayPrice? boolean
+
+-- =============================================================================
+-- Widgets - Items Frame
+-- =============================================================================
+
+--- Creates a fake scrolling frame for displaying items.
+--- @param options ItemsFrameWidgetOptions
+--- @return ItemsFrameWidget
 function Widgets:ItemsFrame(options)
   local SPACING = Widgets:Padding()
 
@@ -32,7 +36,7 @@ function Widgets:ItemsFrame(options)
   options.numButtons = Addon:IfNil(options.numButtons, 7)
 
   -- Base frame.
-  local frame = self:TitleFrame(options)
+  local frame = self:TitleFrame(options) ---@class ItemsFrameWidget : TitleFrameWidget
   frame.buttons = {}
 
   frame.titleButton:SetScript("OnClick", function(_, button)
@@ -133,20 +137,13 @@ function Widgets:ItemsFrame(options)
   return frame
 end
 
---[[
-  Creates a button for displaying an item in an ItemsFrame.
+-- =============================================================================
+-- Widgets - Item Button
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    onClick? = function(self, button) -> nil,
-    displayPrice? = boolean
-  }
-]]
+--- Creates a button for displaying an item in an ItemsFrame.
+--- @param options ItemButtonWidgetOptions
+--- @return ItemButtonWidget frame
 function Widgets:ItemButton(options)
   -- Defaults.
   options.frameType = "Button"
@@ -155,7 +152,7 @@ function Widgets:ItemButton(options)
   end)
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class ItemButtonWidget : FrameWidget
   frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
