@@ -1,7 +1,7 @@
 local _, Addon = ...
 local Container = Addon:GetModule("Container")
 local Items = Addon:GetModule("Items")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local Looter = Addon:GetModule("Looter")
 local TickerManager = Addon:GetModule("TickerManager")
 

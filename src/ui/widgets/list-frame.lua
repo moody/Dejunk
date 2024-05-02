@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local TransportFrame = Addon:GetModule("TransportFrame")
 local Widgets = Addon:GetModule("Widgets")
 

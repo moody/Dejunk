@@ -3,7 +3,7 @@ local Confirmer = Addon:GetModule("Confirmer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local TickerManager = Addon:GetModule("TickerManager")
 
 local profit = 0

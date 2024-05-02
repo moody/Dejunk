@@ -1,6 +1,6 @@
 local _, Addon = ...
 local Commands = Addon:GetModule("Commands")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 
 -- ============================================================================
