@@ -1,28 +1,30 @@
 local _, Addon = ...
-local Colors = Addon:GetModule("Colors")
-local Widgets = Addon:GetModule("Widgets")
+local Colors = Addon:GetModule("Colors") ---@type Colors
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a basic button.
+-- =============================================================================
+-- EmmyLua Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    labelText = string,
-    labelColor? = Color,
-    onClick? = function(self, button) -> nil
-  }
-]]
+--- @class ButtonWidgetOptions : FrameWidgetOptions
+--- @field labelText string
+--- @field labelColor? Color
+--- @field onClick? fun(self: ButtonWidget, button: string)
+
+-- =============================================================================
+-- Widgets - Button
+-- =============================================================================
+
+--- Creates a basic button.
+--- @param options ButtonWidgetOptions
+--- @return ButtonWidget frame
 function Widgets:Button(options)
   -- Defaults.
   options.frameType = "Button"
   options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class ButtonWidget : FrameWidget
   frame.onClick = options.onClick
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
   frame:SetBackdropBorderColor(0, 0, 0, 1)
