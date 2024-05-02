@@ -1,6 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Actions = Addon:GetModule("Actions") --- @type Actions
-local Colors = Addon:GetModule("Colors")
+local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
