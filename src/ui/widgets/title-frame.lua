@@ -1,6 +1,6 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 --[[
   Creates a basic frame with title text.

@@ -2,7 +2,7 @@ local _, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local L = Addon:GetModule("Locale") ---@type Locale
 local TransportFrame = Addon:GetModule("TransportFrame")
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 --[[
   Creates an ItemsFrame for displaying a list.

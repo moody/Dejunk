@@ -11,7 +11,7 @@ local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 -- ============================================================================
 -- Events

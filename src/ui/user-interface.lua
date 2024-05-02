@@ -8,7 +8,7 @@ local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local UserInterface = Addon:GetModule("UserInterface")
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 -- ============================================================================
 -- UserInterface
