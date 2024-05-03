@@ -107,8 +107,8 @@ function Widgets:OptionButton(options)
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
-  frame.label:SetPoint("LEFT", frame, self:Padding(), 0)
-  frame.label:SetPoint("RIGHT", frame.checkBox, "LEFT", -self:Padding(0.5), 0)
+  frame.label:SetPoint("LEFT", frame, Widgets:Padding(), 0)
+  frame.label:SetPoint("RIGHT", frame.checkBox, "LEFT", -Widgets:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame.label:SetJustifyH("LEFT")
 
