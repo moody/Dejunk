@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Refactored UI to display all lists together
+
 ## [1.8.0] - 2024-04-30
 
 ### Changed
