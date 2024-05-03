@@ -52,7 +52,7 @@ UserInterface.frame = (function()
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_ParentFrame",
     width = TOTAL_FRAME_WIDTH,
-    height = 550,
+    height = 600,
     titleText = Colors.Blue(ADDON_NAME),
   })
 
