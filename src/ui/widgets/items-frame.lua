@@ -4,7 +4,7 @@ local L = Addon:GetModule("Locale") ---@type Locale
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class ItemsFrameWidgetOptions : TitleFrameWidgetOptions
@@ -50,8 +50,8 @@ function Widgets:ItemsFrame(options)
     name = "$parent_Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
-      { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
+      { "TOPRIGHT",    frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "BOTTOMRIGHT", frame,             "BOTTOMRIGHT", -SPACING, SPACING }
     }
   })
 

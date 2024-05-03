@@ -2,7 +2,7 @@ local _, Addon = ...
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class ScrollableTitleFrameWidgetOptions : TitleFrameWidgetOptions
@@ -29,8 +29,8 @@ function Widgets:ScrollableTitleFrame(options)
     name = "$parent_Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
-      { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
+      { "TOPRIGHT",    frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "BOTTOMRIGHT", frame,             "BOTTOMRIGHT", -SPACING, SPACING }
     }
   })
 

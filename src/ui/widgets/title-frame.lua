@@ -3,7 +3,7 @@ local Colors = Addon:GetModule("Colors") ---@type Colors
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class TitleFrameWidgetOptions : FrameWidgetOptions

@@ -3,7 +3,7 @@ local Tooltip = Addon:GetModule("Tooltip") ---@type Tooltip
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class FrameWidgetOptions

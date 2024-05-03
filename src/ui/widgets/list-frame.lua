@@ -5,7 +5,7 @@ local TransportFrame = Addon:GetModule("TransportFrame")
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
@@ -117,7 +117,7 @@ function Widgets:ListFrame(options)
     name = "$parent_SwitchButton",
     parent = frame.titleButton,
     points = {
-      { "TOPRIGHT", frame.transportButton, "TOPLEFT", 0, 0 },
+      { "TOPRIGHT",    frame.transportButton, "TOPLEFT",    0, 0 },
       { "BOTTOMRIGHT", frame.transportButton, "BOTTOMLEFT", 0, 0 }
     },
     texture = Addon:GetAsset("switch-icon"),
