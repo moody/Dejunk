@@ -96,7 +96,12 @@ function Widgets:OptionButton(options)
   -- Check box.
   frame.checkBox = self:Frame({
     name = "$parent_CheckBox",
-    parent = frame
+    parent = frame,
+    points = {
+      { "RIGHT", -Widgets:Padding(), 0 }
+    },
+    width = options.height - Widgets:Padding(2),
+    height = options.height - Widgets:Padding(2)
   })
 
   -- Label text.
@@ -122,11 +127,6 @@ function Widgets:OptionButton(options)
   end)
 
   frame:SetScript("OnUpdate", function(self)
-    -- Check box.
-    local size = self.label:GetStringHeight()
-    self.checkBox:SetSize(size, size)
-    self.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
-
     if options.get() then
       self:SetAlpha(1)
       self.checkBox:SetBackdropColor(Colors.Blue:GetRGBA(0.5))
