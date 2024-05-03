@@ -78,6 +78,8 @@ end
 --- @param options OptionButtonWidgetOptions
 --- @return OptionButtonWidget frame
 function Widgets:OptionButton(options)
+  local CHECKBOX_SIZE = options.height - Widgets:Padding(2)
+
   -- Defaults.
   options.frameType = "Button"
 
@@ -94,15 +96,9 @@ function Widgets:OptionButton(options)
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
   -- Check box.
-  frame.checkBox = self:Frame({
-    name = "$parent_CheckBox",
-    parent = frame,
-    points = {
-      { "RIGHT", -Widgets:Padding(), 0 }
-    },
-    width = options.height - Widgets:Padding(2),
-    height = options.height - Widgets:Padding(2)
-  })
+  frame.checkBox = frame:CreateTexture("$parent_CheckBox")
+  frame.checkBox:SetSize(CHECKBOX_SIZE, CHECKBOX_SIZE)
+  frame.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
@@ -129,12 +125,10 @@ function Widgets:OptionButton(options)
   frame:SetScript("OnUpdate", function(self)
     if options.get() then
       self:SetAlpha(1)
-      self.checkBox:SetBackdropColor(Colors.Blue:GetRGBA(0.5))
-      self.checkBox:SetBackdropBorderColor(Colors.Blue:GetRGB())
+      self.checkBox:SetColorTexture(Colors.Blue:GetRGBA(0.75))
     else
       self:SetAlpha(0.5)
-      self.checkBox:SetBackdropColor(0, 0, 0, 0)
-      self.checkBox:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+      self.checkBox:SetColorTexture(Colors.White:GetRGBA(0.25))
     end
   end)
 
