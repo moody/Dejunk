@@ -35,6 +35,7 @@ function Widgets:OptionsFrame(options)
 
   -- Scroll child.
   frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
+  frame.scrollChild:SetBackdrop(nil)
   frame.scrollFrame:SetScrollChild(frame.scrollChild)
 
   --- Adds an option button to the frame.
