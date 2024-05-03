@@ -26,5 +26,5 @@ function Tooltip:AddLine(text)
 end
 
 function Tooltip:AddDoubleLine(leftText, rightText)
-  GameTooltip:AddDoubleLine(Colors.Yellow(leftText), Colors.White(rightText))
+  GameTooltip:AddDoubleLine(Colors.Blue(leftText), Colors.White(rightText))
 end
