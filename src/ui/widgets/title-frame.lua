@@ -39,7 +39,7 @@ function Widgets:TitleFrame(options)
     points = { { "TOPLEFT" }, { "TOPRIGHT" } },
     onUpdateTooltip = onUpdateTooltip
   })
-  frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+  frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGB())
   frame.titleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
   -- Title text.

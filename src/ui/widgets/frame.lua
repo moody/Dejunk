@@ -36,7 +36,7 @@ function Widgets:Frame(options)
   -- Backdrop.
   Mixin(frame, BackdropTemplateMixin)
   frame:SetBackdrop(self.BORDER_BACKDROP)
-  frame:SetBackdropColor(0, 0, 0, 0.75)
+  frame:SetBackdropColor(0.05, 0.05, 0.05, 0.95)
   frame:SetBackdropBorderColor(0, 0, 0, 1)
 
   -- Size.
