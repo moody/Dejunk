@@ -2,18 +2,25 @@ local _, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a TitleFrame with the ability to add boolean options.
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    titleText? = string
-  }
-]]
+--- @class OptionsFrameWidgetOptions : ScrollableTitleFrameWidgetOptions
+
+--- @class OptionButtonWidgetOptions : FrameWidgetOptions
+--- @field labelText string
+--- @field tooltipText? string
+--- @field get fun(): boolean
+--- @field set fun(value: boolean)
+
+-- =============================================================================
+-- Widgets - Options Frame
+-- =============================================================================
+
+--- Creates a ScrollableTitleFrame with the ability to add boolean options.
+--- @param options OptionsFrameWidgetOptions
+--- @return OptionsFrameWidget frame
 function Widgets:OptionsFrame(options)
   local BUTTONS_PER_ROW = 4
   local SPACING = Widgets:Padding()
@@ -24,21 +31,12 @@ function Widgets:OptionsFrame(options)
   options.titleJustify = "CENTER"
 
   -- Base frame.
-  local frame = self:TitleFrame(options)
+  local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
   frame.titleButton:EnableMouse(false)
   frame.buttons = {}
 
-  --[[
-    -- Adds an option button to the frame.
-
-    options = {
-      onUpdateTooltip? = function(self, tooltip) -> nil,
-      labelText = string,
-      tooltipText? = string,
-      get = function() -> boolean,
-      set = function(value: boolean) -> nil
-    }
-  ]]
+  --- Adds an option button to the frame.
+  --- @param options OptionButtonWidgetOptions
   function frame:AddOption(options)
     -- Defaults.
     options.name = "$parent_CheckButton" .. #self.buttons + 1
@@ -80,22 +78,13 @@ function Widgets:OptionsFrame(options)
   return frame
 end
 
---[[
-  Creates a toggleable option button.
+-- =============================================================================
+-- Widgets - Option Button
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    labelText = string,
-    tooltipText? = string,
-    get = function() -> boolean,
-    set = function(value: boolean) -> nil
-  }
-]]
+--- Creates a toggleable option button.
+--- @param options OptionButtonWidgetOptions
+--- @return OptionButtonWidget frame
 function Widgets:OptionButton(options)
   -- Defaults.
   options.frameType = "Button"
@@ -108,7 +97,7 @@ function Widgets:OptionButton(options)
   end
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class OptionButtonWidget : FrameWidget
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
