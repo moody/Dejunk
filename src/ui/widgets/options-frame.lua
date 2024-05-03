@@ -22,7 +22,6 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @param options OptionsFrameWidgetOptions
 --- @return OptionsFrameWidget frame
 function Widgets:OptionsFrame(options)
-  local BUTTONS_PER_ROW = 4
   local SPACING = Widgets:Padding()
 
   -- Defaults.
@@ -34,44 +33,39 @@ function Widgets:OptionsFrame(options)
   local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
   frame.titleButton:EnableMouse(false)
   frame.buttons = {}
+  frame.buttonHeight = frame.title:GetStringHeight() + (SPACING * 2)
+
+  -- Scroll child.
+  frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
+  frame.scrollFrame:SetScrollChild(frame.scrollChild)
 
   --- Adds an option button to the frame.
   --- @param options OptionButtonWidgetOptions
   function frame:AddOption(options)
     -- Defaults.
     options.name = "$parent_CheckButton" .. #self.buttons + 1
-    options.parent = self
-
-    -- Set `points` based on `#self.buttons` and `BUTTONS_PER_ROW`.
-    if #self.buttons == 0 then
-      options.points = { { "TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING } }
-    else
-      local row = #self.buttons / BUTTONS_PER_ROW
-      if math.floor(row) == row then
-        local firstIndexOfPreviousRow = #self.buttons - (BUTTONS_PER_ROW - 1)
-        options.points = { { "TOPLEFT", self.buttons[firstIndexOfPreviousRow], "BOTTOMLEFT", 0, -SPACING } }
-      else
-        options.points = { { "TOPLEFT", self.buttons[#self.buttons], "TOPRIGHT", SPACING, 0 } }
-      end
-    end
+    options.parent = self.scrollChild
+    options.height = self.buttonHeight
 
     -- Add button.
     self.buttons[#self.buttons + 1] = Widgets:OptionButton(options)
   end
 
-  frame:SetScript("OnUpdate", function(self)
-    -- Resize buttons.
-    local numColumns = math.ceil(#self.buttons / BUTTONS_PER_ROW)
-    local buttonAreaWidth = self:GetWidth() - (SPACING * 2)
-    local buttonAreaHeight = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
-    local buttonSpacingHorizontal = (BUTTONS_PER_ROW - 1) * SPACING
-    local buttonSpacingVertical = (numColumns - 1) * SPACING
+  frame:HookScript("OnUpdate", function(self)
+    local scrollChildHeight = (#self.buttons * self.buttonHeight) + (SPACING * (#self.buttons - 1))
+    frame.scrollChild:SetHeight(scrollChildHeight)
 
-    local buttonWidth = (buttonAreaWidth - buttonSpacingHorizontal) / BUTTONS_PER_ROW
-    local buttonHeight = (buttonAreaHeight - buttonSpacingVertical) / numColumns
-
-    for _, button in ipairs(self.buttons) do
-      button:SetSize(buttonWidth, buttonHeight)
+    -- Update button points.
+    for i, button in ipairs(self.buttons) do
+      button:ClearAllPoints()
+      if i == 1 then
+        button:SetPoint("TOPLEFT", frame.scrollChild, SPACING, 0)
+        button:SetPoint("TOPRIGHT", frame.scrollChild, -SPACING, 0)
+      else
+        local prevButton = self.buttons[i - 1]
+        button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, -SPACING)
+        button:SetPoint("TOPRIGHT", prevButton, "BOTTOMRIGHT", 0, -SPACING)
+      end
     end
   end)
 
@@ -110,8 +104,8 @@ function Widgets:OptionButton(options)
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
-  frame.label:SetPoint("LEFT", frame.checkBox, "RIGHT", self:Padding(0.5), 0)
-  frame.label:SetPoint("RIGHT", frame, -self:Padding(), 0)
+  frame.label:SetPoint("LEFT", frame, self:Padding(), 0)
+  frame.label:SetPoint("RIGHT", frame.checkBox, -self:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame.label:SetJustifyH("LEFT")
 
@@ -133,7 +127,7 @@ function Widgets:OptionButton(options)
     -- Check box.
     local size = self.label:GetStringHeight()
     self.checkBox:SetSize(size, size)
-    self.checkBox:SetPoint("LEFT", Widgets:Padding(), 0)
+    self.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
 
     if options.get() then
       self.checkBox:SetBackdropColor(Colors.Yellow:GetRGBA(0.5))
