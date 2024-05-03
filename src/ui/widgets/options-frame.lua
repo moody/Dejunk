@@ -22,8 +22,6 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @param options OptionsFrameWidgetOptions
 --- @return OptionsFrameWidget frame
 function Widgets:OptionsFrame(options)
-  local SPACING = Widgets:Padding()
-
   -- Defaults.
   options.onUpdateTooltip = nil
   options.titleTemplate = nil
@@ -33,7 +31,7 @@ function Widgets:OptionsFrame(options)
   local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
   frame.titleButton:EnableMouse(false)
   frame.buttons = {}
-  frame.buttonHeight = frame.title:GetStringHeight() + (SPACING * 2)
+  frame.buttonHeight = frame.title:GetStringHeight() + Widgets:Padding(2)
 
   -- Scroll child.
   frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
@@ -52,19 +50,18 @@ function Widgets:OptionsFrame(options)
   end
 
   frame:HookScript("OnUpdate", function(self)
-    local scrollChildHeight = (#self.buttons * self.buttonHeight) + (SPACING * (#self.buttons - 1))
+    local scrollChildHeight = (#self.buttons * self.buttonHeight) + (Widgets:Padding() * (#self.buttons - 1))
     frame.scrollChild:SetHeight(scrollChildHeight)
 
     -- Update button points.
     for i, button in ipairs(self.buttons) do
       button:ClearAllPoints()
       if i == 1 then
-        button:SetPoint("TOPLEFT", frame.scrollChild, SPACING, 0)
-        button:SetPoint("TOPRIGHT", frame.scrollChild, -SPACING, 0)
+        button:SetPoint("TOPLEFT", frame.scrollChild)
+        button:SetPoint("TOPRIGHT", frame.scrollChild)
       else
-        local prevButton = self.buttons[i - 1]
-        button:SetPoint("TOPLEFT", prevButton, "BOTTOMLEFT", 0, -SPACING)
-        button:SetPoint("TOPRIGHT", prevButton, "BOTTOMRIGHT", 0, -SPACING)
+        button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -Widgets:Padding())
+        button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, -Widgets:Padding())
       end
     end
   end)
