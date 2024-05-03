@@ -1,26 +1,24 @@
 local _, Addon = ...
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a TitleFrame with an embedded scroll frame and slider.
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    titleText? = string,
-    titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
-  }
-]]
+--- @class ScrollableTitleFrameWidgetOptions : TitleFrameWidgetOptions
+
+-- =============================================================================
+-- Widgets - Scrollable Title Frame
+-- =============================================================================
+
+--- Creates a TitleFrame with an embedded scroll frame and slider.
+--- @param options ScrollableTitleFrameWidgetOptions
+--- @return ScrollableTitleFrameWidget frame
 function Widgets:ScrollableTitleFrame(options)
   local SPACING = self:Padding()
 
   -- Base frame.
-  local frame = self:TitleFrame(options)
+  local frame = self:TitleFrame(options) ---@class ScrollableTitleFrameWidget : TitleFrameWidget
 
   -- Scroll frame.
   frame.scrollFrame = CreateFrame("ScrollFrame", "$parent_ScrollFrame", frame)
@@ -31,8 +29,8 @@ function Widgets:ScrollableTitleFrame(options)
     name = "$parent_Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
-      { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
+      { "TOPRIGHT",    frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "BOTTOMRIGHT", frame,             "BOTTOMRIGHT", -SPACING, SPACING }
     }
   })
 

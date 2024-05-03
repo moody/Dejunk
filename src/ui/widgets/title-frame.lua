@@ -1,22 +1,23 @@
 local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors")
-local Widgets = Addon:GetModule("Widgets")
+local Colors = Addon:GetModule("Colors") ---@type Colors
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a basic frame with title text.
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    titleText? = string,
-    titleTemplate? = string,
-    titleJustify? = "LEFT" | "RIGHT" | "CENTER"
-  }
-]]
+--- @class TitleFrameWidgetOptions : FrameWidgetOptions
+--- @field titleText? string
+--- @field titleTemplate? string
+--- @field titleJustify? "LEFT" | "RIGHT" | "CENTER"
+
+-- =============================================================================
+-- Widgets - Title Frame
+-- =============================================================================
+
+--- Creates a basic frame with title text.
+--- @param options TitleFrameWidgetOptions
+--- @return TitleFrameWidget frame
 function Widgets:TitleFrame(options)
   -- Defaults.
   options.frameType = "Frame"
@@ -28,7 +29,7 @@ function Widgets:TitleFrame(options)
   options.onUpdateTooltip = nil
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class TitleFrameWidget : FrameWidget
 
   -- Title button.
   frame.titleButton = self:Frame({
@@ -38,7 +39,7 @@ function Widgets:TitleFrame(options)
     points = { { "TOPLEFT" }, { "TOPRIGHT" } },
     onUpdateTooltip = onUpdateTooltip
   })
-  frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+  frame.titleButton:SetBackdropColor(Colors.DarkGrey:GetRGB())
   frame.titleButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
   -- Title text.

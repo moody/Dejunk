@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.8.1] - 2024-05-03
+
+### Changed
+
+- Refactored UI to display all lists together
+- Updated dependencies
+
+### Removed
+
+- Switch view functionality for list frames
+
 ## [1.8.0] - 2024-04-30
 
 ### Changed

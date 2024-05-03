@@ -1,9 +1,9 @@
 local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors")
+local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 local Tooltip = Addon:GetModule("Tooltip")
 

@@ -1,14 +1,14 @@
 local ADDON_NAME, Addon = ...
 local Actions = Addon:GetModule("Actions") --- @type Actions
-local Colors = Addon:GetModule("Colors")
+local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 local UserInterface = Addon:GetModule("UserInterface")
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 -- ============================================================================
 -- UserInterface
@@ -35,9 +35,23 @@ end
 -- ============================================================================
 
 UserInterface.frame = (function()
+  local NUM_LIST_FRAME_BUTTONS = 7
+  local OPTIONS_FRAME_WIDTH = 250
+  local LIST_FRAME_WIDTH = 250
+  local TOTAL_FRAME_WIDTH = (
+    Widgets:Padding() +
+    OPTIONS_FRAME_WIDTH +
+    Widgets:Padding(0.5) +
+    LIST_FRAME_WIDTH +
+    Widgets:Padding(0.5) +
+    LIST_FRAME_WIDTH +
+    Widgets:Padding()
+  )
+
+  -- Base frame.
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_ParentFrame",
-    width = 780,
+    width = TOTAL_FRAME_WIDTH,
     height = 600,
     titleText = Colors.Blue(ADDON_NAME),
   })
@@ -71,9 +85,10 @@ UserInterface.frame = (function()
     name = "$parent_OptionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame, "RIGHT", -Widgets:Padding(), Widgets:Padding(10) }
+      { "TOPLEFT",    frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
+      { "BOTTOMLEFT", frame,             "BOTTOMLEFT", Widgets:Padding(), Widgets:Padding() }
     },
+    width = OPTIONS_FRAME_WIDTH,
     titleText = L.OPTIONS_TEXT
   })
   frame.optionsFrame:AddOption({
@@ -189,28 +204,56 @@ UserInterface.frame = (function()
     })
   end
 
-  -- Inclusions frame.
-  frame.inclusionsFrame = Widgets:ListFrame({
-    name = "$parent_InclusionsFrame",
+  -- Global inclusions frame.
+  frame.globalInclusionsFrame = Widgets:ListFrame({
+    name = "$parent_GlobalInclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT", frame.optionsFrame, "BOTTOMLEFT", 0, -Widgets:Padding(0.5) },
-      { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
+      { "TOPLEFT",    frame.optionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
+      { "BOTTOMLEFT", frame.optionsFrame, "RIGHT",    Widgets:Padding(0.5), Widgets:Padding(0.25) }
     },
-    list = Lists.PerCharInclusions,
-    numButtons = 8
+    width = LIST_FRAME_WIDTH,
+    list = Lists.GlobalInclusions,
+    numButtons = NUM_LIST_FRAME_BUTTONS
   })
 
-  -- Exclusions frame.
-  frame.exclusionsFrame = Widgets:ListFrame({
-    name = "$parent_ExclusionsFrame",
+  -- Global exclusions frame.
+  frame.globalExclusionsFrame = Widgets:ListFrame({
+    name = "$parent_GlobalExclusionsFrame",
     parent = frame,
     points = {
-      { "TOPRIGHT", frame.optionsFrame, "BOTTOMRIGHT", 0, -Widgets:Padding(0.5) },
-      { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() }
+      { "TOPLEFT",    frame.globalInclusionsFrame, "TOPRIGHT",   Widgets:Padding(0.5), 0 },
+      { "BOTTOMLEFT", frame.globalInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
+    width = LIST_FRAME_WIDTH,
+    list = Lists.GlobalExclusions,
+    numButtons = NUM_LIST_FRAME_BUTTONS
+  })
+
+  -- Perchar inclusions frame.
+  frame.percharInclusionsFrame = Widgets:ListFrame({
+    name = "$parent_PercharInclusionsFrame",
+    parent = frame,
+    points = {
+      { "TOPLEFT",    frame.optionsFrame, "RIGHT",       Widgets:Padding(0.5), -Widgets:Padding(0.25) },
+      { "BOTTOMLEFT", frame.optionsFrame, "BOTTOMRIGHT", Widgets:Padding(0.5), 0 }
+    },
+    width = LIST_FRAME_WIDTH,
+    list = Lists.PerCharInclusions,
+    numButtons = NUM_LIST_FRAME_BUTTONS
+  })
+
+  -- Perchar exclusions frame.
+  frame.percharExclusionsFrame = Widgets:ListFrame({
+    name = "$parent_PercharExclusionsFrame",
+    parent = frame,
+    points = {
+      { "TOPLEFT",    frame.percharInclusionsFrame, "TOPRIGHT",   Widgets:Padding(0.5), 0 },
+      { "BOTTOMLEFT", frame.percharInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
+    },
+    width = LIST_FRAME_WIDTH,
     list = Lists.PerCharExclusions,
-    numButtons = 8
+    numButtons = NUM_LIST_FRAME_BUTTONS
   })
 
   return frame

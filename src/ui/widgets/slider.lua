@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Colors = Addon:GetModule("Colors")
-local Widgets = Addon:GetModule("Widgets")
+local Colors = Addon:GetModule("Colors") ---@type Colors
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 --[[
   Creates a basic slider.

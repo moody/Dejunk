@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Colors = Addon:GetModule("Colors")
-local Tooltip = Addon:GetModule("Tooltip")
+local Colors = Addon:GetModule("Colors") ---@type Colors
+local Tooltip = Addon:GetModule("Tooltip") ---@class Tooltip
 
 local cache = {}
 
@@ -26,5 +26,5 @@ function Tooltip:AddLine(text)
 end
 
 function Tooltip:AddDoubleLine(leftText, rightText)
-  GameTooltip:AddDoubleLine(Colors.Yellow(leftText), Colors.White(rightText))
+  GameTooltip:AddDoubleLine(Colors.Blue(leftText), Colors.White(rightText))
 end

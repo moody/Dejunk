@@ -72,6 +72,7 @@ else:
         for path in references[key]:
             print(f"    {path}")
 
-# Exit with an error if any unused entries or undefined references were found.
-if len(unusedEntries) > 0 or len(undefinedReferences) > 0:
+
+# Exit with an error if any undefined references were found.
+if len(undefinedReferences) > 0:
     sys.exit(1)

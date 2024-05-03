@@ -5,7 +5,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 
 -- ============================================================================
 -- Local Functions

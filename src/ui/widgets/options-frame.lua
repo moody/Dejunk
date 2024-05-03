@@ -1,102 +1,85 @@
 local _, Addon = ...
-local Colors = Addon:GetModule("Colors")
-local Widgets = Addon:GetModule("Widgets")
+local Colors = Addon:GetModule("Colors") ---@type Colors
+local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a TitleFrame with the ability to add boolean options.
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    titleText? = string
-  }
-]]
+--- @class OptionsFrameWidgetOptions : ScrollableTitleFrameWidgetOptions
+
+--- @class OptionButtonWidgetOptions : FrameWidgetOptions
+--- @field labelText string
+--- @field tooltipText? string
+--- @field get fun(): boolean
+--- @field set fun(value: boolean)
+
+-- =============================================================================
+-- Widgets - Options Frame
+-- =============================================================================
+
+--- Creates a ScrollableTitleFrame with the ability to add boolean options.
+--- @param options OptionsFrameWidgetOptions
+--- @return OptionsFrameWidget frame
 function Widgets:OptionsFrame(options)
-  local BUTTONS_PER_ROW = 4
-  local SPACING = Widgets:Padding()
-
   -- Defaults.
   options.onUpdateTooltip = nil
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
 
   -- Base frame.
-  local frame = self:TitleFrame(options)
+  local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
   frame.titleButton:EnableMouse(false)
   frame.buttons = {}
+  frame.buttonHeight = frame.title:GetStringHeight() + Widgets:Padding(2)
 
-  --[[
-    -- Adds an option button to the frame.
+  -- Scroll child.
+  frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
+  frame.scrollChild:SetBackdrop(nil)
+  frame.scrollFrame:SetScrollChild(frame.scrollChild)
 
-    options = {
-      onUpdateTooltip? = function(self, tooltip) -> nil,
-      labelText = string,
-      tooltipText? = string,
-      get = function() -> boolean,
-      set = function(value: boolean) -> nil
-    }
-  ]]
+  --- Adds an option button to the frame.
+  --- @param options OptionButtonWidgetOptions
   function frame:AddOption(options)
     -- Defaults.
     options.name = "$parent_CheckButton" .. #self.buttons + 1
-    options.parent = self
-
-    -- Set `points` based on `#self.buttons` and `BUTTONS_PER_ROW`.
-    if #self.buttons == 0 then
-      options.points = { { "TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING } }
-    else
-      local row = #self.buttons / BUTTONS_PER_ROW
-      if math.floor(row) == row then
-        local firstIndexOfPreviousRow = #self.buttons - (BUTTONS_PER_ROW - 1)
-        options.points = { { "TOPLEFT", self.buttons[firstIndexOfPreviousRow], "BOTTOMLEFT", 0, -SPACING } }
-      else
-        options.points = { { "TOPLEFT", self.buttons[#self.buttons], "TOPRIGHT", SPACING, 0 } }
-      end
-    end
+    options.parent = self.scrollChild
+    options.height = self.buttonHeight
 
     -- Add button.
     self.buttons[#self.buttons + 1] = Widgets:OptionButton(options)
   end
 
-  frame:SetScript("OnUpdate", function(self)
-    -- Resize buttons.
-    local numColumns = math.ceil(#self.buttons / BUTTONS_PER_ROW)
-    local buttonAreaWidth = self:GetWidth() - (SPACING * 2)
-    local buttonAreaHeight = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
-    local buttonSpacingHorizontal = (BUTTONS_PER_ROW - 1) * SPACING
-    local buttonSpacingVertical = (numColumns - 1) * SPACING
+  frame:HookScript("OnUpdate", function(self)
+    local scrollChildHeight = (#self.buttons * self.buttonHeight) + (Widgets:Padding() * (#self.buttons - 1))
+    frame.scrollChild:SetHeight(scrollChildHeight)
 
-    local buttonWidth = (buttonAreaWidth - buttonSpacingHorizontal) / BUTTONS_PER_ROW
-    local buttonHeight = (buttonAreaHeight - buttonSpacingVertical) / numColumns
-
-    for _, button in ipairs(self.buttons) do
-      button:SetSize(buttonWidth, buttonHeight)
+    -- Update button points.
+    for i, button in ipairs(self.buttons) do
+      button:ClearAllPoints()
+      if i == 1 then
+        button:SetPoint("TOPLEFT", frame.scrollChild)
+        button:SetPoint("TOPRIGHT", frame.scrollChild)
+      else
+        button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -Widgets:Padding())
+        button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, -Widgets:Padding())
+      end
     end
   end)
 
   return frame
 end
 
---[[
-  Creates a toggleable option button.
+-- =============================================================================
+-- Widgets - Option Button
+-- =============================================================================
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    onUpdateTooltip? = function(self, tooltip) -> nil,
-    labelText = string,
-    tooltipText? = string,
-    get = function() -> boolean,
-    set = function(value: boolean) -> nil
-  }
-]]
+--- Creates a toggleable option button.
+--- @param options OptionButtonWidgetOptions
+--- @return OptionButtonWidget frame
 function Widgets:OptionButton(options)
+  local CHECKBOX_SIZE = options.height - Widgets:Padding(2)
+
   -- Defaults.
   options.frameType = "Button"
 
@@ -108,21 +91,20 @@ function Widgets:OptionButton(options)
   end
 
   -- Base frame.
-  local frame = self:Frame(options)
+  local frame = self:Frame(options) ---@class OptionButtonWidget : FrameWidget
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
   -- Check box.
-  frame.checkBox = self:Frame({
-    name = "$parent_CheckBox",
-    parent = frame
-  })
+  frame.checkBox = frame:CreateTexture("$parent_CheckBox")
+  frame.checkBox:SetSize(CHECKBOX_SIZE, CHECKBOX_SIZE)
+  frame.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
-  frame.label:SetPoint("LEFT", frame.checkBox, "RIGHT", self:Padding(0.5), 0)
-  frame.label:SetPoint("RIGHT", frame, -self:Padding(), 0)
+  frame.label:SetPoint("LEFT", frame, Widgets:Padding(), 0)
+  frame.label:SetPoint("RIGHT", frame.checkBox, "LEFT", -Widgets:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame.label:SetJustifyH("LEFT")
 
@@ -141,17 +123,12 @@ function Widgets:OptionButton(options)
   end)
 
   frame:SetScript("OnUpdate", function(self)
-    -- Check box.
-    local size = self.label:GetStringHeight()
-    self.checkBox:SetSize(size, size)
-    self.checkBox:SetPoint("LEFT", Widgets:Padding(), 0)
-
     if options.get() then
-      self.checkBox:SetBackdropColor(Colors.Yellow:GetRGBA(0.5))
-      self.checkBox:SetBackdropBorderColor(Colors.Yellow:GetRGB())
+      self:SetAlpha(1)
+      self.checkBox:SetColorTexture(Colors.Blue:GetRGBA(0.75))
     else
-      self.checkBox:SetBackdropColor(0, 0, 0, 0)
-      self.checkBox:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+      self:SetAlpha(0.5)
+      self.checkBox:SetColorTexture(Colors.White:GetRGBA(0.25))
     end
   end)
 

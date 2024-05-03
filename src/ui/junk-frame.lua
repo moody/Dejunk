@@ -1,5 +1,5 @@
 local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors")
+local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
@@ -7,11 +7,11 @@ local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local JunkFrame = Addon:GetModule("JunkFrame")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
-local Widgets = Addon:GetModule("Widgets")
+local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 -- ============================================================================
 -- Events

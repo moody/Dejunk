@@ -1,6 +1,6 @@
 <Bindings>
   <!-- General -->
-  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" header="DEJUNK_HEADER_GENERAL" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_ToggleOptionsFrame()
   </Binding>
   <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="|cFF4FAFE3Dejunk|r">
@@ -16,8 +16,8 @@
     DejunkBindings_OpenLootables()
   </Binding>
 
-  <!-- Lists -->
-  <Binding name="DEJUNK_ADD_PERCHAR_INCLUSIONS" header="DEJUNK_HEADER_LISTS" category="|cFF4FAFE3Dejunk|r">
+  <!-- Perchar Lists -->
+  <Binding name="DEJUNK_ADD_PERCHAR_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_AddToList("PerCharInclusions")
   </Binding>
   <Binding name="DEJUNK_REM_PERCHAR_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
@@ -30,7 +30,8 @@
     DejunkBindings_RemoveFromList("PerCharExclusions")
   </Binding>
 
-  <Binding name="DEJUNK_ADD_GLOBAL_INCLUSIONS" HEADER="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
+  <!-- Global Lists -->
+  <Binding name="DEJUNK_ADD_GLOBAL_INCLUSIONS" header="DEJUNK_HEADER_BLANK2" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_AddToList("GlobalInclusions")
   </Binding>
   <Binding name="DEJUNK_REM_GLOBAL_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">

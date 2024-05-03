@@ -46,7 +46,7 @@ function Addon:GetLatency(minLatency)
 end
 
 do -- Addon:Concat()
-  local Colors = Addon:GetModule("Colors")
+  local Colors = Addon:GetModule("Colors") ---@type Colors
   local cache = {}
 
   function Addon:Concat(sep, ...)
@@ -63,7 +63,7 @@ end
 
 do -- Addon:IsBusy()
   local Confirmer = Addon:GetModule("Confirmer")
-  local L = Addon:GetModule("Locale")
+  local L = Addon:GetModule("Locale") ---@type Locale
   local ListItemParser = Addon:GetModule("ListItemParser")
   local Seller = Addon:GetModule("Seller")
 
@@ -76,7 +76,7 @@ do -- Addon:IsBusy()
 end
 
 do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
-  local Colors = Addon:GetModule("Colors")
+  local Colors = Addon:GetModule("Colors") ---@type Colors
   local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
   function Addon:ForcePrint(...)

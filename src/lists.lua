@@ -1,10 +1,10 @@
 local _, Addon = ...
 local Actions = Addon:GetModule("Actions") --- @type Actions
-local Colors = Addon:GetModule("Colors")
+local Colors = Addon:GetModule("Colors") ---@type Colors
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@type Locale
 local ListItemParser = Addon:GetModule("ListItemParser")
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager

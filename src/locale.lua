@@ -1,5 +1,5 @@
 local _, Addon = ...
-local L = Addon:GetModule("Locale")
+local L = Addon:GetModule("Locale") ---@class Locale
 
 setmetatable(L, {
   __index = function(t, k)
@@ -88,8 +88,6 @@ L["JUNK_FRAME_TOOLTIP"] = "Junk items you currently possess will be listed in th
 L["JUNK_ITEMS"] = "Junk Items"
 L["KEYBINDS"] = "Keybinds"
 L["LEFT_CLICK"] = "Left-Click"
-L["LIST_FRAME_SWITCH_BUTTON_TEXT"] = "Switch View"
-L["LIST_FRAME_SWITCH_BUTTON_TOOLTIP"] = "Display the %s list."
 L["LIST_FRAME_TOOLTIP"] = "To add an item, drop it into the frame below."
 L["LIST_FRAME_TRANSPORT_BUTTON_TOOLTIP"] = "Toggle the Transport frame for this list."
 L["LISTS"] = "Lists"
