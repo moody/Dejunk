@@ -33,7 +33,6 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(" ")
     tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine(L.LEFT_CLICK, L.LIST_FRAME_SWITCH_BUTTON_TEXT)
     tooltip:AddDoubleLine(Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
   end
 
@@ -85,19 +84,6 @@ function Widgets:ListFrame(options)
   local frame = self:ItemsFrame(options) ---@class ListFrameWidget : ItemsFrameWidget
   frame.title:SetJustifyH("LEFT")
 
-  function frame:SwitchList()
-    options.list = options.list:GetSibling()
-    self.title:SetText(options.list.name)
-  end
-
-  -- Hook OnClick.
-  frame.titleButton:HookScript("OnClick", function(self, button)
-    if button == "LeftButton" then
-      frame:SwitchList()
-      self:UpdateTooltip()
-    end
-  end)
-
   -- Transport button.
   frame.transportButton = self:ListFrameIconButton({
     name = "$parent_TransportButton",
@@ -109,26 +95,6 @@ function Widgets:ListFrame(options)
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.TRANSPORT)
       tooltip:AddLine(L.LIST_FRAME_TRANSPORT_BUTTON_TOOLTIP)
-    end
-  })
-
-  -- Switch button.
-  frame.switchButton = self:ListFrameIconButton({
-    name = "$parent_SwitchButton",
-    parent = frame.titleButton,
-    points = {
-      { "TOPRIGHT",    frame.transportButton, "TOPLEFT",    0, 0 },
-      { "BOTTOMRIGHT", frame.transportButton, "BOTTOMLEFT", 0, 0 }
-    },
-    texture = Addon:GetAsset("switch-icon"),
-    textureSize = frame.title:GetStringHeight(),
-    onClick = function(self)
-      frame:SwitchList()
-      self:UpdateTooltip()
-    end,
-    onUpdateTooltip = function(self, tooltip)
-      tooltip:SetText(L.LIST_FRAME_SWITCH_BUTTON_TEXT)
-      tooltip:AddLine(L.LIST_FRAME_SWITCH_BUTTON_TOOLTIP:format(options.list:GetSibling().name))
     end
   })
 
