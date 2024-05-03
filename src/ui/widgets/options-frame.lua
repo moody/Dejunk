@@ -130,9 +130,11 @@ function Widgets:OptionButton(options)
     self.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
 
     if options.get() then
-      self.checkBox:SetBackdropColor(Colors.Yellow:GetRGBA(0.5))
-      self.checkBox:SetBackdropBorderColor(Colors.Yellow:GetRGB())
+      self:SetAlpha(1)
+      self.checkBox:SetBackdropColor(Colors.Blue:GetRGBA(0.5))
+      self.checkBox:SetBackdropBorderColor(Colors.Blue:GetRGB())
     else
+      self:SetAlpha(0.5)
       self.checkBox:SetBackdropColor(0, 0, 0, 0)
       self.checkBox:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
     end
