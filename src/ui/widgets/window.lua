@@ -62,30 +62,15 @@ function Widgets:Window(options)
   frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
   -- Close button.
-  frame.closeButton = self:Frame({
+  frame.closeButton = self:TitleFrameIconButton({
     name = "$parent_CloseButton",
-    frameType = "Button",
-    parent = frame.titleButton
+    parent = frame.titleButton,
+    points = { { "TOPRIGHT" }, { "BOTTOMRIGHT" } },
+    texture = Addon:GetAsset("x-icon"),
+    textureSize = frame.title:GetStringHeight() - Widgets:Padding(0.25),
+    highlightColor = Colors.Red,
+    onClick = function() frame:Hide() end
   })
-  frame.closeButton:SetBackdropColor(0, 0, 0, 0)
-  frame.closeButton:SetBackdropBorderColor(0, 0, 0, 0)
-  frame.closeButton:SetPoint("TOPRIGHT", frame.titleButton)
-  frame.closeButton:SetPoint("BOTTOMRIGHT", frame.titleButton)
-
-  frame.closeButton.text = frame.closeButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
-  frame.closeButton.text:SetText(Colors.White("X"))
-  frame.closeButton:SetFontString(frame.closeButton.text)
-  frame.closeButton:SetWidth(frame.closeButton.text:GetWidth() + self:Padding(4))
-
-  frame.closeButton:SetScript("OnEnter", function(self)
-    self:SetBackdropColor(Colors.Red:GetRGBA(0.75))
-  end)
-
-  frame.closeButton:SetScript("OnLeave", function(self)
-    self:SetBackdropColor(0, 0, 0, 0)
-  end)
-
-  frame.closeButton:SetScript("OnClick", function() frame:Hide() end)
 
   return frame
 end
