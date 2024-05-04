@@ -101,7 +101,7 @@ function Mixins:GetSearchItems(searchText)
   searchText = string.lower(searchText or "")
   for k in pairs(self.searchItems) do self.searchItems[k] = nil end
 
-  for _, item in pairs(self.items) do
+  for _, item in ipairs(self.items) do
     if item.name:lower():find(searchText, 1, true) then
       self.searchItems[#self.searchItems + 1] = item
     end
