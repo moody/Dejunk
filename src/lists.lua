@@ -94,6 +94,22 @@ function Mixins:GetItems()
   return self.items
 end
 
+--- Returns the list's items filtered by name using the given string.
+--- @param searchText string
+--- @return table searchItems
+function Mixins:GetSearchItems(searchText)
+  searchText = string.lower(searchText or "")
+  for k in pairs(self.searchItems) do self.searchItems[k] = nil end
+
+  for _, item in pairs(self.items) do
+    if item.name:lower():find(searchText, 1, true) then
+      self.searchItems[#self.searchItems + 1] = item
+    end
+  end
+
+  return self.searchItems
+end
+
 -- ============================================================================
 -- Events
 -- ============================================================================
@@ -149,6 +165,7 @@ do -- Create the lists.
     local list = data
     list.items = {}
     list.itemIds = {}
+    list.searchItems = {}
     for k, v in pairs(Mixins) do list[k] = v end
     return list
   end
