@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Refactored the `Keybinds` button to use an icon
+
 ## [1.9.0] - 2024-05-04
 
 ### Added
