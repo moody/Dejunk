@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.9.0] - 2024-05-04
+
+### Added
+
+- Added a `Search Lists` button to the options frame which enables searching lists by item name ([#198](https://github.com/moody/Dejunk/issues/198))
+
+### Changed
+
+- Modified some icons
+
 ## [1.8.1] - 2024-05-03
 
 ### Changed

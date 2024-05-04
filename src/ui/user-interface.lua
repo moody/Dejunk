@@ -80,6 +80,93 @@ UserInterface.frame = (function()
   frame.keybindsButton:SetScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
   frame.keybindsButton:SetScript("OnClick", Commands.keybinds)
 
+  --- @class ListSearchState
+  local listSearchState = {
+    isSearching = false,
+    searchText = ""
+  }
+
+  local function getListSearchState()
+    return listSearchState
+  end
+
+  local function startSearching()
+    frame.searchBox:Show()
+    frame.searchBox:SetText("")
+    frame.searchBox:SetFocus()
+    frame.searchButton.texture:SetTexture(Addon:GetAsset("ban-icon"))
+    frame.title:Hide()
+    frame.versionText:Hide()
+    listSearchState.isSearching = true
+  end
+
+  local function stopSearching()
+    frame.title:Show()
+    frame.versionText:Show()
+    frame.searchBox:Hide()
+    frame.searchButton.texture:SetTexture(Addon:GetAsset("search-icon"))
+    listSearchState.isSearching = false
+  end
+  frame:HookScript("OnHide", stopSearching)
+
+  local function toggleSearching()
+    if not listSearchState.isSearching then
+      startSearching()
+    else
+      stopSearching()
+    end
+  end
+
+  -- Search button.
+  frame.searchButton = Widgets:TitleFrameIconButton({
+    name = "$parent_SearchButton",
+    parent = frame.titleButton,
+    points = {
+      { "TOPRIGHT",    frame.keybindsButton, "TOPLEFT",    0, 0 },
+      { "BOTTOMRIGHT", frame.keybindsButton, "BOTTOMLEFT", 0, 0 }
+    },
+    texture = Addon:GetAsset("search-icon"),
+    textureSize = frame.title:GetStringHeight(),
+    highlightColor = Colors.Yellow,
+    onClick = toggleSearching,
+    onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
+    end
+  })
+
+  -- Search box.
+  frame.searchBox = CreateFrame("EditBox", "$parent_SearchBox", frame.titleButton)
+  frame.searchBox:SetFontObject("GameFontNormalLarge")
+  frame.searchBox:SetTextColor(1, 1, 1)
+  frame.searchBox:SetAutoFocus(false)
+  frame.searchBox:SetMultiLine(false)
+  frame.searchBox:SetCountInvisibleLetters(true)
+  frame.searchBox:SetPoint("TOPLEFT", Widgets:Padding(), 0)
+  frame.searchBox:SetPoint("BOTTOMLEFT", Widgets:Padding(), 0)
+  frame.searchBox:SetPoint("TOPRIGHT", frame.searchButton, "TOPLEFT", 0, 0)
+  frame.searchBox:SetPoint("BOTTOMRIGHT", frame.searchButton, "BOTTOMLEFT", 0, 0)
+  frame.searchBox:Hide()
+
+  -- Search box placeholder text.
+  frame.searchBox.placeholderText = frame.searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
+    "GameFontNormalLarge")
+  frame.searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
+  frame.searchBox.placeholderText:SetPoint("LEFT")
+  frame.searchBox.placeholderText:SetPoint("RIGHT")
+  frame.searchBox.placeholderText:SetJustifyH("LEFT")
+  frame.searchBox.placeholderText:SetAlpha(0.5)
+
+  frame.searchBox:SetScript("OnEscapePressed", stopSearching)
+  frame.searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+  frame.searchBox:SetScript("OnTextChanged", function(self)
+    listSearchState.searchText = self:GetText()
+    if listSearchState.searchText == "" then
+      self.placeholderText:Show()
+    else
+      self.placeholderText:Hide()
+    end
+  end)
+
   -- Options frame.
   frame.optionsFrame = Widgets:OptionsFrame({
     name = "$parent_OptionsFrame",
@@ -213,8 +300,9 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame.optionsFrame, "RIGHT",    Widgets:Padding(0.5), Widgets:Padding(0.25) }
     },
     width = LIST_FRAME_WIDTH,
+    numButtons = NUM_LIST_FRAME_BUTTONS,
     list = Lists.GlobalInclusions,
-    numButtons = NUM_LIST_FRAME_BUTTONS
+    getListSearchState = getListSearchState
   })
 
   -- Global exclusions frame.
@@ -226,8 +314,9 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame.globalInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
+    numButtons = NUM_LIST_FRAME_BUTTONS,
     list = Lists.GlobalExclusions,
-    numButtons = NUM_LIST_FRAME_BUTTONS
+    getListSearchState = getListSearchState
   })
 
   -- Perchar inclusions frame.
@@ -239,8 +328,9 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame.optionsFrame, "BOTTOMRIGHT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
+    numButtons = NUM_LIST_FRAME_BUTTONS,
     list = Lists.PerCharInclusions,
-    numButtons = NUM_LIST_FRAME_BUTTONS
+    getListSearchState = getListSearchState
   })
 
   -- Perchar exclusions frame.
@@ -252,8 +342,9 @@ UserInterface.frame = (function()
       { "BOTTOMLEFT", frame.percharInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
+    numButtons = NUM_LIST_FRAME_BUTTONS,
     list = Lists.PerCharExclusions,
-    numButtons = NUM_LIST_FRAME_BUTTONS
+    getListSearchState = getListSearchState
   })
 
   return frame

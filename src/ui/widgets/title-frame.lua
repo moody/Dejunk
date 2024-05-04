@@ -11,6 +11,12 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @field titleTemplate? string
 --- @field titleJustify? "LEFT" | "RIGHT" | "CENTER"
 
+--- @class TitleFrameIconButtonWidgetOptions : FrameWidgetOptions
+--- @field texture string
+--- @field textureSize number
+--- @field highlightColor Color
+--- @field onClick? fun(self: TitleFrameIconButtonWidget, button: string)
+
 -- =============================================================================
 -- Widgets - Title Frame
 -- =============================================================================
@@ -51,6 +57,36 @@ function Widgets:TitleFrame(options)
 
   frame.titleButton:SetFontString(frame.title)
   frame.titleButton:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
+
+  return frame
+end
+
+-- =============================================================================
+-- Widgets - Title Frame Icon Button
+-- =============================================================================
+
+--- Creates a button Frame with an icon.
+--- @param options TitleFrameIconButtonWidgetOptions
+--- @return TitleFrameIconButtonWidget frame
+function Widgets:TitleFrameIconButton(options)
+  -- Defaults.
+  options.frameType = "Button"
+
+  -- Base frame.
+  local frame = self:Frame(options) ---@class TitleFrameIconButtonWidget : FrameWidget
+  frame:SetBackdropColor(0, 0, 0, 0)
+  frame:SetBackdropBorderColor(0, 0, 0, 0)
+  frame:SetWidth(options.textureSize + self:Padding(4))
+
+  -- Texture.
+  frame.texture = frame:CreateTexture("$parent_Texture", "ARTWORK")
+  frame.texture:SetTexture(options.texture)
+  frame.texture:SetSize(options.textureSize, options.textureSize)
+  frame.texture:SetPoint("CENTER")
+
+  frame:HookScript("OnEnter", function(self) self:SetBackdropColor(options.highlightColor:GetRGBA(0.75)) end)
+  frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
+  frame:SetScript("OnClick", options.onClick)
 
   return frame
 end

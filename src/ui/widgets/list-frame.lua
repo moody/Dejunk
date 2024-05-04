@@ -10,11 +10,7 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
 --- @field list table
-
---- @class ListFrameIconButtonWidgetOptions : FrameWidgetOptions
---- @field texture string
---- @field textureSize number
---- @field onClick? fun(self: ListFrameIconButtonWidget, button: string)
+--- @field getListSearchState fun(): ListSearchState
 
 -- =============================================================================
 -- Widgets - List Frame
@@ -69,6 +65,11 @@ function Widgets:ListFrame(options)
   end
 
   function options.getItems()
+    local searchState = options.getListSearchState()
+    if searchState.isSearching and searchState.searchText ~= "" then
+      return options.list:GetSearchItems(searchState.searchText)
+    end
+
     return options.list:GetItems()
   end
 
@@ -85,48 +86,19 @@ function Widgets:ListFrame(options)
   frame.title:SetJustifyH("LEFT")
 
   -- Transport button.
-  frame.transportButton = self:ListFrameIconButton({
+  frame.transportButton = self:TitleFrameIconButton({
     name = "$parent_TransportButton",
     parent = frame.titleButton,
     points = { { "TOPRIGHT" }, { "BOTTOMRIGHT" } },
     texture = Addon:GetAsset("transport-icon"),
     textureSize = frame.title:GetStringHeight(),
+    highlightColor = Colors.Yellow,
     onClick = function() TransportFrame:Toggle(options.list) end,
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.TRANSPORT)
       tooltip:AddLine(L.LIST_FRAME_TRANSPORT_BUTTON_TOOLTIP)
     end
   })
-
-  return frame
-end
-
--- =============================================================================
--- Widgets - List Frame Icon Button
--- =============================================================================
-
---- Creates a button Frame with an icon.
---- @param options ListFrameIconButtonWidgetOptions
---- @return ListFrameIconButtonWidget frame
-function Widgets:ListFrameIconButton(options)
-  -- Defaults.
-  options.frameType = "Button"
-
-  -- Base frame.
-  local frame = self:Frame(options) ---@class ListFrameIconButtonWidget : FrameWidget
-  frame:SetBackdropColor(0, 0, 0, 0)
-  frame:SetBackdropBorderColor(0, 0, 0, 0)
-  frame:SetWidth(options.textureSize + self:Padding(4))
-
-  -- Texture.
-  frame.texture = frame:CreateTexture("$parent_Texture", "ARTWORK")
-  frame.texture:SetTexture(options.texture)
-  frame.texture:SetSize(options.textureSize, options.textureSize)
-  frame.texture:SetPoint("CENTER")
-
-  frame:HookScript("OnEnter", function(self) self:SetBackdropColor(Colors.Yellow:GetRGBA(0.75)) end)
-  frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
-  frame:SetScript("OnClick", options.onClick)
 
   return frame
 end
