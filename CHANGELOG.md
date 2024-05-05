@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Global Functions: `DejunkApi_AddListener(listener)` and `DejunkApi_IsJunk(bagId, slotId)` ([#189](https://github.com/moody/Dejunk/issues/189))
+
 ### Changed
 
 - Refactored the `Keybinds` button to use an icon
