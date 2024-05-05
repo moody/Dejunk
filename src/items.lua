@@ -140,7 +140,12 @@ end
 -- Bags
 -- ============================================================================
 
-function Items:GetItem(bag, slot)
+function Items:GetItem(bag, slot, noCache)
+  if noCache then
+    EquipmentSetsCache:Refresh()
+    return getItem(bag, slot)
+  end
+
   for _, item in pairs(self.cache) do
     if item.bag == bag and item.slot == slot then
       return item
@@ -224,13 +229,17 @@ do -- Items:IsItemEquipment()
 
     if item.classId == Enum.ItemClass.Armor then
       if invTypeExceptions[item.invType] then return true end
-      return not (item.subclassId == Enum.ItemArmorSubclass.Generic or
-          item.subclassId == Enum.ItemArmorSubclass.Cosmetic)
+      return not (
+        item.subclassId == Enum.ItemArmorSubclass.Generic or
+        item.subclassId == Enum.ItemArmorSubclass.Cosmetic
+      )
     end
 
     if item.classId == Enum.ItemClass.Weapon then
-      return not (item.subclassId == Enum.ItemWeaponSubclass.Generic or
-          item.subclassId == Enum.ItemWeaponSubclass.Fishingpole)
+      return not (
+        item.subclassId == Enum.ItemWeaponSubclass.Generic or
+        item.subclassId == Enum.ItemWeaponSubclass.Fishingpole
+      )
     end
 
     return false

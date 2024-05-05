@@ -43,6 +43,6 @@ end
 --- @return boolean isJunk
 function DejunkApi_IsJunk(bagId, slotId)
   if StateManager:GetStore() == nil then return false end
-  local item = Items:GetItem(bagId, slotId)
+  local item = Items:GetItem(bagId, slotId, true)
   return item and JunkFilter:IsJunkItem(item) or false
 end
