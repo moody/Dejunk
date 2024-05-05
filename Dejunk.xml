@@ -54,4 +54,7 @@
 
   <!-- Bindings -->
   <Script file="Bindings.lua"/>
+
+  <!-- Dejunk API -->
+  <Script file="DejunkApi.lua"/>
 </Ui>
