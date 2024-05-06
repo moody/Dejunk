@@ -9,6 +9,7 @@
 ### Changed
 
 - Refactored the `Keybinds` button to use an icon
+- Removed outdated code (Container)
 
 ## [1.9.0] - 2024-05-04
 
