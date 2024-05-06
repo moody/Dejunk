@@ -140,12 +140,12 @@ end
 -- Bags
 -- ============================================================================
 
-function Items:GetItem(bag, slot, noCache)
-  if noCache then
-    EquipmentSetsCache:Refresh()
-    return getItem(bag, slot)
-  end
+function Items:GetFreshItem(bag, slot)
+  EquipmentSetsCache:Refresh()
+  return getItem(bag, slot)
+end
 
+function Items:GetItem(bag, slot)
   for _, item in pairs(self.cache) do
     if item.bag == bag and item.slot == slot then
       return item
