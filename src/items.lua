@@ -1,5 +1,4 @@
 local _, Addon = ...
-local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
@@ -22,7 +21,7 @@ do
   local t = {}
 
   function getContainerItem(bag, slot)
-    local item = Container.GetContainerItemInfo(bag, slot)
+    local item = C_Container.GetContainerItemInfo(bag, slot)
     if type(item) ~= "table" then return nil end
 
     for k in pairs(t) do t[k] = nil end
@@ -69,7 +68,7 @@ end
 
 local function iterateBags()
   local bag, slot = BACKPACK_CONTAINER, 0
-  local numSlots = Container.GetContainerNumSlots(bag)
+  local numSlots = C_Container.GetContainerNumSlots(bag)
 
   return function()
     slot = slot + 1
@@ -81,11 +80,11 @@ local function iterateBags()
       repeat
         bag = bag + 1
         if bag > NUM_BAG_SLOTS then return nil end
-        numSlots = Container.GetContainerNumSlots(bag)
+        numSlots = C_Container.GetContainerNumSlots(bag)
       until numSlots > 0
     end
 
-    return bag, slot, Container.GetContainerItemID(bag, slot)
+    return bag, slot, C_Container.GetContainerItemID(bag, slot)
   end
 end
 
@@ -169,11 +168,11 @@ function Items:GetItems(items)
 end
 
 function Items:IsBagSlotEmpty(bag, slot)
-  return Container.GetContainerItemID(bag, slot) == nil
+  return C_Container.GetContainerItemID(bag, slot) == nil
 end
 
 function Items:IsItemStillInBags(item)
-  return item.id == Container.GetContainerItemID(item.bag, item.slot)
+  return item.id == C_Container.GetContainerItemID(item.bag, item.slot)
 end
 
 function Items:IsItemLocked(item)
@@ -212,7 +211,7 @@ function Items:IsItemDestroyable(item)
 end
 
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
+  local refundTimeRemaining = select(3, C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 

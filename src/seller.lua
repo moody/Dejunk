@@ -1,5 +1,4 @@
 local _, Addon = ...
-local Container = Addon:GetModule("Container")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
@@ -68,7 +67,7 @@ local function handleItem(item)
   if not Items:IsItemStillInBags(item) then return end
   if Items:IsItemLocked(item) then return end
 
-  Container.UseContainerItem(item.bag, item.slot)
+  C_Container.UseContainerItem(item.bag, item.slot)
   handleStaticPopup()
 
   EventManager:Fire(E.AttemptedToSellItem, item)

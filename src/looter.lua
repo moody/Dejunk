@@ -1,5 +1,4 @@
 local _, Addon = ...
-local Container = Addon:GetModule("Container")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Looter = Addon:GetModule("Looter")
@@ -90,5 +89,5 @@ function Looter:OnCallback()
 
   CloseLoot()
   SetCVar("autoLootDefault", 1)
-  Container.UseContainerItem(item.bag, item.slot)
+  C_Container.UseContainerItem(item.bag, item.slot)
 end
