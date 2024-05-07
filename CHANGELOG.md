@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.9.2] - 2024-05-07
+
+### Changed
+
+- Listeners registered using `DejunkApi:AddListener(listener)` now receive an `event` argument equal to one of the following values:
+
+  1. `DejunkApi.Events.BagsUpdated` when Dejunk updates its internal bag cache
+  2. `DejunkApi.Events.StateUpdated` when Dejunk's state has changed (e.g., the user changes an option, adds an item to a list, etc.)
+
+- Modified the default value for `Exclude Equipment Sets` to be `true`, regardless of game version
+- Modified the default value for `Exclude Unbound Equipment` to be `false`, regardless of game version
+
 ## [1.9.1] - 2024-05-06
 
 ### Added

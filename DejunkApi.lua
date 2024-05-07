@@ -5,29 +5,39 @@ local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 
+--- @type DejunkApiListener[]
 local listeners = {}
 
-local function notifyListeners()
+--- @param event string
+local function notifyListeners(event)
   for _, listener in ipairs(listeners) do
-    listener()
+    listener(event)
   end
 end
 
+-- Register events to notify listeners.
 EventManager:Once(E.StoreCreated, function()
-  EventManager:On(E.BagsUpdated, notifyListeners)
-  EventManager:On(E.StateUpdated, notifyListeners)
+  EventManager:On(E.BagsUpdated, function() notifyListeners(DejunkApi.Events.BagsUpdated) end)
+  EventManager:On(E.StateUpdated, function() notifyListeners(DejunkApi.Events.StateUpdated) end)
 end)
 
 -- ============================================================================
 -- Dejunk API
 -- ============================================================================
 
-DejunkApi = {}
+--- @alias DejunkApiListener fun(event: string): nil
 
---- Adds a listener to be called whenever Dejunk's state changes.
---- The returned function can be called to remove the listener.
---- @param listener fun() The listener to add
---- @return fun(): fun() | nil removeListener Returns the listener if removed; otherwise `nil`.
+--- @class DejunkApi
+DejunkApi = {
+  Events = {
+    BagsUpdated = "BagsUpdated",
+    StateUpdated = "StateUpdated"
+  }
+}
+
+--- Adds a listener to be called whenever Dejunk's bag cache or state is updated.
+--- @param listener DejunkApiListener The listener to add
+--- @return fun(): DejunkApiListener|nil removeListener Function which returns the `listener` if removed; otherwise `nil`.
 function DejunkApi:AddListener(listener)
   listeners[#listeners + 1] = listener
   return function()

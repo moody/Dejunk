@@ -25,10 +25,7 @@ local events = {
   "AttemptedToSellItem",
 
   -- Destroyer.
-  "AttemptedToDestroyItem",
-
-  -- UI.
-  "MainUIClosed",
+  "AttemptedToDestroyItem"
 }
 
 for _, event in pairs(events) do

@@ -1,6 +1,6 @@
 local _, Addon = ...
-local Reducers = Addon:GetModule("Reducers") --- @class Reducers
-local Wux = Addon.Wux --- @type Wux
+local Reducers = Addon:GetModule("Reducers") ---@class Reducers
+local Wux = Addon.Wux ---@type Wux
 
 -- ============================================================================
 -- Default States
@@ -20,8 +20,8 @@ local DEFAULT_STATE = {
   autoSell = false,
   safeMode = false,
 
-  excludeEquipmentSets = not Addon.IS_VANILLA,
-  excludeUnboundEquipment = Addon.IS_RETAIL,
+  excludeEquipmentSets = true,
+  excludeUnboundEquipment = false,
 
   includePoorItems = true,
   includeBelowItemLevel = { enabled = false, value = 0 },
