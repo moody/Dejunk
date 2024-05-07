@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.1] - 2024-05-06
+
+### Added
+
+- Global API Methods: `DejunkApi:AddListener(listener)` and `DejunkApi:IsJunk(bagId, slotId)` ([#189](https://github.com/moody/Dejunk/issues/189))
+
+### Changed
+
+- Refactored the `Keybinds` button to use an icon
+- Removed outdated code (Container)
+
 ## [1.9.0] - 2024-05-04
 
 ### Added

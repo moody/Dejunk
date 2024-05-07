@@ -1,5 +1,4 @@
 local _, Addon = ...
-local Container = Addon:GetModule("Container")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -16,7 +15,7 @@ local function handleItem(item)
   if Items:IsItemLocked(item) then return end
 
   ClearCursor()
-  Container.PickupContainerItem(item.bag, item.slot)
+  C_Container.PickupContainerItem(item.bag, item.slot)
   DeleteCursorItem()
 
   EventManager:Fire(E.AttemptedToDestroyItem, item)

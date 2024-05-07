@@ -21,7 +21,6 @@
   <Script file="src\store\state-manager.lua"/>
 
   <Script file="src\commands.lua"/>
-  <Script file="src\container.lua"/>
   <Script file="src\items.lua"/>
   <Script file="src\equipment-sets-cache.lua"/>
   <Script file="src\list-item-parser.lua"/>
@@ -54,4 +53,7 @@
 
   <!-- Bindings -->
   <Script file="Bindings.lua"/>
+
+  <!-- Dejunk API -->
+  <Script file="DejunkApi.lua"/>
 </Ui>

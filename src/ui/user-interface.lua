@@ -63,22 +63,21 @@ UserInterface.frame = (function()
   frame.versionText:SetAlpha(0.5)
 
   -- Keybinds button.
-  frame.keybindsButton = Widgets:Frame({
+  frame.keybindsButton = Widgets:TitleFrameIconButton({
     name = "$parent_KeybindsButton",
-    frameType = "Button",
-    parent = frame.titleButton
+    parent = frame.titleButton,
+    points = {
+      { "TOPRIGHT",    frame.closeButton, "TOPLEFT",    0, 0 },
+      { "BOTTOMRIGHT", frame.closeButton, "BOTTOMLEFT", 0, 0 }
+    },
+    texture = Addon:GetAsset("keyboard-icon"),
+    textureSize = frame.title:GetStringHeight(),
+    highlightColor = Colors.Blue,
+    onClick = Commands.keybinds,
+    onUpdateTooltip = function(self, tooltip)
+      tooltip:SetText(L.KEYBINDS)
+    end
   })
-  frame.keybindsButton:SetBackdropColor(0, 0, 0, 0)
-  frame.keybindsButton:SetBackdropBorderColor(0, 0, 0, 0)
-  frame.keybindsButton:SetPoint("TOPRIGHT", frame.closeButton, "TOPLEFT", 0, 0)
-  frame.keybindsButton:SetPoint("BOTTOMRIGHT", frame.closeButton, "BOTTOMLEFT", 0, 0)
-  frame.keybindsButton.text = frame.keybindsButton:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormalLarge")
-  frame.keybindsButton.text:SetText(Colors.White(L.KEYBINDS))
-  frame.keybindsButton:SetFontString(frame.keybindsButton.text)
-  frame.keybindsButton:SetWidth(frame.keybindsButton.text:GetWidth() + Widgets:Padding(4))
-  frame.keybindsButton:SetScript("OnEnter", function(self) self:SetBackdropColor(Colors.Blue:GetRGBA(0.75)) end)
-  frame.keybindsButton:SetScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
-  frame.keybindsButton:SetScript("OnClick", Commands.keybinds)
 
   --- @class ListSearchState
   local listSearchState = {
