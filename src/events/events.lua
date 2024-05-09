@@ -43,7 +43,7 @@ E.Wow = {
   ItemUnlocked = "ITEM_UNLOCKED",
   MerchantClosed = "MERCHANT_CLOSED",
   MerchantShow = "MERCHANT_SHOW",
+  PlayerLevelUp = "PLAYER_LEVEL_UP",
   PlayerLogin = "PLAYER_LOGIN",
-  PlayerLogout = "PLAYER_LOGOUT",
   UIErrorMessage = "UI_ERROR_MESSAGE"
 }
