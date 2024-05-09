@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- For Cataclysm, updated the handling of unsuitable armor when the player is below level 50
+
 ## [1.9.2] - 2024-05-07
 
 ### Changed
