@@ -1,19 +1,19 @@
 local _, Addon = ...
-local TickerManager = Addon:GetModule("TickerManager")
+local TickerManager = Addon:GetModule("TickerManager") ---@class TickerManager
 
 --- @class Ticker
---- @field callback function
---- @field isActive boolean
---- @field maxTicks number
---- @field ticks number
---- @field timePerTick number
---- @field timer number
+--- @field protected callback function
+--- @field protected isActive boolean
+--- @field protected maxTicks number
+--- @field protected ticks number
+--- @field protected timePerTick number
+--- @field protected timer number
 --- @field Restart fun(self: Ticker)
 --- @field Cancel fun(self: Ticker)
 --- @field IsCancelled fun(self: Ticker): boolean
 --- @field OnUpdate fun(self: Ticker, elapsed: number)
 
---- @type table<Ticker, true|nil>
+--- @type table<Ticker, boolean>
 local activeTickers = {}
 
 -- ============================================================================
@@ -28,7 +28,7 @@ end)
 -- Mixins
 -- ============================================================================
 
---- @type Ticker
+--- @class TickerMixins : Ticker
 local TickerMixins = {}
 
 --- Reactivates the ticker and resets its timer and tick count.
@@ -78,6 +78,7 @@ end
 --- @param iterations? number If `0` (default), the ticker will be called indefinitely.
 --- @return Ticker ticker
 function TickerManager:NewTicker(seconds, callback, iterations)
+  --- @class (exact) Ticker
   local ticker = {
     callback = callback,
     maxTicks = iterations or 0,
@@ -112,4 +113,19 @@ end
 --- @param callback function
 function TickerManager:After(seconds, callback)
   self:NewTicker(seconds, callback, 1)
+end
+
+--- Returns a debounce function that delays invoking a callback until a specified duration of inactivity has passed.
+--- @param seconds number
+--- @param callback function
+--- @return function debounce
+function TickerManager:NewDebouncer(seconds, callback)
+  local timer
+  return function()
+    if timer then
+      timer:Restart()
+    else
+      timer = self:NewTimer(seconds, callback)
+    end
+  end
 end
