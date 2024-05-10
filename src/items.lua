@@ -6,7 +6,7 @@ local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedI
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
 local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-local TickerManager = Addon:GetModule("TickerManager")
+local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 -- Initialize cache table.
 Items.cache = {}
@@ -113,27 +113,18 @@ end
 -- Events
 -- ============================================================================
 
-do
-  local ticker
+-- Register events to trigger cache updates.
+EventManager:Once(E.Wow.PlayerLogin, function()
+  local debounce = TickerManager:NewDebouncer(0.01, updateCache)
+  debounce()
 
-  local function refreshTicker()
-    if ticker then
-      ticker:Restart()
-    else
-      ticker = TickerManager:NewTicker(0.01, updateCache, 1)
-    end
-  end
-
-  EventManager:Once(E.Wow.PlayerLogin, refreshTicker)
-
-  EventManager:On(E.Wow.BagUpdate, refreshTicker)
-  EventManager:On(E.Wow.BagUpdateDelayed, refreshTicker)
-  EventManager:On(E.Wow.EquipmentSetsChanged, refreshTicker)
-
+  EventManager:On(E.Wow.BagUpdate, debounce)
+  EventManager:On(E.Wow.BagUpdateDelayed, debounce)
+  EventManager:On(E.Wow.EquipmentSetsChanged, debounce)
   EventManager:On(E.BagsUpdated, function(allItemsCached)
-    if not allItemsCached then refreshTicker() end
+    if not allItemsCached then debounce() end
   end)
-end
+end)
 
 -- ============================================================================
 -- Bags
