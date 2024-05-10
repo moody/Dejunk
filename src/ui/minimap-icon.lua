@@ -1,5 +1,5 @@
 local ADDON_NAME, Addon = ...
-local Actions = Addon:GetModule("Actions") --- @type Actions
+local Actions = Addon:GetModule("Actions") ---@type Actions
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
@@ -7,9 +7,9 @@ local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale") ---@type Locale
 local LDB = Addon:GetLibrary("LDB")
 local LDBIcon = Addon:GetLibrary("LDBIcon")
-local MinimapIcon = Addon:GetModule("MinimapIcon")
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
-local TickerManager = Addon:GetModule("TickerManager")
+local MinimapIcon = Addon:GetModule("MinimapIcon") ---@class MinimapIcon
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 local function addDoubleLine(tooltip, leftLine, rightLine)
   tooltip:AddDoubleLine(Colors.Yellow(leftLine), Colors.White(rightLine))
@@ -44,18 +44,17 @@ EventManager:Once(E.StoreCreated, function()
   local debouncePatchMinimapIcon
   do
     local patchCache = {}
-    local patchTimer = TickerManager:NewTimer(0.2, function()
+    local debounce = TickerManager:NewDebouncer(0.2, function()
       StateManager:GetStore():Dispatch(Actions:PatchMinimapIcon(patchCache))
       for k in pairs(patchCache) do patchCache[k] = nil end
     end)
-    patchTimer:Cancel() -- Prevent timer from executing immediately.
 
     --- Helper function to debounce a `PatchMinimapIcon` action.
     --- @param key string
     --- @param value any
     debouncePatchMinimapIcon = function(key, value)
       patchCache[key] = value
-      patchTimer:Restart()
+      debounce()
     end
   end
 
