@@ -10,7 +10,7 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 -- ============================================================================
@@ -75,8 +75,8 @@ JunkFrame.frame = (function()
     name = "$parent_StartSellingButton",
     parent = frame,
     points = {
-      { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
-      { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
+      { "BOTTOMLEFT",  frame, Widgets:Padding(), Widgets:Padding() },
+      { "BOTTOMRIGHT", frame, "BOTTOM",          -Widgets:Padding(0.25), Widgets:Padding() }
     },
     labelColor = Colors.Yellow,
     labelText = L.START_SELLING,
@@ -88,7 +88,7 @@ JunkFrame.frame = (function()
     name = "$parent_DestroyNextItemButton",
     parent = frame,
     points = {
-      { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() },
+      { "BOTTOMLEFT",  frame, "BOTTOM",           Widgets:Padding(0.25), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding() }
     },
     labelColor = Colors.Red,
@@ -102,7 +102,11 @@ JunkFrame.frame = (function()
     end
   })
 
-  frame:HookScript("OnUpdate", function(self)
+  frame:HookScript("OnUpdate", function(self, elapsed)
+    self.delayTimer = (self.delayTimer or 0) + elapsed
+    if self.delayTimer < 0.02 then return end
+    self.delayTimer = 0
+
     -- Get items.
     JunkFilter:GetJunkItems(self.items)
 
