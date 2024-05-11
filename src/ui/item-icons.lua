@@ -5,11 +5,11 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
---- @class BagItemIcons
+--- @class ItemIcons
 --- @field total integer
---- @field active table<BagItemIcon, boolean>
---- @field inactive table<BagItemIcon, boolean>
-local bagItemIcons = {
+--- @field active table<ItemIcon, boolean>
+--- @field inactive table<ItemIcon, boolean>
+local itemIcons = {
   total = 0,
   active = {},
   inactive = {}
@@ -18,42 +18,42 @@ local bagItemIcons = {
 local junkItems = {}
 
 --- Retrieves an icon from the inactive pool or creates a new one.
---- @return BagItemIcon
-local function getBagItemIcon()
-  local bagItemIcon = next(bagItemIcons.inactive)
+--- @return ItemIcon
+local function getItemIcon()
+  local itemIcon = next(itemIcons.inactive)
 
-  if bagItemIcon then
-    bagItemIcons.inactive[bagItemIcon] = nil
+  if itemIcon then
+    itemIcons.inactive[itemIcon] = nil
   else
-    bagItemIcons.total = bagItemIcons.total + 1
+    itemIcons.total = itemIcons.total + 1
 
-    --- @class BagItemIcon : Frame
-    bagItemIcon = CreateFrame("Frame", ADDON_NAME .. "_BagItemIcon" .. bagItemIcons.total)
+    --- @class ItemIcon : Frame
+    itemIcon = CreateFrame("Frame", ADDON_NAME .. "_ItemIcon" .. itemIcons.total)
 
     -- Background texture.
-    bagItemIcon.background = bagItemIcon:CreateTexture(nil, "BACKGROUND")
-    bagItemIcon.background:SetAllPoints()
-    bagItemIcon.background:SetColorTexture(0, 0, 0, 0.3)
+    itemIcon.background = itemIcon:CreateTexture("$parent_BackgroundTexture", "BACKGROUND")
+    itemIcon.background:SetAllPoints()
+    itemIcon.background:SetColorTexture(0, 0, 0, 0.3)
 
     -- Overlay texture.
-    bagItemIcon.overlay = bagItemIcon:CreateTexture(nil, "OVERLAY")
-    bagItemIcon.overlay:SetAllPoints()
-    bagItemIcon.overlay:SetTexture(Addon:GetAsset("dejunk-icon"))
+    itemIcon.overlay = itemIcon:CreateTexture("$parent_OverlayTexture", "OVERLAY")
+    itemIcon.overlay:SetAllPoints()
+    itemIcon.overlay:SetTexture(Addon:GetAsset("dejunk-icon"))
   end
 
-  bagItemIcons.active[bagItemIcon] = true
+  itemIcons.active[itemIcon] = true
 
-  return bagItemIcon
+  return itemIcon
 end
 
 --- Resets the given icon and places it into the inactive icon pool.
---- @param bagItemIcon BagItemIcon
-local function releaseBagItemIcon(bagItemIcon)
-  bagItemIcons.active[bagItemIcon] = nil
-  bagItemIcons.inactive[bagItemIcon] = true
-  bagItemIcon:ClearAllPoints()
-  bagItemIcon:SetParent(nil)
-  bagItemIcon:Hide()
+--- @param itemIcon ItemIcon
+local function releaseItemIcon(itemIcon)
+  itemIcons.active[itemIcon] = nil
+  itemIcons.inactive[itemIcon] = true
+  itemIcon:ClearAllPoints()
+  itemIcon:SetParent(nil)
+  itemIcon:Hide()
 end
 
 --- Attempts to retrieve the item frame for the given bag and slot.
@@ -66,34 +66,34 @@ local function getContainerFrame(bag, slot)
   return _G[("ContainerFrame%sItem%s"):format(containerBag, containerSlot)]
 end
 
---- Updates icons for bag items based on their junk status.
-local function updateBagIcons()
-  for icon in pairs(bagItemIcons.active) do releaseBagItemIcon(icon) end
+--- Refreshes bag item icons based on item junk status.
+local function refreshIcons()
+  for icon in pairs(itemIcons.active) do releaseItemIcon(icon) end
   if not StateManager:GetCurrentState().itemIcons then return end
 
-  local searchText = (BagItemSearchBox and BagItemSearchBox:GetText() or ""):lower()
+  local searchText = (_G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""):lower()
   JunkFilter:GetJunkItems(junkItems)
 
   for _, item in pairs(junkItems) do
     if searchText == "" then
-      local bagItemIcon = getBagItemIcon()
+      local itemIcon = getItemIcon()
       local containerFrame = getContainerFrame(item.bag, item.slot)
-      bagItemIcon:SetParent(containerFrame)
-      bagItemIcon:SetPoint("TOPLEFT", 2, -2)
-      bagItemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
-      bagItemIcon:Show()
+      itemIcon:SetParent(containerFrame)
+      itemIcon:SetPoint("TOPLEFT", 2, -2)
+      itemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+      itemIcon:Show()
     end
   end
 end
 
 -- Register events.
 EventManager:Once(E.StoreCreated, function()
-  local debounce = TickerManager:NewDebouncer(0.1, updateBagIcons)
+  local debounce = TickerManager:NewDebouncer(0.1, refreshIcons)
 
   EventManager:On(E.BagsUpdated, debounce)
   EventManager:On(E.Wow.ItemLocked, debounce)
   EventManager:On(E.Wow.ItemUnlocked, debounce)
 
-  EventManager:On(E.StateUpdated, updateBagIcons)
-  EventManager:On(E.Wow.InventorySearchUpdate, updateBagIcons)
+  EventManager:On(E.StateUpdated, refreshIcons)
+  EventManager:On(E.Wow.InventorySearchUpdate, refreshIcons)
 end)
