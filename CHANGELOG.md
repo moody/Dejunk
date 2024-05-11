@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Option: `Bag Item Icons` ([#167](https://github.com/moody/Dejunk/issues/167))
+
 ### Changed
 
 - For Cataclysm, updated the handling of unsuitable armor when the player is below level 50
