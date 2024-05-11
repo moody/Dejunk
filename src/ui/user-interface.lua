@@ -48,7 +48,7 @@ UserInterface.frame = (function()
     Widgets:Padding()
   )
 
-  -- Base frame.
+  --- @class UserInterfaceFrameWidget : TitleFrameWidget
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_ParentFrame",
     width = TOTAL_FRAME_WIDTH,
@@ -133,7 +133,7 @@ UserInterface.frame = (function()
     end
   })
 
-  -- Search box.
+  --- @class UserInterfaceSearchBoxWidget : EditBox
   frame.searchBox = CreateFrame("EditBox", "$parent_SearchBox", frame.titleButton)
   frame.searchBox:SetFontObject("GameFontNormalLarge")
   frame.searchBox:SetTextColor(1, 1, 1)
@@ -188,6 +188,12 @@ UserInterface.frame = (function()
     tooltipText = L.CHAT_MESSAGES_TOOLTIP,
     get = function() return StateManager:GetCurrentState().chatMessages end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
+  })
+  frame.optionsFrame:AddOption({
+    labelText = L.BAG_ITEM_ICONS_TEXT,
+    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
+    get = function() return StateManager:GetCurrentState().itemIcons end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemIcons(value)) end
   })
   frame.optionsFrame:AddOption({
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,

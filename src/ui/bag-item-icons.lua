@@ -2,6 +2,7 @@ local ADDON_NAME, Addon = ...
 local E = Addon:GetModule("Events") ---@type Events
 local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local JunkFilter = Addon:GetModule("JunkFilter")
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 --- @class BagItemIcons
@@ -68,6 +69,7 @@ end
 --- Updates icons for bag items based on their junk status.
 local function updateBagIcons()
   for icon in pairs(bagItemIcons.active) do releaseBagItemIcon(icon) end
+  if not StateManager:GetCurrentState().itemIcons then return end
 
   local searchText = (BagItemSearchBox and BagItemSearchBox:GetText() or ""):lower()
   JunkFilter:GetJunkItems(junkItems)

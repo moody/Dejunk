@@ -63,6 +63,16 @@ end
 
 --- @param value boolean
 --- @return WuxAction
+function Actions:SetItemIcons(value)
+  if StateManager:IsCharacterSpecificSettings() then
+    return { type = "perchar/itemIcons/set", payload = value }
+  else
+    return { type = "global/itemIcons/set", payload = value }
+  end
+end
+
+--- @param value boolean
+--- @return WuxAction
 function Actions:SetItemTooltips(value)
   if StateManager:IsCharacterSpecificSettings() then
     return { type = "perchar/itemTooltips/set", payload = value }

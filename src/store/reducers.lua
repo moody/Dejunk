@@ -13,6 +13,7 @@ local Reducers = Addon:GetModule("Reducers")
 local DEFAULT_STATE = {
   -- User interface.
   chatMessages = true,
+  itemIcons = true,
   itemTooltips = true,
   merchantButton = true,
 
@@ -55,6 +56,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.chatMessages)
 
     if action.type == "global/chatMessages/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Item icons.
+  itemIcons = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemIcons)
+
+    if action.type == "global/itemIcons/set" then
       state = action.payload
     end
 
@@ -251,6 +263,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.chatMessages)
 
     if action.type == "perchar/chatMessages/set" then
+      state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Item icons.
+  itemIcons = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemIcons)
+
+    if action.type == "perchar/itemIcons/set" then
       state = action.payload
     end
 
