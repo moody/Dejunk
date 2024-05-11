@@ -32,12 +32,11 @@ local function getBagItemIcon()
     -- Background texture.
     bagItemIcon.background = bagItemIcon:CreateTexture(nil, "BACKGROUND")
     bagItemIcon.background:SetAllPoints()
-    bagItemIcon.background:SetColorTexture(0, 0, 0, 0.6)
+    bagItemIcon.background:SetColorTexture(0, 0, 0, 0.3)
 
     -- Overlay texture.
     bagItemIcon.overlay = bagItemIcon:CreateTexture(nil, "OVERLAY")
-    bagItemIcon.overlay:SetPoint("TOPLEFT", 2, -2)
-    bagItemIcon.overlay:SetPoint("BOTTOMRIGHT", -2, 2)
+    bagItemIcon.overlay:SetAllPoints()
     bagItemIcon.overlay:SetTexture(Addon:GetAsset("dejunk-icon"))
   end
 
@@ -78,7 +77,8 @@ local function updateBagIcons()
       local bagItemIcon = getBagItemIcon()
       local containerFrame = getContainerFrame(item.bag, item.slot)
       bagItemIcon:SetParent(containerFrame)
-      bagItemIcon:SetAllPoints()
+      bagItemIcon:SetPoint("TOPLEFT", 2, -2)
+      bagItemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
       bagItemIcon:Show()
     end
   end
