@@ -1,6 +1,8 @@
 local _, Addon = ...
-local Reducers = Addon:GetModule("Reducers") ---@class Reducers
 local Wux = Addon.Wux ---@type Wux
+
+--- @class Reducers
+local Reducers = Addon:GetModule("Reducers")
 
 -- ============================================================================
 -- Default States

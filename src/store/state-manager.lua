@@ -1,9 +1,11 @@
 local _, Addon = ...
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local StateManager = Addon:GetModule("StateManager") --- @class StateManager
-local Reducers = Addon:GetModule("Reducers") --- @type Reducers
-local Wux = Addon.Wux --- @type Wux
+local Reducers = Addon:GetModule("Reducers") ---@type Reducers
+local Wux = Addon.Wux ---@type Wux
+
+---@class StateManager
+local StateManager = Addon:GetModule("StateManager")
 
 local GLOBAL_SV_KEY = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
 local PERCHAR_SV_KEY = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
@@ -22,6 +24,7 @@ end
 -- Store
 -- ============================================================================
 
+--- @type WuxStore
 local _Store = nil
 
 -- Create store once the `Wow.PlayerLogin` event fires.
