@@ -13,7 +13,7 @@ local Reducers = Addon:GetModule("Reducers")
 local DEFAULT_STATE = {
   -- User interface.
   chatMessages = true,
-  itemIcons = true,
+  itemIcons = false,
   itemTooltips = true,
   merchantButton = true,
 
