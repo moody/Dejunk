@@ -1,6 +1,6 @@
 local ADDON_NAME, Addon = ...
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
+local E = Addon:GetModule("Events") ---@type Events
+local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local JunkFilter = Addon:GetModule("JunkFilter")
 local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 

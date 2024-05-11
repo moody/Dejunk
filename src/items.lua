@@ -1,7 +1,7 @@
 local _, Addon = ...
-local E = Addon:GetModule("Events")
+local E = Addon:GetModule("Events") ---@type Events
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
-local EventManager = Addon:GetModule("EventManager")
+local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
 local Items = Addon:GetModule("Items")

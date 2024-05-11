@@ -1,6 +1,8 @@
 local _, Addon = ...
-local Actions = Addon:GetModule("Actions") --- @class Actions
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 -- ============================================================================
 -- Global

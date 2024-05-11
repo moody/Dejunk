@@ -1,10 +1,10 @@
 local _, Addon = ...
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
+local E = Addon:GetModule("Events") ---@type Events
+local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
 local ListItemParser = Addon:GetModule("ListItemParser")
 local Seller = Addon:GetModule("Seller")
-local TickerManager = Addon:GetModule("TickerManager")
+local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 local PARSE_DELAY_SECONDS = 0.1
 

@@ -2,14 +2,16 @@ local ADDON_NAME, Addon = ...
 local Actions = Addon:GetModule("Actions") ---@type Actions
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
+local E = Addon:GetModule("Events") ---@type Events
+local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local L = Addon:GetModule("Locale") ---@type Locale
 local LDB = Addon:GetLibrary("LDB")
 local LDBIcon = Addon:GetLibrary("LDBIcon")
-local MinimapIcon = Addon:GetModule("MinimapIcon") ---@class MinimapIcon
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+
+---@class MinimapIcon
+local MinimapIcon = Addon:GetModule("MinimapIcon")
 
 local function addDoubleLine(tooltip, leftLine, rightLine)
   tooltip:AddDoubleLine(Colors.Yellow(leftLine), Colors.White(rightLine))
