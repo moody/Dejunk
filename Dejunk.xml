@@ -48,7 +48,7 @@
   <Script file="src\ui\transport-frame.lua"/>
   <Script file="src\ui\merchant-button.lua"/>
   <Script file="src\ui\minimap-icon.lua"/>
-  <Script file="src\ui\bag-item-icons.lua"/>
+  <Script file="src\ui\item-icons.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>
   <Script file="src\ui\popup.lua"/>
 
