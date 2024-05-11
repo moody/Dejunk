@@ -9,13 +9,19 @@ local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 --- @field total integer
 --- @field active table<ItemIcon, boolean>
 --- @field inactive table<ItemIcon, boolean>
+--- @field plugins table<ItemIconPlugin, boolean>
 local itemIcons = {
   total = 0,
   active = {},
-  inactive = {}
+  inactive = {},
+  plugins = {}
 }
 
 local junkItems = {}
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
 
 --- Retrieves an icon from the inactive pool or creates a new one.
 --- @return ItemIcon
@@ -56,37 +62,36 @@ local function releaseItemIcon(itemIcon)
   itemIcon:Hide()
 end
 
---- Attempts to retrieve the item frame for the given bag and slot.
---- @param bag integer
---- @param slot integer
---- @return Frame | nil
-local function getContainerFrame(bag, slot)
-  local containerBag = bag + 1
-  local containerSlot = C_Container.GetContainerNumSlots(bag) - slot + 1
-  return _G[("ContainerFrame%sItem%s"):format(containerBag, containerSlot)]
-end
-
 --- Refreshes bag item icons based on item junk status.
 local function refreshIcons()
   for icon in pairs(itemIcons.active) do releaseItemIcon(icon) end
   if not StateManager:GetCurrentState().itemIcons then return end
 
-  local searchText = (_G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""):lower()
   JunkFilter:GetJunkItems(junkItems)
 
-  for _, item in pairs(junkItems) do
-    if searchText == "" then
-      local itemIcon = getItemIcon()
-      local containerFrame = getContainerFrame(item.bag, item.slot)
-      itemIcon:SetParent(containerFrame)
-      itemIcon:SetPoint("TOPLEFT", 2, -2)
-      itemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
-      itemIcon:Show()
+  for plugin in pairs(itemIcons.plugins) do
+    if plugin.isEnabled() then
+      local searchText = plugin.getSearchText() or ""
+      for _, item in pairs(junkItems) do
+        if searchText == "" then
+          local frame = plugin.getBagSlotFrame(item.bag, item.slot)
+          if frame then
+            local itemIcon = getItemIcon()
+            itemIcon:SetParent(frame)
+            itemIcon:SetPoint("TOPLEFT", 2, -2)
+            itemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+            itemIcon:Show()
+          end
+        end
+      end
     end
   end
 end
 
--- Register events.
+-- ============================================================================
+-- Events
+-- ============================================================================
+
 EventManager:Once(E.StoreCreated, function()
   local debounce = TickerManager:NewDebouncer(0.1, refreshIcons)
 
@@ -97,3 +102,70 @@ EventManager:Once(E.StoreCreated, function()
   EventManager:On(E.StateUpdated, refreshIcons)
   EventManager:On(E.Wow.InventorySearchUpdate, refreshIcons)
 end)
+
+-- ============================================================================
+-- Plugins
+-- ============================================================================
+
+--- @class ItemIconPlugin
+--- @field isEnabled fun(): boolean
+--- @field getSearchText fun(): string
+--- @field getBagSlotFrame fun(bag: integer, slot: integer): Frame
+
+--- Adds a plugin that will be evaluated whenever `refreshIcons()` is called.
+--- @param plugin ItemIconPlugin
+local function addPlugin(plugin)
+  itemIcons.plugins[plugin] = true
+end
+
+-- Default user interface.
+addPlugin({
+  isEnabled = function()
+    return not (_G.Baganator or _G.Bagnon or _G.ElvUI)
+  end,
+  getSearchText = function()
+    return _G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""
+  end,
+  getBagSlotFrame = function(bag, slot)
+    local containerBag = bag + 1
+    local containerSlot = C_Container.GetContainerNumSlots(bag) - slot + 1
+    return _G[("ContainerFrame%sItem%s"):format(containerBag, containerSlot)]
+  end
+})
+
+-- Bagnon.
+addPlugin({
+  isEnabled = function()
+    return _G.Bagnon ~= nil and _G.BagnonInventory1
+  end,
+  getSearchText = function()
+    -- local frame = _G.BagnonInventory1 and _G.BagnonInventory1.SearchFrame
+    -- return frame and frame:GetText() or ""
+    return ""
+  end,
+  getBagSlotFrame = function(bag, slot)
+    local offset = 0
+    for i = BACKPACK_CONTAINER, bag - 1 do
+      offset = offset + C_Container.GetContainerNumSlots(i)
+    end
+    return _G["BagnonContainerItem" .. offset + slot]
+  end
+})
+
+-- ElvUI.
+addPlugin({
+  isEnabled = function()
+    if (not _G.ElvUI) or _G.Bagnon then return false end
+    local engine = _G.ElvUI[1]
+    return (
+      engine.private.bags.enable or
+      not (engine.private.skins.blizzard.enable and engine.private.skins.blizzard.bags)
+    )
+  end,
+  getSearchText = function()
+    return _G.ElvUI_ContainerFrameEditBox and _G.ElvUI_ContainerFrameEditBox:GetText() or ""
+  end,
+  getBagSlotFrame = function(bag, slot)
+    return _G[("ElvUI_ContainerFrameBag%sSlot%s"):format(bag - 1, slot)]
+  end
+})
