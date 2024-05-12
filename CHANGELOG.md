@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Attempted bug fix for overlaying item icons on Bagnon frames
+
 ## [1.10.0] - 2024-05-11
 
 ### Added
