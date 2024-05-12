@@ -2,7 +2,7 @@ local _, Addon = ...
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Looter = Addon:GetModule("Looter")
-local TickerManager = Addon:GetModule("TickerManager")
+local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 -- ============================================================================
 -- Local Functions

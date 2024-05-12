@@ -1,36 +1,21 @@
-local AddonName, Addon = ...
-local E = Addon:GetModule("Events")
+local _, Addon = ...
+local E = Addon:GetModule("Events") ---@class Events
 
 -- ============================================================================
--- Addon Events
+-- Dejunk Events
 -- ============================================================================
 
-local events = {
-  -- Bags.
-  "BagsUpdated",
-
-  -- Store.
-  "StoreCreated",
-  "StateUpdated",
-
-  -- Lists.
-  "ListItemCannotBeParsed",
-  "ListItemFailedToParse",
-  "ListItemParsed",
-  "ListParsingComplete",
-
-  -- Seller.
-  "SellerStarted",
-  "SellerStopped",
-  "AttemptedToSellItem",
-
-  -- Destroyer.
-  "AttemptedToDestroyItem"
-}
-
-for _, event in pairs(events) do
-  E[event] = ("%s_%s"):format(AddonName, event)
-end
+E.AttemptedToDestroyItem = "Dejunk_AttemptedToDestroyItem"
+E.AttemptedToSellItem = "Dejunk_AttemptedToSellItem"
+E.BagsUpdated = "Dejunk_BagsUpdated"
+E.ListItemCannotBeParsed = "Dejunk_ListItemCannotBeParsed"
+E.ListItemFailedToParse = "Dejunk_ListItemFailedToParse"
+E.ListItemParsed = "Dejunk_ListItemParsed"
+E.ListParsingComplete = "Dejunk_ListParsingComplete"
+E.SellerStarted = "Dejunk_SellerStarted"
+E.SellerStopped = "Dejunk_SellerStopped"
+E.StateUpdated = "Dejunk_StateUpdated"
+E.StoreCreated = "Dejunk_StoreCreated"
 
 -- ============================================================================
 -- WoW Events
@@ -40,10 +25,12 @@ E.Wow = {
   BagUpdate = "BAG_UPDATE",
   BagUpdateDelayed = "BAG_UPDATE_DELAYED",
   EquipmentSetsChanged = "EQUIPMENT_SETS_CHANGED",
+  InventorySearchUpdate = "INVENTORY_SEARCH_UPDATE",
+  ItemLocked = "ITEM_LOCKED",
   ItemUnlocked = "ITEM_UNLOCKED",
   MerchantClosed = "MERCHANT_CLOSED",
   MerchantShow = "MERCHANT_SHOW",
+  PlayerLevelUp = "PLAYER_LEVEL_UP",
   PlayerLogin = "PLAYER_LOGIN",
-  PlayerLogout = "PLAYER_LOGOUT",
   UIErrorMessage = "UI_ERROR_MESSAGE"
 }

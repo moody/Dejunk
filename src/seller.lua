@@ -1,12 +1,12 @@
 local _, Addon = ...
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
+local E = Addon:GetModule("Events") ---@type Events
+local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Seller = Addon:GetModule("Seller")
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
-local TickerManager = Addon:GetModule("TickerManager")
+local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 
 -- ============================================================================
 -- Events
