@@ -110,7 +110,7 @@ end)
 --- @class ItemIconPlugin
 --- @field isEnabled fun(): boolean
 --- @field getSearchText fun(): string
---- @field getBagSlotFrame fun(bag: integer, slot: integer): Frame
+--- @field getBagSlotFrame fun(bag: integer, slot: integer): Frame | nil
 
 --- Adds a plugin that will be evaluated whenever `refreshIcons()` is called.
 --- @param plugin ItemIconPlugin
@@ -164,17 +164,25 @@ addPlugin({
 addPlugin({
   name = "Bagnon",
   isEnabled = function()
-    return _G.Bagnon ~= nil and not isPluginEnabled("ArkInventory")
+    return (
+      _G.Bagnon ~= nil and
+      _G.BagnonInventory1 ~= nil and
+      not isPluginEnabled("ArkInventory")
+    )
   end,
   getSearchText = function()
     return ""
   end,
   getBagSlotFrame = function(bag, slot)
-    local offset = 0
-    for i = BACKPACK_CONTAINER, bag - 1 do
-      offset = offset + C_Container.GetContainerNumSlots(i)
+    local inventory = _G.BagnonInventory1
+    local itemGroup = inventory and inventory.ItemGroup
+    local buttons = itemGroup and itemGroup.buttons
+    if buttons and buttons[bag] then
+      local frame = buttons[bag][slot]
+      if frame and frame.SetParent then
+        return frame
+      end
     end
-    return _G["BagnonContainerItem" .. offset + slot]
   end
 })
 
