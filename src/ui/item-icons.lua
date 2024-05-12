@@ -9,7 +9,7 @@ local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
 --- @field total integer
 --- @field active table<ItemIcon, boolean>
 --- @field inactive table<ItemIcon, boolean>
---- @field plugins table<ItemIconPlugin, boolean>
+--- @field plugins table<string, ItemIconPlugin>
 local itemIcons = {
   total = 0,
   active = {},
@@ -39,7 +39,7 @@ local function getItemIcon()
     -- Background texture.
     itemIcon.background = itemIcon:CreateTexture("$parent_BackgroundTexture", "BACKGROUND")
     itemIcon.background:SetAllPoints()
-    itemIcon.background:SetColorTexture(0, 0, 0, 0.3)
+    itemIcon.background:SetColorTexture(0, 0, 0, 0.75)
 
     -- Overlay texture.
     itemIcon.overlay = itemIcon:CreateTexture("$parent_OverlayTexture", "OVERLAY")
@@ -69,8 +69,9 @@ local function refreshIcons()
 
   JunkFilter:GetJunkItems(junkItems)
 
-  for plugin in pairs(itemIcons.plugins) do
+  for pluginName, plugin in pairs(itemIcons.plugins) do
     if plugin.isEnabled() then
+      -- Addon:Debug(("Refreshing icons for %s."):format(pluginName))
       local searchText = plugin.getSearchText() or ""
       for _, item in pairs(junkItems) do
         if searchText == "" then
@@ -78,8 +79,7 @@ local function refreshIcons()
           if frame then
             local itemIcon = getItemIcon()
             itemIcon:SetParent(frame)
-            itemIcon:SetPoint("TOPLEFT", 2, -2)
-            itemIcon:SetPoint("BOTTOMRIGHT", -2, 2)
+            itemIcon:SetAllPoints()
             itemIcon:Show()
           end
         end
@@ -115,13 +115,26 @@ end)
 --- Adds a plugin that will be evaluated whenever `refreshIcons()` is called.
 --- @param plugin ItemIconPlugin
 local function addPlugin(plugin)
-  itemIcons.plugins[plugin] = true
+  itemIcons.plugins[plugin.name] = plugin
+end
+
+--- Returns `true` if plugin with the given name is enabled.
+--- @param pluginName string
+--- @return boolean
+local function isPluginEnabled(pluginName)
+  return itemIcons.plugins[pluginName] and itemIcons.plugins[pluginName].isEnabled()
 end
 
 -- Default user interface.
 addPlugin({
+  name = "Default",
   isEnabled = function()
-    return not (_G.Baganator or _G.Bagnon or _G.ElvUI)
+    return not (
+      _G.Baganator or
+      isPluginEnabled("ArkInventory") or
+      isPluginEnabled("Bagnon") or
+      isPluginEnabled("ElvUI")
+    )
   end,
   getSearchText = function()
     return _G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""
@@ -133,14 +146,27 @@ addPlugin({
   end
 })
 
--- Bagnon.
+-- ArkInventory.
 addPlugin({
+  name = "ArkInventory",
   isEnabled = function()
-    return _G.Bagnon ~= nil and _G.BagnonInventory1
+    return _G.ArkInventory ~= nil
   end,
   getSearchText = function()
-    -- local frame = _G.BagnonInventory1 and _G.BagnonInventory1.SearchFrame
-    -- return frame and frame:GetText() or ""
+    return ""
+  end,
+  getBagSlotFrame = function(bag, slot)
+    return _G[("ARKINV_Frame1ScrollContainerBag%sItem%s"):format(bag + 1, slot)]
+  end
+})
+
+-- Bagnon.
+addPlugin({
+  name = "Bagnon",
+  isEnabled = function()
+    return _G.Bagnon ~= nil and not isPluginEnabled("ArkInventory")
+  end,
+  getSearchText = function()
     return ""
   end,
   getBagSlotFrame = function(bag, slot)
@@ -154,18 +180,22 @@ addPlugin({
 
 -- ElvUI.
 addPlugin({
+  name = "ElvUI",
   isEnabled = function()
-    if (not _G.ElvUI) or _G.Bagnon then return false end
-    local engine = _G.ElvUI[1]
-    return (
-      engine.private.bags.enable or
-      not (engine.private.skins.blizzard.enable and engine.private.skins.blizzard.bags)
-    )
+    if _G.ElvUI ~= nil and not (isPluginEnabled("ArkInventory") or isPluginEnabled("Bagnon")) then
+      local engine = _G.ElvUI[1]
+      return (
+        engine.private.bags.enable or
+        not (engine.private.skins.blizzard.enable and engine.private.skins.blizzard.bags)
+      )
+    end
+    return false
   end,
   getSearchText = function()
     return _G.ElvUI_ContainerFrameEditBox and _G.ElvUI_ContainerFrameEditBox:GetText() or ""
   end,
   getBagSlotFrame = function(bag, slot)
-    return _G[("ElvUI_ContainerFrameBag%sSlot%s"):format(bag - 1, slot)]
+    bag = Addon.IS_RETAIL and bag or (bag - 1)
+    return _G[("ElvUI_ContainerFrameBag%sSlot%s"):format(bag, slot)]
   end
 })
