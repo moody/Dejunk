@@ -3,6 +3,7 @@ local E = Addon:GetModule("Events") ---@type Events
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
+local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
 local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
@@ -216,6 +217,7 @@ do -- Items:IsItemEquipment()
 
   function Items:IsItemEquipment(item)
     if not IsEquippableItem(item.link) then return false end
+    if IsCosmeticItem and IsCosmeticItem(item.link) then return false end
 
     if item.classId == Enum.ItemClass.Armor then
       if invTypeExceptions[item.invType] then return true end
