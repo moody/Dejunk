@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.2] - 2024-05-13
+
+### Changed
+
+- When the `Below Item Level` and `Unsuitable Equipment` options are enabled, certain "Cosmetic" items should now be properly ignored ([#209](https://github.com/moody/Dejunk/issues/209))
+
 ## [1.10.1] - 2024-05-12
 
 ### Changed
