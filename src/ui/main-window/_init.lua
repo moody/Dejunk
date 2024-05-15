@@ -177,7 +177,7 @@ MainWindow.frame = (function()
     titleText = L.OPTIONS_TEXT
   })
   for _, option in ipairs(MainWindowOptionData:Get()) do
-    frame.optionsFrame:AddOption(option)
+    frame.optionsFrame:AddOptionButton(option)
   end
 
   -- Global inclusions frame.

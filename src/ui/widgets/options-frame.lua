@@ -22,6 +22,8 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @param options OptionsFrameWidgetOptions
 --- @return OptionsFrameWidget frame
 function Widgets:OptionsFrame(options)
+  local CHILD_SPACING = Widgets:Padding()
+
   -- Defaults.
   options.onUpdateTooltip = nil
   options.titleTemplate = nil
@@ -30,8 +32,7 @@ function Widgets:OptionsFrame(options)
   -- Base frame.
   local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
   frame.titleButton:EnableMouse(false)
-  frame.buttons = {}
-  frame.buttonHeight = frame.title:GetStringHeight() + Widgets:Padding(2)
+  frame.children = {}
 
   -- Scroll child.
   frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
@@ -40,29 +41,38 @@ function Widgets:OptionsFrame(options)
 
   --- Adds an option button to the frame.
   --- @param options OptionButtonWidgetOptions
-  function frame:AddOption(options)
+  function frame:AddOptionButton(options)
     -- Defaults.
-    options.name = "$parent_CheckButton" .. #self.buttons + 1
+    options.name = "$parent_OptionButton" .. #self.children + 1
     options.parent = self.scrollChild
-    options.height = self.buttonHeight
 
     -- Add button.
-    self.buttons[#self.buttons + 1] = Widgets:OptionButton(options)
+    self.children[#self.children + 1] = Widgets:OptionButton(options)
   end
 
+  -- Hook `OnUpdate` script.
   frame:HookScript("OnUpdate", function(self)
-    local scrollChildHeight = (#self.buttons * self.buttonHeight) + (Widgets:Padding() * (#self.buttons - 1))
-    frame.scrollChild:SetHeight(scrollChildHeight)
+    -- Calculate total height of children.
+    local childrenHeight = 0
+    for _, child in ipairs(self.children) do
+      childrenHeight = childrenHeight + child:GetHeight()
+    end
 
-    -- Update button points.
-    for i, button in ipairs(self.buttons) do
-      button:ClearAllPoints()
+    -- Calculate total spacing between children.
+    local childrenSpacing = (#self.children - 1) * CHILD_SPACING
+
+    -- Update scroll child height.
+    frame.scrollChild:SetHeight(childrenHeight + childrenSpacing)
+
+    -- Update child points.
+    for i, child in ipairs(self.children) do
+      child:ClearAllPoints()
       if i == 1 then
-        button:SetPoint("TOPLEFT", frame.scrollChild)
-        button:SetPoint("TOPRIGHT", frame.scrollChild)
+        child:SetPoint("TOPLEFT", frame.scrollChild)
+        child:SetPoint("TOPRIGHT", frame.scrollChild)
       else
-        button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -Widgets:Padding())
-        button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, -Widgets:Padding())
+        child:SetPoint("TOPLEFT", self.children[i - 1], "BOTTOMLEFT", 0, -CHILD_SPACING)
+        child:SetPoint("TOPRIGHT", self.children[i - 1], "BOTTOMRIGHT", 0, -CHILD_SPACING)
       end
     end
   end)
@@ -78,8 +88,6 @@ end
 --- @param options OptionButtonWidgetOptions
 --- @return OptionButtonWidget frame
 function Widgets:OptionButton(options)
-  local CHECKBOX_SIZE = options.height - Widgets:Padding(2)
-
   -- Defaults.
   options.frameType = "Button"
 
@@ -97,7 +105,6 @@ function Widgets:OptionButton(options)
 
   -- Check box.
   frame.checkBox = frame:CreateTexture("$parent_CheckBox")
-  frame.checkBox:SetSize(CHECKBOX_SIZE, CHECKBOX_SIZE)
   frame.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
 
   -- Label text.
@@ -107,6 +114,11 @@ function Widgets:OptionButton(options)
   frame.label:SetPoint("RIGHT", frame.checkBox, "LEFT", -Widgets:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame.label:SetJustifyH("LEFT")
+
+  -- Set frame height and check box size.
+  local labelHeight = frame.label:GetStringHeight()
+  frame:SetHeight(labelHeight + Widgets:Padding(2))
+  frame.checkBox:SetSize(labelHeight, labelHeight)
 
   frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
