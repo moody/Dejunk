@@ -43,6 +43,7 @@
   <Script file="src\ui\widgets\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\window.lua"/>
 
+  <Script file="src\ui\main-window\option-data.lua"/>
   <Script file="src\ui\main-window\_init.lua"/>
 
   <Script file="src\ui\junk-frame.lua"/>
