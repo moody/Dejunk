@@ -7,22 +7,24 @@ local Lists = Addon:GetModule("Lists")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
-local UserInterface = Addon:GetModule("UserInterface")
 local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
+--- @class MainWindow
+local MainWindow = Addon:GetModule("MainWindow")
+
 -- ============================================================================
--- UserInterface
+-- MainWindow
 -- ============================================================================
 
-function UserInterface:Show()
+function MainWindow:Show()
   self.frame:Show()
 end
 
-function UserInterface:Hide()
+function MainWindow:Hide()
   self.frame:Hide()
 end
 
-function UserInterface:Toggle()
+function MainWindow:Toggle()
   if self.frame:IsShown() then
     self.frame:Hide()
   else
@@ -34,7 +36,7 @@ end
 -- Initialize
 -- ============================================================================
 
-UserInterface.frame = (function()
+MainWindow.frame = (function()
   local NUM_LIST_FRAME_BUTTONS = 7
   local OPTIONS_FRAME_WIDTH = 250
   local LIST_FRAME_WIDTH = 250
@@ -48,9 +50,9 @@ UserInterface.frame = (function()
     Widgets:Padding()
   )
 
-  --- @class UserInterfaceFrameWidget : TitleFrameWidget
+  --- @class MainWindowWidget : TitleFrameWidget
   local frame = Widgets:Window({
-    name = ADDON_NAME .. "_ParentFrame",
+    name = ADDON_NAME .. "_MainWindow",
     width = TOTAL_FRAME_WIDTH,
     height = 600,
     titleText = Colors.Blue(ADDON_NAME),
@@ -133,7 +135,7 @@ UserInterface.frame = (function()
     end
   })
 
-  --- @class UserInterfaceSearchBoxWidget : EditBox
+  --- @class MainWindowSearchBoxWidget : EditBox
   frame.searchBox = CreateFrame("EditBox", "$parent_SearchBox", frame.titleButton)
   frame.searchBox:SetFontObject("GameFontNormalLarge")
   frame.searchBox:SetTextColor(1, 1, 1)

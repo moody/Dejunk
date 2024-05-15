@@ -8,9 +8,9 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
 local Looter = Addon:GetModule("Looter")
+local MainWindow = Addon:GetModule("MainWindow") ---@type MainWindow
 local Seller = Addon:GetModule("Seller")
 local TransportFrame = Addon:GetModule("TransportFrame")
-local UserInterface = Addon:GetModule("UserInterface")
 
 -- ============================================================================
 -- Events
@@ -55,7 +55,7 @@ function Commands.help()
 end
 
 function Commands.options()
-  UserInterface:Toggle()
+  MainWindow:Toggle()
 end
 
 function Commands.junk()
