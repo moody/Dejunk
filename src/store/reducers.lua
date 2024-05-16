@@ -11,13 +11,6 @@ local Reducers = Addon:GetModule("Reducers")
 --- Default state.
 --- @class DefaultState
 local DEFAULT_STATE = {
-  -- User interface.
-  chatMessages = true,
-  itemIcons = false,
-  itemTooltips = true,
-  merchantButton = true,
-
-  -- Junk.
   autoJunkFrame = false,
   autoRepair = false,
   autoSell = false,
@@ -38,6 +31,10 @@ local DEFAULT_STATE = {
 --- Global default state.
 --- @class GlobalState : DefaultState
 local GLOBAL_DEFAULT_STATE = Wux:DeepCopy(DEFAULT_STATE)
+GLOBAL_DEFAULT_STATE.chatMessages = true
+GLOBAL_DEFAULT_STATE.itemIcons = false
+GLOBAL_DEFAULT_STATE.itemTooltips = true
+GLOBAL_DEFAULT_STATE.merchantButton = true
 GLOBAL_DEFAULT_STATE.minimapIcon = { hide = false }
 
 -- Per character default state.
@@ -90,6 +87,18 @@ Reducers.globalReducer = Wux:CombineReducers({
 
     if action.type == "global/merchantButton/set" then
       state = action.payload
+    end
+
+    return state
+  end,
+
+  -- Minimap icon.
+  minimapIcon = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
+
+    if action.type == "global/minimapIcon/patch" then
+      state = Wux:ShallowCopy(state)
+      for k, v in pairs(action.payload) do state[k] = v end
     end
 
     return state
@@ -206,18 +215,6 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
-  -- Minimap icon.
-  minimapIcon = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
-
-    if action.type == "global/minimapIcon/patch" then
-      state = Wux:ShallowCopy(state)
-      for k, v in pairs(action.payload) do state[k] = v end
-    end
-
-    return state
-  end,
-
   -- Inclusions.
   inclusions = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.inclusions)
@@ -253,50 +250,6 @@ Reducers.percharReducer = Wux:CombineReducers({
 
     if action.type == "perchar/characterSpecificSettings/toggle" then
       state = not state
-    end
-
-    return state
-  end,
-
-  -- Chat messages.
-  chatMessages = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.chatMessages)
-
-    if action.type == "perchar/chatMessages/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Item icons.
-  itemIcons = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemIcons)
-
-    if action.type == "perchar/itemIcons/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Item tooltips.
-  itemTooltips = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemTooltips)
-
-    if action.type == "perchar/itemTooltips/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Merchant button.
-  merchantButton = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.merchantButton)
-
-    if action.type == "perchar/merchantButton/set" then
-      state = action.payload
     end
 
     return state

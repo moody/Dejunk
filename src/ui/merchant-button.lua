@@ -26,7 +26,7 @@ EventManager:Once(E.Wow.MerchantShow, function()
   end, frame)
 
   MerchantFrame:HookScript("OnUpdate", function()
-    if StateManager:GetCurrentState().merchantButton then frame:Show() else frame:Hide() end
+    if StateManager:GetGlobalState().merchantButton then frame:Show() else frame:Hide() end
   end)
 
   frame:HookScript("OnUpdate", function(self)

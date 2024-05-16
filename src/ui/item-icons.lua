@@ -65,7 +65,7 @@ end
 --- Refreshes bag item icons based on item junk status.
 local function refreshIcons()
   for icon in pairs(itemIcons.active) do releaseItemIcon(icon) end
-  if not StateManager:GetCurrentState().itemIcons then return end
+  if not StateManager:GetGlobalState().itemIcons then return end
 
   JunkFilter:GetJunkItems(junkItems)
 

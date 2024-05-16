@@ -8,6 +8,30 @@ local Actions = Addon:GetModule("Actions")
 -- Global
 -- ============================================================================
 
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetChatMessages(value)
+  return { type = "global/chatMessages/set", payload = value }
+end
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetItemIcons(value)
+  return { type = "global/itemIcons/set", payload = value }
+end
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetItemTooltips(value)
+  return { type = "global/itemTooltips/set", payload = value }
+end
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetMerchantButton(value)
+  return { type = "global/merchantButton/set", payload = value }
+end
+
 --- @param value table
 --- @return WuxAction
 function Actions:PatchMinimapIcon(value)
@@ -48,48 +72,8 @@ function Actions:SetPercharExclusions(value)
 end
 
 -- ============================================================================
--- Dynamic
+-- General
 -- ============================================================================
-
---- @param value boolean
---- @return WuxAction
-function Actions:SetChatMessages(value)
-  if StateManager:IsCharacterSpecificSettings() then
-    return { type = "perchar/chatMessages/set", payload = value }
-  else
-    return { type = "global/chatMessages/set", payload = value }
-  end
-end
-
---- @param value boolean
---- @return WuxAction
-function Actions:SetItemIcons(value)
-  if StateManager:IsCharacterSpecificSettings() then
-    return { type = "perchar/itemIcons/set", payload = value }
-  else
-    return { type = "global/itemIcons/set", payload = value }
-  end
-end
-
---- @param value boolean
---- @return WuxAction
-function Actions:SetItemTooltips(value)
-  if StateManager:IsCharacterSpecificSettings() then
-    return { type = "perchar/itemTooltips/set", payload = value }
-  else
-    return { type = "global/itemTooltips/set", payload = value }
-  end
-end
-
---- @param value boolean
---- @return WuxAction
-function Actions:SetMerchantButton(value)
-  if StateManager:IsCharacterSpecificSettings() then
-    return { type = "perchar/merchantButton/set", payload = value }
-  else
-    return { type = "global/merchantButton/set", payload = value }
-  end
-end
 
 --- @param value boolean
 --- @return WuxAction

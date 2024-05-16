@@ -1,4 +1,7 @@
-local ADDON_NAME, Addon = ...
+local ADDON_NAME = ...
+
+--- @class Addon
+local Addon = select(2, ...)
 
 -- ============================================================================
 -- Consts
@@ -77,14 +80,14 @@ end
 
 do -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
   local Colors = Addon:GetModule("Colors") ---@type Colors
-  local StateManager = Addon:GetModule("StateManager") --- @type StateManager
+  local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 
   function Addon:ForcePrint(...)
     print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
   end
 
   function Addon:Print(...)
-    if StateManager:GetCurrentState().chatMessages then
+    if StateManager:GetGlobalState().chatMessages then
       print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
     end
   end

@@ -13,26 +13,11 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:Initialize(optionsFrame)
   -- ============================================================================
-  -- Global
-  -- ============================================================================
-
-  -- Heading.
-  optionsFrame:AddOptionHeading({ text = L.GLOBAL })
-
-  -- Minimap icon.
-  optionsFrame:AddOptionButton({
-    labelText = L.MINIMAP_ICON_TEXT,
-    tooltipText = L.MINIMAP_ICON_TOOLTIP,
-    get = function() return MinimapIcon:IsEnabled() end,
-    set = function(value) MinimapIcon:SetEnabled(value) end
-  })
-
-  -- ============================================================================
   -- Per Character
   -- ============================================================================
 
   -- Heading.
-  optionsFrame:AddOptionHeading({ text = L.CHARACTER })
+  -- optionsFrame:AddOptionHeading({ text = L.CHARACTER })
 
   -- Character specific settings.
   optionsFrame:AddOptionButton({
@@ -43,43 +28,11 @@ function MainWindowOptions:Initialize(optionsFrame)
   })
 
   -- ============================================================================
-  -- Dynamic
+  -- General
   -- ============================================================================
 
   -- Heading.
-  optionsFrame:AddOptionHeading({ text = L.DYNAMIC })
-
-  -- Chat messages.
-  optionsFrame:AddOptionButton({
-    labelText = L.CHAT_MESSAGES_TEXT,
-    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().chatMessages end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
-  })
-
-  -- Bag item icons.
-  optionsFrame:AddOptionButton({
-    labelText = L.BAG_ITEM_ICONS_TEXT,
-    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().itemIcons end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemIcons(value)) end
-  })
-
-  -- Bag item tooltips.
-  optionsFrame:AddOptionButton({
-    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
-    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().itemTooltips end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemTooltips(value)) end
-  })
-
-  -- Merchant button.
-  optionsFrame:AddOptionButton({
-    labelText = L.MERCHANT_BUTTON_TEXT,
-    tooltipText = L.MERCHANT_BUTTON_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().merchantButton end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end
-  })
+  optionsFrame:AddOptionHeading({ text = L.GENERAL })
 
   -- Auto junk frame.
   optionsFrame:AddOptionButton({
@@ -181,4 +134,51 @@ function MainWindowOptions:Initialize(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
     })
   end
+
+  -- ============================================================================
+  -- Global
+  -- ============================================================================
+
+  -- Heading.
+  optionsFrame:AddOptionHeading({ text = L.GLOBAL })
+
+  -- Bag item icons.
+  optionsFrame:AddOptionButton({
+    labelText = L.BAG_ITEM_ICONS_TEXT,
+    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemIcons end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemIcons(value)) end
+  })
+
+  -- Bag item tooltips.
+  optionsFrame:AddOptionButton({
+    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
+    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemTooltips end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemTooltips(value)) end
+  })
+
+  -- Chat messages.
+  optionsFrame:AddOptionButton({
+    labelText = L.CHAT_MESSAGES_TEXT,
+    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().chatMessages end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
+  })
+
+  -- Merchant button.
+  optionsFrame:AddOptionButton({
+    labelText = L.MERCHANT_BUTTON_TEXT,
+    tooltipText = L.MERCHANT_BUTTON_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().merchantButton end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end
+  })
+
+  -- Minimap icon.
+  optionsFrame:AddOptionButton({
+    labelText = L.MINIMAP_ICON_TEXT,
+    tooltipText = L.MINIMAP_ICON_TOOLTIP,
+    get = function() return MinimapIcon:IsEnabled() end,
+    set = function(value) MinimapIcon:SetEnabled(value) end
+  })
 end
