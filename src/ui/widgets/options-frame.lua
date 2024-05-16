@@ -185,7 +185,7 @@ function Widgets:OptionHeading(options)
 
   -- Text.
   frame.text = frame:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormal")
-  frame.text:SetText(Colors.Grey(options.text))
+  frame.text:SetText(Colors.Blue(options.text))
   frame.text:SetPoint("LEFT")
   frame.text:SetPoint("RIGHT")
   frame.text:SetJustifyH("LEFT")
