@@ -16,6 +16,9 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- Global
   -- ============================================================================
 
+  -- Heading.
+  optionsFrame:AddOptionHeading({ text = L.GLOBAL })
+
   -- Minimap icon.
   optionsFrame:AddOptionButton({
     labelText = L.MINIMAP_ICON_TEXT,
@@ -28,6 +31,9 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- Per Character
   -- ============================================================================
 
+  -- Heading.
+  optionsFrame:AddOptionHeading({ text = L.CHARACTER })
+
   -- Character specific settings.
   optionsFrame:AddOptionButton({
     labelText = L.CHARACTER_SPECIFIC_SETTINGS_TEXT,
@@ -39,6 +45,9 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- ============================================================================
   -- Dynamic
   -- ============================================================================
+
+  -- Heading.
+  optionsFrame:AddOptionHeading({ text = L.DYNAMIC })
 
   -- Chat messages.
   optionsFrame:AddOptionButton({

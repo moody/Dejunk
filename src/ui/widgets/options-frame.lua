@@ -14,6 +14,9 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @field get fun(): boolean
 --- @field set fun(value: boolean)
 
+--- @class OptionHeadingWidgetOptions : FrameWidgetOptions
+--- @field text string
+
 -- =============================================================================
 -- Widgets - Options Frame
 -- =============================================================================
@@ -34,7 +37,8 @@ function Widgets:OptionsFrame(options)
   frame.titleButton:EnableMouse(false)
   frame.children = {}
   frame.childCounts = {
-    optionButton = 0
+    optionButton = 0,
+    optionHeading = 0
   }
 
   -- Scroll child.
@@ -54,6 +58,20 @@ function Widgets:OptionsFrame(options)
 
     -- Add button.
     self.children[#self.children + 1] = Widgets:OptionButton(options)
+  end
+
+  --- Adds an option heading to the frame.
+  --- @param options OptionHeadingWidgetOptions
+  function frame:AddOptionHeading(options)
+    -- Increment count.
+    self.childCounts.optionHeading = self.childCounts.optionHeading + 1
+
+    -- Defaults.
+    options.name = "$parent_OptionHeading" .. self.childCounts.optionHeading
+    options.parent = self.scrollChild
+
+    -- Add button.
+    self.children[#self.children + 1] = Widgets:OptionHeading(options)
   end
 
   -- Hook `OnUpdate` script.
@@ -149,6 +167,31 @@ function Widgets:OptionButton(options)
       self.checkBox:SetColorTexture(Colors.White:GetRGBA(0.25))
     end
   end)
+
+  return frame
+end
+
+-- =============================================================================
+-- Widgets - Option Heading
+-- =============================================================================
+
+--- Creates a heading for grouping options.
+--- @param options OptionHeadingWidgetOptions
+--- @return OptionHeadingWidget frame
+function Widgets:OptionHeading(options)
+  --- @class OptionHeadingWidget : FrameWidget
+  local frame = Widgets:Frame(options)
+  frame:SetBackdrop(nil)
+
+  -- Text.
+  frame.text = frame:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormal")
+  frame.text:SetText(Colors.Grey(options.text))
+  frame.text:SetPoint("LEFT")
+  frame.text:SetPoint("RIGHT")
+  frame.text:SetJustifyH("LEFT")
+
+  -- Set height.
+  frame:SetHeight(frame.text:GetStringHeight() + Widgets:Padding())
 
   return frame
 end
