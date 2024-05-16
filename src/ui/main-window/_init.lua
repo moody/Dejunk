@@ -3,7 +3,7 @@ local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale") ---@type Locale
 local Lists = Addon:GetModule("Lists")
-local MainWindowOptionData = Addon:GetModule("MainWindowOptionData") ---@type MainWindowOptionData
+local MainWindowOptions = Addon:GetModule("MainWindowOptions") ---@type MainWindowOptions
 local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 
 --- @class MainWindow
@@ -176,9 +176,7 @@ MainWindow.frame = (function()
     width = OPTIONS_FRAME_WIDTH,
     titleText = L.OPTIONS_TEXT
   })
-  for _, option in ipairs(MainWindowOptionData:Get()) do
-    frame.optionsFrame:AddOptionButton(option)
-  end
+  MainWindowOptions:Initialize(frame.optionsFrame)
 
   -- Global inclusions frame.
   frame.globalInclusionsFrame = Widgets:ListFrame({

@@ -29,10 +29,13 @@ function Widgets:OptionsFrame(options)
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
 
-  -- Base frame.
-  local frame = self:ScrollableTitleFrame(options) ---@class OptionsFrameWidget : ScrollableTitleFrameWidget
+  --- @class OptionsFrameWidget : ScrollableTitleFrameWidget
+  local frame = self:ScrollableTitleFrame(options)
   frame.titleButton:EnableMouse(false)
   frame.children = {}
+  frame.childCounts = {
+    optionButton = 0
+  }
 
   -- Scroll child.
   frame.scrollChild = self:Frame({ name = "$parent_ScrollChild", parent = frame.scrollFrame })
@@ -42,8 +45,11 @@ function Widgets:OptionsFrame(options)
   --- Adds an option button to the frame.
   --- @param options OptionButtonWidgetOptions
   function frame:AddOptionButton(options)
+    -- Increment count.
+    self.childCounts.optionButton = self.childCounts.optionButton + 1
+
     -- Defaults.
-    options.name = "$parent_OptionButton" .. #self.children + 1
+    options.name = "$parent_OptionButton" .. self.childCounts.optionButton
     options.parent = self.scrollChild
 
     -- Add button.
