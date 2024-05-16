@@ -15,7 +15,10 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 --- @field set fun(value: boolean)
 
 --- @class OptionHeadingWidgetOptions : FrameWidgetOptions
---- @field text string
+--- @field headingText string
+--- @field headingColor? Color
+--- @field headingJustify? "LEFT" | "RIGHT" | "CENTER"
+--- @field headingTemplate? string
 
 -- =============================================================================
 -- Widgets - Options Frame
@@ -70,7 +73,7 @@ function Widgets:OptionsFrame(options)
     options.name = "$parent_OptionHeading" .. self.childCounts.optionHeading
     options.parent = self.scrollChild
 
-    -- Add button.
+    -- Add heading.
     self.children[#self.children + 1] = Widgets:OptionHeading(options)
   end
 
@@ -179,16 +182,21 @@ end
 --- @param options OptionHeadingWidgetOptions
 --- @return OptionHeadingWidget frame
 function Widgets:OptionHeading(options)
+  --- Defaults.
+  options.headingColor = Addon:IfNil(options.headingColor, Colors.Blue)
+  options.headingJustify = Addon:IfNil(options.headingJustify, "LEFT")
+  options.headingTemplate = Addon:IfNil(options.headingTemplate, "GameFontNormal")
+
   --- @class OptionHeadingWidget : FrameWidget
   local frame = Widgets:Frame(options)
   frame:SetBackdrop(nil)
 
   -- Text.
-  frame.text = frame:CreateFontString("$parent_Text", "ARTWORK", "GameFontNormal")
-  frame.text:SetText(Colors.Blue(options.text))
+  frame.text = frame:CreateFontString("$parent_Text", "ARTWORK", options.headingTemplate)
+  frame.text:SetText(options.headingColor(options.headingText))
+  frame.text:SetJustifyH(options.headingJustify)
   frame.text:SetPoint("LEFT")
   frame.text:SetPoint("RIGHT")
-  frame.text:SetJustifyH("LEFT")
 
   -- Set height.
   frame:SetHeight(frame.text:GetStringHeight() + Widgets:Padding())
