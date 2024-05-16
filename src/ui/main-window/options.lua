@@ -84,13 +84,15 @@ function MainWindowOptions:Initialize(optionsFrame)
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
   })
 
-  -- Include poor items.
-  optionsFrame:AddOptionButton({
-    labelText = L.INCLUDE_POOR_ITEMS_TEXT,
-    tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().includePoorItems end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludePoorItems(value)) end
-  })
+  -- Include artifact relics.
+  if Addon.IS_RETAIL then
+    optionsFrame:AddOptionButton({
+      labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
+      tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
+      get = function() return StateManager:GetCurrentState().includeArtifactRelics end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
+    })
+  end
 
   -- Include below item level.
   optionsFrame:AddOptionButton({
@@ -117,6 +119,14 @@ function MainWindowOptions:Initialize(optionsFrame)
     end
   })
 
+  -- Include poor items.
+  optionsFrame:AddOptionButton({
+    labelText = L.INCLUDE_POOR_ITEMS_TEXT,
+    tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
+    get = function() return StateManager:GetCurrentState().includePoorItems end,
+    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludePoorItems(value)) end
+  })
+
   -- Include unsuitable equipment.
   optionsFrame:AddOptionButton({
     labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
@@ -124,16 +134,6 @@ function MainWindowOptions:Initialize(optionsFrame)
     get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
   })
-
-  -- Include artifact relics.
-  if Addon.IS_RETAIL then
-    optionsFrame:AddOptionButton({
-      labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
-      tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
-      get = function() return StateManager:GetCurrentState().includeArtifactRelics end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
-    })
-  end
 
   -- ============================================================================
   -- Global
