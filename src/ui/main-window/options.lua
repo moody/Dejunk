@@ -16,8 +16,8 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- Per Character
   -- ============================================================================
 
-  -- Heading.
-  -- optionsFrame:AddOptionHeading({ text = L.CHARACTER })
+  -- Character heading.
+  -- optionsFrame:AddOptionHeading({ headingText = L.CHARACTER })
 
   -- Character specific settings.
   optionsFrame:AddOptionButton({
@@ -31,8 +31,8 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- General
   -- ============================================================================
 
-  -- Heading.
-  optionsFrame:AddOptionHeading({ text = L.GENERAL })
+  -- General heading.
+  optionsFrame:AddOptionHeading({ headingText = L.GENERAL })
 
   -- Auto junk frame.
   optionsFrame:AddOptionButton({
@@ -66,6 +66,14 @@ function MainWindowOptions:Initialize(optionsFrame)
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
   })
 
+  -- Exclude heading.
+  optionsFrame:AddOptionHeading({
+    headingText = L.EXCLUDE,
+    headingTemplate = "GameFontNormalSmall",
+    headingColor = Colors.Green,
+    headingJustify = "CENTER"
+  })
+
   -- Exclude equipment sets.
   if not Addon.IS_VANILLA then
     optionsFrame:AddOptionButton({
@@ -82,6 +90,14 @@ function MainWindowOptions:Initialize(optionsFrame)
     tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
     get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
+  })
+
+  -- Include heading.
+  optionsFrame:AddOptionHeading({
+    headingText = L.INCLUDE,
+    headingTemplate = "GameFontNormalSmall",
+    headingColor = Colors.Red,
+    headingJustify = "CENTER"
   })
 
   -- Include artifact relics.
@@ -139,8 +155,8 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- Global
   -- ============================================================================
 
-  -- Heading.
-  optionsFrame:AddOptionHeading({ text = L.GLOBAL })
+  -- Global heading.
+  optionsFrame:AddOptionHeading({ headingText = L.GLOBAL })
 
   -- Bag item icons.
   optionsFrame:AddOptionButton({
