@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Added headings to the options UI
+- The following options are now set globally:
+  1. `Bag Item Icons`
+  2. `Bag Item Tooltips`
+  3. `Chat Messages`
+  4. `Merchant Button`
+
 ## [1.10.2] - 2024-05-13
 
 ### Changed
