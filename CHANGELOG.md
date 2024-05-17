@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.10.3] - 2024-05-16
+
+### Changed
+
+- The following options are now applied globally:
+
+  1. `Bag Item Icons`
+  2. `Bag Item Tooltips`
+  3. `Chat Messages`
+  4. `Merchant Button`
+
+- Added headings to group UI options together
+
 ## [1.10.2] - 2024-05-13
 
 ### Changed
