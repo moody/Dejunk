@@ -26,20 +26,8 @@ with the press of a button.
 ## Chat Commands
 
 ```ps1
-# Display help commands.
-/dejunk
-
-# Open the key binding frame.
-/dejunk keybinds
-
 # Toggle the options frame.
-/dejunk options
-
-# Toggle the junk frame.
-/dejunk junk
-
-# Toggle the transport frame.
-/dejunk transport {inclusions|exclusions} {global|character}
+/dejunk
 
 # Start selling items.
 /dejunk sell
@@ -49,6 +37,21 @@ with the press of a button.
 
 # Open lootable items.
 /dejunk loot
+
+# Toggle the junk frame.
+/dejunk junk
+
+# Open the key binding frame.
+/dejunk keybinds
+
+# Toggle the transport frame.
+/dejunk transport inclusions global
+/dejunk transport inclusions character
+/dejunk transport exclusions global
+/dejunk transport exclusions character
+
+# Display a list of commands.
+/dejunk help
 ```
 
 ## Credit
