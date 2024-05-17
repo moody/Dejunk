@@ -26,10 +26,11 @@
   <Script file="src\list-item-parser.lua"/>
   <Script file="src\lists.lua"/>
   <Script file="src\junk-filter.lua"/>
-  <Script file="src\seller.lua"/>
-  <Script file="src\destroyer.lua"/>
-  <Script file="src\confirmer.lua"/>
-  <Script file="src\looter.lua"/>
+
+  <Script file="src\services\seller.lua"/>
+  <Script file="src\services\destroyer.lua"/>
+  <Script file="src\services\confirmer.lua"/>
+  <Script file="src\services\looter.lua"/>
 
   <Script file="src\ui\widgets\_init.lua"/>
   <Script file="src\ui\widgets\button.lua"/>
