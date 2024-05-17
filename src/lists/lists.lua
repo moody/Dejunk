@@ -5,7 +5,7 @@ local E = Addon:GetModule("Events") ---@type Events
 local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale") ---@type Locale
-local ListItemParser = Addon:GetModule("ListItemParser")
+local ListItemParser = Addon:GetModule("ListItemParser") ---@type ListItemParser
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
 

@@ -67,7 +67,7 @@ end
 do -- Addon:IsBusy()
   local Confirmer = Addon:GetModule("Confirmer")
   local L = Addon:GetModule("Locale") ---@type Locale
-  local ListItemParser = Addon:GetModule("ListItemParser")
+  local ListItemParser = Addon:GetModule("ListItemParser") ---@type ListItemParser
   local Seller = Addon:GetModule("Seller")
 
   function Addon:IsBusy()
