@@ -27,9 +27,9 @@ local Lists = Addon:GetModule("Lists")
 --- @field protected getOpposite fun(): List
 
 --- @class List : ListData
---- @field private items table
---- @field private itemIds table
---- @field private searchItems table
+--- @field private items ListItem[]
+--- @field private itemIds ListItemIds
+--- @field private searchItems ListItem[]
 
 -- ============================================================================
 -- Local Functions
@@ -129,14 +129,14 @@ function Mixins:RemoveAll()
 end
 
 --- Returns the list's items.
----@return table items
+---@return ListItem[] items
 function Mixins:GetItems()
   return self.items
 end
 
 --- Returns the list's items filtered by name using the given `searchText`.
 --- @param searchText string
---- @return table searchItems
+--- @return ListItem[] searchItems
 function Mixins:GetSearchItems(searchText)
   searchText = string.lower(searchText or "")
   for k in pairs(self.searchItems) do self.searchItems[k] = nil end
