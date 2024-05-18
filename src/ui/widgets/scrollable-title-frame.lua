@@ -1,5 +1,7 @@
 local _, Addon = ...
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -17,8 +19,8 @@ local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 function Widgets:ScrollableTitleFrame(options)
   local SPACING = self:Padding()
 
-  -- Base frame.
-  local frame = self:TitleFrame(options) ---@class ScrollableTitleFrameWidget : TitleFrameWidget
+  --- @class ScrollableTitleFrameWidget : TitleFrameWidget
+  local frame = self:TitleFrame(options)
 
   -- Scroll frame.
   frame.scrollFrame = CreateFrame("ScrollFrame", "$parent_ScrollFrame", frame)
@@ -29,8 +31,8 @@ function Widgets:ScrollableTitleFrame(options)
     name = "$parent_Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT",    frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
-      { "BOTTOMRIGHT", frame,             "BOTTOMRIGHT", -SPACING, SPACING }
+      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
     }
   })
 

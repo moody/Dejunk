@@ -1,6 +1,8 @@
 local _, Addon = ...
 local Tooltip = Addon:GetModule("Tooltip") ---@type Tooltip
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
