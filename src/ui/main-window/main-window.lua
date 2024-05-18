@@ -47,7 +47,7 @@ MainWindow.frame = (function()
     Widgets:Padding()
   )
 
-  --- @class MainWindowWidget : TitleFrameWidget
+  --- @class MainWindowWidget : WindowWidget
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_MainWindow",
     width = TOTAL_FRAME_WIDTH,
@@ -66,7 +66,7 @@ MainWindow.frame = (function()
     name = "$parent_KeybindsButton",
     parent = frame.titleButton,
     points = {
-      { "TOPRIGHT",    frame.closeButton, "TOPLEFT",    0, 0 },
+      { "TOPRIGHT", frame.closeButton, "TOPLEFT", 0, 0 },
       { "BOTTOMRIGHT", frame.closeButton, "BOTTOMLEFT", 0, 0 }
     },
     texture = Addon:GetAsset("keyboard-icon"),
@@ -120,7 +120,7 @@ MainWindow.frame = (function()
     name = "$parent_SearchButton",
     parent = frame.titleButton,
     points = {
-      { "TOPRIGHT",    frame.keybindsButton, "TOPLEFT",    0, 0 },
+      { "TOPRIGHT", frame.keybindsButton, "TOPLEFT", 0, 0 },
       { "BOTTOMRIGHT", frame.keybindsButton, "BOTTOMLEFT", 0, 0 }
     },
     texture = Addon:GetAsset("search-icon"),
@@ -170,8 +170,8 @@ MainWindow.frame = (function()
     name = "$parent_OptionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT",    frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMLEFT", frame,             "BOTTOMLEFT", Widgets:Padding(), Widgets:Padding() }
+      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
+      { "BOTTOMLEFT", frame, "BOTTOMLEFT", Widgets:Padding(), Widgets:Padding() }
     },
     width = OPTIONS_FRAME_WIDTH,
     titleText = L.OPTIONS_TEXT
@@ -183,8 +183,8 @@ MainWindow.frame = (function()
     name = "$parent_GlobalInclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT",    frame.optionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
-      { "BOTTOMLEFT", frame.optionsFrame, "RIGHT",    Widgets:Padding(0.5), Widgets:Padding(0.25) }
+      { "TOPLEFT", frame.optionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
+      { "BOTTOMLEFT", frame.optionsFrame, "RIGHT", Widgets:Padding(0.5), Widgets:Padding(0.25) }
     },
     width = LIST_FRAME_WIDTH,
     numButtons = NUM_LIST_FRAME_BUTTONS,
@@ -197,7 +197,7 @@ MainWindow.frame = (function()
     name = "$parent_GlobalExclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT",    frame.globalInclusionsFrame, "TOPRIGHT",   Widgets:Padding(0.5), 0 },
+      { "TOPLEFT", frame.globalInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
       { "BOTTOMLEFT", frame.globalInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
@@ -211,7 +211,7 @@ MainWindow.frame = (function()
     name = "$parent_PercharInclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT",    frame.optionsFrame, "RIGHT",       Widgets:Padding(0.5), -Widgets:Padding(0.25) },
+      { "TOPLEFT", frame.optionsFrame, "RIGHT", Widgets:Padding(0.5), -Widgets:Padding(0.25) },
       { "BOTTOMLEFT", frame.optionsFrame, "BOTTOMRIGHT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
@@ -225,7 +225,7 @@ MainWindow.frame = (function()
     name = "$parent_PercharExclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT",    frame.percharInclusionsFrame, "TOPRIGHT",   Widgets:Padding(0.5), 0 },
+      { "TOPLEFT", frame.percharInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
       { "BOTTOMLEFT", frame.percharInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,

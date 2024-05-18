@@ -1,13 +1,17 @@
 local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local L = Addon:GetModule("Locale") ---@type Locale
-local TransportFrame = Addon:GetModule("TransportFrame")
 local Widgets = Addon:GetModule("Widgets") ---@type Widgets
+
+--- @class TransportFrame
+local TransportFrame = Addon:GetModule("TransportFrame")
 
 -- ============================================================================
 -- TransportFrame
 -- ============================================================================
 
+--- Shows the frame for the given `list`.
+--- @param list List
 function TransportFrame:Show(list)
   self.frame.list = list
   self.frame.textFrame.editBox:SetText("")
@@ -15,10 +19,13 @@ function TransportFrame:Show(list)
   self.frame:Show()
 end
 
+--- Hides the frame.
 function TransportFrame:Hide()
   self.frame:Hide()
 end
 
+--- Toggles the frame for the given `list`.
+--- @param list List
 function TransportFrame:Toggle(list)
   if list == self.frame.list and self.frame:IsShown() then
     self:Hide()
@@ -31,8 +38,9 @@ end
 -- Initialize
 -- ============================================================================
 
--- Create frame.
 TransportFrame.frame = (function()
+  --- @class TransportFrameWidget : WindowWidget
+  --- @field list? List
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_TransportFrame",
     width = 325,

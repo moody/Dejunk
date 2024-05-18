@@ -29,8 +29,8 @@ function Widgets:Frame(options)
   options.width = Addon:IfNil(options.width, 1)
   options.height = Addon:IfNil(options.height, 1)
 
-  -- Base frame.
-  local frame = CreateFrame(options.frameType, options.name, options.parent) ---@class FrameWidget
+  --- @class FrameWidget : Frame, BackdropTemplate
+  local frame = CreateFrame(options.frameType, options.name, options.parent)
   frame:SetClipsChildren(true)
 
   -- Backdrop.

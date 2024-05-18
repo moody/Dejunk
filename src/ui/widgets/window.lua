@@ -1,7 +1,15 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
+
+-- ============================================================================
+-- LuaCATS Annotations
+-- ============================================================================
+
+--- @class WindowWidgetOptions : TitleFrameWidgetOptions
 
 -- ============================================================================
 -- Local Functions
@@ -22,18 +30,9 @@ end
 -- Window
 -- ============================================================================
 
---[[
-  Creates a moveable frame with title text and a close button.
-
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    titleText? = string
-  }
-]]
+--- Creates a moveable frame with title text and a close button.
+--- @param options WindowWidgetOptions
+--- @return WindowWidget frame
 function Widgets:Window(options)
   -- Defaults.
   options.points = Addon:IfNil(options.points, { { "CENTER" } })
@@ -43,7 +42,7 @@ function Widgets:Window(options)
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
 
-  -- Base frame.
+  --- @class WindowWidget : TitleFrameWidget
   local frame = self:TitleFrame(options)
   frame.titleButton:SetBackdrop(nil)
   frame.titleButton:EnableMouse(false)
