@@ -11,7 +11,7 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Items
 local Items = Addon:GetModule("Items")
 
--- Initialize cache table.
+--- @type table<integer, BagItem>
 Items.cache = {}
 Items.location = ItemLocation:CreateEmpty()
 
@@ -21,9 +21,15 @@ Items.location = ItemLocation:CreateEmpty()
 
 local getContainerItem
 do
+  --- @class BagItemInfoBuffer : ContainerItemInfo
   local t = {}
 
+  --- Creates a new `BagItemInfo` for the given `bag` and `slot`.
+  --- @param bag integer
+  --- @param slot integer
+  --- @return BagItemInfo? item
   function getContainerItem(bag, slot)
+    --- @class BagItemInfo : table
     local item = C_Container.GetContainerItemInfo(bag, slot)
     if type(item) ~= "table" then return nil end
 
@@ -47,7 +53,13 @@ do
   end
 end
 
+--- Creates a new `BagItem` for the given `bag` and `slot`.
+--- @param bag integer
+--- @param slot integer
+--- @return BagItem? item
 local function getItem(bag, slot)
+  --- @class BagItem : BagItemInfo
+  --- @field reason? string
   local item = getContainerItem(bag, slot)
   if item == nil then return nil end
 
@@ -69,6 +81,13 @@ local function getItem(bag, slot)
   return item
 end
 
+--- Custom iterator for each bag and slot. Usage:
+--- ```
+--- for bag, slot, itemId in iterateBags() do
+---   -- Do stuff.
+--- end
+--- ```
+---@return function
 local function iterateBags()
   local bag, slot = BACKPACK_CONTAINER, 0
   local numSlots = C_Container.GetContainerNumSlots(bag)
@@ -91,6 +110,7 @@ local function iterateBags()
   end
 end
 
+--- Updates the item cache and fires the `BagsUpdated` event.
 local function updateCache()
   EquipmentSetsCache:Refresh()
 
@@ -133,11 +153,19 @@ end)
 -- Bags
 -- ============================================================================
 
+--- Creates a new `BagItem` for the given `bag` and `slot`.
+--- @param bag integer
+--- @param slot integer
+--- @return BagItem? item
 function Items:GetFreshItem(bag, slot)
   EquipmentSetsCache:Refresh()
   return getItem(bag, slot)
 end
 
+--- Returns a cached `BagItem` for the given `bag` and `slot`, if available.
+--- @param bag integer
+--- @param slot integer
+--- @return BagItem? item
 function Items:GetItem(bag, slot)
   for _, item in pairs(self.cache) do
     if item.bag == bag and item.slot == slot then
@@ -146,6 +174,9 @@ function Items:GetItem(bag, slot)
   end
 end
 
+--- Creates or updates an array with all cached items.
+--- @param items? BagItem[]
+--- @return BagItem[] items
 function Items:GetItems(items)
   if type(items) ~= "table" then
     items = {}
@@ -161,14 +192,24 @@ function Items:GetItems(items)
   return items
 end
 
+--- Returns `true` if the given `bag` and `slot` does not contain an item.
+--- @param bag integer
+--- @param slot integer
+--- @return boolean
 function Items:IsBagSlotEmpty(bag, slot)
   return C_Container.GetContainerItemID(bag, slot) == nil
 end
 
+--- Returns `true` if the given `item` is still in the same bag and slot.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemStillInBags(item)
   return item.id == C_Container.GetContainerItemID(item.bag, item.slot)
 end
 
+--- Returns `true` if the given `item` is locked.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemLocked(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
   local success, isLocked = pcall(C_Item.IsLocked, self.location)
@@ -176,6 +217,9 @@ function Items:IsItemLocked(item)
   return true
 end
 
+--- Returns `true` if the given `item` is soulbound or account bound.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemBound(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
   local success, isBound = pcall(C_Item.IsBound, self.location)
@@ -183,6 +227,9 @@ function Items:IsItemBound(item)
   return false
 end
 
+--- Returns `true` if the given `item` can be treated as junk.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemJunkable(item)
   return item.quality == Enum.ItemQuality.Poor or
       item.quality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard) or
@@ -192,10 +239,16 @@ function Items:IsItemJunkable(item)
       item.quality == Enum.ItemQuality.Heirloom
 end
 
+--- Returns `true` if the given `item` can be sold.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemSellable(item)
   return not item.noValue and item.price > 0 and self:IsItemJunkable(item)
 end
 
+--- Returns `true` if the given `item` can be destroyed.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemDestroyable(item)
   if Addon.IS_RETAIL and item.classId == Enum.ItemClass.Battlepet then
     return false
@@ -204,12 +257,16 @@ function Items:IsItemDestroyable(item)
   return self:IsItemJunkable(item)
 end
 
+--- Returns `true` if the given `item` can be refunded.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemRefundable(item)
   local refundTimeRemaining = select(3, C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
   return refundTimeRemaining and refundTimeRemaining > 0
 end
 
-do -- Items:IsItemEquipment()
+-- Items:IsItemEquipment()
+do
   local invTypeExceptions = {
     ["INVTYPE_FINGER"] = true,
     ["INVTYPE_NECK"] = true,
@@ -217,6 +274,9 @@ do -- Items:IsItemEquipment()
     ["INVTYPE_HOLDABLE"] = true
   }
 
+  --- Returns `true` if the given `item` is equipment.
+  --- @param item BagItem
+  --- @return boolean
   function Items:IsItemEquipment(item)
     if not IsEquippableItem(item.link) then return false end
     if IsCosmeticItem and IsCosmeticItem(item.link) then return false end
@@ -240,11 +300,17 @@ do -- Items:IsItemEquipment()
   end
 end
 
+--- Returns `true` if the given `item` is suitable for the player's class.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemSuitable(item)
   if item.invType == "INVTYPE_CLOAK" then return true end
   return self.suitable[item.classId] and self.suitable[item.classId][item.subclassId]
 end
 
+--- Returns `true` if the given `item` is an artifact relic.
+--- @param item BagItem
+--- @return boolean
 function Items:IsItemArtifactRelic(item)
   return item.classId == Enum.ItemClass.Gem and item.subclassId == Enum.ItemGemSubclass.Artifactrelic
 end
