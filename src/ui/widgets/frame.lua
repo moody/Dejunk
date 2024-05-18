@@ -1,5 +1,5 @@
-local _, Addon = ...
-local Tooltip = Addon:GetModule("Tooltip") ---@type Tooltip
+local Addon = select(2, ...) ---@type Addon
+local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")

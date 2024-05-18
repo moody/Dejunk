@@ -1,9 +1,9 @@
-local _, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
 local Seller = Addon:GetModule("Seller")
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class ListItemParser
 local ListItemParser = Addon:GetModule("ListItemParser")

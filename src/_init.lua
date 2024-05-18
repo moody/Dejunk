@@ -1,6 +1,7 @@
 local ADDON_NAME = ... ---@type string
 
 --- @class Addon
+--- @field Wux Wux
 local Addon = select(2, ...)
 
 -- ============================================================================
@@ -43,6 +44,7 @@ do
 
   --- Returns a library based on the given `key`.
   --- @param key LibraryKey
+  --- @return table
   function Addon:GetLibrary(key)
     return libraries[key] or error("Invalid library: " .. key)
   end

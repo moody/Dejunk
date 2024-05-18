@@ -1,13 +1,15 @@
-local _, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local EventManager = Addon:GetModule("EventManager")
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
 local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
-local Items = Addon:GetModule("Items")
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local TickerManager = Addon:GetModule("TickerManager")
+
+--- @class Items
+local Items = Addon:GetModule("Items")
 
 -- Initialize cache table.
 Items.cache = {}

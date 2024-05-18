@@ -1,7 +1,7 @@
-local _, Addon = ...
-local Commands = Addon:GetModule("Commands") ---@type Commands
-local L = Addon:GetModule("Locale") ---@type Locale
-local Lists = Addon:GetModule("Lists") ---@type Lists
+local Addon = select(2, ...) ---@type Addon
+local Commands = Addon:GetModule("Commands")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 
 -- ============================================================================
 -- Binding Strings

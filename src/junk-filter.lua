@@ -1,10 +1,12 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
+local StateManager = Addon:GetModule("StateManager")
+
+--- @class JunkFilter
 local JunkFilter = Addon:GetModule("JunkFilter")
-local L = Addon:GetModule("Locale") ---@type Locale
-local Lists = Addon:GetModule("Lists") ---@type Lists
-local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================
 -- Local Functions

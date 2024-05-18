@@ -1,5 +1,7 @@
-local _, Addon = ...
-local L = Addon:GetModule("Locale") ---@class Locale
+local Addon = select(2, ...) ---@type Addon
+
+--- @class Locale
+local L = Addon:GetModule("Locale")
 
 setmetatable(L, {
   __index = function(t, k)

@@ -1,10 +1,12 @@
-local _, Addon = ...
-local Confirmer = Addon:GetModule("Confirmer")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
-local L = Addon:GetModule("Locale") ---@type Locale
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local L = Addon:GetModule("Locale")
+local TickerManager = Addon:GetModule("TickerManager")
+
+--- @class Confirmer
+local Confirmer = Addon:GetModule("Confirmer")
 
 local profit = 0
 local profitReady = false

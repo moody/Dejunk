@@ -1,10 +1,10 @@
-local _, Addon = ...
-local Actions = Addon:GetModule("Actions") ---@type Actions
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local L = Addon:GetModule("Locale") ---@type Locale
-local MinimapIcon = Addon:GetModule("MinimapIcon") ---@type MinimapIcon
+local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
+local Colors = Addon:GetModule("Colors")
+local L = Addon:GetModule("Locale")
+local MinimapIcon = Addon:GetModule("MinimapIcon")
 local Popup = Addon:GetModule("Popup")
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local StateManager = Addon:GetModule("StateManager")
 
 --- @class MainWindowOptions
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")

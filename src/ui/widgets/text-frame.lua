@@ -1,5 +1,5 @@
-local _, Addon = ...
-local L = Addon:GetModule("Locale") ---@type Locale
+local Addon = select(2, ...) ---@type Addon
+local L = Addon:GetModule("Locale")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")

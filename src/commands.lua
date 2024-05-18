@@ -1,13 +1,13 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Destroyer = Addon:GetModule("Destroyer")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local JunkFrame = Addon:GetModule("JunkFrame")
-local L = Addon:GetModule("Locale") ---@type Locale
-local Lists = Addon:GetModule("Lists") ---@type Lists
+local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 local Looter = Addon:GetModule("Looter")
-local MainWindow = Addon:GetModule("MainWindow") ---@type MainWindow
+local MainWindow = Addon:GetModule("MainWindow")
 local Seller = Addon:GetModule("Seller")
 local TransportFrame = Addon:GetModule("TransportFrame")
 

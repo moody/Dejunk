@@ -1,16 +1,17 @@
-local ADDON_NAME, Addon = ...
-local Actions = Addon:GetModule("Actions") ---@type Actions
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
+local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
-local L = Addon:GetModule("Locale") ---@type Locale
-local LDB = Addon:GetLibrary("LDB")
-local LDBIcon = Addon:GetLibrary("LDBIcon")
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local L = Addon:GetModule("Locale")
+local LDB = Addon:GetLibrary("LDB") ---@type LibDataBroker-1.1
+local LDBIcon = Addon:GetLibrary("LDBIcon") ---@type LibDBIcon-1.0
+local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 
----@class MinimapIcon
+--- @class MinimapIcon
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 
 local function addDoubleLine(tooltip, leftLine, rightLine)
@@ -75,7 +76,7 @@ EventManager:Once(E.StoreCreated, function()
 
   -- Listen for the `StateUpdated` event and refresh the icon.
   EventManager:On(E.StateUpdated, function()
-    LDBIcon:Refresh(ADDON_NAME)
+    LDBIcon:Refresh(ADDON_NAME, db)
   end)
 
   --- Returns true if the minimap icon is visible.

@@ -1,5 +1,5 @@
-local _, Addon = ...
-local Wux = Addon.Wux ---@type Wux
+local Addon = select(2, ...) ---@type Addon
+local Wux = Addon.Wux
 
 --- @class Reducers
 local Reducers = Addon:GetModule("Reducers")

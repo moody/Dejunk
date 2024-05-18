@@ -1,4 +1,6 @@
-local _, Addon = ...
+local Addon = select(2, ...) ---@type Addon
+
+--- @class EquipmentSetsCache
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 
 local cache = {}

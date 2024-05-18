@@ -1,8 +1,8 @@
-local _, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
-local Reducers = Addon:GetModule("Reducers") ---@type Reducers
-local Wux = Addon.Wux ---@type Wux
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Reducers = Addon:GetModule("Reducers")
+local Wux = Addon.Wux
 
 ---@class StateManager
 local StateManager = Addon:GetModule("StateManager")

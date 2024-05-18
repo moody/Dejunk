@@ -1,6 +1,6 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")

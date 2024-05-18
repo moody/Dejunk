@@ -1,9 +1,9 @@
-local _, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local StateManager = Addon:GetModule("StateManager")
 
 --- @type DejunkApiListener[]
 local listeners = {}

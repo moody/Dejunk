@@ -1,5 +1,7 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@class Colors
+local Addon = select(2, ...) ---@type Addon
+
+--- @class Colors
+local Colors = Addon:GetModule("Colors")
 
 -- =============================================================================
 -- Local Functions
@@ -43,6 +45,7 @@ local function createColor(hex)
     return ("%.2x%.2x%.2x%.2x"):format(alpha, color:GetRGBAsBytes())
   end
 
+  --- @cast wrapper Color
   return wrapper
 end
 

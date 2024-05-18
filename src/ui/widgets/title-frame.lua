@@ -1,5 +1,6 @@
-local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
