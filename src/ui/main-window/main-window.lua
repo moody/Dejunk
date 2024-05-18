@@ -2,7 +2,7 @@ local ADDON_NAME, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale") ---@type Locale
-local Lists = Addon:GetModule("Lists")
+local Lists = Addon:GetModule("Lists") ---@type Lists
 local MainWindowOptions = Addon:GetModule("MainWindowOptions") ---@type MainWindowOptions
 local Widgets = Addon:GetModule("Widgets") ---@type Widgets
 

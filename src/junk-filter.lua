@@ -3,7 +3,7 @@ local Colors = Addon:GetModule("Colors") ---@type Colors
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale") ---@type Locale
-local Lists = Addon:GetModule("Lists")
+local Lists = Addon:GetModule("Lists") ---@type Lists
 local StateManager = Addon:GetModule("StateManager") --- @type StateManager
 
 -- ============================================================================

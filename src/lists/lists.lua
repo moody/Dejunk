@@ -6,8 +6,30 @@ local EventManager = Addon:GetModule("EventManager") ---@type EventManager
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale") ---@type Locale
 local ListItemParser = Addon:GetModule("ListItemParser") ---@type ListItemParser
-local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+
+--- @class Lists
+local Lists = Addon:GetModule("Lists")
+
+-- ============================================================================
+-- LuaCATS Annotations
+-- ============================================================================
+
+--- @alias ListItemIds table<string, boolean>
+--- @alias ListKey "GlobalInclusions" | "GlobalExclusions" | "PerCharInclusions" | "PerCharExclusions"
+
+--- @class ListData
+--- @field name string
+--- @field description string
+--- @field protected load fun(): ListItemIds
+--- @field protected save fun(itemIds: ListItemIds): nil
+--- @field protected getSibling fun(): List
+--- @field protected getOpposite fun(): List
+
+--- @class List : ListData
+--- @field private items table
+--- @field private itemIds table
+--- @field private searchItems table
 
 -- ============================================================================
 -- Local Functions
@@ -21,20 +43,30 @@ end
 -- Mixins
 -- ============================================================================
 
+--- @class List
 local Mixins = {}
 
+--- Returns the list's sibling.
+--- For example: if `GlobalInclusions`, returns `PerCharInclusions`.
 function Mixins:GetSibling()
   return self.getSibling()
 end
 
+--- Returns the list's opposite.
+--- For example: if `GlobalInclusions`, returns `GlobalExclusions`.
 function Mixins:GetOpposite()
   return self.getOpposite()
 end
 
+--- Returns `true` if the list contains the given `itemId`.
+--- @param itemId string|number
+--- @return boolean
 function Mixins:Contains(itemId)
   return self.itemIds[tostring(itemId)] == true
 end
 
+--- Attempts to add the given `itemId` to the list.
+--- @param itemId string|number
 function Mixins:Add(itemId)
   itemId = tostring(itemId)
 
@@ -48,6 +80,8 @@ function Mixins:Add(itemId)
   end
 end
 
+--- Attempts to remove the given `itemId` from the list.
+---@param itemId string|number
 function Mixins:Remove(itemId)
   itemId = tostring(itemId)
 
@@ -67,6 +101,9 @@ function Mixins:Remove(itemId)
   end
 end
 
+--- Returns the list's item array index for the given `itemId`, or `-1` if not found.
+--- @param itemId string|number
+--- @return integer index
 function Mixins:GetIndex(itemId)
   itemId = tostring(itemId)
 
@@ -79,6 +116,7 @@ function Mixins:GetIndex(itemId)
   return -1
 end
 
+--- Removes all items from the list.
 function Mixins:RemoveAll()
   if #self.items > 0 or next(self.itemIds) then
     for k in pairs(self.items) do self.items[k] = nil end
@@ -90,11 +128,13 @@ function Mixins:RemoveAll()
   end
 end
 
+--- Returns the list's items.
+---@return table items
 function Mixins:GetItems()
   return self.items
 end
 
---- Returns the list's items filtered by name using the given string.
+--- Returns the list's items filtered by name using the given `searchText`.
 --- @param searchText string
 --- @return table searchItems
 function Mixins:GetSearchItems(searchText)
@@ -161,7 +201,10 @@ end)
 -- ============================================================================
 
 do -- Create the lists.
+  ---@param data ListData
+  ---@return List list
   local function createList(data)
+    --- @class List
     local list = data
     list.items = {}
     list.itemIds = {}
@@ -218,6 +261,15 @@ do -- Lists:Iterate()
     [Lists.GlobalExclusions] = true,
     [Lists.PerCharExclusions] = true
   }
+
+  --- Provides an iterator for the lists. Usage:
+  --- ```
+  --- for list in Lists:Iterate() do
+  ---   -- Do stuff.
+  --- end
+  --- ```
+  --- @return function next
+  --- @return table<List, boolean> lists
   function Lists:Iterate()
     return next, lists
   end
