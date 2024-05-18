@@ -1,20 +1,22 @@
 local _, Addon = ...
 local L = Addon:GetModule("Locale") ---@type Locale
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a ScrollableTitleFrame with an edit box.
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    titleText = string,
-    descriptionText = string
-  }
-]]
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
+
+--- @class TextFrameWidgetOptions : ScrollableTitleFrameWidgetOptions
+
+-- =============================================================================
+-- Widgets - Text Frame
+-- =============================================================================
+
+--- Creates a `ScrollableTitleFrame` with a multiline edit box.
+--- @param options TextFrameWidgetOptions
+--- @return TextFrameWidget frame
 function Widgets:TextFrame(options)
   -- Defaults.
   options.titleTemplate = nil
@@ -28,9 +30,10 @@ function Widgets:TextFrame(options)
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CLEAR)
   end
 
-  -- Base frame.
+  --- @class TextFrameWidget : ScrollableTitleFrameWidget
   local frame = Widgets:ScrollableTitleFrame(options)
 
+  -- Title button.
   frame.titleButton:SetScript("OnClick", function(_, button)
     -- Select all.
     if button == "LeftButton" then

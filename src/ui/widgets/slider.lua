@@ -1,20 +1,24 @@
 local _, Addon = ...
 local Colors = Addon:GetModule("Colors") ---@type Colors
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
 
---[[
-  Creates a basic slider.
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
-  options = {
-    name? = string,
-    parent? = UIObject,
-    points? = table[],
-    width? = number,
-    height? = number,
-    orientation? = "VERTICAL" | "HORIZONTAL",
-    valueStep? = number
-  }
-]]
+-- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
+
+--- @class SliderWidgetOptions : FrameWidgetOptions
+--- @field orientation? "VERTICAL" | "HORIZONTAL"
+--- @field valueStep? number
+
+-- =============================================================================
+-- Widgets - Slider
+-- =============================================================================
+
+--- Creates a basic slider.
+--- @param options SliderWidgetOptions
+--- @return SliderWidget frame
 function Widgets:Slider(options)
   -- Defaults.
   options.frameType = "Slider"
@@ -23,7 +27,7 @@ function Widgets:Slider(options)
   options.orientation = Addon:IfNil(options.orientation, "VERTICAL")
   options.valueStep = Addon:IfNil(options.valueStep, 1)
 
-  -- Base frame.
+  --- @class SliderWidget : FrameWidget, Slider
   local frame = self:Frame(options)
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
   frame:SetBackdropBorderColor(Colors.DarkGrey:GetRGBA(0.5))
