@@ -1,6 +1,6 @@
-local _, Addon = ...
+local Addon = select(2, ...) ---@type Addon
 local Commands = Addon:GetModule("Commands")
-local L = Addon:GetModule("Locale") ---@type Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 
 -- ============================================================================
@@ -42,6 +42,10 @@ DejunkBindings_StartSelling = Commands.sell
 DejunkBindings_DestroyNextItem = Commands.destroy
 DejunkBindings_OpenLootables = Commands.loot
 
+--- Adds an item to a list. If `itemId` is not given, then
+--- an attempt will be made to retrieve it from the `GameTooltip`.
+--- @param listKey ListKey
+--- @param itemId? string|number
 function DejunkBindings_AddToList(listKey, itemId)
   if not itemId then
     local name, link = GameTooltip:GetItem()
@@ -51,6 +55,10 @@ function DejunkBindings_AddToList(listKey, itemId)
   if itemId then Lists[listKey]:Add(itemId) end
 end
 
+--- Removes an item from a list. If `itemId` is not given, then
+--- an attempt will be made to retrieve it from the `GameTooltip`.
+--- @param listKey ListKey
+--- @param itemId? string|number
 function DejunkBindings_RemoveFromList(listKey, itemId)
   if not itemId then
     local name, link = GameTooltip:GetItem()

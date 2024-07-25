@@ -1,17 +1,20 @@
-local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local Destroyer = Addon:GetModule("Destroyer")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
-local JunkFrame = Addon:GetModule("JunkFrame")
-local L = Addon:GetModule("Locale") ---@type Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
-local Widgets = Addon:GetModule("Widgets") ---@type Widgets
+local StateManager = Addon:GetModule("StateManager")
+local Widgets = Addon:GetModule("Widgets")
+
+--- @class JunkFrame
+local JunkFrame = Addon:GetModule("JunkFrame")
 
 -- ============================================================================
 -- Events
@@ -62,6 +65,7 @@ end
 
 -- Create frame.
 JunkFrame.frame = (function()
+  --- @class JunkFrameWidget : WindowWidget
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_JunkFrame",
     width = 325,
@@ -75,8 +79,8 @@ JunkFrame.frame = (function()
     name = "$parent_StartSellingButton",
     parent = frame,
     points = {
-      { "BOTTOMLEFT",  frame, Widgets:Padding(), Widgets:Padding() },
-      { "BOTTOMRIGHT", frame, "BOTTOM",          -Widgets:Padding(0.25), Widgets:Padding() }
+      { "BOTTOMLEFT", frame, Widgets:Padding(), Widgets:Padding() },
+      { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
     },
     labelColor = Colors.Yellow,
     labelText = L.START_SELLING,
@@ -88,7 +92,7 @@ JunkFrame.frame = (function()
     name = "$parent_DestroyNextItemButton",
     parent = frame,
     points = {
-      { "BOTTOMLEFT",  frame, "BOTTOM",           Widgets:Padding(0.25), Widgets:Padding() },
+      { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() },
       { "BOTTOMRIGHT", frame, -Widgets:Padding(), Widgets:Padding() }
     },
     labelColor = Colors.Red,

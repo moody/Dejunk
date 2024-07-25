@@ -1,9 +1,10 @@
-local ADDON_NAME, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local JunkFilter = Addon:GetModule("JunkFilter")
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class ItemIcons
 --- @field total integer

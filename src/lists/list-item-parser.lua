@@ -1,10 +1,12 @@
-local _, Addon = ...
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
-local ListItemParser = Addon:GetModule("ListItemParser")
 local Seller = Addon:GetModule("Seller")
-local TickerManager = Addon:GetModule("TickerManager") ---@type TickerManager
+local TickerManager = Addon:GetModule("TickerManager")
+
+--- @class ListItemParser
+local ListItemParser = Addon:GetModule("ListItemParser")
 
 local PARSE_DELAY_SECONDS = 0.1
 
@@ -26,38 +28,38 @@ local PARSING_OPTIONS = {
 
 --- Queue of item IDs to be parsed for lists where the item IDs are
 --- not yet saved in SavedVariables.
---- @type table<table, table<string, boolean|nil>>
+--- @type table<List, ListItemIds>
 local newListItemQueue = {}
 
 --- Queue of item IDs to be parsed for lists where the item IDs are
 --- already saved in SavedVariables.
---- @type table<table, table<string, boolean|nil>>
+--- @type table<List, ListItemIds>
 local existingListItemQueue = {}
 
 --- Parse attempts by list for each queued item ID.
---- @type table<table, table<string, number|nil>>
+--- @type table<List, table<string, number>>
 local listParseAttempts = {}
 
 --- Cache for items that have been successfully parsed.
---- @type table<string, table>
+--- @type table<string, ListItem>
 local itemCache = {}
 
 -- ============================================================================
 -- Functions
 -- ============================================================================
 
---- Initiates parsing for the given list and item ID,
+--- Initiates parsing for the given `list` and `itemId`,
 --- specifically for item IDs that are not yet part of saved variables.
---- @param list table
+--- @param list List
 --- @param itemId string|number
 function ListItemParser:Parse(list, itemId)
   if not newListItemQueue[list] then newListItemQueue[list] = {} end
   newListItemQueue[list][tostring(itemId)] = true
 end
 
---- Initiates parsing for the given list and item ID,
+--- Initiates parsing for the given `list` and `itemId`,
 --- specifically for item IDs that are already part of saved variables.
---- @param list table
+--- @param list List
 --- @param itemId string|number
 function ListItemParser:ParseExisting(list, itemId)
   if not existingListItemQueue[list] then existingListItemQueue[list] = {} end
@@ -82,13 +84,14 @@ end
 -- Local Functions
 -- ============================================================================
 
---- Attempts to retrieve item data for the given item ID.
+--- Attempts to retrieve item data for the given `itemId`.
 --- @param itemId string
---- @return table|nil
+--- @return ListItem? item
 local function getItemById(itemId)
   if not itemCache[itemId] then
     local name, link, quality, _, _, _, _, _, _, texture, price, classId = GetItemInfo(itemId)
     if type(link) == "string" then
+      --- @class ListItem
       itemCache[itemId] = {
         id = itemId,
         name = name,
@@ -104,8 +107,8 @@ local function getItemById(itemId)
   return itemCache[itemId]
 end
 
---- Increments and returns the number of parse attempts for the given list and item ID.
---- @param list table
+--- Increments and returns the number of parse attempts for the given `list` and `itemId`.
+--- @param list List
 --- @param itemId string
 --- @return number parseAttempts
 local function incrementParseAttempts(list, itemId)
@@ -115,16 +118,16 @@ local function incrementParseAttempts(list, itemId)
   return parseAttempts
 end
 
---- Resets the number of parse attempts for the given list and item ID.
---- @param list table
+--- Resets the number of parse attempts for the given `list` and `itemId`.
+--- @param list List
 --- @param itemId string
 local function resetParseAttempts(list, itemId)
   if not listParseAttempts[list] then listParseAttempts[list] = {} end
   listParseAttempts[list][itemId] = nil
 end
 
---- Return `true` if there are no more item IDs for the given list to be parsed.
---- @param list table
+--- Return `true` if there are no more item IDs for the given `list` to be parsed.
+--- @param list List
 --- @return boolean
 local function isListParsingComplete(list)
   if newListItemQueue[list] and next(newListItemQueue[list]) then
@@ -139,8 +142,8 @@ local function isListParsingComplete(list)
 end
 
 --- Attempts to parse items for a list.
---- @param list table
---- @param itemIds table<string, boolean|nil>
+--- @param list List
+--- @param itemIds ListItemIds
 --- @param options ParsingOptions
 local function parse(list, itemIds, options)
   if not next(itemIds) then return end

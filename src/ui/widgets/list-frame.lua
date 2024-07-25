@@ -1,15 +1,17 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local L = Addon:GetModule("Locale") ---@type Locale
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
+local L = Addon:GetModule("Locale")
 local TransportFrame = Addon:GetModule("TransportFrame")
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
 
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
---- @field list table
+--- @field list List
 --- @field getListSearchState fun(): ListSearchState
 
 -- =============================================================================
@@ -81,8 +83,8 @@ function Widgets:ListFrame(options)
     return options.list:RemoveAll()
   end
 
-  -- Base frame.
-  local frame = self:ItemsFrame(options) ---@class ListFrameWidget : ItemsFrameWidget
+  --- @class ListFrameWidget : ItemsFrameWidget
+  local frame = self:ItemsFrame(options)
   frame.title:SetJustifyH("LEFT")
 
   -- Transport button.

@@ -1,5 +1,7 @@
-local _, Addon = ...
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+local Addon = select(2, ...) ---@type Addon
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 Widgets.BORDER_BACKDROP = {
   bgFile = "Interface\\Buttons\\WHITE8x8",

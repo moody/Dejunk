@@ -1,6 +1,9 @@
-local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -34,8 +37,8 @@ function Widgets:TitleFrame(options)
   local onUpdateTooltip = options.onUpdateTooltip
   options.onUpdateTooltip = nil
 
-  -- Base frame.
-  local frame = self:Frame(options) ---@class TitleFrameWidget : FrameWidget
+  --- @class TitleFrameWidget : FrameWidget
+  local frame = self:Frame(options)
 
   -- Title button.
   frame.titleButton = self:Frame({
@@ -72,8 +75,8 @@ function Widgets:TitleFrameIconButton(options)
   -- Defaults.
   options.frameType = "Button"
 
-  -- Base frame.
-  local frame = self:Frame(options) ---@class TitleFrameIconButtonWidget : FrameWidget
+  --- @class TitleFrameIconButtonWidget : FrameWidget, Button
+  local frame = self:Frame(options)
   frame:SetBackdropColor(0, 0, 0, 0)
   frame:SetBackdropBorderColor(0, 0, 0, 0)
   frame:SetWidth(options.textureSize + self:Padding(4))

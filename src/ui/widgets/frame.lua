@@ -1,6 +1,8 @@
-local _, Addon = ...
-local Tooltip = Addon:GetModule("Tooltip") ---@type Tooltip
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+local Addon = select(2, ...) ---@type Addon
+local Tooltip = Addon:GetModule("Tooltip")
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -29,8 +31,8 @@ function Widgets:Frame(options)
   options.width = Addon:IfNil(options.width, 1)
   options.height = Addon:IfNil(options.height, 1)
 
-  -- Base frame.
-  local frame = CreateFrame(options.frameType, options.name, options.parent) ---@class FrameWidget
+  --- @class FrameWidget : Frame, BackdropTemplate
+  local frame = CreateFrame(options.frameType, options.name, options.parent)
   frame:SetClipsChildren(true)
 
   -- Backdrop.

@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.4] - 2024-07-25
+
+### Changed
+
+- Command: `/dejunk` - Toggle the options frame
+- Command: `/dejunk help` - Display a list of commands
+
 ## [1.10.3] - 2024-05-16
 
 ### Changed

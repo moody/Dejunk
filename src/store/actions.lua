@@ -1,5 +1,5 @@
-local _, Addon = ...
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local Addon = select(2, ...) ---@type Addon
+local StateManager = Addon:GetModule("StateManager")
 
 --- @class Actions
 local Actions = Addon:GetModule("Actions")

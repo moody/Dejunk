@@ -1,10 +1,11 @@
-local ADDON_NAME, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
+local ADDON_NAME = ... ---@type string
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
-local L = Addon:GetModule("Locale") ---@type Locale
-local StateManager = Addon:GetModule("StateManager") ---@type StateManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local L = Addon:GetModule("Locale")
+local StateManager = Addon:GetModule("StateManager")
 local Tooltip = Addon:GetModule("Tooltip")
 
 EventManager:Once(E.Wow.MerchantShow, function()

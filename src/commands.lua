@@ -1,21 +1,24 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local Commands = Addon:GetModule("Commands")
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Destroyer = Addon:GetModule("Destroyer")
-local E = Addon:GetModule("Events") ---@type Events
-local EventManager = Addon:GetModule("EventManager") ---@type EventManager
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local JunkFrame = Addon:GetModule("JunkFrame")
-local L = Addon:GetModule("Locale") ---@type Locale
+local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local Looter = Addon:GetModule("Looter")
-local MainWindow = Addon:GetModule("MainWindow") ---@type MainWindow
+local MainWindow = Addon:GetModule("MainWindow")
 local Seller = Addon:GetModule("Seller")
 local TransportFrame = Addon:GetModule("TransportFrame")
+
+--- @class Commands
+local Commands = Addon:GetModule("Commands")
 
 -- ============================================================================
 -- Events
 -- ============================================================================
 
+-- Register the `/dejunk` slash command on login.
 EventManager:Once(E.Wow.PlayerLogin, function()
   SLASH_DEJUNK1 = "/dejunk"
   SlashCmdList.DEJUNK = function(msg)
@@ -26,7 +29,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     for arg in msg:gmatch("%S+") do args[#args + 1] = strlower(arg) end
 
     -- First arg is command name.
-    local key = table.remove(args, 1)
+    local key = table.remove(args, 1) or "options"
     key = type(Commands[key]) == "function" and key or "help"
     Commands[key](SafeUnpack(args))
   end
@@ -36,44 +39,53 @@ end)
 -- Commands
 -- ============================================================================
 
+--- Prints a list of commands.
 function Commands.help()
   Addon:ForcePrint(L.COMMANDS .. ":")
-  Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_HELP)
-  Addon:ForcePrint(Colors.Gold("  /dejunk keybinds"), "-", L.COMMAND_DESCRIPTION_KEYBINDS)
-  Addon:ForcePrint(Colors.Gold("  /dejunk options"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
+  Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
+
+  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
+  Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
+  Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
+
   Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
-  Addon:ForcePrint(
-    Colors.Gold("  /dejunk transport"),
+  Addon:ForcePrint(Colors.Gold("  /dejunk keybinds"), "-", L.COMMAND_DESCRIPTION_KEYBINDS)
+  Addon:ForcePrint(Colors.Gold("  /dejunk transport"),
     Colors.Grey(("{%s||%s}"):format(Colors.Gold("inclusions"), Colors.Gold("exclusions"))),
     Colors.Grey(("{%s||%s}"):format(Colors.Gold("global"), Colors.Gold("character"))),
     "-",
     L.COMMAND_DESCRIPTION_TRANSPORT
   )
-  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
-  Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
-  Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
+
+  Addon:ForcePrint(Colors.Gold("  /dejunk help"), "-", L.COMMAND_DESCRIPTION_HELP)
 end
 
+--- Toggles the `MainWindow`.
 function Commands.options()
   MainWindow:Toggle()
 end
 
+--- Toggles the `JunkFrame`.
 function Commands.junk()
   JunkFrame:Toggle()
 end
 
+--- Starts the `Seller`.
 function Commands.sell()
   Seller:Start()
 end
 
+--- Starts the `Destroyer`.
 function Commands.destroy()
   Destroyer:Start()
 end
 
+--- Starts the `Looter`.
 function Commands.loot()
   Looter:Start()
 end
 
+--- Opens the game's settings window for keybindings.
 function Commands.keybinds()
   CloseMenus()
   CloseAllWindows()
@@ -83,6 +95,9 @@ function Commands.keybinds()
   Settings.OpenToCategory(keybindingsCategoryId)
 end
 
+--- Toggles the `TransportFrame` based on the given `listName` and `listType`.
+--- @param listName "inclusions" | "exclusions"
+---@param listType "global" | "perchar"
 function Commands.transport(listName, listType)
   local list = nil
   if listName == "inclusions" then list = listType == "global" and Lists.GlobalInclusions or Lists.PerCharInclusions end

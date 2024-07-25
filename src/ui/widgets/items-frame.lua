@@ -1,7 +1,9 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local L = Addon:GetModule("Locale") ---@type Locale
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
+local L = Addon:GetModule("Locale")
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -35,8 +37,8 @@ function Widgets:ItemsFrame(options)
   options.titleJustify = "CENTER"
   options.numButtons = Addon:IfNil(options.numButtons, 7)
 
-  -- Base frame.
-  local frame = self:TitleFrame(options) ---@class ItemsFrameWidget : TitleFrameWidget
+  --- @class ItemsFrameWidget : TitleFrameWidget
+  local frame = self:TitleFrame(options)
   frame.buttons = {}
 
   frame.titleButton:SetScript("OnClick", function(_, button)
@@ -50,8 +52,8 @@ function Widgets:ItemsFrame(options)
     name = "$parent_Slider",
     parent = frame,
     points = {
-      { "TOPRIGHT",    frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
-      { "BOTTOMRIGHT", frame,             "BOTTOMRIGHT", -SPACING, SPACING }
+      { "TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING },
+      { "BOTTOMRIGHT", frame, "BOTTOMRIGHT", -SPACING, SPACING }
     }
   })
 
@@ -151,8 +153,8 @@ function Widgets:ItemButton(options)
     tooltip:SetHyperlink(self.item.link)
   end)
 
-  -- Base frame.
-  local frame = self:Frame(options) ---@class ItemButtonWidget : FrameWidget
+  --- @class ItemButtonWidget : FrameWidget, Button
+  local frame = self:Frame(options)
   frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))

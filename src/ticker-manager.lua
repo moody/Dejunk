@@ -1,5 +1,7 @@
-local _, Addon = ...
-local TickerManager = Addon:GetModule("TickerManager") ---@class TickerManager
+local Addon = select(2, ...) ---@type Addon
+
+--- @class TickerManager
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Ticker
 --- @field protected callback function
@@ -8,10 +10,6 @@ local TickerManager = Addon:GetModule("TickerManager") ---@class TickerManager
 --- @field protected ticks number
 --- @field protected timePerTick number
 --- @field protected timer number
---- @field Restart fun(self: Ticker)
---- @field Cancel fun(self: Ticker)
---- @field IsCancelled fun(self: Ticker): boolean
---- @field OnUpdate fun(self: Ticker, elapsed: number)
 
 --- @type table<Ticker, boolean>
 local activeTickers = {}
@@ -28,7 +26,7 @@ end)
 -- Mixins
 -- ============================================================================
 
---- @class TickerMixins : Ticker
+--- @class Ticker
 local TickerMixins = {}
 
 --- Reactivates the ticker and resets its timer and tick count.

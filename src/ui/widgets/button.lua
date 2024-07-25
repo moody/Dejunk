@@ -1,6 +1,8 @@
-local _, Addon = ...
-local Colors = Addon:GetModule("Colors") ---@type Colors
-local Widgets = Addon:GetModule("Widgets") ---@class Widgets
+local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
+
+--- @class Widgets
+local Widgets = Addon:GetModule("Widgets")
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -23,8 +25,8 @@ function Widgets:Button(options)
   options.frameType = "Button"
   options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
 
-  -- Base frame.
-  local frame = self:Frame(options) ---@class ButtonWidget : FrameWidget
+  ---@class ButtonWidget : FrameWidget, Button
+  local frame = self:Frame(options)
   frame.onClick = options.onClick
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
   frame:SetBackdropBorderColor(0, 0, 0, 1)
