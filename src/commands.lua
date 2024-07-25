@@ -29,8 +29,8 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     for arg in msg:gmatch("%S+") do args[#args + 1] = strlower(arg) end
 
     -- First arg is command name.
-    local key = table.remove(args, 1)
-    key = type(Commands[key]) == "function" and key or "options"
+    local key = table.remove(args, 1) or "options"
+    key = type(Commands[key]) == "function" and key or "help"
     Commands[key](SafeUnpack(args))
   end
 end)
