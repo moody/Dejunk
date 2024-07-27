@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- TOC version for classic
+- Item icons on retail ([#219](https://github.com/moody/Dejunk/issues/219))
+
 ## [1.10.4] - 2024-07-25
 
 ### Changed
