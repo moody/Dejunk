@@ -1,11 +1,12 @@
 # Changelog
 
-## [Unreleased]
+## [1.10.5] - 2024-07-26
 
 ### Fixed
 
 - TOC version for classic
 - Item icons on retail ([#219](https://github.com/moody/Dejunk/issues/219))
+- Increased looter interval ([#212](https://github.com/moody/Dejunk/issues/212))
 
 ## [1.10.4] - 2024-07-25
 
