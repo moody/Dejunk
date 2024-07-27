@@ -102,6 +102,9 @@ EventManager:Once(E.StoreCreated, function()
 
   EventManager:On(E.StateUpdated, refreshIcons)
   EventManager:On(E.Wow.InventorySearchUpdate, refreshIcons)
+
+  EventRegistry:RegisterCallback("ContainerFrame.OpenBag", debounce)
+  EventRegistry:RegisterCallback("ContainerFrame.OpenAllBags", debounce)
 end)
 
 -- ============================================================================
@@ -141,6 +144,16 @@ addPlugin({
     return _G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""
   end,
   getBagSlotFrame = function(bag, slot)
+    if Addon.IS_RETAIL then
+      local containerFrame = _G["ContainerFrame" .. bag + 1]
+      for _, itemFrame in containerFrame:EnumerateItems() do
+        local itemSlot, itemBag = itemFrame:GetSlotAndBagID()
+        if bag == itemBag and slot == itemSlot then
+          return itemFrame
+        end
+      end
+    end
+
     local containerBag = bag + 1
     local containerSlot = C_Container.GetContainerNumSlots(bag) - slot + 1
     return _G[("ContainerFrame%sItem%s"):format(containerBag, containerSlot)]
