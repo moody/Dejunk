@@ -72,7 +72,7 @@ function Looter:Start()
 
   -- Start ticker.
   self.autoLootDefault = GetCVar("autoLootDefault")
-  self.ticker = TickerManager:NewTicker(Addon:GetLatency(1), tickerCallback)
+  self.ticker = TickerManager:NewTicker(Addon:GetLatency(1.8), tickerCallback)
   self:OnCallback()
 end
 
