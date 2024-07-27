@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.10.6] - 2024-07-27
+
+### Fixed
+
+- Item icons when using combined bags in retail ([#219](https://github.com/moody/Dejunk/issues/219))
+
 ## [1.10.5] - 2024-07-26
 
 ### Fixed
