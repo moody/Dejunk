@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Performance issues when loading large lists ([#222](https://github.com/moody/Dejunk/issues/222))
+
 ## [1.10.6] - 2024-07-27
 
 ### Fixed
