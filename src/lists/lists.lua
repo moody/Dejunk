@@ -92,12 +92,13 @@ function Mixins:Add(itemId)
   itemId = tostring(itemId)
 
   if self:Contains(itemId) then
-    local index = self:GetIndex(itemId)
-    if index ~= -1 then
-      Addon:Print(L.ITEM_ALREADY_ON_LIST:format(self.items[index].link, self.name))
+    local item = ListItemParser:GetParsedItem(itemId)
+    if item then
+      Addon:Print(L.ITEM_ALREADY_ON_LIST:format(item.link, self.name))
     end
   else
     ListItemParser:Parse(self, itemId)
+    ListItemParser:CancelParse(self.getOpposite(), itemId)
   end
 end
 
@@ -145,6 +146,8 @@ end
 --- Removes all items from the list.
 function Mixins:RemoveAll()
   if #self.items > 0 or next(self.itemIds) then
+    ListItemParser:StopParsing(self)
+
     for k in pairs(self.items) do self.items[k] = nil end
     for k in pairs(self.itemIds) do self.itemIds[k] = nil end
 

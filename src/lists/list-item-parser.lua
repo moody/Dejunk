@@ -74,6 +74,24 @@ function ListItemParser:ParseExisting(list, itemId)
   existingListItemQueue[list][tostring(itemId)] = true
 end
 
+--- Cancels parsing for the given `list` and `itemId`.
+--- @param list List
+--- @param itemId string|number
+function ListItemParser:CancelParse(list, itemId)
+  itemId = tostring(itemId)
+  if newListItemQueue[list] then newListItemQueue[list][itemId] = nil end
+  if existingListItemQueue[list] then existingListItemQueue[list][itemId] = nil end
+  if listParseAttempts[list] then listParseAttempts[list][itemId] = nil end
+end
+
+--- Stops all parsing for the given `list`.
+--- @param list List
+function ListItemParser:StopParsing(list)
+  newListItemQueue[list] = {}
+  existingListItemQueue[list] = {}
+  listParseAttempts[list] = {}
+end
+
 --- Returns `true` if any item IDs are currently queued for parsing.
 --- @return boolean
 function ListItemParser:IsBusy()
