@@ -7,6 +7,7 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Lists
 local Lists = Addon:GetModule("Lists")
@@ -37,6 +38,26 @@ local Lists = Addon:GetModule("Lists")
 
 local function compareByQuality(a, b)
   return a.quality == b.quality and a.name < b.name or a.quality < b.quality
+end
+
+--- Returns the sorted insertion index for an item.
+--- @param items ListItem[]
+--- @param item ListItem
+--- @return integer index
+local function getSortedIndex(items, item)
+  local low, high = 1, #items
+
+  while low <= high do
+    local mid = math.floor((low + high) / 2)
+
+    if compareByQuality(items[mid], item) then
+      low = mid + 1
+    else
+      high = mid - 1
+    end
+  end
+
+  return low
 end
 
 -- ============================================================================
@@ -107,9 +128,14 @@ end
 function Mixins:GetIndex(itemId)
   itemId = tostring(itemId)
 
-  for i, item in ipairs(self.items) do
-    if tostring(item.id) == itemId then
-      return i
+  local item = ListItemParser:GetParsedItem(itemId)
+  if item then
+    local index = getSortedIndex(self.items, item)
+    while (index >= 1 and index <= #self.items) and self.items[index].name == item.name do
+      if tostring(self.items[index].id) == itemId then
+        return index
+      end
+      index = index + 1
     end
   end
 
@@ -157,6 +183,12 @@ end
 -- Listen for `StoreCreated` to initialize lists with existing data.
 EventManager:Once(E.StoreCreated, function()
   for list in Lists:Iterate() do
+    local _save = list.save
+    list.save = TickerManager:NewDebouncer(0.1, function()
+      Addon:Debug(list.name, "saved.")
+      _save(list.itemIds)
+    end)
+
     for itemId in pairs(list.load()) do
       ListItemParser:ParseExisting(list, itemId)
     end
@@ -168,7 +200,8 @@ end)
 EventManager:On(E.ListItemParsed, function(list, item, silent)
   if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
     -- Add item.
-    list.items[#list.items + 1] = item
+    local index = getSortedIndex(list.items, item)
+    table.insert(list.items, index, item)
     list.itemIds[tostring(item.id)] = true
     -- Remove from opposite list.
     local opposite = list:GetOpposite()
@@ -190,10 +223,9 @@ EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
   if not silent then Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId))) end
 end)
 
--- Listen for `ListParsingComplete` to save and sort the list after parsing.
+-- Listen for `ListParsingComplete` to save the list after parsing.
 EventManager:On(E.ListParsingComplete, function(list)
   list.save(list.itemIds)
-  table.sort(list.items, compareByQuality)
 end)
 
 -- ============================================================================

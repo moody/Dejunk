@@ -49,6 +49,13 @@ local itemCache = {}
 -- Functions
 -- ============================================================================
 
+--- Returns a parsed item from the cache, if it exists.
+--- @param itemId string|number
+--- @return ListItem?
+function ListItemParser:GetParsedItem(itemId)
+  return itemCache[tostring(itemId)]
+end
+
 --- Initiates parsing for the given `list` and `itemId`,
 --- specifically for item IDs that are not yet part of saved variables.
 --- @param list List
