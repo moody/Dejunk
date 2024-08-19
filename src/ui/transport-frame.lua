@@ -70,7 +70,7 @@ TransportFrame.frame = (function()
       for itemId in editBox:GetText():gmatch("%d+") do
         itemId = tonumber(itemId)
         if itemId and itemId > 0 and itemId <= 2147483647 then
-          frame.list:Add(itemId)
+          frame.list:Add(itemId, true)
         end
       end
       -- Clear.
