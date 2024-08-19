@@ -179,6 +179,14 @@ function Mixins:RemoveAll()
   end
 end
 
+--- Returns an array of the list's item ids.
+---@return string[] itemIds
+function Mixins:GetItemIds()
+  local t = {}
+  for k in pairs(self.itemIds) do t[#t + 1] = k end
+  return t
+end
+
 --- Returns the list's items.
 ---@return ListItem[] items
 function Mixins:GetItems()
