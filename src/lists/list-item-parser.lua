@@ -13,17 +13,17 @@ local PARSE_ATTEMPTS_PER_CALL = 500
 
 --- @class ParsingOptions
 --- @field silent boolean
---- @field maxParseAttempts number
+-- --- @field maxParseAttempts number
 
 --- @type table<string, ParsingOptions>
 local PARSING_OPTIONS = {
   NEW_LIST_ITEM = {
     silent = false,
-    maxParseAttempts = math.ceil(5 / PARSE_DELAY_SECONDS) -- Fail after 5 seconds.
+    -- maxParseAttempts = math.ceil(5 / PARSE_DELAY_SECONDS) -- Fail after 5 seconds.
   },
   EXISTING_LIST_ITEM = {
     silent = true,
-    maxParseAttempts = math.ceil(30 / PARSE_DELAY_SECONDS) -- Fail after 30 seconds.
+    -- maxParseAttempts = math.ceil(30 / PARSE_DELAY_SECONDS) -- Fail after 30 seconds.
   }
 }
 
@@ -37,9 +37,9 @@ local newListItemQueue = {}
 --- @type table<List, ListItemIds>
 local existingListItemQueue = {}
 
---- Parse attempts by list for each queued item ID.
---- @type table<List, table<string, number>>
-local listParseAttempts = {}
+-- --- Parse attempts by list for each queued item ID.
+-- --- @type table<List, table<string, number>>
+-- local listParseAttempts = {}
 
 --- Cache for items that have been successfully parsed.
 --- @type table<string, ListItem>
@@ -81,7 +81,7 @@ function ListItemParser:CancelParse(list, itemId)
   itemId = tostring(itemId)
   if newListItemQueue[list] then newListItemQueue[list][itemId] = nil end
   if existingListItemQueue[list] then existingListItemQueue[list][itemId] = nil end
-  if listParseAttempts[list] then listParseAttempts[list][itemId] = nil end
+  -- if listParseAttempts[list] then listParseAttempts[list][itemId] = nil end
 end
 
 --- Stops all parsing for the given `list`.
@@ -89,7 +89,7 @@ end
 function ListItemParser:StopParsing(list)
   newListItemQueue[list] = {}
   existingListItemQueue[list] = {}
-  listParseAttempts[list] = {}
+  -- listParseAttempts[list] = {}
 end
 
 --- Returns `true` if any item IDs are currently queued for parsing.
@@ -133,24 +133,24 @@ local function getItemById(itemId)
   return itemCache[itemId]
 end
 
---- Increments and returns the number of parse attempts for the given `list` and `itemId`.
---- @param list List
---- @param itemId string
---- @return number parseAttempts
-local function incrementParseAttempts(list, itemId)
-  if not listParseAttempts[list] then listParseAttempts[list] = {} end
-  local parseAttempts = (listParseAttempts[list][itemId] or 0) + 1
-  listParseAttempts[list][itemId] = parseAttempts
-  return parseAttempts
-end
+-- --- Increments and returns the number of parse attempts for the given `list` and `itemId`.
+-- --- @param list List
+-- --- @param itemId string
+-- --- @return number parseAttempts
+-- local function incrementParseAttempts(list, itemId)
+--   if not listParseAttempts[list] then listParseAttempts[list] = {} end
+--   local parseAttempts = (listParseAttempts[list][itemId] or 0) + 1
+--   listParseAttempts[list][itemId] = parseAttempts
+--   return parseAttempts
+-- end
 
---- Resets the number of parse attempts for the given `list` and `itemId`.
---- @param list List
---- @param itemId string
-local function resetParseAttempts(list, itemId)
-  if not listParseAttempts[list] then listParseAttempts[list] = {} end
-  listParseAttempts[list][itemId] = nil
-end
+-- --- Resets the number of parse attempts for the given `list` and `itemId`.
+-- --- @param list List
+-- --- @param itemId string
+-- local function resetParseAttempts(list, itemId)
+--   if not listParseAttempts[list] then listParseAttempts[list] = {} end
+--   listParseAttempts[list][itemId] = nil
+-- end
 
 --- Return `true` if there are no more item IDs for the given `list` to be parsed.
 --- @param list List
@@ -187,13 +187,13 @@ local function parse(list, itemIds, options)
       if item then
         itemIds[itemId] = nil
         EventManager:Fire(E.ListItemParsed, list, item, options.silent)
-      else
-        local parseAttempts = incrementParseAttempts(list, itemId)
-        if parseAttempts >= options.maxParseAttempts then
-          resetParseAttempts(list, itemId)
-          itemIds[itemId] = nil
-          EventManager:Fire(E.ListItemFailedToParse, list, itemId, options.silent)
-        end
+        -- else
+        --   local parseAttempts = incrementParseAttempts(list, itemId)
+        --   if parseAttempts >= options.maxParseAttempts then
+        --     resetParseAttempts(list, itemId)
+        --     itemIds[itemId] = nil
+        --     EventManager:Fire(E.ListItemFailedToParse, list, itemId, options.silent)
+        --   end
       end
     end
   end

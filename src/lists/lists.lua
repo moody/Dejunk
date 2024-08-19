@@ -231,11 +231,11 @@ EventManager:On(E.ListItemParsed, function(list, item, silent)
   end
 end)
 
--- Listen for `ListItemFailedToParse` to print an error message.
-EventManager:On(E.ListItemFailedToParse, function(list, itemId, silent)
-  list:RemoveItemId(itemId, true)
-  if not silent then Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId))) end
-end)
+-- -- Listen for `ListItemFailedToParse` to print an error message.
+-- EventManager:On(E.ListItemFailedToParse, function(list, itemId, silent)
+--   list:RemoveItemId(itemId, true)
+--   if not silent then Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId))) end
+-- end)
 
 -- Listen for `ListItemCannotBeParsed` to print an error message.
 EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
