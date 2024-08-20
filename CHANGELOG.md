@@ -5,6 +5,7 @@
 ### Fixed
 
 - Performance issues when loading large lists ([#222](https://github.com/moody/Dejunk/issues/222))
+- Attempted to fix an unknown issue with the bag cache by periodically updating it
 
 ## [1.10.6] - 2024-07-27
 
