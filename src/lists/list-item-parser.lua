@@ -8,8 +8,8 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class ListItemParser
 local ListItemParser = Addon:GetModule("ListItemParser")
 
-local PARSE_DELAY_SECONDS = 0.02
-local PARSE_ATTEMPTS_PER_CALL = 500
+local PARSE_DELAY_SECONDS = 0.1
+local PARSE_ATTEMPTS_PER_CALL = 1000
 
 --- @class ParsingOptions
 --- @field silent boolean
