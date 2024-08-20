@@ -9,7 +9,7 @@ local TickerManager = Addon:GetModule("TickerManager")
 local ListItemParser = Addon:GetModule("ListItemParser")
 
 local PARSE_DELAY_SECONDS = 0.1
-local PARSE_ATTEMPTS_PER_CALL = 1000
+local PARSE_ATTEMPTS_PER_CALL = 25
 
 --- @class ParsingOptions
 --- @field silent boolean
@@ -174,10 +174,13 @@ end
 local function parse(list, itemIds, options)
   if not next(itemIds) then return end
 
+  -- Counter to limit iterations.
+  local counter = 0
+
   -- Attempt to parse items.
-  for _ = 1, PARSE_ATTEMPTS_PER_CALL do
-    local itemId = next(itemIds)
-    if not itemId then break end
+  for itemId in pairs(itemIds) do
+    if counter >= PARSE_ATTEMPTS_PER_CALL then break end
+    counter = counter + 1
 
     if not GetItemInfoInstant(itemId) then
       itemIds[itemId] = nil
