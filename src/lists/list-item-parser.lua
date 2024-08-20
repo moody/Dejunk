@@ -208,8 +208,6 @@ end
 -- ============================================================================
 
 TickerManager:NewTicker(PARSE_DELAY_SECONDS, function()
-  if Seller:IsBusy() then return end
-
   for list, itemIds in pairs(newListItemQueue) do
     parse(list, itemIds, PARSING_OPTIONS.NEW_LIST_ITEM)
   end
