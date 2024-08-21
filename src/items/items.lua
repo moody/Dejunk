@@ -139,6 +139,7 @@ end
 -- Register events to trigger cache updates.
 EventManager:Once(E.Wow.PlayerLogin, function()
   local debounce = TickerManager:NewDebouncer(0.01, updateCache)
+  TickerManager:NewTicker(10, debounce)
   debounce()
 
   EventManager:On(E.Wow.BagUpdate, debounce)

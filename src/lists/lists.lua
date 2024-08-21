@@ -3,10 +3,12 @@ local Actions = Addon:GetModule("Actions")
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Lists
 local Lists = Addon:GetModule("Lists")
@@ -22,7 +24,7 @@ local Lists = Addon:GetModule("Lists")
 --- @field name string
 --- @field description string
 --- @field protected load fun(): ListItemIds
---- @field protected save fun(itemIds: ListItemIds): nil
+--- @field protected save fun(): nil
 --- @field protected getSibling fun(): List
 --- @field protected getOpposite fun(): List
 
@@ -35,8 +37,32 @@ local Lists = Addon:GetModule("Lists")
 -- Local Functions
 -- ============================================================================
 
+--- Item comparison function for sorting by quality.
+--- @param a ListItem
+--- @param b ListItem
+--- @return boolean
 local function compareByQuality(a, b)
   return a.quality == b.quality and a.name < b.name or a.quality < b.quality
+end
+
+--- Returns the sorted insertion index for an item.
+--- @param items ListItem[]
+--- @param item ListItem
+--- @return integer index
+local function getSortedIndex(items, item)
+  local low, high = 1, #items
+
+  while low <= high do
+    local mid = math.floor((low + high) / 2)
+
+    if compareByQuality(items[mid], item) then
+      low = mid + 1
+    else
+      high = mid - 1
+    end
+  end
+
+  return low
 end
 
 -- ============================================================================
@@ -48,12 +74,14 @@ local Mixins = {}
 
 --- Returns the list's sibling.
 --- For example: if `GlobalInclusions`, returns `PerCharInclusions`.
+--- @return List sibling
 function Mixins:GetSibling()
   return self.getSibling()
 end
 
 --- Returns the list's opposite.
 --- For example: if `GlobalInclusions`, returns `GlobalExclusions`.
+--- @return List opposite
 function Mixins:GetOpposite()
   return self.getOpposite()
 end
@@ -62,42 +90,62 @@ end
 --- @param itemId string|number
 --- @return boolean
 function Mixins:Contains(itemId)
-  return self.itemIds[tostring(itemId)] == true
+  return not not self.itemIds[tostring(itemId)]
 end
 
---- Attempts to add the given `itemId` to the list.
+--- Adds the given `itemId` to the list.
 --- @param itemId string|number
-function Mixins:Add(itemId)
+--- @param silent? boolean
+function Mixins:Add(itemId, silent)
   itemId = tostring(itemId)
 
   if self:Contains(itemId) then
-    local index = self:GetIndex(itemId)
-    if index ~= -1 then
-      Addon:Print(L.ITEM_ALREADY_ON_LIST:format(self.items[index].link, self.name))
+    if not silent then
+      local _, link = GetItemInfo(itemId)
+      if link then Addon:Print(L.ITEM_ALREADY_ON_LIST:format(link, self.name)) end
     end
   else
     ListItemParser:Parse(self, itemId)
+    self.itemIds[itemId] = true
+    self.save()
+
+    self.getOpposite():RemoveItemId(itemId, true)
+
+    if not silent then
+      local _, link = GetItemInfo(itemId)
+      if link then Addon:Print(L.ITEM_ADDED_TO_LIST:format(link, self.name)) end
+    end
   end
 end
 
---- Attempts to remove the given `itemId` from the list.
----@param itemId string|number
-function Mixins:Remove(itemId)
+--- Removes the given `itemId` from the list, as well as the associated item object.
+--- @param itemId string|number
+--- @param silent? boolean
+function Mixins:Remove(itemId, silent)
+  self:RemoveItemId(itemId, silent)
+  local index = self:GetIndex(itemId)
+  if index ~= -1 then table.remove(self.items, index) end
+end
+
+--- Removes the given `itemId` from the list.
+--- @param itemId string|number
+--- @param silent? boolean
+function Mixins:RemoveItemId(itemId, silent)
   itemId = tostring(itemId)
+  ListItemParser:CancelParse(self, itemId)
 
   if self:Contains(itemId) then
     self.itemIds[itemId] = nil
-
-    local index = self:GetIndex(itemId)
-    if index ~= -1 then
-      local item = table.remove(self.items, index)
-      Addon:Print(L.ITEM_REMOVED_FROM_LIST:format(item.link, self.name))
+    self.save()
+    if not silent then
+      local _, link = GetItemInfo(itemId)
+      if link then Addon:Print(L.ITEM_REMOVED_FROM_LIST:format(link, self.name)) end
     end
-
-    self.save(self.itemIds)
   else
-    local link = select(2, GetItemInfo(itemId))
-    if link then Addon:Print(L.ITEM_NOT_ON_LIST:format(link, self.name)) end
+    if not silent then
+      local _, link = GetItemInfo(itemId)
+      if link then Addon:Print(L.ITEM_NOT_ON_LIST:format(link, self.name)) end
+    end
   end
 end
 
@@ -107,9 +155,14 @@ end
 function Mixins:GetIndex(itemId)
   itemId = tostring(itemId)
 
-  for i, item in ipairs(self.items) do
-    if tostring(item.id) == itemId then
-      return i
+  local item = ListItemParser:GetParsedItem(itemId)
+  if item then
+    local index = getSortedIndex(self.items, item)
+    while (index >= 1 and index <= #self.items) and self.items[index].name == item.name do
+      if tostring(self.items[index].id) == itemId then
+        return index
+      end
+      index = index + 1
     end
   end
 
@@ -118,18 +171,26 @@ end
 
 --- Removes all items from the list.
 function Mixins:RemoveAll()
+  ListItemParser:StopParsing(self)
   if #self.items > 0 or next(self.itemIds) then
     for k in pairs(self.items) do self.items[k] = nil end
     for k in pairs(self.itemIds) do self.itemIds[k] = nil end
-
-    self.save(self.itemIds)
+    self.save()
 
     Addon:Print(L.ALL_ITEMS_REMOVED_FROM_LIST:format(self.name))
   end
 end
 
+--- Returns an array of the list's item ids.
+--- @return string[] itemIds
+function Mixins:GetItemIds()
+  local t = {}
+  for k in pairs(self.itemIds) do t[#t + 1] = k end
+  return t
+end
+
 --- Returns the list's items.
----@return ListItem[] items
+--- @return ListItem[] items
 function Mixins:GetItems()
   return self.items
 end
@@ -150,6 +211,14 @@ function Mixins:GetSearchItems(searchText)
   return self.searchItems
 end
 
+--- Returns the percentage of parsed items relative to total item IDs, or `100` if there are no item IDs.
+--- @return integer percentage
+function Mixins:GetParsedItemPercentage()
+  local totalItemIds = 0
+  for _ in pairs(self.itemIds) do totalItemIds = totalItemIds + 1 end
+  return totalItemIds > 0 and math.floor((#self.items / totalItemIds) * 100) or 100
+end
+
 -- ============================================================================
 -- Events
 -- ============================================================================
@@ -158,6 +227,7 @@ end
 EventManager:Once(E.StoreCreated, function()
   for list in Lists:Iterate() do
     for itemId in pairs(list.load()) do
+      list.itemIds[itemId] = true
       ListItemParser:ParseExisting(list, itemId)
     end
   end
@@ -167,33 +237,29 @@ end)
 -- If the item cannot be sold or destroyed, then an error message is printed.
 EventManager:On(E.ListItemParsed, function(list, item, silent)
   if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
-    -- Add item.
-    list.items[#list.items + 1] = item
+    -- Remove from opposite.
+    list.getOpposite():Remove(item.id, true)
+    -- Add item if necessary.
+    if list:GetIndex(item.id) == -1 then
+      table.insert(list.items, getSortedIndex(list.items, item), item)
+    end
     list.itemIds[tostring(item.id)] = true
-    -- Remove from opposite list.
-    local opposite = list:GetOpposite()
-    if opposite:Contains(item.id) then opposite:Remove(item.id) end
-    -- Print.
-    if not silent then Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name)) end
   else
+    list:RemoveItemId(item.id, true)
     if not silent then Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link)) end
   end
 end)
 
 -- Listen for `ListItemFailedToParse` to print an error message.
 EventManager:On(E.ListItemFailedToParse, function(list, itemId, silent)
+  list:RemoveItemId(itemId, true)
   if not silent then Addon:Print(L.ITEM_ID_FAILED_TO_PARSE:format(Colors.Grey(itemId))) end
 end)
 
 -- Listen for `ListItemCannotBeParsed` to print an error message.
 EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
+  list:RemoveItemId(itemId, true)
   if not silent then Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId))) end
-end)
-
--- Listen for `ListParsingComplete` to save and sort the list after parsing.
-EventManager:On(E.ListParsingComplete, function(list)
-  list.save(list.itemIds)
-  table.sort(list.items, compareByQuality)
 end)
 
 -- ============================================================================
@@ -210,6 +276,13 @@ do -- Create the lists.
     list.itemIds = {}
     list.searchItems = {}
     for k, v in pairs(Mixins) do list[k] = v end
+
+    -- Debounce `save()` for performance reasons.
+    local _save = list.save
+    list.save = TickerManager:NewDebouncer(0.1, function()
+      _save(list.itemIds)
+    end)
+
     return list
   end
 

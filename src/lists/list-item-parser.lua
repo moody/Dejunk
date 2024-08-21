@@ -2,13 +2,13 @@ local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetItemInfoInstant = C_Item.GetItemInfoInstant or GetItemInfoInstant
-local Seller = Addon:GetModule("Seller")
 local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class ListItemParser
 local ListItemParser = Addon:GetModule("ListItemParser")
 
 local PARSE_DELAY_SECONDS = 0.1
+local PARSE_ATTEMPTS_PER_CALL = 25
 
 --- @class ParsingOptions
 --- @field silent boolean
@@ -48,6 +48,13 @@ local itemCache = {}
 -- Functions
 -- ============================================================================
 
+--- Returns a parsed item from the cache, if it exists.
+--- @param itemId string|number
+--- @return ListItem?
+function ListItemParser:GetParsedItem(itemId)
+  return itemCache[tostring(itemId)]
+end
+
 --- Initiates parsing for the given `list` and `itemId`,
 --- specifically for item IDs that are not yet part of saved variables.
 --- @param list List
@@ -66,17 +73,30 @@ function ListItemParser:ParseExisting(list, itemId)
   existingListItemQueue[list][tostring(itemId)] = true
 end
 
---- Returns `true` if any item IDs are currently queued for parsing.
+--- Cancels parsing for the given `list` and `itemId`.
+--- @param list List
+--- @param itemId string|number
+function ListItemParser:CancelParse(list, itemId)
+  itemId = tostring(itemId)
+  if newListItemQueue[list] then newListItemQueue[list][itemId] = nil end
+  if existingListItemQueue[list] then existingListItemQueue[list][itemId] = nil end
+  if listParseAttempts[list] then listParseAttempts[list][itemId] = nil end
+end
+
+--- Stops all parsing for the given `list`.
+--- @param list List
+function ListItemParser:StopParsing(list)
+  newListItemQueue[list] = {}
+  existingListItemQueue[list] = {}
+  listParseAttempts[list] = {}
+end
+
+--- Returns `true` if any items are currently being parsed for the given `list`.
+--- @param list List
 --- @return boolean
-function ListItemParser:IsBusy()
-  for _, itemIds in pairs(newListItemQueue) do
-    if next(itemIds) then return true end
-  end
-
-  for _, itemIds in pairs(existingListItemQueue) do
-    if next(itemIds) then return true end
-  end
-
+function ListItemParser:IsParsing(list)
+  if newListItemQueue[list] and next(newListItemQueue[list]) then return true end
+  if existingListItemQueue[list] and next(existingListItemQueue[list]) then return true end
   return false
 end
 
@@ -126,21 +146,6 @@ local function resetParseAttempts(list, itemId)
   listParseAttempts[list][itemId] = nil
 end
 
---- Return `true` if there are no more item IDs for the given `list` to be parsed.
---- @param list List
---- @return boolean
-local function isListParsingComplete(list)
-  if newListItemQueue[list] and next(newListItemQueue[list]) then
-    return false
-  end
-
-  if existingListItemQueue[list] and next(existingListItemQueue[list]) then
-    return false
-  end
-
-  return true
-end
-
 --- Attempts to parse items for a list.
 --- @param list List
 --- @param itemIds ListItemIds
@@ -148,8 +153,14 @@ end
 local function parse(list, itemIds, options)
   if not next(itemIds) then return end
 
+  -- Counter to limit iterations.
+  local counter = 0
+
   -- Attempt to parse items.
   for itemId in pairs(itemIds) do
+    if counter >= PARSE_ATTEMPTS_PER_CALL then break end
+    counter = counter + 1
+
     if not GetItemInfoInstant(itemId) then
       itemIds[itemId] = nil
       EventManager:Fire(E.ListItemCannotBeParsed, list, itemId, options.silent)
@@ -168,10 +179,6 @@ local function parse(list, itemIds, options)
       end
     end
   end
-
-  if isListParsingComplete(list) then
-    EventManager:Fire(E.ListParsingComplete, list)
-  end
 end
 
 -- ============================================================================
@@ -179,8 +186,6 @@ end
 -- ============================================================================
 
 TickerManager:NewTicker(PARSE_DELAY_SECONDS, function()
-  if Seller:IsBusy() then return end
-
   for list, itemIds in pairs(newListItemQueue) do
     parse(list, itemIds, PARSING_OPTIONS.NEW_LIST_ITEM)
   end

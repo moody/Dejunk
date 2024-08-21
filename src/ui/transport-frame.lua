@@ -70,7 +70,7 @@ TransportFrame.frame = (function()
       for itemId in editBox:GetText():gmatch("%d+") do
         itemId = tonumber(itemId)
         if itemId and itemId > 0 and itemId <= 2147483647 then
-          frame.list:Add(itemId)
+          frame.list:Add(itemId, true)
         end
       end
       -- Clear.
@@ -92,10 +92,7 @@ TransportFrame.frame = (function()
     onClick = function(self)
       -- Set edit box text.
       local editBox = frame.textFrame.editBox
-      local itemIds = {}
-      for _, item in pairs(frame.list:GetItems()) do
-        itemIds[#itemIds + 1] = item.id
-      end
+      local itemIds = frame.list:GetItemIds()
       editBox:SetText(table.concat(itemIds, ","))
       -- Select all.
       local numLetters = editBox:GetNumLetters()

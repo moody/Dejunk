@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
+local ListItemParser = Addon:GetModule("ListItemParser")
 local TransportFrame = Addon:GetModule("TransportFrame")
 
 --- @class Widgets
@@ -24,6 +25,7 @@ local Widgets = Addon:GetModule("Widgets")
 function Widgets:ListFrame(options)
   -- Defaults.
   options.titleText = options.list.name
+  options.titleJustify = "LEFT"
 
   function options.onUpdateTooltip(self, tooltip)
     tooltip:SetText(options.list.name)
@@ -66,6 +68,10 @@ function Widgets:ListFrame(options)
     end
   end
 
+  function options.isItemEnabled(item)
+    return options.list:Contains(item.id)
+  end
+
   function options.getItems()
     local searchState = options.getListSearchState()
     if searchState.isSearching and searchState.searchText ~= "" then
@@ -85,7 +91,6 @@ function Widgets:ListFrame(options)
 
   --- @class ListFrameWidget : ItemsFrameWidget
   local frame = self:ItemsFrame(options)
-  frame.title:SetJustifyH("LEFT")
 
   -- Transport button.
   frame.transportButton = self:TitleFrameIconButton({
@@ -101,6 +106,50 @@ function Widgets:ListFrame(options)
       tooltip:AddLine(L.LIST_FRAME_TRANSPORT_BUTTON_TOOLTIP)
     end
   })
+
+  -- Spinner button.
+  frame.spinnerButton = self:TitleFrameIconButton({
+    name = "$parent_SpinnerButton",
+    parent = frame.titleButton,
+    points = {
+      { "TOPRIGHT", frame.transportButton, "TOPLEFT", 0, 0 },
+      { "BOTTOMRIGHT", frame.transportButton, "BOTTOMLEFT", 0, 0 }
+    },
+    texture = Addon:GetAsset("spinner-icon"),
+    textureSize = frame.title:GetStringHeight(),
+    highlightColor = Colors.Blue,
+    onClick = nil,
+    onUpdateTooltip = function(self, tooltip)
+      local percentage = options.list:GetParsedItemPercentage()
+      tooltip:SetText(("%s: %s%%"):format(L.LOADING, Colors.Blue(percentage)))
+    end
+  })
+
+  local spinnerAnimGroup = frame.spinnerButton.texture:CreateAnimationGroup()
+  spinnerAnimGroup:SetLooping("REPEAT")
+
+  local rotationAnim = spinnerAnimGroup:CreateAnimation("Rotation")
+  rotationAnim:SetDegrees(-360)
+  rotationAnim:SetDuration(1)
+
+  spinnerAnimGroup:Play()
+
+  -- Update spinner visibility.
+  local UPDATE_INTERVAL = 0.2
+  local timer = UPDATE_INTERVAL
+  frame:HookScript("OnUpdate", function(_, elapsed)
+    timer = timer + elapsed
+    if timer >= UPDATE_INTERVAL then
+      timer = 0
+      if ListItemParser:IsParsing(options.list) then
+        frame.spinnerButton:Show()
+        frame.title:SetPoint("RIGHT", frame.spinnerButton, "LEFT", 0, 0)
+      else
+        frame.spinnerButton:Hide()
+        frame.title:SetPoint("RIGHT", frame.transportButton, "LEFT", 0, 0)
+      end
+    end
+  end)
 
   return frame
 end

@@ -14,11 +14,13 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field itemButtonOnClick? fun(self: ItemButtonWidget, button: string)
 --- @field numButtons? integer
 --- @field displayPrice? boolean
---- @field getItems fun(): table[]
+--- @field isItemEnabled? fun(item: ListItem): boolean
+--- @field getItems fun(): ListItem[]
 --- @field addItem fun(itemId: string)
 --- @field removeAllItems fun()
 
 --- @class ItemButtonWidgetOptions : FrameWidgetOptions
+--- @field isItemEnabled? fun(item: ListItem): boolean
 --- @field onClick? fun(self: ItemButtonWidget, button: string)
 --- @field displayPrice? boolean
 
@@ -34,7 +36,7 @@ function Widgets:ItemsFrame(options)
 
   -- Defaults.
   options.titleTemplate = nil
-  options.titleJustify = "CENTER"
+  options.titleJustify = Addon:IfNil(options.titleJustify, "CENTER")
   options.numButtons = Addon:IfNil(options.numButtons, 7)
 
   --- @class ItemsFrameWidget : TitleFrameWidget
@@ -64,6 +66,7 @@ function Widgets:ItemsFrame(options)
       parent = frame,
       displayPrice = options.displayPrice,
       onUpdateTooltip = options.itemButtonOnUpdateTooltip,
+      isItemEnabled = options.isItemEnabled,
       onClick = options.itemButtonOnClick
     })
   end
@@ -194,8 +197,15 @@ function Widgets:ItemButton(options)
     if self.price then
       self.price:SetText(Colors.White(GetCoinTextureString(self.item.price * quantity)))
     end
+    -- Enabled.
+    if options.isItemEnabled then
+      local isEnabled = options.isItemEnabled(self.item)
+      self:SetEnabled(isEnabled)
+      self:SetAlpha(isEnabled and 1 or 0.3)
+    end
   end
 
+  --- @param item ListItem
   function frame:SetItem(item)
     self.item = item
   end

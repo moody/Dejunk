@@ -57,6 +57,7 @@ function Widgets:TitleFrame(options)
   frame.title:SetPoint("LEFT", self:Padding(), 0)
   frame.title:SetPoint("RIGHT", -self:Padding(), 0)
   frame.title:SetJustifyH(options.titleJustify)
+  frame.title:SetWordWrap(false)
 
   frame.titleButton:SetFontString(frame.title)
   frame.titleButton:SetHeight(frame.title:GetStringHeight() + self:Padding(2))
