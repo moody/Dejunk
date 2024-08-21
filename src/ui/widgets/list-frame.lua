@@ -122,7 +122,7 @@ function Widgets:ListFrame(options)
     onUpdateTooltip = function(self, tooltip)
       local current = options.list:CountItems()
       local total = options.list:CountItemIds()
-      local percentage = math.floor((current / total) * 100)
+      local percentage = total > 0 and math.floor((current / total) * 100) or 100
       tooltip:SetText(("%s: %s%%"):format(L.LOADING, Colors.Blue(percentage)))
     end
   })
@@ -137,9 +137,10 @@ function Widgets:ListFrame(options)
   spinnerAnimGroup:Play()
 
   -- Update spinner visibility.
+  local UPDATE_INTERVAL = 0.2
   frame:HookScript("OnUpdate", function(_, elapsed)
-    frame.spinnerUpdateTimer = (frame.spinnerUpdateTimer or 0) + elapsed
-    if frame.spinnerUpdateTimer >= 0.2 then
+    frame.spinnerUpdateTimer = (frame.spinnerUpdateTimer or UPDATE_INTERVAL) + elapsed
+    if frame.spinnerUpdateTimer >= UPDATE_INTERVAL then
       frame.spinnerUpdateTimer = 0
       if ListItemParser:IsParsing(options.list) then
         frame.spinnerButton:Show()
