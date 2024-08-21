@@ -91,17 +91,12 @@ function ListItemParser:StopParsing(list)
   listParseAttempts[list] = {}
 end
 
---- Returns `true` if any item IDs are currently queued for parsing.
+--- Returns `true` if any items are currently being parsed for the given `list`.
+--- @param list List
 --- @return boolean
-function ListItemParser:IsBusy()
-  for _, itemIds in pairs(newListItemQueue) do
-    if next(itemIds) then return true end
-  end
-
-  for _, itemIds in pairs(existingListItemQueue) do
-    if next(itemIds) then return true end
-  end
-
+function ListItemParser:IsParsing(list)
+  if newListItemQueue[list] and next(newListItemQueue[list]) then return true end
+  if existingListItemQueue[list] and next(existingListItemQueue[list]) then return true end
   return false
 end
 

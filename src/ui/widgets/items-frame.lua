@@ -36,7 +36,7 @@ function Widgets:ItemsFrame(options)
 
   -- Defaults.
   options.titleTemplate = nil
-  options.titleJustify = "CENTER"
+  options.titleJustify = Addon:IfNil(options.titleJustify, "CENTER")
   options.numButtons = Addon:IfNil(options.numButtons, 7)
 
   --- @class ItemsFrameWidget : TitleFrameWidget
