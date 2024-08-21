@@ -146,21 +146,6 @@ local function resetParseAttempts(list, itemId)
   listParseAttempts[list][itemId] = nil
 end
 
---- Return `true` if there are no more item IDs for the given `list` to be parsed.
---- @param list List
---- @return boolean
-local function isListParsingComplete(list)
-  if newListItemQueue[list] and next(newListItemQueue[list]) then
-    return false
-  end
-
-  if existingListItemQueue[list] and next(existingListItemQueue[list]) then
-    return false
-  end
-
-  return true
-end
-
 --- Attempts to parse items for a list.
 --- @param list List
 --- @param itemIds ListItemIds
@@ -193,10 +178,6 @@ local function parse(list, itemIds, options)
         end
       end
     end
-  end
-
-  if isListParsingComplete(list) then
-    EventManager:Fire(E.ListParsingComplete, list)
   end
 end
 

@@ -237,7 +237,6 @@ EventManager:Once(E.StoreCreated, function()
       ListItemParser:ParseExisting(list, itemId)
     end
   end
-  Addon:Debug("Lists initialized.")
 end)
 
 -- Listen for `ListItemParsed` to add the item to the list and print a message.
@@ -269,12 +268,6 @@ EventManager:On(E.ListItemCannotBeParsed, function(list, itemId, silent)
   if not silent then Addon:Print(L.ITEM_ID_DOES_NOT_EXIST:format(Colors.Grey(itemId))) end
 end)
 
--- Listen for `ListParsingComplete` to save the list after parsing.
-EventManager:On(E.ListParsingComplete, function(list)
-  Addon:Debug(list.name, "parsing complete.")
-  -- list.save()
-end)
-
 -- ============================================================================
 -- Initialize
 -- ============================================================================
@@ -293,7 +286,6 @@ do -- Create the lists.
     -- Debounce `save()` for performance reasons.
     local _save = list.save
     list.save = TickerManager:NewDebouncer(0.1, function()
-      Addon:Debug(list.name, "saved.")
       _save(list.itemIds)
     end)
 
