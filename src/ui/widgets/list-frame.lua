@@ -120,9 +120,7 @@ function Widgets:ListFrame(options)
     highlightColor = Colors.Blue,
     onClick = nil,
     onUpdateTooltip = function(self, tooltip)
-      local current = options.list:CountItems()
-      local total = options.list:CountItemIds()
-      local percentage = total > 0 and math.floor((current / total) * 100) or 100
+      local percentage = options.list:GetParsedItemPercentage()
       tooltip:SetText(("%s: %s%%"):format(L.LOADING, Colors.Blue(percentage)))
     end
   })

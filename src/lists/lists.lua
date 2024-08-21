@@ -181,20 +181,6 @@ function Mixins:RemoveAll()
   end
 end
 
---- Returns the number of item ids in the list.
---- @return integer count
-function Mixins:CountItemIds()
-  local count = 0
-  for _ in pairs(self.itemIds) do count = count + 1 end
-  return count
-end
-
---- Returns the number of the parsed items in the list.
---- @return integer count
-function Mixins:CountItems()
-  return #self.items
-end
-
 --- Returns an array of the list's item ids.
 --- @return string[] itemIds
 function Mixins:GetItemIds()
@@ -223,6 +209,14 @@ function Mixins:GetSearchItems(searchText)
   end
 
   return self.searchItems
+end
+
+--- Returns the percentage of parsed items relative to total item IDs, or `100` if there are no item IDs.
+--- @return integer percentage
+function Mixins:GetParsedItemPercentage()
+  local totalItemIds = 0
+  for _ in pairs(self.itemIds) do totalItemIds = totalItemIds + 1 end
+  return totalItemIds > 0 and math.floor((#self.items / totalItemIds) * 100) or 100
 end
 
 -- ============================================================================
