@@ -79,7 +79,6 @@ L["INCLUSIONS_DESCRIPTION_PERCHAR"] = "Items on this list will always be conside
 L["INCLUSIONS_TEXT"] = "Inclusions"
 L["IS_BUSY_CONFIRMING_ITEMS"] = "Confirming items..."
 L["IS_BUSY_SELLING_ITEMS"] = "Selling items..."
-L["IS_BUSY_UPDATING_LISTS"] = "Updating lists..."
 L["ITEM_ADDED_TO_LIST"] = "%s added to %s."
 L["ITEM_ALREADY_ON_LIST"] = "%s is already on %s."
 L["ITEM_ID_DOES_NOT_EXIST"] = "Item with ID %s does not exist."
