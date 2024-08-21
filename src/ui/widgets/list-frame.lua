@@ -136,10 +136,11 @@ function Widgets:ListFrame(options)
 
   -- Update spinner visibility.
   local UPDATE_INTERVAL = 0.2
+  local timer = UPDATE_INTERVAL
   frame:HookScript("OnUpdate", function(_, elapsed)
-    frame.spinnerUpdateTimer = (frame.spinnerUpdateTimer or UPDATE_INTERVAL) + elapsed
-    if frame.spinnerUpdateTimer >= UPDATE_INTERVAL then
-      frame.spinnerUpdateTimer = 0
+    timer = timer + elapsed
+    if timer >= UPDATE_INTERVAL then
+      timer = 0
       if ListItemParser:IsParsing(options.list) then
         frame.spinnerButton:Show()
         frame.title:SetPoint("RIGHT", frame.spinnerButton, "LEFT", 0, 0)
