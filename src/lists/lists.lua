@@ -74,12 +74,14 @@ local Mixins = {}
 
 --- Returns the list's sibling.
 --- For example: if `GlobalInclusions`, returns `PerCharInclusions`.
+--- @return List sibling
 function Mixins:GetSibling()
   return self.getSibling()
 end
 
 --- Returns the list's opposite.
 --- For example: if `GlobalInclusions`, returns `GlobalExclusions`.
+--- @return List opposite
 function Mixins:GetOpposite()
   return self.getOpposite()
 end
@@ -179,8 +181,22 @@ function Mixins:RemoveAll()
   end
 end
 
+--- Returns the number of item ids in the list.
+--- @return integer count
+function Mixins:CountItemIds()
+  local count = 0
+  for _ in pairs(self.itemIds) do count = count + 1 end
+  return count
+end
+
+--- Returns the number of the parsed items in the list.
+--- @return integer count
+function Mixins:CountItems()
+  return #self.items
+end
+
 --- Returns an array of the list's item ids.
----@return string[] itemIds
+--- @return string[] itemIds
 function Mixins:GetItemIds()
   local t = {}
   for k in pairs(self.itemIds) do t[#t + 1] = k end
@@ -188,7 +204,7 @@ function Mixins:GetItemIds()
 end
 
 --- Returns the list's items.
----@return ListItem[] items
+--- @return ListItem[] items
 function Mixins:GetItems()
   return self.items
 end
@@ -230,9 +246,10 @@ EventManager:On(E.ListItemParsed, function(list, item, silent)
   if Items:IsItemSellable(item) or Items:IsItemDestroyable(item) then
     -- Remove from opposite.
     list.getOpposite():Remove(item.id, true)
-    -- Add item.
-    local index = getSortedIndex(list.items, item)
-    table.insert(list.items, index, item)
+    -- Add item if necessary.
+    if list:GetIndex(item.id) == -1 then
+      table.insert(list.items, getSortedIndex(list.items, item), item)
+    end
     list.itemIds[tostring(item.id)] = true
   else
     list:RemoveItemId(item.id, true)

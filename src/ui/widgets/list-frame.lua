@@ -117,10 +117,13 @@ function Widgets:ListFrame(options)
     },
     texture = Addon:GetAsset("spinner-icon"),
     textureSize = frame.title:GetStringHeight(),
-    highlightColor = Colors.Red,
+    highlightColor = Colors.Blue,
     onClick = nil,
     onUpdateTooltip = function(self, tooltip)
-      tooltip:SetText(L.LOADING)
+      local current = options.list:CountItems()
+      local total = options.list:CountItemIds()
+      local percentage = math.floor((current / total) * 100)
+      tooltip:SetText(("%s: %s%%"):format(L.LOADING, Colors.Blue(percentage)))
     end
   })
 
