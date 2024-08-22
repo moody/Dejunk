@@ -3,6 +3,7 @@ local E = Addon:GetModule("Events")
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
 local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
@@ -10,14 +11,30 @@ local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Items
 local Items = Addon:GetModule("Items")
-
---- @type table<integer, BagItem>
-Items.cache = {}
 Items.location = ItemLocation:CreateEmpty()
+
+--- @type table<string, BagItem>
+local bagItemCache = {}
 
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
+
+--- Returns the item cached for the `bag` and `slot`, if it exists.
+--- @param bag integer
+--- @param slot integer
+--- @return BagItem
+local function getCachedItem(bag, slot)
+  return bagItemCache[bag .. "," .. slot]
+end
+
+--- Sets the item for the `bag` and `slot` in the cache.
+--- @param bag integer
+--- @param slot integer
+--- @param item BagItem|nil
+local function setCachedItem(bag, slot, item)
+  bagItemCache[bag .. "," .. slot] = item
+end
 
 local getContainerItem
 do
@@ -114,7 +131,7 @@ end
 local function updateCache()
   EquipmentSetsCache:Refresh()
 
-  for k in pairs(Items.cache) do Items.cache[k] = nil end
+  for k in pairs(bagItemCache) do bagItemCache[k] = nil end
 
   local allItemsCached = true
 
@@ -122,7 +139,7 @@ local function updateCache()
     if itemId then
       local item = getItem(bag, slot)
       if item then
-        Items.cache[#Items.cache + 1] = item
+        setCachedItem(bag, slot, item)
       else
         allItemsCached = false
       end
@@ -138,15 +155,14 @@ end
 
 -- Register events to trigger cache updates.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  local debounce = TickerManager:NewDebouncer(0.01, updateCache)
-  TickerManager:NewTicker(10, debounce)
+  local debounce = TickerManager:NewDebouncer(0.1, updateCache)
   debounce()
 
   EventManager:On(E.Wow.BagUpdate, debounce)
   EventManager:On(E.Wow.BagUpdateDelayed, debounce)
   EventManager:On(E.Wow.EquipmentSetsChanged, debounce)
   EventManager:On(E.BagsUpdated, function(allItemsCached)
-    if not allItemsCached then debounce() end
+    if not allItemsCached then TickerManager:After(0.01, debounce) end
   end)
 end)
 
@@ -168,11 +184,7 @@ end
 --- @param slot integer
 --- @return BagItem? item
 function Items:GetItem(bag, slot)
-  for _, item in pairs(self.cache) do
-    if item.bag == bag and item.slot == slot then
-      return item
-    end
-  end
+  return getCachedItem(bag, slot)
 end
 
 --- Creates or updates an array with all cached items.
@@ -186,7 +198,7 @@ function Items:GetItems(items)
   end
 
   -- Add cached items.
-  for _, item in ipairs(self.cache) do
+  for _, item in pairs(bagItemCache) do
     items[#items + 1] = item
   end
 
