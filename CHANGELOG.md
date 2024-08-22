@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed a bug that would sometimes prevent the bag items cache from updating (hopefully)
+
 ## [1.10.7] - 2024-08-21
 
 ### Fixed
