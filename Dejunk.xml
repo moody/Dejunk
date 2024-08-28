@@ -39,12 +39,15 @@
   <Script file="src\ui\widgets\frame.lua"/>
   <Script file="src\ui\widgets\items-frame.lua"/>
   <Script file="src\ui\widgets\list-frame.lua"/>
-  <Script file="src\ui\widgets\options-frame.lua"/>
   <Script file="src\ui\widgets\slider.lua"/>
   <Script file="src\ui\widgets\title-frame.lua"/>
   <Script file="src\ui\widgets\text-frame.lua"/>
   <Script file="src\ui\widgets\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\window.lua"/>
+
+  <Script file="src\ui\widgets\options\option-button.lua"/>
+  <Script file="src\ui\widgets\options\option-heading.lua"/>
+  <Script file="src\ui\widgets\options\options-frame.lua"/>
 
   <Script file="src\ui\main-window\options.lua"/>
   <Script file="src\ui\main-window\main-window.lua"/>

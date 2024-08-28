@@ -1,3 +1,4 @@
+local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 
 --- @class Widgets
@@ -26,5 +27,17 @@ do -- Widget:Padding()
       cache[tostring(multiplier)] = value
     end
     return value
+  end
+end
+
+do -- Widget:GetUniqueName()
+  local ids = {}
+
+  --- Returns a unique variant of the given `widgetName`.
+  --- @param widgetName string
+  --- @return string
+  function Widgets:GetUniqueName(widgetName)
+    ids[widgetName] = (ids[widgetName] or 0) + 1
+    return ("%s_%s%s"):format(ADDON_NAME, widgetName, ids[widgetName])
   end
 end
