@@ -24,6 +24,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return ListFrameWidget frame
 function Widgets:ListFrame(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("ListFrame"))
   options.titleText = options.list.name
   options.titleJustify = "LEFT"
 

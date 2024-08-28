@@ -23,7 +23,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return OptionButtonWidget frame
 function Widgets:OptionButton(options)
   -- Defaults.
-  options.name = Widgets:GetUniqueName("OptionButton")
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("OptionButton"))
   options.frameType = "Button"
 
   if options.tooltipText then

@@ -35,6 +35,7 @@ end
 --- @return WindowWidget frame
 function Widgets:Window(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Window"))
   options.points = Addon:IfNil(options.points, { { "CENTER" } })
   options.width = Addon:IfNil(options.width, 675)
   options.height = Addon:IfNil(options.height, 500)

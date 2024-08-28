@@ -20,7 +20,7 @@ function Widgets:OptionsFrame(options)
   local CHILD_SPACING = Widgets:Padding()
 
   -- Defaults.
-  options.name = Widgets:GetUniqueName("OptionsFrame")
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("OptionsFrame"))
   options.titleJustify = "CENTER"
 
   --- @class OptionsFrameWidget : ScrollableTitleFrameWidget

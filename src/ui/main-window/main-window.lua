@@ -168,6 +168,7 @@ MainWindow.frame = (function()
 
   -- Options frame.
   frame.optionsFrame = Widgets:OptionsFrame({
+    name = "$parent_OptionsFrame",
     parent = frame,
     points = {
       { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },

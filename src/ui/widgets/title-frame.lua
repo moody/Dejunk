@@ -29,6 +29,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return TitleFrameWidget frame
 function Widgets:TitleFrame(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("TitleFrame"))
   options.frameType = "Frame"
   options.titleText = Addon:IfNil(options.titleText, ADDON_NAME)
   options.titleTemplate = Addon:IfNil(options.titleTemplate, "GameFontNormal")
@@ -74,6 +75,7 @@ end
 --- @return TitleFrameIconButtonWidget frame
 function Widgets:TitleFrameIconButton(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("TitleFrameIconButton"))
   options.frameType = "Button"
 
   --- @class TitleFrameIconButtonWidget : FrameWidget, Button

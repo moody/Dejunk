@@ -26,6 +26,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return FrameWidget frame
 function Widgets:Frame(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Frame"))
   options.frameType = Addon:IfNil(options.frameType, "Frame")
   options.parent = Addon:IfNil(options.parent, UIParent)
   options.width = Addon:IfNil(options.width, 1)

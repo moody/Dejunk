@@ -35,6 +35,7 @@ function Widgets:ItemsFrame(options)
   local SPACING = Widgets:Padding()
 
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("ItemsFrame"))
   options.titleTemplate = nil
   options.titleJustify = Addon:IfNil(options.titleJustify, "CENTER")
   options.numButtons = Addon:IfNil(options.numButtons, 7)
@@ -151,6 +152,7 @@ end
 --- @return ItemButtonWidget frame
 function Widgets:ItemButton(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("ItemButton"))
   options.frameType = "Button"
   options.onUpdateTooltip = Addon:IfNil(options.onUpdateTooltip, function(self, tooltip)
     tooltip:SetHyperlink(self.item.link)

@@ -22,6 +22,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return ButtonWidget frame
 function Widgets:Button(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Button"))
   options.frameType = "Button"
   options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
 

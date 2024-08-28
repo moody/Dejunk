@@ -23,7 +23,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return OptionHeadingWidget frame
 function Widgets:OptionHeading(options)
   --- Defaults.
-  options.name = Widgets:GetUniqueName("OptionHeading")
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("OptionHeading"))
   options.headingColor = Addon:IfNil(options.headingColor, Colors.Blue)
   options.headingJustify = Addon:IfNil(options.headingJustify, "LEFT")
   options.headingTemplate = Addon:IfNil(options.headingTemplate, "GameFontNormal")
