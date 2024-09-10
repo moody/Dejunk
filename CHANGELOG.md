@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+
+- Addon compartment support for retail
+
 ## [1.10.8] - 2024-08-21
 
 ### Fixed
