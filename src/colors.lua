@@ -30,8 +30,8 @@ local function createColor(hex)
   end
 
   --- Returns the color's normalized RGBA values.
-  --- @param alpha number normalized alpha (optional override)
-  --- @return number r, number g, number b, number a
+  --- @param alpha? number normalized alpha (optional override)
+  --- @return number r, number g, number b, number? a
   function wrapper:GetRGBA(alpha)
     local r, g, b, a = color:GetRGBA()
     return r, g, b, alpha or a
@@ -53,6 +53,8 @@ end
 -- Colors
 -- =============================================================================
 
+Colors.Backdrop = createColor("FF121212")
+Colors.Black = createColor("FF000000")
 Colors.Blue = createColor("FF4FAFE3")
 Colors.DarkGrey = createColor("FF1E1E1E")
 Colors.Gold = createColor("FFFFD100")
