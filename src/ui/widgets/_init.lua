@@ -1,5 +1,9 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local StateManager = Addon:GetModule("StateManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -40,4 +44,57 @@ do -- Widget:GetUniqueName()
     ids[widgetName] = (ids[widgetName] or 0) + 1
     return ("%s_%s%s"):format(ADDON_NAME, widgetName, ids[widgetName])
   end
+end
+
+--- Configures a `frame` to be draggable.
+--- @param frame Frame | any
+function Widgets:ConfigureForDrag(frame)
+  frame:SetFrameStrata("HIGH")
+  frame:SetMovable(true)
+  frame:EnableMouse(true)
+  frame:SetClampedToScreen(true)
+  frame:RegisterForDrag("LeftButton")
+  frame:SetScript("OnDragStart", frame.StartMoving)
+  frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
+end
+
+--- Configures a draggable `frame` to refresh or save its point based on certain events.
+--- @param frame Frame | any
+--- @param stateType "MainWindow" | "JunkFrame" | "TransportFrame" | "MerchantButton"
+function Widgets:ConfigureForPointSync(frame, stateType)
+  local getPoint, setPoint
+
+  if stateType == "MainWindow" then
+    getPoint = function() return StateManager:GetGlobalState().points.mainWindow end
+    setPoint = function(point) StateManager:Dispatch(Actions:SetMainWindowPoint(point)) end
+  elseif stateType == "JunkFrame" then
+    getPoint = function() return StateManager:GetGlobalState().points.junkFrame end
+    setPoint = function(point) StateManager:Dispatch(Actions:SetJunkFramePoint(point)) end
+  elseif stateType == "TransportFrame" then
+    getPoint = function() return StateManager:GetGlobalState().points.transportFrame end
+    setPoint = function(point) StateManager:Dispatch(Actions:SetTransportFramePoint(point)) end
+  elseif stateType == "MerchantButton" then
+    getPoint = function() return StateManager:GetGlobalState().points.merchantButton end
+    setPoint = function(point) StateManager:Dispatch(Actions:SetMerchantButtonPoint(point)) end
+  end
+
+  local function refresh()
+    local p = getPoint()
+    frame:ClearAllPoints()
+    frame:SetPoint(p.point, nil, p.relativePoint, p.offsetX, p.offsetY)
+  end
+
+  local function save()
+    local point, _, relativePoint, offsetX, offsetY = frame:GetPoint()
+    setPoint({
+      point = point,
+      relativePoint = relativePoint,
+      offsetX = offsetX,
+      offsetY = offsetY
+    })
+  end
+
+  EventManager:On(E.StateUpdated, refresh)
+  frame:HookScript("OnShow", refresh)
+  frame:HookScript("OnDragStop", save)
 end

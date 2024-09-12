@@ -38,6 +38,9 @@ GLOBAL_DEFAULT_STATE.itemTooltips = true
 GLOBAL_DEFAULT_STATE.merchantButton = true
 GLOBAL_DEFAULT_STATE.minimapIcon = { hide = false }
 GLOBAL_DEFAULT_STATE.points = {
+  mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+  junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+  transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
   merchantButton = { point = "TOPLEFT", relativePoint = "TOPLEFT", offsetX = 75, offsetY = -145 }
 }
 
@@ -110,6 +113,49 @@ Reducers.globalReducer = Wux:CombineReducers({
 
   -- Points.
   points = Wux:CombineReducers({
+    -- Points -> MainWindow.
+    mainWindow = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.mainWindow)
+
+      if action.type == Actions.Types.Global.SET_MAIN_WINDOW_POINT then
+        return action.payload
+      end
+
+      if action.type == Actions.Types.Global.RESET_MAIN_WINDOW_POINT then
+        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.mainWindow)
+      end
+
+      return state
+    end,
+    -- Points -> JunkFrame.
+    junkFrame = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.junkFrame)
+
+      if action.type == Actions.Types.Global.SET_JUNK_FRAME_POINT then
+        return action.payload
+      end
+
+      if action.type == Actions.Types.Global.RESET_JUNK_FRAME_POINT then
+        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.junkFrame)
+      end
+
+      return state
+    end,
+    -- Points -> TransportFrame.
+    transportFrame = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.transportFrame)
+
+      if action.type == Actions.Types.Global.SET_TRANSPORT_FRAME_POINT then
+        return action.payload
+      end
+
+      if action.type == Actions.Types.Global.RESET_TRANSPORT_FRAME_POINT then
+        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.transportFrame)
+      end
+
+      return state
+    end,
+    -- Points -> MerchantButton.
     merchantButton = function(state, action)
       state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.merchantButton)
 

@@ -6,6 +6,12 @@ local Actions = Addon:GetModule("Actions")
 
 Actions.Types = {
   Global = {
+    SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
+    RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
+    SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
+    RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
+    SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
+    RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
     RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset"
   }
@@ -55,6 +61,39 @@ end
 --- @return WuxAction
 function Actions:SetGlobalExclusions(value)
   return { type = "global/exclusions/set", payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetMainWindowPoint(value)
+  return { type = Actions.Types.Global.SET_MAIN_WINDOW_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetMainWindowPoint()
+  return { type = Actions.Types.Global.RESET_MAIN_WINDOW_POINT }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetJunkFramePoint(value)
+  return { type = Actions.Types.Global.SET_JUNK_FRAME_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetJunkFramePoint()
+  return { type = Actions.Types.Global.RESET_JUNK_FRAME_POINT }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetTransportFramePoint(value)
+  return { type = Actions.Types.Global.SET_TRANSPORT_FRAME_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetTransportFramePoint()
+  return { type = Actions.Types.Global.RESET_TRANSPORT_FRAME_POINT }
 end
 
 --- @param value table

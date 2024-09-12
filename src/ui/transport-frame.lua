@@ -47,7 +47,8 @@ TransportFrame.frame = (function()
     width = 325,
     height = 375
   })
-  frame:SetFrameLevel(frame:GetFrameLevel() + 2)
+
+  Widgets:ConfigureForPointSync(frame, "TransportFrame")
 
   frame:HookScript("OnUpdate", function(self)
     if not self.list then return end

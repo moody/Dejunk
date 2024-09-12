@@ -49,17 +49,10 @@ function Widgets:Window(options)
   frame.titleButton:EnableMouse(false)
   setFrameLevel(frame)
 
+  Widgets:ConfigureForDrag(frame)
+
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())
-
-  -- Make frame moveable.
-  frame:SetFrameStrata("HIGH")
-  frame:SetMovable(true)
-  frame:EnableMouse(true)
-  frame:SetClampedToScreen(true)
-  frame:RegisterForDrag("LeftButton")
-  frame:SetScript("OnDragStart", frame.StartMoving)
-  frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
   -- Close button.
   frame.closeButton = self:TitleFrameIconButton({

@@ -52,6 +52,12 @@ function StateManager:GetStore()
   return _Store
 end
 
+--- Convenience method. Equivalent to `StateManager:GetStore():Dispatch()`.
+--- @param action WuxAction
+function StateManager:Dispatch(action)
+  _Store:Dispatch(action)
+end
+
 --- Returns true if `perchar.characterSpecificSettings` is enabled.
 --- @return boolean
 function StateManager:IsCharacterSpecificSettings()

@@ -74,6 +74,8 @@ JunkFrame.frame = (function()
   })
   frame.items = {}
 
+  Widgets:ConfigureForPointSync(frame, "JunkFrame")
+
   -- Start selling button.
   frame.startSellingButton = Widgets:Button({
     name = "$parent_StartSellingButton",

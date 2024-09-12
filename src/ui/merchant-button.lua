@@ -9,6 +9,7 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local Tooltip = Addon:GetModule("Tooltip")
+local Widgets = Addon:GetModule("Widgets")
 
 local junkItems = {}
 
@@ -19,46 +20,18 @@ EventManager:Once(E.Wow.MerchantShow, function()
   frame:SetWidth(90)
   frame:SetHeight(22)
 
-  frame:SetFrameStrata("HIGH")
-  frame:SetMovable(true)
-  frame:EnableMouse(true)
-  frame:SetClampedToScreen(true)
-  frame:RegisterForDrag("LeftButton")
+  Widgets:ConfigureForDrag(frame)
+  Widgets:ConfigureForPointSync(frame, "MerchantButton")
 
   -- MerchantFrame OnUpdate.
   MerchantFrame:HookScript("OnUpdate", function()
     if StateManager:GetGlobalState().merchantButton then frame:Show() else frame:Hide() end
   end)
 
-  do -- Refresh the frame's point on certain events.
-    local function refreshPoint()
-      local state = StateManager:GetGlobalState().points.merchantButton
-      frame:ClearAllPoints()
-      frame:SetPoint(state.point, nil, state.relativePoint, state.offsetX, state.offsetY)
-    end
-
-    EventManager:On(E.StateUpdated, refreshPoint)
-    frame:SetScript("OnShow", refreshPoint)
-  end
-
   -- OnDragStart.
-  frame:SetScript("OnDragStart", function()
-    frame:StartMoving(true)
+  frame:HookScript("OnDragStart", function()
     frame:GetScript("OnMouseUp")(frame)
     Tooltip:Hide()
-  end)
-
-  -- OnDragStop.
-  frame:SetScript("OnDragStop", function()
-    frame:StopMovingOrSizing()
-
-    local point, _, relativePoint, offsetX, offsetY = frame:GetPoint()
-    StateManager:GetStore():Dispatch(Actions:SetMerchantButtonPoint({
-      point = point,
-      relativePoint = relativePoint,
-      offsetX = offsetX,
-      offsetY = offsetY
-    }))
   end)
 
   -- OnUpdate.

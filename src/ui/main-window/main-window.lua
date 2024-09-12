@@ -56,6 +56,8 @@ MainWindow.frame = (function()
     titleText = Colors.Blue(ADDON_NAME),
   })
 
+  Widgets:ConfigureForPointSync(frame, "MainWindow")
+
   -- Version text.
   frame.versionText = frame.titleButton:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
   frame.versionText:SetPoint("CENTER")
