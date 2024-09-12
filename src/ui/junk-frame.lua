@@ -199,7 +199,8 @@ JunkFrame.frame = (function()
   frame.itemsFrame:HookScript("OnUpdate", function(self)
     local totalJunkValue = 0
     for _, item in pairs(frame.items) do
-      totalJunkValue = totalJunkValue + item.price * item.quantity
+      local itemValue = item.noValue and 0 or (item.price * item.quantity)
+      totalJunkValue = totalJunkValue + itemValue
     end
     self.title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
   end)
