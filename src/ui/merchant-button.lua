@@ -76,14 +76,14 @@ EventManager:Once(E.Wow.MerchantShow, function()
   -- OnClick.
   frame:SetScript("OnClick", function(self, button)
     if button == "LeftButton" then
-      Commands.sell()
+      if IsShiftKeyDown() then Commands.junk() else Commands.sell() end
     end
 
     if button == "RightButton" then
       if IsShiftKeyDown() then
         StateManager:GetStore():Dispatch(Actions:ResetMerchantButtonPoint())
       else
-        Commands.junk()
+        Commands.options()
       end
     end
   end)
@@ -93,7 +93,8 @@ EventManager:Once(E.Wow.MerchantShow, function()
     Tooltip:SetOwner(frame, "ANCHOR_TOPLEFT")
     Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
     Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
-    Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
+    Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+    Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.TOGGLE_JUNK_FRAME))
     Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), L.RESET_POSITION))
     Tooltip:Show()
   end)
