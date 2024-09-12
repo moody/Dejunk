@@ -6,6 +6,15 @@
 
 - Addon compartment support for retail
 
+### Changed
+
+- Merchant Button is now draggable
+- Left-Click on Merchant Button initiates selling
+- Right-Click on Merchant Button toggles the Options Frame
+- Shift + Left-Click on Merchant Button toggles the Junk Frame
+- Shift + Right-Click on Merchant Button resets its position
+- Items listed in the Junk Frame no longer have a price displayed when they have no value
+
 ## [1.10.8] - 2024-08-21
 
 ### Fixed
