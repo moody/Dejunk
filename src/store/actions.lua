@@ -4,6 +4,13 @@ local StateManager = Addon:GetModule("StateManager")
 --- @class Actions
 local Actions = Addon:GetModule("Actions")
 
+Actions.Types = {
+  Global = {
+    SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
+    RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset"
+  }
+}
+
 -- ============================================================================
 -- Global
 -- ============================================================================
@@ -48,6 +55,17 @@ end
 --- @return WuxAction
 function Actions:SetGlobalExclusions(value)
   return { type = "global/exclusions/set", payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetMerchantButtonPoint(value)
+  return { type = Actions.Types.Global.SET_MERCHANT_BUTTON_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetMerchantButtonPoint()
+  return { type = Actions.Types.Global.RESET_MERCHANT_BUTTON_POINT }
 end
 
 -- ============================================================================

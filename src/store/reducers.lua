@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
 local Wux = Addon.Wux
 
 --- @class Reducers
@@ -36,6 +37,9 @@ GLOBAL_DEFAULT_STATE.itemIcons = false
 GLOBAL_DEFAULT_STATE.itemTooltips = true
 GLOBAL_DEFAULT_STATE.merchantButton = true
 GLOBAL_DEFAULT_STATE.minimapIcon = { hide = false }
+GLOBAL_DEFAULT_STATE.points = {
+  merchantButton = { point = "TOPLEFT", relativePoint = "TOPLEFT", offsetX = 75, offsetY = -145 }
+}
 
 -- Per character default state.
 --- @class PercharState : DefaultState
@@ -103,6 +107,23 @@ Reducers.globalReducer = Wux:CombineReducers({
 
     return state
   end,
+
+  -- Points.
+  points = Wux:CombineReducers({
+    merchantButton = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.merchantButton)
+
+      if action.type == Actions.Types.Global.SET_MERCHANT_BUTTON_POINT then
+        return action.payload
+      end
+
+      if action.type == Actions.Types.Global.RESET_MERCHANT_BUTTON_POINT then
+        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.merchantButton)
+      end
+
+      return state
+    end,
+  }),
 
   -- Auto junk frame.
   autoJunkFrame = function(state, action)
