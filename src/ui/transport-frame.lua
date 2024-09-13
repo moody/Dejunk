@@ -1,7 +1,9 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
+local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class TransportFrame
@@ -62,8 +64,13 @@ TransportFrame.frame = (function()
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_TransportFrame",
     width = 325,
-    height = 375
+    height = 375,
+    enableClickHandling = true
   })
+
+  frame:SetClickHandler("RightButton", "SHIFT", function()
+    StateManager:Dispatch(Actions:ResetTransportFramePoint())
+  end)
 
   Widgets:ConfigureForPointSync(frame, "TransportFrame")
 

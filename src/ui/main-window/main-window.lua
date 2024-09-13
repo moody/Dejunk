@@ -1,10 +1,12 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
+local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class MainWindow
@@ -54,7 +56,12 @@ MainWindow.frame = (function()
     width = TOTAL_FRAME_WIDTH,
     height = 600,
     titleText = Colors.Blue(ADDON_NAME),
+    enableClickHandling = true
   })
+
+  frame:SetClickHandler("RightButton", "SHIFT", function()
+    StateManager:Dispatch(Actions:ResetMainWindowPoint())
+  end)
 
   Widgets:ConfigureForPointSync(frame, "MainWindow")
 
