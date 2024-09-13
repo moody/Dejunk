@@ -125,25 +125,13 @@ JunkFrame.frame = (function()
     -- Title.
     self.title:SetText(Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#self.items))))
 
-    -- Update button state.
-    if #self.items > 0 then
-      self.startSellingButton:Show()
-      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
-
-      self.destroyNextItemButton:Show()
-      self.destroyNextItemButton:SetEnabled(true)
-
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", self.destroyNextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5))
-    else
-      self.startSellingButton:Hide()
-      self.destroyNextItemButton:Hide()
-      self.itemsFrame:SetPoint("BOTTOMRIGHT", self, -Widgets:Padding(), Widgets:Padding())
-    end
-
-    -- Disable buttons if busy.
+    -- Buttons.
     if Addon:IsBusy() then
       self.startSellingButton:SetEnabled(false)
       self.destroyNextItemButton:SetEnabled(false)
+    else
+      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
+      self.destroyNextItemButton:SetEnabled(#self.items > 0)
     end
   end)
 
@@ -151,7 +139,10 @@ JunkFrame.frame = (function()
   frame.itemsFrame = Widgets:ItemsFrame({
     name = "$parent_ItemsFrame",
     parent = frame,
-    points = { { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 } },
+    points = {
+      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
+      { "BOTTOMRIGHT", frame.destroyNextItemButton, "TOPRIGHT", 0, Widgets:Padding(0.5) }
+    },
     displayPrice = true,
     titleText = Colors.White(L.JUNK_ITEMS),
     onUpdateTooltip = function(self, tooltip)
