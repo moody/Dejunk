@@ -274,8 +274,8 @@ end
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
-  return refundTimeRemaining and refundTimeRemaining > 0
+  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false)
+  return purchaseInfo and purchaseInfo.refundSeconds > 0
 end
 
 -- Items:IsItemEquipment()
