@@ -8,6 +8,24 @@ local Widgets = Addon:GetModule("Widgets")
 local TransportFrame = Addon:GetModule("TransportFrame")
 
 -- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Sets the edit box text for the `frame` to comma-separated item IDs from the associated list.
+--- @param frame TransportFrameWidget
+local function export(frame)
+  -- Set edit box text.
+  local editBox = frame.textFrame.editBox
+  local itemIds = frame.list:GetItemIds()
+  editBox:SetText(table.concat(itemIds, ","))
+  -- Select all.
+  local numLetters = editBox:GetNumLetters()
+  editBox:SetFocus()
+  editBox:HighlightText(0, numLetters)
+  editBox:SetCursorPosition(numLetters)
+end
+
+-- ============================================================================
 -- TransportFrame
 -- ============================================================================
 
@@ -15,9 +33,8 @@ local TransportFrame = Addon:GetModule("TransportFrame")
 --- @param list List
 function TransportFrame:Show(list)
   self.frame.list = list
-  self.frame.textFrame.editBox:SetText("")
-  self.frame.textFrame.editBox:ClearFocus()
   self.frame:Show()
+  export(self.frame)
 end
 
 --- Hides the frame.
@@ -90,17 +107,7 @@ TransportFrame.frame = (function()
     },
     labelText = L.EXPORT,
     labelColor = Colors.Yellow,
-    onClick = function(self)
-      -- Set edit box text.
-      local editBox = frame.textFrame.editBox
-      local itemIds = frame.list:GetItemIds()
-      editBox:SetText(table.concat(itemIds, ","))
-      -- Select all.
-      local numLetters = editBox:GetNumLetters()
-      editBox:SetFocus()
-      editBox:HighlightText(0, numLetters)
-      editBox:SetCursorPosition(numLetters)
-    end
+    onClick = function() export(frame) end
   })
 
   -- Text frame.
