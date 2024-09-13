@@ -14,6 +14,7 @@
 - Shift + Left-Click on Merchant Button toggles the Junk Frame
 - Shift + Right-Click on Merchant Button resets its position
 - Items listed in the Junk Frame no longer have a price displayed when they have no value
+- Opening the Transport Frame now automatically exports the associated list
 
 ## [1.10.8] - 2024-08-21
 
