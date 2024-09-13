@@ -16,6 +16,10 @@
 - Items listed in the Junk Frame no longer have a price displayed when they have no value
 - Opening the Transport Frame now automatically exports the associated list
 
+### Fixed
+
+- Resolved a bug which caused refundable junk items to not be ignored
+
 ## [1.10.8] - 2024-08-21
 
 ### Fixed
