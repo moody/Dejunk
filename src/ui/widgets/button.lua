@@ -29,49 +29,52 @@ function Widgets:Button(options)
   ---@class ButtonWidget : FrameWidget, Button
   local frame = self:Frame(options)
   frame.onClick = options.onClick
-  frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-  frame:SetBackdropBorderColor(0, 0, 0, 1)
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(options.labelText)
-  frame.label:SetTextColor(options.labelColor:GetRGBA(1))
   frame.label:SetPoint("LEFT", frame, self:Padding(0.5), 0)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame:SetFontString(frame.label)
   frame:SetHeight(frame.label:GetHeight() + Widgets:Padding(2))
 
-  -- OnClick.
+  local function setNormalColors()
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+    frame:SetBackdropBorderColor(0, 0, 0, 1)
+    frame.label:SetTextColor(options.labelColor:GetRGBA(1))
+  end
+
+  local function setHighlightColors()
+    frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
+    frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
+    frame.label:SetTextColor(Colors.White:GetRGBA(1))
+  end
+
+  local function setDisabledColors()
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
+    frame:SetBackdropBorderColor(0, 0, 0, 1)
+    frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
+  end
+
+  -- Initialize colors.
+  setNormalColors()
+
+  -- Scripts.
   frame:SetScript("OnClick", function(self, button)
     if self.onClick then self.onClick(self, button) end
   end)
 
-  -- OnEnter.
-  frame:HookScript("OnEnter", function(self)
-    self:SetBackdropColor(options.labelColor:GetRGBA(0.25))
-    self:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
-    self.label:SetTextColor(Colors.White:GetRGBA(1))
-  end)
+  frame:HookScript("OnEnter", setHighlightColors)
+  frame:HookScript("OnLeave", setNormalColors)
 
-  -- OnLeave.
-  frame:HookScript("OnLeave", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-    self:SetBackdropBorderColor(0, 0, 0, 1)
-    self.label:SetTextColor(options.labelColor:GetRGBA(1))
-  end)
-
-  -- OnEnable.
-  frame:SetScript("OnEnable", function(self)
-    local script = self:IsMouseOver() and "OnEnter" or "OnLeave"
-    self:GetScript(script)(self)
-  end)
-
-  -- OnDisable.
-  frame:SetScript("OnDisable", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    self:SetBackdropBorderColor(0, 0, 0, 1)
-    self.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
+  frame:HookScript("OnDisable", setDisabledColors)
+  frame:HookScript("OnEnable", function()
+    if frame:IsMouseOver() then
+      setHighlightColors()
+    else
+      setNormalColors()
+    end
   end)
 
   return frame
