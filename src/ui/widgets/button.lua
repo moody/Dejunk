@@ -35,11 +35,12 @@ function Widgets:Button(options)
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(options.labelText)
-  frame.label:SetTextColor(options.labelColor:GetRGB())
+  frame.label:SetTextColor(options.labelColor:GetRGBA(1))
   frame.label:SetPoint("LEFT", frame, self:Padding(0.5), 0)
   frame.label:SetPoint("RIGHT", frame, -self:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame:SetFontString(frame.label)
+  frame:SetHeight(frame.label:GetHeight() + Widgets:Padding(2))
 
   -- OnClick.
   frame:SetScript("OnClick", function(self, button)
@@ -49,21 +50,28 @@ function Widgets:Button(options)
   -- OnEnter.
   frame:HookScript("OnEnter", function(self)
     self:SetBackdropColor(options.labelColor:GetRGBA(0.25))
-    self:SetBackdropBorderColor(options.labelColor:GetRGB())
-    self.label:SetTextColor(Colors.White:GetRGB())
+    self:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
+    self.label:SetTextColor(Colors.White:GetRGBA(1))
   end)
 
   -- OnLeave.
   frame:HookScript("OnLeave", function(self)
     self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
     self:SetBackdropBorderColor(0, 0, 0, 1)
-    self.label:SetTextColor(options.labelColor:GetRGB())
+    self.label:SetTextColor(options.labelColor:GetRGBA(1))
   end)
 
-  -- OnUpdate.
-  frame:SetScript("OnUpdate", function(self)
-    self:SetHeight(self.label:GetHeight() + Widgets:Padding(2))
-    self:SetAlpha(self:IsEnabled() and 1 or 0.5)
+  -- OnEnable.
+  frame:SetScript("OnEnable", function(self)
+    local script = self:IsMouseOver() and "OnEnter" or "OnLeave"
+    self:GetScript(script)(self)
+  end)
+
+  -- OnDisable.
+  frame:SetScript("OnDisable", function(self)
+    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
+    self:SetBackdropBorderColor(0, 0, 0, 1)
+    self.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
   end)
 
   return frame
