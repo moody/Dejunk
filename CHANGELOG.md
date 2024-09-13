@@ -12,7 +12,8 @@
 - Left-Click on Merchant Button initiates selling
 - Right-Click on Merchant Button toggles the Options Frame
 - Shift + Left-Click on Merchant Button toggles the Junk Frame
-- Shift + Right-Click on Merchant Button resets its position
+- Positions of draggable frames are now saved globally
+- Shift + Right-Click on a draggable frame will reset its position
 - Items listed in the Junk Frame no longer have a price displayed when they have no value
 - Opening the Transport Frame now automatically exports the associated list
 
