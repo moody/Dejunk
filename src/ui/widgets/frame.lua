@@ -29,7 +29,7 @@ local ModifierValues = {
   ALT = 4
 }
 
---- @enum (key) WidgetFrameClickModifierType
+--- @enum (key) FrameWidgetClickModifierType
 local ModifierTypes = {
   NONE = 0,
   SHIFT = ModifierValues.SHIFT,
@@ -99,7 +99,7 @@ function Widgets:Frame(options)
 
   -- Click handling.
   if options.enableClickHandling then
-    --- @enum (key) WidgetFrameMouseButtonType
+    --- @enum (key) FrameWidgetMouseButtonType
     local clickHandlers = {
       LeftButton = {},
       RightButton = {},
@@ -119,8 +119,8 @@ function Widgets:Frame(options)
 
     --- Registers a `clickHandler` to be executed when the frame is clicked
     --- with the specified `buttonType` and `modifierType` combination.
-    --- @param buttonType WidgetFrameMouseButtonType
-    --- @param modifierType WidgetFrameClickModifierType
+    --- @param buttonType FrameWidgetMouseButtonType
+    --- @param modifierType FrameWidgetClickModifierType
     --- @param clickHandler fun()
     function frame:SetClickHandler(buttonType, modifierType, clickHandler)
       local modifierValue = ModifierTypes[modifierType]
