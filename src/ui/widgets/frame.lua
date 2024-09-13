@@ -17,6 +17,36 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field width? integer
 --- @field height? integer
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
+--- @field enableClickHandling? boolean
+
+-- =============================================================================
+-- Modifier (Click Handling)
+-- =============================================================================
+
+local ModifierValues = {
+  SHIFT = 1,
+  CONTROL = 2,
+  ALT = 4
+}
+
+--- @enum (key) WidgetFrameClickModifierType
+local ModifierTypes = {
+  NONE = 0,
+  SHIFT = ModifierValues.SHIFT,
+  CONTROL = ModifierValues.CONTROL,
+  ALT = ModifierValues.ALT,
+  SHIFT_CONTROL = ModifierValues.SHIFT + ModifierValues.CONTROL,
+  SHIFT_ALT = ModifierValues.SHIFT + ModifierValues.ALT,
+  CONTROL_ALT = ModifierValues.CONTROL + ModifierValues.ALT,
+  SHIFT_CONTROL_ALT = ModifierValues.SHIFT + ModifierValues.CONTROL + ModifierValues.ALT,
+}
+
+local function getCurrentModifierValue()
+  local shift = IsShiftKeyDown() and ModifierValues.SHIFT or 0
+  local control = IsControlKeyDown() and ModifierValues.CONTROL or 0
+  local alt = IsLeftAltKeyDown() and ModifierValues.ALT or 0
+  return shift + control + alt
+end
 
 -- =============================================================================
 -- Widgets - Frame
@@ -65,6 +95,37 @@ function Widgets:Frame(options)
 
     frame:SetScript("OnEnter", frame.UpdateTooltip)
     frame:SetScript("OnLeave", function() Tooltip:Hide() end)
+  end
+
+  -- Click handling.
+  if options.enableClickHandling then
+    --- @enum (key) WidgetFrameMouseButtonType
+    local clickHandlers = {
+      LeftButton = {},
+      RightButton = {},
+      MiddleButton = {},
+      Button4 = {},
+      Button5 = {}
+    }
+
+    -- OnMouseUp.
+    frame:SetScript("OnMouseUp", function(_, button, upInside)
+      if not (upInside and type(button) == "string") then return end
+      local modifierValue = getCurrentModifierValue()
+      local buttonHandlers = clickHandlers[button]
+      if not (buttonHandlers and buttonHandlers[modifierValue]) then return end
+      buttonHandlers[modifierValue]()
+    end)
+
+    --- Registers a `clickHandler` to be executed when the frame is clicked
+    --- with the specified `buttonType` and `modifierType` combination.
+    --- @param buttonType WidgetFrameMouseButtonType
+    --- @param modifierType WidgetFrameClickModifierType
+    --- @param clickHandler fun()
+    function frame:SetClickHandler(buttonType, modifierType, clickHandler)
+      local modifierValue = ModifierTypes[modifierType]
+      clickHandlers[buttonType][modifierValue] = clickHandler
+    end
   end
 
   return frame
