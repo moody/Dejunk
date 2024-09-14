@@ -5,6 +5,7 @@
 ### Added
 
 - Addon compartment support for retail
+- Option: `Exclude Warbound Equipment` for retail
 
 ### Changed
 
