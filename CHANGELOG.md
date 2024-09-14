@@ -16,6 +16,7 @@
 - Shift + Right-Click on a draggable frame will reset its position
 - Items listed in the Junk Frame no longer have a price displayed when they have no value
 - Opening the Transport Frame now automatically exports the associated list
+- Right-Clicking the `Include Below Item Level` option is now required to change the value
 
 ### Fixed
 
