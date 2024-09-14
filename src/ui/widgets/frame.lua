@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local TickerManager = Addon:GetModule("TickerManager")
 local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class Widgets
@@ -18,6 +19,22 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field height? integer
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 --- @field enableClickHandling? boolean
+--- @field assignFrameLevel? boolean
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local assignFrameLevel
+do
+  local prevLevel = 0
+  assignFrameLevel = function(frame)
+    local level = prevLevel + 1
+    prevLevel = level
+    -- Delay to avoid overwrites from existing values in `{character}/layout-local.txt`.
+    TickerManager:After(1, function() frame:SetFrameLevel(level) end)
+  end
+end
 
 -- =============================================================================
 -- Modifier (Click Handling)
@@ -76,6 +93,11 @@ function Widgets:Frame(options)
   -- Size.
   frame:SetWidth(options.width)
   frame:SetHeight(options.height)
+
+  -- Frame level.
+  if options.assignFrameLevel then
+    assignFrameLevel(frame)
+  end
 
   -- Points.
   if options.points then

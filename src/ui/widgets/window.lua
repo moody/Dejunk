@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
-local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -10,21 +9,6 @@ local Widgets = Addon:GetModule("Widgets")
 -- ============================================================================
 
 --- @class WindowWidgetOptions : TitleFrameWidgetOptions
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
-local setFrameLevel
-do
-  local prevLevel = 0
-  setFrameLevel = function(frame)
-    local level = prevLevel + 1
-    prevLevel = level
-    -- Delay to avoid overwrites from existing values in `{character}/layout-local.txt`.
-    TickerManager:After(1, function() frame:SetFrameLevel(level) end)
-  end
-end
 
 -- ============================================================================
 -- Window
@@ -39,7 +23,7 @@ function Widgets:Window(options)
   options.points = Addon:IfNil(options.points, { { "CENTER" } })
   options.width = Addon:IfNil(options.width, 675)
   options.height = Addon:IfNil(options.height, 500)
-  options.onUpdateTooltip = nil
+  options.assignFrameLevel = true
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
 
@@ -47,7 +31,6 @@ function Widgets:Window(options)
   local frame = self:TitleFrame(options)
   frame.titleButton:SetBackdrop(nil)
   frame.titleButton:EnableMouse(false)
-  setFrameLevel(frame)
 
   Widgets:ConfigureForDrag(frame)
 
