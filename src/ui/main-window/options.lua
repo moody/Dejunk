@@ -112,29 +112,34 @@ function MainWindowOptions:Initialize(optionsFrame)
   end
 
   -- Include below item level.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
-    onUpdateTooltip = function(self, tooltip)
-      local itemLevel = Colors.White(StateManager:GetCurrentState().includeBelowItemLevel.value)
-      tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
-      tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
-    end,
-    get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
-    set = function(value)
-      if value then
-        local currentState = StateManager:GetCurrentState()
-        Popup:GetInteger({
-          text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
-          initialValue = currentState.includeBelowItemLevel.value,
-          onAccept = function(self, value)
-            StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = true, value = value }))
-          end
-        })
-      else
-        StateManager:GetStore():Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value }))
-      end
-    end
-  }))
+  do
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
+      get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
+      set = function(value) StateManager:Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value })) end,
+      enableClickHandling = true,
+      onUpdateTooltip = function(self, tooltip)
+        local itemLevel = Colors.White(StateManager:GetCurrentState().includeBelowItemLevel.value)
+        tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
+        tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
+      end,
+    })
+
+    frame:SetClickHandler("RightButton", "NONE", function()
+      local currentState = StateManager:GetCurrentState()
+      Popup:GetInteger({
+        text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
+        initialValue = currentState.includeBelowItemLevel.value,
+        onAccept = function(self, value)
+          StateManager:Dispatch(Actions:PatchIncludeBelowItemLevel({ value = value }))
+        end
+      })
+    end)
+
+    optionsFrame:AddChild(frame)
+  end
 
   -- Include poor items.
   optionsFrame:AddChild(Widgets:OptionButton({
@@ -185,7 +190,7 @@ function MainWindowOptions:Initialize(optionsFrame)
 
   -- Merchant button.
   do
-    local merchantButton = Widgets:OptionButton({
+    local frame = Widgets:OptionButton({
       labelText = L.MERCHANT_BUTTON_TEXT,
       get = function() return StateManager:GetGlobalState().merchantButton end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end,
@@ -198,11 +203,11 @@ function MainWindowOptions:Initialize(optionsFrame)
       end
     })
 
-    merchantButton:SetClickHandler("RightButton", "NONE", function()
+    frame:SetClickHandler("RightButton", "NONE", function()
       StateManager:Dispatch(Actions:ResetMerchantButtonPoint())
     end)
 
-    optionsFrame:AddChild(merchantButton)
+    optionsFrame:AddChild(frame)
   end
 
   -- Minimap icon.
