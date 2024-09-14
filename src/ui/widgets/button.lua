@@ -30,6 +30,11 @@ function Widgets:Button(options)
   local frame = self:Frame(options)
   frame.onClick = options.onClick
 
+  -- Background texture.
+  frame.background = frame:CreateTexture("$parent_Background", "BACKGROUND")
+  frame.background:SetColorTexture(Colors.Backdrop:GetRGBA(1))
+  frame.background:SetAllPoints()
+
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(options.labelText)
@@ -40,7 +45,7 @@ function Widgets:Button(options)
   frame:SetHeight(frame.label:GetHeight() + Widgets:Padding(2))
 
   local function setNormalColors()
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.95))
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
     frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
     frame.label:SetTextColor(options.labelColor:GetRGBA(1))
   end
