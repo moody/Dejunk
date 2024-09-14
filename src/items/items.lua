@@ -230,13 +230,18 @@ function Items:IsItemLocked(item)
   return true
 end
 
---- Returns `true` if the given `item` is soulbound or account bound.
+--- Returns `true` if the given `item` is soulbound, account bound, or warband bound.
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemBound(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
+
   local success, isBound = pcall(C_Item.IsBound, self.location)
-  if success then return isBound end
+  if success and isBound then return true end
+
+  success, isBound = pcall(C_Item.IsBoundToAccountUntilEquip, self.location)
+  if success and isBound then return true end
+
   return false
 end
 
