@@ -38,7 +38,7 @@ end
 
 MainWindow.frame = (function()
   local NUM_LIST_FRAME_BUTTONS = 7
-  local OPTIONS_FRAME_WIDTH = 250
+  local OPTIONS_FRAME_WIDTH = 275
   local LIST_FRAME_WIDTH = 250
   local TOTAL_FRAME_WIDTH = (
     Widgets:Padding() +
