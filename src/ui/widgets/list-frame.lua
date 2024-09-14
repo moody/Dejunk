@@ -38,6 +38,7 @@ function Widgets:ListFrame(options)
   end
 
   function options.itemButtonOnUpdateTooltip(self, tooltip)
+    tooltip:SetOwner(self, "ANCHOR_RIGHT")
     tooltip:SetHyperlink(self.item.link)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)

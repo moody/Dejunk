@@ -163,6 +163,7 @@ JunkFrame.frame = (function()
       )
     end,
     itemButtonOnUpdateTooltip = function(self, tooltip)
+      tooltip:SetOwner(self, "ANCHOR_RIGHT")
       tooltip:SetBagItem(self.item.bag, self.item.slot)
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
