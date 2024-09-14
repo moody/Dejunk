@@ -6,14 +6,18 @@ local Actions = Addon:GetModule("Actions")
 
 Actions.Types = {
   Global = {
-    SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
-    RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
-    SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
     RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
-    SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
+    RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
+    RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
     RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
+    SET_EXCLUDE_WARBOUND_EQUIPMENT = "global/excludeWarboundEquipment/set",
+    SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
+    SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
-    RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset"
+    SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
+  },
+  Perchar = {
+    SET_EXCLUDE_WARBOUND_EQUIPMENT = "perchar/excludeWarboundEquipment/set",
   }
 }
 
@@ -190,6 +194,15 @@ function Actions:SetExcludeUnboundEquipment(value)
   else
     return { type = "global/excludeUnboundEquipment/set", payload = value }
   end
+end
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetExcludeWarboundEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.SET_EXCLUDE_WARBOUND_EQUIPMENT or
+      Actions.Types.Global.SET_EXCLUDE_WARBOUND_EQUIPMENT
+  return { type = actionType, payload = value }
 end
 
 --- @param value boolean

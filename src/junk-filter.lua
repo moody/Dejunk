@@ -149,6 +149,11 @@ function JunkFilter:IsJunkItem(item)
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
   end
 
+  -- Exclude warbound equipment.
+  if currentState.excludeWarboundEquipment and Items:IsItemWarboundEquipment(item) then
+    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBOUND_EQUIPMENT_TEXT)
+  end
+
   -- Include poor items.
   if currentState.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
