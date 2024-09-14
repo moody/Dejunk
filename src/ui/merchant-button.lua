@@ -11,27 +11,35 @@ local StateManager = Addon:GetModule("StateManager")
 local Tooltip = Addon:GetModule("Tooltip")
 local Widgets = Addon:GetModule("Widgets")
 
+local LABEL_TEXT_FORMAT = ("%s %s"):format(ADDON_NAME, Colors.Grey("(%s)"):format(Colors.White("%s")))
+
 local junkItems = {}
 
 EventManager:Once(E.Wow.MerchantShow, function()
-  local frame = CreateFrame("Button", ADDON_NAME .. "_MerchantButton", MerchantFrame, "UIPanelButtonTemplate")
-  frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-  frame:SetText(ADDON_NAME)
-  frame:SetWidth(90)
-  frame:SetHeight(22)
+  --- @class MerchantButtonWidget : ButtonWidget
+  local frame = Widgets:Button({
+    parent = MerchantFrame,
+    name = ADDON_NAME .. "_MerchantButton",
+    width = 100,
+    labelText = LABEL_TEXT_FORMAT:format(0),
+    labelColor = Colors.Blue,
+    enableClickHandling = true
+  })
 
   Widgets:ConfigureForDrag(frame)
   Widgets:ConfigureForPointSync(frame, "MerchantButton")
 
+  -- Click handlers.
+  frame:SetClickHandler("LeftButton", "NONE", Commands.sell)
+  frame:SetClickHandler("LeftButton", "SHIFT", Commands.junk)
+  frame:SetClickHandler("RightButton", "NONE", Commands.options)
+  frame:SetClickHandler("RightButton", "SHIFT", function()
+    StateManager:Dispatch(Actions:ResetMerchantButtonPoint())
+  end)
+
   -- MerchantFrame OnUpdate.
   MerchantFrame:HookScript("OnUpdate", function()
     if StateManager:GetGlobalState().merchantButton then frame:Show() else frame:Hide() end
-  end)
-
-  -- OnDragStart.
-  frame:HookScript("OnDragStart", function()
-    frame:GetScript("OnMouseUp")(frame)
-    Tooltip:Hide()
   end)
 
   -- OnUpdate.
@@ -43,22 +51,7 @@ EventManager:Once(E.Wow.MerchantShow, function()
     frame.delayTimer = 0
 
     JunkFilter:GetSellableJunkItems(junkItems)
-    frame:SetAlpha(#junkItems > 0 and 1 or 0.5)
-  end)
-
-  -- OnClick.
-  frame:SetScript("OnClick", function(self, button)
-    if button == "LeftButton" then
-      if IsShiftKeyDown() then Commands.junk() else Commands.sell() end
-    end
-
-    if button == "RightButton" then
-      if IsShiftKeyDown() then
-        StateManager:GetStore():Dispatch(Actions:ResetMerchantButtonPoint())
-      else
-        Commands.options()
-      end
-    end
+    frame.label:SetText(LABEL_TEXT_FORMAT:format(#junkItems))
   end)
 
   -- OnEnter.
@@ -75,5 +68,17 @@ EventManager:Once(E.Wow.MerchantShow, function()
   -- OnLeave.
   frame:HookScript("OnLeave", function()
     Tooltip:Hide()
+  end)
+
+  -- OnDragStart.
+  frame:HookScript("OnDragStart", function()
+    frame:GetScript("OnLeave")(frame)
+  end)
+
+  -- OnDragStop.
+  frame:HookScript("OnDragStop", function()
+    if frame:IsMouseOver() then
+      frame:GetScript("OnEnter")(frame)
+    end
   end)
 end)
