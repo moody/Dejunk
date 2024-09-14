@@ -184,12 +184,26 @@ function MainWindowOptions:Initialize(optionsFrame)
   }))
 
   -- Merchant button.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.MERCHANT_BUTTON_TEXT,
-    tooltipText = L.MERCHANT_BUTTON_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().merchantButton end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end
-  }))
+  do
+    local merchantButton = Widgets:OptionButton({
+      labelText = L.MERCHANT_BUTTON_TEXT,
+      get = function() return StateManager:GetGlobalState().merchantButton end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end,
+      enableClickHandling = true,
+      onUpdateTooltip = function(self, tooltip)
+        tooltip:SetText(L.MERCHANT_BUTTON_TEXT)
+        tooltip:AddLine(L.MERCHANT_BUTTON_TOOLTIP)
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RESET_POSITION)
+      end
+    })
+
+    merchantButton:SetClickHandler("RightButton", "NONE", function()
+      StateManager:Dispatch(Actions:ResetMerchantButtonPoint())
+    end)
+
+    optionsFrame:AddChild(merchantButton)
+  end
 
   -- Minimap icon.
   optionsFrame:AddChild(Widgets:OptionButton({
