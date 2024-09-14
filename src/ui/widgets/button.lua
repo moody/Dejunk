@@ -31,7 +31,7 @@ function Widgets:Button(options)
   frame.onClick = options.onClick
 
   -- Background texture.
-  frame.background = frame:CreateTexture("$parent_Background", "BACKGROUND")
+  frame.background = frame:CreateTexture("$parent_Background", "BACKGROUND", nil, -8)
   frame.background:SetColorTexture(Colors.Backdrop:GetRGBA(1))
   frame.background:SetAllPoints()
 
