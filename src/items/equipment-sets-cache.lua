@@ -28,16 +28,14 @@ function EquipmentSetsCache:Refresh()
 
   for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
     for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
-      if itemLocation and itemLocation ~= 1 then
-        local _, _, _, voidStorage, slot, bag = EquipmentManager_UnpackLocation(itemLocation)
-
-        -- In Cataclysm, `voidStorage` is not returned.
-        if Addon.IS_CATA then
-          bag = slot
-          slot = voidStorage
-        end
-
-        if bag ~= nil and slot ~= nil then
+      -- See: Blizzard_FrameXML/EquipmentManager.lua -> `EquipmentManager_UnpackLocation()`.
+      if itemLocation and itemLocation >= 0 then
+        local player = bit.band(itemLocation, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0
+        local bags = bit.band(itemLocation, ITEM_INVENTORY_LOCATION_BAGS) ~= 0
+        if player and bags then
+          itemLocation = itemLocation - ITEM_INVENTORY_LOCATION_PLAYER - ITEM_INVENTORY_LOCATION_BAGS
+          local bag = bit.rshift(itemLocation, ITEM_INVENTORY_BAG_BIT_OFFSET)
+          local slot = itemLocation - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET)
           cache[getCacheKey(bag, slot)] = true
         end
       end
@@ -45,7 +43,7 @@ function EquipmentSetsCache:Refresh()
   end
 end
 
---- Returns `true` if the given bag and slot contains a equipment set item,
+--- Returns `true` if the given `bag` and `slot` contains an equipment set item,
 --- based on the current state of the cache.
 --- @param bag number
 --- @param slot number
