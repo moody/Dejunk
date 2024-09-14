@@ -40,8 +40,8 @@ function Widgets:Button(options)
   frame:SetHeight(frame.label:GetHeight() + Widgets:Padding(2))
 
   local function setNormalColors()
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-    frame:SetBackdropBorderColor(0, 0, 0, 1)
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.95))
+    frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
     frame.label:SetTextColor(options.labelColor:GetRGBA(1))
   end
 
@@ -53,7 +53,7 @@ function Widgets:Button(options)
 
   local function setDisabledColors()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    frame:SetBackdropBorderColor(0, 0, 0, 1)
+    frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
     frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
   end
 
