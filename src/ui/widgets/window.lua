@@ -23,7 +23,7 @@ function Widgets:Window(options)
   options.points = Addon:IfNil(options.points, { { "CENTER" } })
   options.width = Addon:IfNil(options.width, 675)
   options.height = Addon:IfNil(options.height, 500)
-  options.assignFrameLevel = true
+  options.enableDragging = true
   options.titleTemplate = "GameFontNormalLarge"
   options.titleJustify = "LEFT"
 
@@ -31,8 +31,6 @@ function Widgets:Window(options)
   local frame = self:TitleFrame(options)
   frame.titleButton:SetBackdrop(nil)
   frame.titleButton:EnableMouse(false)
-
-  Widgets:ConfigureForDrag(frame)
 
   -- Add as special frame to be hidden on certain events.
   table.insert(UISpecialFrames, frame:GetName())

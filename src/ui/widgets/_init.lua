@@ -46,18 +46,6 @@ do -- Widget:GetUniqueName()
   end
 end
 
---- Configures a `frame` to be draggable.
---- @param frame Frame | any
-function Widgets:ConfigureForDrag(frame)
-  frame:SetFrameStrata("HIGH")
-  frame:SetMovable(true)
-  frame:EnableMouse(true)
-  frame:SetClampedToScreen(true)
-  frame:RegisterForDrag("LeftButton")
-  frame:SetScript("OnDragStart", frame.StartMoving)
-  frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-end
-
 --- Configures a draggable `frame` to refresh or save its point based on certain events.
 --- @param frame Frame | any
 --- @param stateType "MainWindow" | "JunkFrame" | "TransportFrame" | "MerchantButton"

@@ -24,11 +24,10 @@ local frame = Widgets:Button({
   width = 100,
   labelText = LABEL_TEXT_FORMAT:format(0),
   labelColor = Colors.Blue,
-  assignFrameLevel = true,
-  enableClickHandling = true
+  enableClickHandling = true,
+  enableDragging = true
 })
 
-Widgets:ConfigureForDrag(frame)
 Widgets:ConfigureForPointSync(frame, "MerchantButton")
 
 -- Click handlers.

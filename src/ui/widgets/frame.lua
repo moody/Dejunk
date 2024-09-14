@@ -19,7 +19,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field height? integer
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 --- @field enableClickHandling? boolean
---- @field assignFrameLevel? boolean
+--- @field enableDragging? boolean
 
 -- ============================================================================
 -- Local Functions
@@ -94,11 +94,6 @@ function Widgets:Frame(options)
   frame:SetWidth(options.width)
   frame:SetHeight(options.height)
 
-  -- Frame level.
-  if options.assignFrameLevel then
-    assignFrameLevel(frame)
-  end
-
   -- Points.
   if options.points then
     for _, point in ipairs(options.points) do
@@ -148,6 +143,18 @@ function Widgets:Frame(options)
       local modifierValue = ModifierTypes[modifierType]
       clickHandlers[buttonType][modifierValue] = clickHandler
     end
+  end
+
+  -- Dragging.
+  if options.enableDragging then
+    assignFrameLevel(frame)
+    frame:SetFrameStrata("HIGH")
+    frame:SetMovable(true)
+    frame:EnableMouse(true)
+    frame:SetClampedToScreen(true)
+    frame:RegisterForDrag("LeftButton")
+    frame:SetScript("OnDragStart", frame.StartMoving)
+    frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
   end
 
   return frame
