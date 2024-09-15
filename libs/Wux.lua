@@ -1,5 +1,5 @@
 -- =============================================================================
--- Wux: 0.1.1 - https://github.com/moody/Wux
+-- Wux: 0.2.0 - https://github.com/moody/Wux
 -- =============================================================================
 
 local _, Addon = ...
@@ -19,6 +19,28 @@ local Wux = Addon.Wux
 --- @alias WuxReducer<T> fun(state?: T, action: WuxAction): T Function to return a new state based on the given action.
 
 --- @alias WuxListener<T> fun(state: T) Function to react to state changes.
+
+-- =============================================================================
+-- Wux - ActionTypes
+-- =============================================================================
+
+Wux.ActionTypes = {
+  --- This action type enables dispatching multiple actions at once, reducing unnecessary listener notifications.
+  ---
+  --- ```
+  --- Store:Dispatch({
+  ---   type = Wux.ActionTypes.Batch,
+  ---   payload = {
+  ---     { type = "ACTION_1", payload = { ... } },
+  ---     { type = "ACTION_2", payload = { ... } }
+  ---   }
+  --- })
+  --- ```
+  Batch = "@@WUX/BATCH",
+
+  --- Dispatched internally on store creation to initialize state.
+  InitializeState = "@@WUX/INITIALIZE_STATE",
+}
 
 -- =============================================================================
 -- Local Functions
@@ -192,11 +214,23 @@ function Wux:CreateStore(reducer, initialState)
     return state
   end
 
-  --- Dispatches the given action to the store's reducer, updates the state, and notifies all listeners.
+  --- Dispatches the given `action` to the store's reducer.
+  --- If the state changes, all listeners will be notified.
   --- @param action WuxAction
   function Store:Dispatch(action)
     local prevState = state
-    state = reducer(prevState, action)
+
+    -- Handle batched actions.
+    if action.type == Wux.ActionTypes.Batch then
+      for _, batchedAction in ipairs(action.payload) do
+        state = reducer(state, batchedAction)
+      end
+    else
+      -- Handle single action.
+      state = reducer(prevState, action)
+    end
+
+    -- Notify listeners if state changed.
     if state ~= prevState then
       for _, listener in ipairs(listeners) do
         listener(state)
@@ -204,10 +238,9 @@ function Wux:CreateStore(reducer, initialState)
     end
   end
 
-  --- Adds a listener to the store, which will be notified of all state changes, and returns
-  --- a function that will unsubscribe the listener if called.
+  --- Registers the given `listener` to be called when the store's state changes.
   --- @param listener WuxListener<table>
-  --- @return fun() unsubscribe Unsubscribes the given listener.
+  --- @return fun() unsubscribe Unsubscribes the `listener`.
   function Store:Subscribe(listener)
     table.insert(listeners, listener)
     return function()
@@ -219,7 +252,7 @@ function Wux:CreateStore(reducer, initialState)
     end
   end
 
-  Store:Dispatch({ type = "@@WUX/INITIALIZE_STATE" })
+  Store:Dispatch({ type = Wux.ActionTypes.InitializeState })
 
   return Store
 end
