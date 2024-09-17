@@ -93,13 +93,13 @@ function MainWindowOptions:Initialize(optionsFrame)
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
   }))
 
-  -- Exclude warbound equipment.
+  -- Exclude warband equipment.
   if Addon.IS_RETAIL then
     optionsFrame:AddChild(Widgets:OptionButton({
-      labelText = L.EXCLUDE_WARBOUND_EQUIPMENT_TEXT,
-      tooltipText = L.EXCLUDE_WARBOUND_EQUIPMENT_TOOLTIP,
-      get = function() return StateManager:GetCurrentState().excludeWarboundEquipment end,
-      set = function(value) StateManager:Dispatch(Actions:SetExcludeWarboundEquipment(value)) end
+      labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
+      tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP,
+      get = function() return StateManager:GetCurrentState().excludeWarbandEquipment end,
+      set = function(value) StateManager:Dispatch(Actions:SetExcludeWarbandEquipment(value)) end
     }))
   end
 

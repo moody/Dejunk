@@ -149,9 +149,9 @@ function JunkFilter:IsJunkItem(item)
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
   end
 
-  -- Exclude warbound equipment.
-  if currentState.excludeWarboundEquipment and Items:IsItemWarboundEquipment(item) then
-    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBOUND_EQUIPMENT_TEXT)
+  -- Exclude warband equipment.
+  if currentState.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
+    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
   end
 
   -- Include poor items.

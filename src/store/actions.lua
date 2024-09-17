@@ -10,14 +10,14 @@ Actions.Types = {
     RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
     RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
     RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
-    SET_EXCLUDE_WARBOUND_EQUIPMENT = "global/excludeWarboundEquipment/set",
+    SET_EXCLUDE_WARBAND_EQUIPMENT = "global/excludeWarbandEquipment/set",
     SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
     SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
     SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
   },
   Perchar = {
-    SET_EXCLUDE_WARBOUND_EQUIPMENT = "perchar/excludeWarboundEquipment/set",
+    SET_EXCLUDE_WARBAND_EQUIPMENT = "perchar/excludeWarbandEquipment/set",
   }
 }
 
@@ -198,10 +198,10 @@ end
 
 --- @param value boolean
 --- @return WuxAction
-function Actions:SetExcludeWarboundEquipment(value)
+function Actions:SetExcludeWarbandEquipment(value)
   local actionType = StateManager:IsCharacterSpecificSettings() and
-      Actions.Types.Perchar.SET_EXCLUDE_WARBOUND_EQUIPMENT or
-      Actions.Types.Global.SET_EXCLUDE_WARBOUND_EQUIPMENT
+      Actions.Types.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT or
+      Actions.Types.Global.SET_EXCLUDE_WARBAND_EQUIPMENT
   return { type = actionType, payload = value }
 end
 

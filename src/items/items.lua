@@ -321,11 +321,11 @@ end
 --- Returns `true` if the given `item` is equipment that can be placed in the warband bank.
 --- @param item BagItem
 --- @return boolean
-function Items:IsItemWarboundEquipment(item)
+function Items:IsItemWarbandEquipment(item)
   if not (Addon.IS_RETAIL and self:IsItemEquipment(item)) then return false end
   self.location:SetBagAndSlot(item.bag, item.slot)
-  local success, isWarbound = pcall(C_Bank.IsItemAllowedInBankType, Enum.BankType.Account, self.location)
-  return (success and isWarbound) or false
+  local success, isWarband = pcall(C_Bank.IsItemAllowedInBankType, Enum.BankType.Account, self.location)
+  return (success and isWarband) or false
 end
 
 --- Returns `true` if the given `item` is suitable for the player's class.

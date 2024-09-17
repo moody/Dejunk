@@ -19,7 +19,7 @@ local DEFAULT_STATE = {
 
   excludeEquipmentSets = true,
   excludeUnboundEquipment = false,
-  excludeWarboundEquipment = false,
+  excludeWarbandEquipment = false,
 
   includePoorItems = true,
   includeBelowItemLevel = { enabled = false, value = 0 },
@@ -238,11 +238,11 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
-  -- Exclude warbound equipment.
-  excludeWarboundEquipment = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeWarboundEquipment)
+  -- Exclude warband equipment.
+  excludeWarbandEquipment = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeWarbandEquipment)
 
-    if action.type == Actions.Types.Global.SET_EXCLUDE_WARBOUND_EQUIPMENT then
+    if action.type == Actions.Types.Global.SET_EXCLUDE_WARBAND_EQUIPMENT then
       return action.payload
     end
 
@@ -400,11 +400,11 @@ Reducers.percharReducer = Wux:CombineReducers({
     return state
   end,
 
-  -- Exclude warbound equipment.
-  excludeWarboundEquipment = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeWarboundEquipment)
+  -- Exclude warband equipment.
+  excludeWarbandEquipment = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeWarbandEquipment)
 
-    if action.type == Actions.Types.Perchar.SET_EXCLUDE_WARBOUND_EQUIPMENT then
+    if action.type == Actions.Types.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT then
       return action.payload
     end
 
