@@ -39,8 +39,15 @@ function Widgets:OptionButton(options)
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
   -- Check box.
-  frame.checkBox = frame:CreateTexture("$parent_CheckBox")
-  frame.checkBox:SetPoint("RIGHT", -Widgets:Padding(), 0)
+  frame.checkBox = self:CheckBox({
+    parent = frame,
+    name = "$parent_CheckBox",
+    points = { { "RIGHT", -Widgets:Padding(), 0 } },
+    clipChildren = false,
+    color = Colors.White,
+    get = options.get,
+    set = options.set
+  })
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
@@ -55,28 +62,22 @@ function Widgets:OptionButton(options)
   frame:SetHeight(labelHeight + Widgets:Padding(2))
   frame.checkBox:SetSize(labelHeight, labelHeight)
 
-  frame:HookScript("OnEnter", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
+  frame:HookScript("OnEnter", function()
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
+    frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
   end)
 
-  frame:HookScript("OnLeave", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+  frame:HookScript("OnLeave", function()
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
+    frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
   end)
 
-  frame:SetScript("OnClick", function(self)
+  frame:SetScript("OnClick", function()
     options.set(not options.get())
   end)
 
-  frame:SetScript("OnUpdate", function(self)
-    if options.get() then
-      self:SetAlpha(1)
-      self.checkBox:SetColorTexture(Colors.Blue:GetRGBA(0.75))
-    else
-      self:SetAlpha(0.5)
-      self.checkBox:SetColorTexture(Colors.White:GetRGBA(0.25))
-    end
+  frame:SetScript("OnUpdate", function()
+    frame:SetAlpha(options.get() and 1 or 0.5)
   end)
 
   return frame
