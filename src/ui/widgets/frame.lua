@@ -17,6 +17,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field points? table[]
 --- @field width? integer
 --- @field height? integer
+--- @field clipChildren? boolean Defaults to `true`.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 --- @field enableClickHandling? boolean
 --- @field enableDragging? boolean
@@ -79,10 +80,13 @@ function Widgets:Frame(options)
   options.parent = Addon:IfNil(options.parent, UIParent)
   options.width = Addon:IfNil(options.width, 1)
   options.height = Addon:IfNil(options.height, 1)
+  options.clipChildren = Addon:IfNil(options.clipChildren, true)
 
   --- @class FrameWidget : Frame, BackdropTemplate
   local frame = CreateFrame(options.frameType, options.name, options.parent)
-  frame:SetClipsChildren(true)
+
+  -- Clip children.
+  frame:SetClipsChildren(options.clipChildren)
 
   -- Backdrop.
   Mixin(frame, BackdropTemplateMixin)
