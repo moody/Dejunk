@@ -31,10 +31,16 @@ function Widgets:CheckBox(options)
   --- @class CheckBoxWidget : FrameWidget
   local frame = self:Frame(options)
 
+  -- Check texture.
+  frame.checkTexture = frame:CreateTexture("$parent_CheckTexture", "ARTWORK")
+  frame.checkTexture:SetPoint("TOPLEFT", 2, -2)
+  frame.checkTexture:SetPoint("BOTTOMRIGHT", -2, 2)
+
   local function setNormalColors(isEnabled)
     if isEnabled then
       frame:SetBackdropColor(options.color:GetRGBA(0.25))
       frame:SetBackdropBorderColor(options.color:GetRGBA(0.75))
+      frame.checkTexture:SetColorTexture(options.color:GetRGBA(0.75))
     else
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
       frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
@@ -45,6 +51,7 @@ function Widgets:CheckBox(options)
     if isEnabled then
       frame:SetBackdropColor(options.color:GetRGBA(0.5))
       frame:SetBackdropBorderColor(options.color:GetRGBA(1))
+      frame.checkTexture:SetColorTexture(options.color:GetRGBA(1))
     else
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
       frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
@@ -58,6 +65,14 @@ function Widgets:CheckBox(options)
   frame:HookScript("OnUpdate", function()
     local isEnabled = options.get()
 
+    -- Update check texture.
+    if isEnabled then
+      frame.checkTexture:Show()
+    else
+      frame.checkTexture:Hide()
+    end
+
+    -- Update colors.
     if frame:IsMouseOver() then
       setHighlightColors(isEnabled)
     else
