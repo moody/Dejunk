@@ -37,25 +37,17 @@ function Widgets:CheckBox(options)
   frame.checkTexture:SetPoint("BOTTOMRIGHT", -2, 2)
 
   local function setNormalColors(isEnabled)
-    if isEnabled then
-      frame:SetBackdropColor(options.color:GetRGBA(0.25))
-      frame:SetBackdropBorderColor(options.color:GetRGBA(0.75))
-      frame.checkTexture:SetColorTexture(options.color:GetRGBA(0.75))
-    else
-      frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-      frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    end
+    local backdropColor = isEnabled and options.color or Colors.DarkGrey
+    frame:SetBackdropColor(backdropColor:GetRGBA(0.25))
+    frame:SetBackdropBorderColor(options.color:GetRGBA(0.75))
+    frame.checkTexture:SetColorTexture(options.color:GetRGBA(0.75))
   end
 
   local function setHighlightColors(isEnabled)
-    if isEnabled then
-      frame:SetBackdropColor(options.color:GetRGBA(0.5))
-      frame:SetBackdropBorderColor(options.color:GetRGBA(1))
-      frame.checkTexture:SetColorTexture(options.color:GetRGBA(1))
-    else
-      frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-      frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-    end
+    local backdropColor = isEnabled and options.color or Colors.DarkGrey
+    frame:SetBackdropColor(backdropColor:GetRGBA(0.5))
+    frame:SetBackdropBorderColor(options.color:GetRGBA(1))
+    frame.checkTexture:SetColorTexture(options.color:GetRGBA(1))
   end
 
   frame:SetClickHandler("LeftButton", "NONE", function()
