@@ -110,6 +110,15 @@ function Widgets:OptionButton(options)
     table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.uncommon))
     table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.rare))
     table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.epic))
+
+    -- Position check boxes.
+    for i, cb in ipairs(frame.itemQualityCheckBoxes) do
+      if i == 1 then
+        cb:SetPoint("TOPLEFT", frame.label, "BOTTOMLEFT", 0, -Widgets:Padding())
+      else
+        cb:SetPoint("LEFT", frame.itemQualityCheckBoxes[i - 1], "RIGHT", Widgets:Padding(), 0)
+      end
+    end
   end
 
   frame:HookScript("OnEnter", function()
@@ -134,15 +143,6 @@ function Widgets:OptionButton(options)
       frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2))
     else
       frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding(2))
-    end
-
-    -- Reposition item quality check boxes.
-    for i, cb in ipairs(frame.itemQualityCheckBoxes) do
-      if i == 1 then
-        cb:SetPoint("TOPLEFT", frame.label, "BOTTOMLEFT", 0, -Widgets:Padding())
-      else
-        cb:SetPoint("LEFT", frame.itemQualityCheckBoxes[i - 1], "RIGHT", Widgets:Padding(), 0)
-      end
     end
   end)
 
