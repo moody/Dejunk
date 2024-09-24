@@ -146,5 +146,23 @@ function Widgets:OptionButton(options)
     end
   end)
 
+  do -- Hack to fix a bug where check boxes are sometimes invisible.
+    local function showCheckBoxes()
+      frame.checkBox:Show()
+      for _, cb in pairs(frame.itemQualityCheckBoxes) do
+        cb:Show()
+      end
+    end
+
+    -- OnShow: hide all check boxes, then show them again after 0.01 seconds.
+    frame:SetScript("OnShow", function()
+      frame.checkBox:Hide()
+      for _, cb in pairs(frame.itemQualityCheckBoxes) do
+        cb:Hide()
+      end
+      C_Timer.After(0.01, showCheckBoxes)
+    end)
+  end
+
   return frame
 end
