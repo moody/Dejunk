@@ -13,10 +13,16 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Initializes options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:Initialize(optionsFrame)
-  -- ============================================================================
-  -- Per Character
-  -- ============================================================================
+  self:AddCharacterOptions(optionsFrame)
+  self:AddGeneralOptions(optionsFrame)
+  self:AddIncludeOptions(optionsFrame)
+  self:AddExcludeOptions(optionsFrame)
+  self:AddGlobalOptions(optionsFrame)
+end
 
+--- Adds character options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddCharacterOptions(optionsFrame)
   -- Character heading.
   -- optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.CHARACTER }))
 
@@ -27,11 +33,11 @@ function MainWindowOptions:Initialize(optionsFrame)
     get = function() return StateManager:GetPercharState().characterSpecificSettings end,
     set = function() StateManager:GetStore():Dispatch(Actions:ToggleCharacterSpecificSettings()) end
   }))
+end
 
-  -- ============================================================================
-  -- General
-  -- ============================================================================
-
+--- Adds general options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddGeneralOptions(optionsFrame)
   -- General heading.
   optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GENERAL }))
 
@@ -66,7 +72,11 @@ function MainWindowOptions:Initialize(optionsFrame)
     get = function() return StateManager:GetCurrentState().safeMode end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
   }))
+end
 
+--- Adds exclude options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddExcludeOptions(optionsFrame)
   -- Exclude heading.
   optionsFrame:AddChild(Widgets:OptionHeading({
     headingText = L.EXCLUDE,
@@ -153,7 +163,11 @@ function MainWindowOptions:Initialize(optionsFrame)
 
     optionsFrame:AddChild(frame)
   end
+end
 
+--- Adds include options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddIncludeOptions(optionsFrame)
   -- Include heading.
   optionsFrame:AddChild(Widgets:OptionHeading({
     headingText = L.INCLUDE,
@@ -217,11 +231,11 @@ function MainWindowOptions:Initialize(optionsFrame)
     get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
   }))
+end
 
-  -- ============================================================================
-  -- Global
-  -- ============================================================================
-
+--- Adds global options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddGlobalOptions(optionsFrame)
   -- Global heading.
   optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GLOBAL }))
 
