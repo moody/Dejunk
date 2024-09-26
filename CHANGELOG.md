@@ -6,6 +6,11 @@
 
 - Addon compartment support for retail
 - Option: `Exclude Warband Equipment` for retail
+- Option: `Include By Quality` with check boxes for item qualities
+
+### Removed
+
+- Option: `Include Poor Items` in favor of `Include By Quality`
 
 ### Changed
 
@@ -18,6 +23,7 @@
 - Items listed in the Junk Frame no longer have a price displayed when they have no value
 - Opening the Transport Frame now automatically exports the associated list
 - Right-Clicking the `Include Below Item Level` option is now required to change the value
+- Option: `Exclude Unbound Equipment` to have additional check boxes for item quality
 
 ### Fixed
 
