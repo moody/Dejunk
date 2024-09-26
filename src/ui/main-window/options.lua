@@ -250,14 +250,6 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     optionsFrame:AddChild(frame)
   end
 
-  -- Include poor items.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.INCLUDE_POOR_ITEMS_TEXT,
-    tooltipText = L.INCLUDE_POOR_ITEMS_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().includePoorItems end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludePoorItems(value)) end
-  }))
-
   -- Include unsuitable equipment.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,

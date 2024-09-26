@@ -181,11 +181,6 @@ function JunkFilter:IsJunkItem(item)
     end
   end
 
-  -- Include poor items.
-  if currentState.includePoorItems and item.quality == Enum.ItemQuality.Poor then
-    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)
-  end
-
   -- Soulbound equipment filters.
   if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
     -- Include below item level.
