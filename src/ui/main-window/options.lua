@@ -216,6 +216,40 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     optionsFrame:AddChild(frame)
   end
 
+  do -- Include by quality.
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BY_QUALITY_TEXT,
+      tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP,
+      get = function() return StateManager:GetCurrentState().includeByQuality end,
+      set = function(value) StateManager:Dispatch(Actions:SetIncludeByQuality(value)) end
+    })
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.poor end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.common end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.uncommon end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.rare end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.epic end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ epic = value })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
+
   -- Include poor items.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.INCLUDE_POOR_ITEMS_TEXT,

@@ -173,6 +173,14 @@ function JunkFilter:IsJunkItem(item)
     end
   end
 
+  -- Include by quality.
+  if currentState.includeByQuality then
+    local checkBoxValues = currentState.itemQualityCheckBoxes.includeByQuality
+    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
+    end
+  end
+
   -- Include poor items.
   if currentState.includePoorItems and item.quality == Enum.ItemQuality.Poor then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_POOR_ITEMS_TEXT)

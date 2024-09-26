@@ -9,12 +9,14 @@ Actions.Types = {
     ItemQualityCheckBoxes = {
       PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
       PATCH_EXCLUDE_WARBAND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+      PATCH_INCLUDE_BY_QUALITY = "global/itemQualityCheckBoxes/includeByQuality/patch",
     },
     RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
     RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
     RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
     RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
     SET_EXCLUDE_WARBAND_EQUIPMENT = "global/excludeWarbandEquipment/set",
+    SET_INCLUDE_BY_QUALITY = "global/includeByQuality/set",
     SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
     SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
@@ -24,8 +26,10 @@ Actions.Types = {
     ItemQualityCheckBoxes = {
       PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
       PATCH_EXCLUDE_WARBAND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+      PATCH_INCLUDE_BY_QUALITY = "perchar/itemQualityCheckBoxes/includeByQuality/patch",
     },
     SET_EXCLUDE_WARBAND_EQUIPMENT = "perchar/excludeWarbandEquipment/set",
+    SET_INCLUDE_BY_QUALITY = "perchar/includeByQuality/set",
   }
 }
 
@@ -235,6 +239,15 @@ end
 
 --- @param value boolean
 --- @return WuxAction
+function Actions:SetIncludeByQuality(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.SET_INCLUDE_BY_QUALITY or
+      Actions.Types.Global.SET_INCLUDE_BY_QUALITY
+  return { type = actionType, payload = value }
+end
+
+--- @param value boolean
+--- @return WuxAction
 function Actions:SetIncludeUnsuitableEquipment(value)
   if StateManager:IsCharacterSpecificSettings() then
     return { type = "perchar/includeUnsuitableEquipment/set", payload = value }
@@ -268,5 +281,14 @@ function Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment(value)
   local actionType = StateManager:IsCharacterSpecificSettings() and
       Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT or
       Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesIncludeByQuality(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY or
+      Actions.Types.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY
   return { type = actionType, payload = value }
 end

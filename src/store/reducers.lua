@@ -17,21 +17,6 @@ local Reducers = Addon:GetModule("Reducers")
 --- @field epic? boolean
 
 -- ============================================================================
--- Local Functions
--- ============================================================================
-
---- @return ItemQualityCheckBoxValues
-local function defaultItemQualityCheckBoxValues()
-  return {
-    poor = true,
-    common = true,
-    uncommon = true,
-    rare = true,
-    epic = true,
-  }
-end
-
--- ============================================================================
 -- Default States
 -- ============================================================================
 
@@ -49,6 +34,7 @@ local DEFAULT_STATE = {
 
   includePoorItems = true,
   includeBelowItemLevel = { enabled = false, value = 0 },
+  includeByQuality = true,
   includeUnsuitableEquipment = false,
   includeArtifactRelics = false,
 
@@ -56,8 +42,9 @@ local DEFAULT_STATE = {
   exclusions = { --[[ ["itemId"] = true, ... ]] },
 
   itemQualityCheckBoxes = {
-    excludeUnboundEquipment = defaultItemQualityCheckBoxValues(),
-    excludeWarbandEquipment = defaultItemQualityCheckBoxValues(),
+    excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+    excludeWarbandEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+    includeByQuality = { poor = true, common = false, uncommon = false, rare = false, epic = false },
   }
 }
 
@@ -303,6 +290,17 @@ Reducers.globalReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Include by quality.
+  includeByQuality = function(state, action)
+    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeByQuality)
+
+    if action.type == Actions.Types.Global.SET_INCLUDE_BY_QUALITY then
+      return action.payload
+    end
+
+    return state
+  end,
+
   -- Include unsuitable equipment.
   includeUnsuitableEquipment = function(state, action)
     state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeUnsuitableEquipment)
@@ -367,6 +365,19 @@ Reducers.globalReducer = Wux:CombineReducers({
       state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemQualityCheckBoxes.excludeWarbandEquipment)
 
       if action.type == Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
+
+    -- Include by quality.
+    includeByQuality = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemQualityCheckBoxes.includeByQuality)
+
+      if action.type == Actions.Types.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY then
         local newState = Wux:ShallowCopy(state)
         for k, v in pairs(action.payload) do newState[k] = v end
         return newState
@@ -494,6 +505,17 @@ Reducers.percharReducer = Wux:CombineReducers({
     return state
   end,
 
+  -- Include by quality.
+  includeByQuality = function(state, action)
+    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeByQuality)
+
+    if action.type == Actions.Types.Perchar.SET_INCLUDE_BY_QUALITY then
+      return action.payload
+    end
+
+    return state
+  end,
+
   -- Include unsuitable equipment.
   includeUnsuitableEquipment = function(state, action)
     state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeUnsuitableEquipment)
@@ -558,6 +580,19 @@ Reducers.percharReducer = Wux:CombineReducers({
       state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemQualityCheckBoxes.excludeWarbandEquipment)
 
       if action.type == Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
+
+    -- Include by quality.
+    includeByQuality = function(state, action)
+      state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemQualityCheckBoxes.includeByQuality)
+
+      if action.type == Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY then
         local newState = Wux:ShallowCopy(state)
         for k, v in pairs(action.payload) do newState[k] = v end
         return newState
