@@ -85,22 +85,73 @@ function MainWindowOptions:Initialize(optionsFrame)
     }))
   end
 
-  -- Exclude unbound equipment.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
-    tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
-  }))
+  do -- Exclude unbound equipment.
+    local frame = Widgets:OptionButton({
+      labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
+      tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
+      get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
+    })
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.poor end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.common end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.uncommon end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.rare end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.epic end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ epic = value })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
 
   -- Exclude warband equipment.
   if Addon.IS_RETAIL then
-    optionsFrame:AddChild(Widgets:OptionButton({
+    local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP,
       get = function() return StateManager:GetCurrentState().excludeWarbandEquipment end,
       set = function(value) StateManager:Dispatch(Actions:SetExcludeWarbandEquipment(value)) end
-    }))
+    })
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.poor end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.common end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.uncommon end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.rare end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.epic end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ epic = value })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
   end
 
   -- Include heading.

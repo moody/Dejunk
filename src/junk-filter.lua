@@ -61,6 +61,19 @@ local function getJunkItems(filterFunc, items)
   return items
 end
 
+--- Returns `true` if the given `itemQuality` is enabled within the given `checkBoxValues`.
+--- @param itemQuality integer
+--- @param checkBoxValues ItemQualityCheckBoxValues
+local function isItemQualityCheckBoxValueEnabled(itemQuality, checkBoxValues)
+  return (
+    (checkBoxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
+    (checkBoxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
+    (checkBoxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
+    (checkBoxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
+    (checkBoxValues.epic and itemQuality == Enum.ItemQuality.Epic)
+  )
+end
+
 -- ============================================================================
 -- JunkFilter
 -- ============================================================================
@@ -146,12 +159,18 @@ function JunkFilter:IsJunkItem(item)
 
   -- Exclude unbound equipment.
   if currentState.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+    local checkBoxValues = currentState.itemQualityCheckBoxes.excludeUnboundEquipment
+    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+      return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+    end
   end
 
   -- Exclude warband equipment.
-  if currentState.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
-    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
+  if Addon.IS_RETAIL and currentState.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
+    local checkBoxValues = currentState.itemQualityCheckBoxes.excludeWarbandEquipment
+    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+      return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
+    end
   end
 
   -- Include poor items.

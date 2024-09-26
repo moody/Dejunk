@@ -6,6 +6,32 @@ local Wux = Addon.Wux
 local Reducers = Addon:GetModule("Reducers")
 
 -- ============================================================================
+-- LuaCATS Annotations
+-- ============================================================================
+
+--- @class ItemQualityCheckBoxValues
+--- @field poor? boolean
+--- @field common? boolean
+--- @field uncommon? boolean
+--- @field rare? boolean
+--- @field epic? boolean
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- @return ItemQualityCheckBoxValues
+local function defaultItemQualityCheckBoxValues()
+  return {
+    poor = true,
+    common = true,
+    uncommon = true,
+    rare = true,
+    epic = true,
+  }
+end
+
+-- ============================================================================
 -- Default States
 -- ============================================================================
 
@@ -28,6 +54,11 @@ local DEFAULT_STATE = {
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },
   exclusions = { --[[ ["itemId"] = true, ... ]] },
+
+  itemQualityCheckBoxes = {
+    excludeUnboundEquipment = defaultItemQualityCheckBoxValues(),
+    excludeWarbandEquipment = defaultItemQualityCheckBoxValues(),
+  }
 }
 
 --- Global default state.
@@ -315,6 +346,35 @@ Reducers.globalReducer = Wux:CombineReducers({
 
     return state
   end,
+
+  -- Item quality check boxes.
+  itemQualityCheckBoxes = Wux:CombineReducers({
+    -- Exclude unbound equipment.
+    excludeUnboundEquipment = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemQualityCheckBoxes.excludeUnboundEquipment)
+
+      if action.type == Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
+
+    -- Exclude warband equipment.
+    excludeWarbandEquipment = function(state, action)
+      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemQualityCheckBoxes.excludeWarbandEquipment)
+
+      if action.type == Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end
+  })
 })
 
 -- ============================================================================
@@ -477,6 +537,35 @@ Reducers.percharReducer = Wux:CombineReducers({
 
     return state
   end,
+
+  -- Item quality check boxes.
+  itemQualityCheckBoxes = Wux:CombineReducers({
+    -- Exclude unbound equipment.
+    excludeUnboundEquipment = function(state, action)
+      state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemQualityCheckBoxes.excludeUnboundEquipment)
+
+      if action.type == Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
+
+    -- Exclude warband equipment.
+    excludeWarbandEquipment = function(state, action)
+      state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.itemQualityCheckBoxes.excludeWarbandEquipment)
+
+      if action.type == Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end
+  })
 })
 
 -- ============================================================================

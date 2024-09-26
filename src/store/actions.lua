@@ -6,6 +6,10 @@ local Actions = Addon:GetModule("Actions")
 
 Actions.Types = {
   Global = {
+    ItemQualityCheckBoxes = {
+      PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
+      PATCH_EXCLUDE_WARBAND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+    },
     RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
     RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
     RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
@@ -17,6 +21,10 @@ Actions.Types = {
     SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
   },
   Perchar = {
+    ItemQualityCheckBoxes = {
+      PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
+      PATCH_EXCLUDE_WARBAND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+    },
     SET_EXCLUDE_WARBAND_EQUIPMENT = "perchar/excludeWarbandEquipment/set",
   }
 }
@@ -243,4 +251,22 @@ function Actions:SetIncludeArtifactRelics(value)
   else
     return { type = "global/includeArtifactRelics/set", payload = value }
   end
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT or
+      Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT or
+      Actions.Types.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT
+  return { type = actionType, payload = value }
 end
