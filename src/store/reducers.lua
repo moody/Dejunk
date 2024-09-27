@@ -62,7 +62,7 @@ PERCHAR_DEFAULT_STATE.characterSpecificSettings = false
 -- ============================================================================
 
 --- @type WuxReducer<GlobalState>
-Reducers.globalReducer = Wux:CombineReducers({
+local globalReducer = Wux:CombineReducers({
   chatMessages = ReducerFactories.chatMessages(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
   itemIcons = ReducerFactories.itemIcons(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
   itemTooltips = ReducerFactories.itemTooltips(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
@@ -95,7 +95,7 @@ Reducers.globalReducer = Wux:CombineReducers({
 -- ============================================================================
 
 --- @type WuxReducer<PercharState>
-Reducers.percharReducer = Wux:CombineReducers({
+local percharReducer = Wux:CombineReducers({
   characterSpecificSettings = ReducerFactories.characterSpecificSettings(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
@@ -124,6 +124,6 @@ Reducers.percharReducer = Wux:CombineReducers({
 
 --- @type WuxReducer<{global: GlobalState, perchar: PercharState}>
 Reducers.rootReducer = Wux:CombineReducers({
-  global = Reducers.globalReducer,
-  perchar = Reducers.percharReducer
+  global = globalReducer,
+  perchar = percharReducer
 })
