@@ -39,7 +39,7 @@ function ReducerFactories.inclusions(defaultState, actionTypes)
     state = Wux:Coalesce(state, defaultState.inclusions)
 
     if action.type == actionTypes.SET_INCLUSIONS then
-      return action.payload
+      return Wux:ShallowCopy(action.payload)
     end
 
     return state

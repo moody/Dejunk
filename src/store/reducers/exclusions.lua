@@ -39,7 +39,7 @@ function ReducerFactories.exclusions(defaultState, actionTypes)
     state = Wux:Coalesce(state, defaultState.exclusions)
 
     if action.type == actionTypes.SET_EXCLUSIONS then
-      return action.payload
+      return Wux:ShallowCopy(action.payload)
     end
 
     return state
