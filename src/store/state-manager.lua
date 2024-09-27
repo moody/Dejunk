@@ -1,7 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Reducers = Addon:GetModule("Reducers")
+local RootReducer = Addon:GetModule("RootReducer")
 local Wux = Addon.Wux
 
 ---@class StateManager
@@ -34,7 +34,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     perchar = _G[PERCHAR_SV_KEY]
   }
 
-  _Store = Wux:CreateStore(Reducers.rootReducer, initialState)
+  _Store = Wux:CreateStore(RootReducer:Build(), initialState)
   _Store:Subscribe(updateSavedVariables)
   updateSavedVariables(_Store:GetState())
 
