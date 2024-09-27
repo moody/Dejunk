@@ -187,13 +187,19 @@ function JunkFilter:IsJunkItem(item)
     if currentState.includeBelowItemLevel.enabled then
       local value = currentState.includeBelowItemLevel.value
       if item.itemLevel < value then
-        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
-        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
+        local checkBoxValues = currentState.itemQualityCheckBoxes.includeBelowItemLevel
+        if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+          local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
+          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
+        end
       end
     end
     -- Include unsuitable equipment.
     if currentState.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
-      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
+      local checkBoxValues = currentState.itemQualityCheckBoxes.includeUnsuitableEquipment
+      if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
+      end
     end
   end
 

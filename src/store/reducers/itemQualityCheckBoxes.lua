@@ -44,10 +44,28 @@ end
 
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL or
+      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesIncludeByQuality(value)
   local actionType = StateManager:IsCharacterSpecificSettings() and
       ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY or
       ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT or
+      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT
   return { type = actionType, payload = value }
 end
 
@@ -90,6 +108,21 @@ function ReducerFactories.itemQualityCheckBoxes(defaultState, actionTypes)
       return state
     end,
 
+    --- Reducer for `includeBelowItemLevel`.
+    --- @param state ItemQualityCheckBoxValues
+    --- @param action WuxAction
+    includeBelowItemLevel = function(state, action)
+      state = Wux:Coalesce(state, defaultState.itemQualityCheckBoxes.includeBelowItemLevel)
+
+      if action.type == actionTypes.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
+
     --- Reducer for `includeByQuality`.
     --- @param state ItemQualityCheckBoxValues
     --- @param action WuxAction
@@ -103,6 +136,21 @@ function ReducerFactories.itemQualityCheckBoxes(defaultState, actionTypes)
       end
 
       return state
-    end
+    end,
+
+    --- Reducer for `includeUnsuitableEquipment`.
+    --- @param state ItemQualityCheckBoxValues
+    --- @param action WuxAction
+    includeUnsuitableEquipment = function(state, action)
+      state = Wux:Coalesce(state, defaultState.itemQualityCheckBoxes.includeUnsuitableEquipment)
+
+      if action.type == actionTypes.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT then
+        local newState = Wux:ShallowCopy(state)
+        for k, v in pairs(action.payload) do newState[k] = v end
+        return newState
+      end
+
+      return state
+    end,
   })
 end

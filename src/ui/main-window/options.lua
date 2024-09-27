@@ -213,6 +213,29 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
       })
     end)
 
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.poor end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.common end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.uncommon end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.rare end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.epic end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ epic = value })) end
+      }
+    })
+
     optionsFrame:AddChild(frame)
   end
 
@@ -250,13 +273,39 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     optionsFrame:AddChild(frame)
   end
 
-  -- Include unsuitable equipment.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
-    tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
-  }))
+  do -- Include unsuitable equipment.
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
+      tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
+      get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
+    })
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.poor end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.common end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.uncommon end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.rare end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.epic end,
+        set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ epic = value })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
 end
 
 --- Adds global options to the given `optionsFrame`.

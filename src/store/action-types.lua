@@ -8,7 +8,9 @@ ActionTypes.Global = {
   ItemQualityCheckBoxes = {
     PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
     PATCH_EXCLUDE_WARBAND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+    PATCH_INCLUDE_BELOW_ITEM_LEVEL = "global/itemQualityCheckBoxes/includeBelowItemLevel/patch",
     PATCH_INCLUDE_BY_QUALITY = "global/itemQualityCheckBoxes/includeByQuality/patch",
+    PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "global/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
   },
   PATCH_INCLUDE_BELOW_ITEM_LEVEL = "global/includeBelowItemLevel/patch",
   PATCH_MINIMAP_ICON = "global/minimapIcon/patch",
@@ -43,7 +45,9 @@ ActionTypes.Perchar = {
   ItemQualityCheckBoxes = {
     PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
     PATCH_EXCLUDE_WARBAND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+    PATCH_INCLUDE_BELOW_ITEM_LEVEL = "perchar/itemQualityCheckBoxes/includeBelowItemLevel/patch",
     PATCH_INCLUDE_BY_QUALITY = "perchar/itemQualityCheckBoxes/includeByQuality/patch",
+    PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "perchar/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
   },
   PATCH_INCLUDE_BELOW_ITEM_LEVEL = "perchar/includeBelowItemLevel/patch",
   SET_AUTO_JUNK_FRAME = "perchar/autoJunkFrame/set",

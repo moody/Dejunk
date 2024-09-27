@@ -27,7 +27,9 @@ local DEFAULT_STATE = {
   itemQualityCheckBoxes = {
     excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
     excludeWarbandEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+    includeBelowItemLevel = { poor = true, common = true, uncommon = true, rare = true, epic = true },
     includeByQuality = { poor = true, common = false, uncommon = false, rare = false, epic = false },
+    includeUnsuitableEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
   }
 }
 
