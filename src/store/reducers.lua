@@ -189,107 +189,34 @@ Reducers.globalReducer = Wux:CombineReducers({
   autoSell = ReducerFactories.autoSell(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Safe mode.
-  safeMode = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.safeMode)
-
-    if action.type == "global/safeMode/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  safeMode = ReducerFactories.safeMode(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Exclude equipment sets.
-  excludeEquipmentSets = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeEquipmentSets)
-
-    if action.type == "global/excludeEquipmentSets/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Exclude unbound equipment.
-  excludeUnboundEquipment = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeUnboundEquipment)
-
-    if action.type == "global/excludeUnboundEquipment/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Exclude warband equipment.
-  excludeWarbandEquipment = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.excludeWarbandEquipment)
-
-    if action.type == Actions.Types.Global.SET_EXCLUDE_WARBAND_EQUIPMENT then
-      return action.payload
-    end
-
-    return state
-  end,
+  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Include below item level.
-  includeBelowItemLevel = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeBelowItemLevel)
-
-    if action.type == "global/includeBelowItemLevel/patch" then
-      state = Wux:ShallowCopy(state)
-      for k, v in pairs(action.payload) do state[k] = v end
-    end
-
-    return state
-  end,
+  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Include by quality.
   includeByQuality = ReducerFactories.includeByQuality(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Include unsuitable equipment.
-  includeUnsuitableEquipment = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeUnsuitableEquipment)
-
-    if action.type == "global/includeUnsuitableEquipment/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Include artifact relics.
-  includeArtifactRelics = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.includeArtifactRelics)
-
-    if action.type == "global/includeArtifactRelics/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Inclusions.
-  inclusions = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.inclusions)
-
-    if action.type == "global/inclusions/set" then
-      state = Wux:ShallowCopy(action.payload)
-    end
-
-    return state
-  end,
+  inclusions = ReducerFactories.inclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Exclusions.
-  exclusions = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.exclusions)
-
-    if action.type == "global/exclusions/set" then
-      state = Wux:ShallowCopy(action.payload)
-    end
-
-    return state
-  end,
+  exclusions = ReducerFactories.exclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Item quality check boxes.
   itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(GLOBAL_DEFAULT_STATE, Actions.Types.Global)
@@ -322,107 +249,34 @@ Reducers.percharReducer = Wux:CombineReducers({
   autoSell = ReducerFactories.autoSell(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Safe mode.
-  safeMode = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.safeMode)
-
-    if action.type == "perchar/safeMode/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  safeMode = ReducerFactories.safeMode(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Exclude equipment sets.
-  excludeEquipmentSets = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeEquipmentSets)
-
-    if action.type == "perchar/excludeEquipmentSets/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Exclude unbound equipment.
-  excludeUnboundEquipment = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeUnboundEquipment)
-
-    if action.type == "perchar/excludeUnboundEquipment/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Exclude warband equipment.
-  excludeWarbandEquipment = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.excludeWarbandEquipment)
-
-    if action.type == Actions.Types.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT then
-      return action.payload
-    end
-
-    return state
-  end,
+  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Include below item level.
-  includeBelowItemLevel = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeBelowItemLevel)
-
-    if action.type == "perchar/includeBelowItemLevel/patch" then
-      state = Wux:ShallowCopy(state)
-      for k, v in pairs(action.payload) do state[k] = v end
-    end
-
-    return state
-  end,
+  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Include by quality.
   includeByQuality = ReducerFactories.includeByQuality(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Include unsuitable equipment.
-  includeUnsuitableEquipment = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeUnsuitableEquipment)
-
-    if action.type == "perchar/includeUnsuitableEquipment/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Include artifact relics.
-  includeArtifactRelics = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.includeArtifactRelics)
-
-    if action.type == "perchar/includeArtifactRelics/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Inclusions.
-  inclusions = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.inclusions)
-
-    if action.type == "perchar/inclusions/set" then
-      state = Wux:ShallowCopy(action.payload)
-    end
-
-    return state
-  end,
+  inclusions = ReducerFactories.inclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Exclusions.
-  exclusions = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.exclusions)
-
-    if action.type == "perchar/exclusions/set" then
-      state = Wux:ShallowCopy(action.payload)
-    end
-
-    return state
-  end,
+  exclusions = ReducerFactories.exclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Item quality check boxes.
   itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar)

@@ -19,8 +19,17 @@
   <Script file="src\store\reducers\autoJunkFrame.lua"/>
   <Script file="src\store\reducers\autoRepair.lua"/>
   <Script file="src\store\reducers\autoSell.lua"/>
+  <Script file="src\store\reducers\excludeEquipmentSets.lua"/>
+  <Script file="src\store\reducers\excludeUnboundEquipment.lua"/>
+  <Script file="src\store\reducers\excludeWarbandEquipment.lua"/>
+  <Script file="src\store\reducers\exclusions.lua"/>
+  <Script file="src\store\reducers\includeArtifactRelics.lua"/>
+  <Script file="src\store\reducers\includeBelowItemLevel.lua"/>
   <Script file="src\store\reducers\includeByQuality.lua"/>
+  <Script file="src\store\reducers\includeUnsuitableEquipment.lua"/>
+  <Script file="src\store\reducers\inclusions.lua"/>
   <Script file="src\store\reducers\itemQualityCheckBoxes.lua"/>
+  <Script file="src\store\reducers\safeMode.lua"/>
 
   <Script file="src\store\actions.lua"/>
   <Script file="src\store\reducers.lua"/>
