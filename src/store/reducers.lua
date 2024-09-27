@@ -1,5 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionTypes = Addon:GetModule("ActionTypes")
 local ReducerFactories = Addon:GetModule("ReducerFactories")
 local Wux = Addon.Wux
 
@@ -63,31 +63,31 @@ PERCHAR_DEFAULT_STATE.characterSpecificSettings = false
 
 --- @type WuxReducer<GlobalState>
 local globalReducer = Wux:CombineReducers({
-  chatMessages = ReducerFactories.chatMessages(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  itemIcons = ReducerFactories.itemIcons(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  itemTooltips = ReducerFactories.itemTooltips(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  merchantButton = ReducerFactories.merchantButton(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  minimapIcon = ReducerFactories.minimapIcon(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  points = ReducerFactories.points(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  chatMessages = ReducerFactories.chatMessages(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  itemIcons = ReducerFactories.itemIcons(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  itemTooltips = ReducerFactories.itemTooltips(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  merchantButton = ReducerFactories.merchantButton(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  minimapIcon = ReducerFactories.minimapIcon(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  points = ReducerFactories.points(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
 
-  autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  autoSell = ReducerFactories.autoSell(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  safeMode = ReducerFactories.safeMode(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  autoSell = ReducerFactories.autoSell(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  safeMode = ReducerFactories.safeMode(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
 
-  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
 
-  includeArtifactRelics = ReducerFactories.includeArtifactRelics(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  includeByQuality = ReducerFactories.includeByQuality(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  includeByQuality = ReducerFactories.includeByQuality(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
 
-  inclusions = ReducerFactories.inclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-  exclusions = ReducerFactories.exclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  inclusions = ReducerFactories.inclusions(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
+  exclusions = ReducerFactories.exclusions(GLOBAL_DEFAULT_STATE, ActionTypes.Global),
 
-  itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(GLOBAL_DEFAULT_STATE, Actions.Types.Global)
+  itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(GLOBAL_DEFAULT_STATE, ActionTypes.Global)
 })
 
 -- ============================================================================
@@ -96,26 +96,26 @@ local globalReducer = Wux:CombineReducers({
 
 --- @type WuxReducer<PercharState>
 local percharReducer = Wux:CombineReducers({
-  characterSpecificSettings = ReducerFactories.characterSpecificSettings(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
+  characterSpecificSettings = ReducerFactories.characterSpecificSettings(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
 
-  autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  autoSell = ReducerFactories.autoSell(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  safeMode = ReducerFactories.safeMode(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
+  autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  autoSell = ReducerFactories.autoSell(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  safeMode = ReducerFactories.safeMode(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
 
-  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
+  excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
 
-  includeArtifactRelics = ReducerFactories.includeArtifactRelics(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  includeByQuality = ReducerFactories.includeByQuality(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  includeByQuality = ReducerFactories.includeByQuality(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
 
-  inclusions = ReducerFactories.inclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-  exclusions = ReducerFactories.exclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
+  inclusions = ReducerFactories.inclusions(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
+  exclusions = ReducerFactories.exclusions(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar),
 
-  itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar)
+  itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(PERCHAR_DEFAULT_STATE, ActionTypes.Perchar)
 })
 
 -- ============================================================================

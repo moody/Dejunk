@@ -1,8 +1,21 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - characterSpecificSettings
+-- ============================================================================
+
+--- @return WuxAction
+function Actions:ToggleCharacterSpecificSettings()
+  return { type = ActionTypes.Perchar.TOGGLE_CHARACTER_SPECIFIC_SETTINGS }
+end
 
 -- ============================================================================
 -- ReducerFactories - characterSpecificSettings

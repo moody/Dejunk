@@ -1,8 +1,60 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - points
+-- ============================================================================
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetMainWindowPoint(value)
+  return { type = ActionTypes.Global.SET_MAIN_WINDOW_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetMainWindowPoint()
+  return { type = ActionTypes.Global.RESET_MAIN_WINDOW_POINT }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetJunkFramePoint(value)
+  return { type = ActionTypes.Global.SET_JUNK_FRAME_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetJunkFramePoint()
+  return { type = ActionTypes.Global.RESET_JUNK_FRAME_POINT }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetTransportFramePoint(value)
+  return { type = ActionTypes.Global.SET_TRANSPORT_FRAME_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetTransportFramePoint()
+  return { type = ActionTypes.Global.RESET_TRANSPORT_FRAME_POINT }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetMerchantButtonPoint(value)
+  return { type = ActionTypes.Global.SET_MERCHANT_BUTTON_POINT, payload = value }
+end
+
+--- @return WuxAction
+function Actions:ResetMerchantButtonPoint()
+  return { type = ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT }
+end
 
 -- ============================================================================
 -- ReducerFactories - points

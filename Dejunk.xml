@@ -16,6 +16,8 @@
   <Script file="src\events\events.lua"/>
   <Script file="src\events\event-manager.lua"/>
 
+  <Script file="src\store\action-types.lua"/>
+
   <Script file="src\store\reducers\autoJunkFrame.lua"/>
   <Script file="src\store\reducers\autoRepair.lua"/>
   <Script file="src\store\reducers\autoSell.lua"/>
@@ -40,7 +42,6 @@
 
   <Script file="src\store\reducers\perchar\characterSpecificSettings.lua"/>
 
-  <Script file="src\store\actions.lua"/>
   <Script file="src\store\reducers.lua"/>
   <Script file="src\store\state-manager.lua"/>
 

@@ -1,8 +1,22 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - minimapIcon
+-- ============================================================================
+
+--- @param value table
+--- @return WuxAction
+function Actions:PatchMinimapIcon(value)
+  return { type = ActionTypes.Global.PATCH_MINIMAP_ICON, payload = value }
+end
 
 -- ============================================================================
 -- ReducerFactories - minimapIcon

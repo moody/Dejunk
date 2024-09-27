@@ -1,8 +1,26 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
+local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - excludeWarbandEquipment
+-- ============================================================================
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetExcludeWarbandEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT or
+      ActionTypes.Global.SET_EXCLUDE_WARBAND_EQUIPMENT
+  return { type = actionType, payload = value }
+end
 
 -- ============================================================================
 -- ReducerFactories - excludeWarbandEquipment

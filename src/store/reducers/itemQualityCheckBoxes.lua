@@ -1,5 +1,10 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
+local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
@@ -14,6 +19,37 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 --- @field uncommon? boolean
 --- @field rare? boolean
 --- @field epic? boolean
+
+-- ============================================================================
+-- Actions - itemQualityCheckBoxes
+-- ============================================================================
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT or
+      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT or
+      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT
+  return { type = actionType, payload = value }
+end
+
+--- @param value ItemQualityCheckBoxValues
+--- @return WuxAction
+function Actions:PatchItemQualityCheckBoxesIncludeByQuality(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY or
+      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY
+  return { type = actionType, payload = value }
+end
 
 -- ============================================================================
 -- ReducerFactories - itemQualityCheckBoxes

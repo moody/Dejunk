@@ -1,8 +1,26 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
+local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - includeArtifactRelics
+-- ============================================================================
+
+--- @param value boolean
+--- @return WuxAction
+function Actions:SetIncludeArtifactRelics(value)
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      ActionTypes.Perchar.SET_INCLUDE_ARTIFACT_RELICS or
+      ActionTypes.Global.SET_INCLUDE_ARTIFACT_RELICS
+  return { type = actionType, payload = value }
+end
 
 -- ============================================================================
 -- ReducerFactories - includeArtifactRelics

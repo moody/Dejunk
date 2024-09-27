@@ -1,8 +1,28 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionTypes = Addon:GetModule("ActionTypes")
 local Wux = Addon.Wux
+
+--- @class Actions
+local Actions = Addon:GetModule("Actions")
 
 --- @class ReducerFactories
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+
+-- ============================================================================
+-- Actions - exclusions
+-- ============================================================================
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetGlobalExclusions(value)
+  return { type = ActionTypes.Global.SET_EXCLUSIONS, payload = value }
+end
+
+--- @param value table
+--- @return WuxAction
+function Actions:SetPercharExclusions(value)
+  return { type = ActionTypes.Perchar.SET_EXCLUSIONS, payload = value }
+end
 
 -- ============================================================================
 -- ReducerFactories - exclusions
