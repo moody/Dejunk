@@ -183,15 +183,7 @@ Reducers.globalReducer = Wux:CombineReducers({
   autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Auto repair.
-  autoRepair = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoRepair)
-
-    if action.type == "global/autoRepair/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Auto sell.
   autoSell = function(state, action)
@@ -332,15 +324,7 @@ Reducers.percharReducer = Wux:CombineReducers({
   autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Auto repair.
-  autoRepair = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoRepair)
-
-    if action.type == "perchar/autoRepair/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Auto sell.
   autoSell = function(state, action)

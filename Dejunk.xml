@@ -17,6 +17,7 @@
   <Script file="src\events\event-manager.lua"/>
 
   <Script file="src\store\reducers\autoJunkFrame.lua"/>
+  <Script file="src\store\reducers\autoRepair.lua"/>
   <Script file="src\store\reducers\includeByQuality.lua"/>
   <Script file="src\store\reducers\itemQualityCheckBoxes.lua"/>
 
