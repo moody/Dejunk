@@ -179,46 +179,23 @@ Reducers.globalReducer = Wux:CombineReducers({
     end,
   }),
 
-  -- Auto junk frame.
   autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Auto repair.
   autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Auto sell.
   autoSell = ReducerFactories.autoSell(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Safe mode.
   safeMode = ReducerFactories.safeMode(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
-  -- Exclude equipment sets.
   excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Exclude unbound equipment.
   excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Exclude warband equipment.
   excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
-  -- Include below item level.
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
   includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Include by quality.
   includeByQuality = ReducerFactories.includeByQuality(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Include unsuitable equipment.
   includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
-  -- Include artifact relics.
-  includeArtifactRelics = ReducerFactories.includeArtifactRelics(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Inclusions.
   inclusions = ReducerFactories.inclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
-
-  -- Exclusions.
   exclusions = ReducerFactories.exclusions(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
-  -- Item quality check boxes.
   itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(GLOBAL_DEFAULT_STATE, Actions.Types.Global)
 })
 
@@ -239,46 +216,23 @@ Reducers.percharReducer = Wux:CombineReducers({
     return state
   end,
 
-  -- Auto junk frame.
   autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Auto repair.
   autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Auto sell.
   autoSell = ReducerFactories.autoSell(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Safe mode.
   safeMode = ReducerFactories.safeMode(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
-  -- Exclude equipment sets.
   excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Exclude unbound equipment.
   excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Exclude warband equipment.
   excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
-  -- Include below item level.
+  includeArtifactRelics = ReducerFactories.includeArtifactRelics(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
   includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Include by quality.
   includeByQuality = ReducerFactories.includeByQuality(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Include unsuitable equipment.
   includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
-  -- Include artifact relics.
-  includeArtifactRelics = ReducerFactories.includeArtifactRelics(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Inclusions.
   inclusions = ReducerFactories.inclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
-
-  -- Exclusions.
   exclusions = ReducerFactories.exclusions(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
-  -- Item quality check boxes.
   itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar)
 })
 
