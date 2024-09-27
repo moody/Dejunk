@@ -24,6 +24,8 @@
 - Opening the Transport Frame now automatically exports the associated list
 - Right-Clicking the `Include Below Item Level` option is now required to change the value
 - Option: `Exclude Unbound Equipment` to have additional check boxes for item quality
+- Option: `Include Below Item Level` to apply to equipment regardless of bound status, as well as to have additional check boxes for item quality
+- Option: `Include Unsuitable Equipment` to apply to equipment regardless of bound status, as well as to have additional check boxes for item quality
 
 ### Fixed
 
