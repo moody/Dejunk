@@ -181,8 +181,8 @@ function JunkFilter:IsJunkItem(item)
     end
   end
 
-  -- Soulbound equipment filters.
-  if Items:IsItemBound(item) and Items:IsItemEquipment(item) then
+  -- Equipment-based include filters.
+  if Items:IsItemEquipment(item) then
     -- Include below item level.
     if currentState.includeBelowItemLevel.enabled then
       local value = currentState.includeBelowItemLevel.value
