@@ -180,15 +180,7 @@ Reducers.globalReducer = Wux:CombineReducers({
   }),
 
   -- Auto junk frame.
-  autoJunkFrame = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoJunkFrame)
-
-    if action.type == "global/autoJunkFrame/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Auto repair.
   autoRepair = function(state, action)
@@ -337,15 +329,7 @@ Reducers.percharReducer = Wux:CombineReducers({
   end,
 
   -- Auto junk frame.
-  autoJunkFrame = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoJunkFrame)
-
-    if action.type == "perchar/autoJunkFrame/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Auto repair.
   autoRepair = function(state, action)
