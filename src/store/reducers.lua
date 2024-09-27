@@ -63,121 +63,12 @@ PERCHAR_DEFAULT_STATE.characterSpecificSettings = false
 
 --- @type WuxReducer<GlobalState>
 Reducers.globalReducer = Wux:CombineReducers({
-  -- Chat messages.
-  chatMessages = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.chatMessages)
-
-    if action.type == "global/chatMessages/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Item icons.
-  itemIcons = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemIcons)
-
-    if action.type == "global/itemIcons/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Item tooltips.
-  itemTooltips = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.itemTooltips)
-
-    if action.type == "global/itemTooltips/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Merchant button.
-  merchantButton = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.merchantButton)
-
-    if action.type == "global/merchantButton/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
-
-  -- Minimap icon.
-  minimapIcon = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.minimapIcon)
-
-    if action.type == "global/minimapIcon/patch" then
-      state = Wux:ShallowCopy(state)
-      for k, v in pairs(action.payload) do state[k] = v end
-    end
-
-    return state
-  end,
-
-  -- Points.
-  points = Wux:CombineReducers({
-    -- Points -> MainWindow.
-    mainWindow = function(state, action)
-      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.mainWindow)
-
-      if action.type == Actions.Types.Global.SET_MAIN_WINDOW_POINT then
-        return action.payload
-      end
-
-      if action.type == Actions.Types.Global.RESET_MAIN_WINDOW_POINT then
-        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.mainWindow)
-      end
-
-      return state
-    end,
-    -- Points -> JunkFrame.
-    junkFrame = function(state, action)
-      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.junkFrame)
-
-      if action.type == Actions.Types.Global.SET_JUNK_FRAME_POINT then
-        return action.payload
-      end
-
-      if action.type == Actions.Types.Global.RESET_JUNK_FRAME_POINT then
-        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.junkFrame)
-      end
-
-      return state
-    end,
-    -- Points -> TransportFrame.
-    transportFrame = function(state, action)
-      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.transportFrame)
-
-      if action.type == Actions.Types.Global.SET_TRANSPORT_FRAME_POINT then
-        return action.payload
-      end
-
-      if action.type == Actions.Types.Global.RESET_TRANSPORT_FRAME_POINT then
-        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.transportFrame)
-      end
-
-      return state
-    end,
-    -- Points -> MerchantButton.
-    merchantButton = function(state, action)
-      state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.points.merchantButton)
-
-      if action.type == Actions.Types.Global.SET_MERCHANT_BUTTON_POINT then
-        return action.payload
-      end
-
-      if action.type == Actions.Types.Global.RESET_MERCHANT_BUTTON_POINT then
-        return Wux:ShallowCopy(GLOBAL_DEFAULT_STATE.points.merchantButton)
-      end
-
-      return state
-    end,
-  }),
+  chatMessages = ReducerFactories.chatMessages(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  itemIcons = ReducerFactories.itemIcons(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  itemTooltips = ReducerFactories.itemTooltips(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  merchantButton = ReducerFactories.merchantButton(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  minimapIcon = ReducerFactories.minimapIcon(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
+  points = ReducerFactories.points(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   autoJunkFrame = ReducerFactories.autoJunkFrame(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
   autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
@@ -205,16 +96,7 @@ Reducers.globalReducer = Wux:CombineReducers({
 
 --- @type WuxReducer<PercharState>
 Reducers.percharReducer = Wux:CombineReducers({
-  -- Character specific settings.
-  characterSpecificSettings = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.characterSpecificSettings)
-
-    if action.type == "perchar/characterSpecificSettings/toggle" then
-      state = not state
-    end
-
-    return state
-  end,
+  characterSpecificSettings = ReducerFactories.characterSpecificSettings(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   autoJunkFrame = ReducerFactories.autoJunkFrame(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
   autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),

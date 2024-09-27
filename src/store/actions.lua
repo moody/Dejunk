@@ -13,6 +13,7 @@ Actions.Types = {
       PATCH_INCLUDE_BY_QUALITY = "global/itemQualityCheckBoxes/includeByQuality/patch",
     },
     PATCH_INCLUDE_BELOW_ITEM_LEVEL = "global/includeBelowItemLevel/patch",
+    PATCH_MINIMAP_ICON = "global/minimapIcon/patch",
     RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
     RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
     RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
@@ -20,6 +21,7 @@ Actions.Types = {
     SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
     SET_AUTO_REPAIR = "global/autoRepair/set",
     SET_AUTO_SELL = "global/autoSell/set",
+    SET_CHAT_MESSAGES = "global/chatMessages/set",
     SET_EXCLUDE_EQUIPMENT_SETS = "global/excludeEquipmentSets/set",
     SET_EXCLUDE_UNBOUND_EQUIPMENT = "global/excludeUnboundEquipment/set",
     SET_EXCLUDE_WARBAND_EQUIPMENT = "global/excludeWarbandEquipment/set",
@@ -28,8 +30,11 @@ Actions.Types = {
     SET_INCLUDE_BY_QUALITY = "global/includeByQuality/set",
     SET_INCLUDE_UNSUITABLE_EQUIPMENT = "global/includeUnsuitableEquipment/set",
     SET_INCLUSIONS = "global/inclusions/set",
+    SET_ITEM_ICONS = "global/itemIcons/set",
+    SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
     SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
     SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
+    SET_MERCHANT_BUTTON = "global/merchantButton/set",
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
     SET_SAFE_MODE = "global/safeMode/set",
     SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
@@ -54,6 +59,7 @@ Actions.Types = {
     SET_INCLUDE_UNSUITABLE_EQUIPMENT = "perchar/includeUnsuitableEquipment/set",
     SET_INCLUSIONS = "perchar/inclusions/set",
     SET_SAFE_MODE = "perchar/safeMode/set",
+    TOGGLE_CHARACTER_SPECIFIC_SETTINGS = "perchar/characterSpecificSettings/toggle",
   }
 }
 
@@ -64,31 +70,31 @@ Actions.Types = {
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetChatMessages(value)
-  return { type = "global/chatMessages/set", payload = value }
+  return { type = Actions.Types.Global.SET_CHAT_MESSAGES, payload = value }
 end
 
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetItemIcons(value)
-  return { type = "global/itemIcons/set", payload = value }
+  return { type = Actions.Types.Global.SET_ITEM_ICONS, payload = value }
 end
 
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetItemTooltips(value)
-  return { type = "global/itemTooltips/set", payload = value }
+  return { type = Actions.Types.Global.SET_ITEM_TOOLTIPS, payload = value }
 end
 
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetMerchantButton(value)
-  return { type = "global/merchantButton/set", payload = value }
+  return { type = Actions.Types.Global.SET_MERCHANT_BUTTON, payload = value }
 end
 
 --- @param value table
 --- @return WuxAction
 function Actions:PatchMinimapIcon(value)
-  return { type = "global/minimapIcon/patch", payload = value }
+  return { type = Actions.Types.Global.PATCH_MINIMAP_ICON, payload = value }
 end
 
 --- @param value table
@@ -153,7 +159,7 @@ end
 
 --- @return WuxAction
 function Actions:ToggleCharacterSpecificSettings()
-  return { type = "perchar/characterSpecificSettings/toggle" }
+  return { type = Actions.Types.Perchar.TOGGLE_CHARACTER_SPECIFIC_SETTINGS }
 end
 
 --- @param value table
