@@ -5,6 +5,7 @@ local StateManager = Addon:GetModule("StateManager")
 local Actions = Addon:GetModule("Actions")
 
 Actions.Types = {
+  --- @class ActionTypesGlobal
   Global = {
     ItemQualityCheckBoxes = {
       PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "global/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
@@ -22,6 +23,7 @@ Actions.Types = {
     SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
     SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
   },
+  --- @class ActionTypesPerchar
   Perchar = {
     ItemQualityCheckBoxes = {
       PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeUnboundEquipment/patch",

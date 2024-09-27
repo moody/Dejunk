@@ -16,6 +16,9 @@
   <Script file="src\events\events.lua"/>
   <Script file="src\events\event-manager.lua"/>
 
+  <Script file="src\store\reducers\includeByQuality.lua"/>
+  <Script file="src\store\reducers\itemQualityCheckBoxes.lua"/>
+
   <Script file="src\store\actions.lua"/>
   <Script file="src\store\reducers.lua"/>
   <Script file="src\store\state-manager.lua"/>
