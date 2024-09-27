@@ -17,6 +17,7 @@
   <Script file="src\events\event-manager.lua"/>
 
   <Script file="src\store\action-types.lua"/>
+  <Script file="src\store\default-states.lua"/>
 
   <Script file="src\store\reducers\autoJunkFrame.lua"/>
   <Script file="src\store\reducers\autoRepair.lua"/>
