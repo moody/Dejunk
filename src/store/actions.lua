@@ -18,6 +18,7 @@ Actions.Types = {
     RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
     SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
     SET_AUTO_REPAIR = "global/autoRepair/set",
+    SET_AUTO_SELL = "global/autoSell/set",
     SET_EXCLUDE_WARBAND_EQUIPMENT = "global/excludeWarbandEquipment/set",
     SET_INCLUDE_BY_QUALITY = "global/includeByQuality/set",
     SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
@@ -34,6 +35,7 @@ Actions.Types = {
     },
     SET_AUTO_JUNK_FRAME = "perchar/autoJunkFrame/set",
     SET_AUTO_REPAIR = "perchar/autoRepair/set",
+    SET_AUTO_SELL = "perchar/autoSell/set",
     SET_EXCLUDE_WARBAND_EQUIPMENT = "perchar/excludeWarbandEquipment/set",
     SET_INCLUDE_BY_QUALITY = "perchar/includeByQuality/set",
   }
@@ -175,11 +177,10 @@ end
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetAutoSell(value)
-  if StateManager:IsCharacterSpecificSettings() then
-    return { type = "perchar/autoSell/set", payload = value }
-  else
-    return { type = "global/autoSell/set", payload = value }
-  end
+  local actionType = StateManager:IsCharacterSpecificSettings() and
+      Actions.Types.Perchar.SET_AUTO_SELL or
+      Actions.Types.Global.SET_AUTO_SELL
+  return { type = actionType, payload = value }
 end
 
 --- @param value boolean

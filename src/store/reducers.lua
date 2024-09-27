@@ -186,15 +186,7 @@ Reducers.globalReducer = Wux:CombineReducers({
   autoRepair = ReducerFactories.autoRepair(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Auto sell.
-  autoSell = function(state, action)
-    state = Wux:Coalesce(state, GLOBAL_DEFAULT_STATE.autoSell)
-
-    if action.type == "global/autoSell/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoSell = ReducerFactories.autoSell(GLOBAL_DEFAULT_STATE, Actions.Types.Global),
 
   -- Safe mode.
   safeMode = function(state, action)
@@ -327,15 +319,7 @@ Reducers.percharReducer = Wux:CombineReducers({
   autoRepair = ReducerFactories.autoRepair(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Auto sell.
-  autoSell = function(state, action)
-    state = Wux:Coalesce(state, PERCHAR_DEFAULT_STATE.autoSell)
-
-    if action.type == "perchar/autoSell/set" then
-      state = action.payload
-    end
-
-    return state
-  end,
+  autoSell = ReducerFactories.autoSell(PERCHAR_DEFAULT_STATE, Actions.Types.Perchar),
 
   -- Safe mode.
   safeMode = function(state, action)
