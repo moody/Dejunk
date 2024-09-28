@@ -188,19 +188,28 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
 
   -- Include below item level.
   do
+    local LABEL_TEXT_FORMAT = Colors.White(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. " " .. Colors.Grey("(%s)")
+
+    local function getItemLevel()
+      return StateManager:GetCurrentState().includeBelowItemLevel.value
+    end
+
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
       get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
       set = function(value) StateManager:Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value })) end,
       enableClickHandling = true,
       onUpdateTooltip = function(self, tooltip)
-        local itemLevel = Colors.White(StateManager:GetCurrentState().includeBelowItemLevel.value)
         tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
-        tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(itemLevel))
+        tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(Colors.White(getItemLevel())))
         tooltip:AddLine(" ")
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
       end,
     })
+
+    frame:HookScript("OnUpdate", function()
+      frame.label:SetText(LABEL_TEXT_FORMAT:format(Colors.Yellow(getItemLevel())))
+    end)
 
     frame:SetClickHandler("RightButton", "NONE", function()
       local currentState = StateManager:GetCurrentState()
