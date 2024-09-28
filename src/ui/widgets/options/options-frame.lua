@@ -41,28 +41,32 @@ function Widgets:OptionsFrame(options)
   end
 
   -- Hook `OnUpdate` script.
-  frame:HookScript("OnUpdate", function(self)
+  frame:HookScript("OnUpdate", function(_, elapsed)
+    frame.refreshTimer = (frame.refreshTimer or 0.2) + elapsed
+    if frame.refreshTimer < 0.2 then return end
+    frame.refreshTimer = 0
+
     -- Calculate total height of children.
     local childrenHeight = 0
-    for _, child in ipairs(self.children) do
+    for _, child in ipairs(frame.children) do
       childrenHeight = childrenHeight + child:GetHeight()
     end
 
     -- Calculate total spacing between children.
-    local childrenSpacing = (#self.children - 1) * CHILD_SPACING
+    local childrenSpacing = (#frame.children - 1) * CHILD_SPACING
 
     -- Update scroll child height.
     frame.scrollChild:SetHeight(childrenHeight + childrenSpacing)
 
     -- Update child points.
-    for i, child in ipairs(self.children) do
+    for i, child in ipairs(frame.children) do
       child:ClearAllPoints()
       if i == 1 then
         child:SetPoint("TOPLEFT", frame.scrollChild)
         child:SetPoint("TOPRIGHT", frame.scrollChild)
       else
-        child:SetPoint("TOPLEFT", self.children[i - 1], "BOTTOMLEFT", 0, -CHILD_SPACING)
-        child:SetPoint("TOPRIGHT", self.children[i - 1], "BOTTOMRIGHT", 0, -CHILD_SPACING)
+        child:SetPoint("TOPLEFT", frame.children[i - 1], "BOTTOMLEFT", 0, -CHILD_SPACING)
+        child:SetPoint("TOPRIGHT", frame.children[i - 1], "BOTTOMRIGHT", 0, -CHILD_SPACING)
       end
     end
   end)
