@@ -19,6 +19,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return TextFrameWidget frame
 function Widgets:TextFrame(options)
   -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("TextFrame"))
   options.titleTemplate = nil
   options.titleJustify = "CENTER"
 

@@ -1,11 +1,31 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local Actions = Addon:GetModule("Actions")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
+local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class TransportFrame
 local TransportFrame = Addon:GetModule("TransportFrame")
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Sets the edit box text for the `frame` to comma-separated item IDs from the associated list.
+--- @param frame TransportFrameWidget
+local function export(frame)
+  -- Set edit box text.
+  local editBox = frame.textFrame.editBox
+  local itemIds = frame.list:GetItemIds()
+  editBox:SetText(table.concat(itemIds, ","))
+  -- Select all.
+  local numLetters = editBox:GetNumLetters()
+  editBox:SetFocus()
+  editBox:HighlightText(0, numLetters)
+  editBox:SetCursorPosition(numLetters)
+end
 
 -- ============================================================================
 -- TransportFrame
@@ -15,9 +35,8 @@ local TransportFrame = Addon:GetModule("TransportFrame")
 --- @param list List
 function TransportFrame:Show(list)
   self.frame.list = list
-  self.frame.textFrame.editBox:SetText("")
-  self.frame.textFrame.editBox:ClearFocus()
   self.frame:Show()
+  export(self.frame)
 end
 
 --- Hides the frame.
@@ -45,9 +64,15 @@ TransportFrame.frame = (function()
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_TransportFrame",
     width = 325,
-    height = 375
+    height = 375,
+    enableClickHandling = true
   })
-  frame:SetFrameLevel(frame:GetFrameLevel() + 2)
+
+  frame:SetClickHandler("RightButton", "SHIFT", function()
+    StateManager:Dispatch(Actions:ResetTransportFramePoint())
+  end)
+
+  Widgets:ConfigureForPointSync(frame, "TransportFrame")
 
   frame:HookScript("OnUpdate", function(self)
     if not self.list then return end
@@ -89,17 +114,7 @@ TransportFrame.frame = (function()
     },
     labelText = L.EXPORT,
     labelColor = Colors.Yellow,
-    onClick = function(self)
-      -- Set edit box text.
-      local editBox = frame.textFrame.editBox
-      local itemIds = frame.list:GetItemIds()
-      editBox:SetText(table.concat(itemIds, ","))
-      -- Select all.
-      local numLetters = editBox:GetNumLetters()
-      editBox:SetFocus()
-      editBox:HighlightText(0, numLetters)
-      editBox:SetCursorPosition(numLetters)
-    end
+    onClick = function() export(frame) end
   })
 
   -- Text frame.

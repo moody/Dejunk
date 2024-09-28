@@ -230,13 +230,18 @@ function Items:IsItemLocked(item)
   return true
 end
 
---- Returns `true` if the given `item` is soulbound or account bound.
+--- Returns `true` if the given `item` is soulbound, account bound, or warband bound.
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemBound(item)
   self.location:SetBagAndSlot(item.bag, item.slot)
+
   local success, isBound = pcall(C_Item.IsBound, self.location)
-  if success then return isBound end
+  if success and isBound then return true end
+
+  success, isBound = pcall(C_Item.IsBoundToAccountUntilEquip, self.location)
+  if success and isBound then return true end
+
   return false
 end
 
@@ -274,8 +279,8 @@ end
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemRefundable(item)
-  local refundTimeRemaining = select(3, C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false))
-  return refundTimeRemaining and refundTimeRemaining > 0
+  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false)
+  return purchaseInfo and purchaseInfo.refundSeconds > 0
 end
 
 -- Items:IsItemEquipment()
@@ -311,6 +316,16 @@ do
 
     return false
   end
+end
+
+--- Returns `true` if the given `item` is equipment that can be placed in the warband bank.
+--- @param item BagItem
+--- @return boolean
+function Items:IsItemWarbandEquipment(item)
+  if not (Addon.IS_RETAIL and self:IsItemEquipment(item)) then return false end
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  local success, isWarband = pcall(C_Bank.IsItemAllowedInBankType, Enum.BankType.Account, self.location)
+  return (success and isWarband) or false
 end
 
 --- Returns `true` if the given `item` is suitable for the player's class.

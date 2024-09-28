@@ -1,5 +1,36 @@
 # Changelog
 
+## [2.0.0] - 2024-09-28
+
+### Added
+
+- Addon compartment support for retail
+- Option: `Exclude Warband Equipment` for retail
+- Option: `Include By Quality` with check boxes for item qualities
+
+### Removed
+
+- Option: `Include Poor Items` in favor of `Include By Quality`
+
+### Changed
+
+- Merchant Button is now draggable
+- Left-Click on Merchant Button initiates selling
+- Right-Click on Merchant Button toggles the Options Frame
+- Shift + Left-Click on Merchant Button toggles the Junk Frame
+- Positions of draggable frames are now saved globally
+- Shift + Right-Click on a draggable frame will reset its position
+- Items listed in the Junk Frame no longer have a price displayed when they have no value
+- Opening the Transport Frame now automatically exports the associated list
+- Right-Clicking the `Include Below Item Level` option is now required to change the value
+- Option: `Exclude Unbound Equipment` to have additional check boxes for item quality
+- Option: `Include Below Item Level` to apply to equipment regardless of bound status, as well as to have additional check boxes for item quality
+- Option: `Include Unsuitable Equipment` to apply to equipment regardless of bound status, as well as to have additional check boxes for item quality
+
+### Fixed
+
+- Resolved a bug which caused refundable junk items to not be ignored
+
 ## [1.10.8] - 2024-08-21
 
 ### Fixed

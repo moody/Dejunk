@@ -66,7 +66,7 @@ function Addon:GetLatency(minLatency)
   return max(latency, minLatency or 0.2)
 end
 
--- Addon:Concat()
+-- Addon:Concat(), Addon:SubjectDescription()
 do
   local Colors = Addon:GetModule("Colors")
   local cache = {}
@@ -79,6 +79,14 @@ do
     for k in pairs(cache) do cache[k] = nil end
     for i = 1, select("#", ...) do cache[#cache + 1] = select(i, ...) end
     return table.concat(cache, Colors.Grey(sep))
+  end
+
+  --- Combines a `subject` and `description` into a formatted string (e.g., `"- <subject>: <description>"`).
+  --- @param subject string
+  --- @param description string
+  --- @return string
+  function Addon:SubjectDescription(subject, description)
+    return Colors.Grey("- %s: %s"):format(Colors.Gold(subject), Colors.White(description))
   end
 end
 

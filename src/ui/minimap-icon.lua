@@ -14,10 +14,6 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class MinimapIcon
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 
-local function addDoubleLine(tooltip, leftLine, rightLine)
-  tooltip:AddDoubleLine(Colors.Yellow(leftLine), Colors.White(rightLine))
-end
-
 EventManager:Once(E.StoreCreated, function()
   local object = LDB:NewDataObject(ADDON_NAME, {
     type = "data source",
@@ -35,12 +31,11 @@ EventManager:Once(E.StoreCreated, function()
     end,
 
     OnTooltipShow = function(tooltip)
-      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Gold(Addon.VERSION))
-      tooltip:AddLine(" ")
-      addDoubleLine(tooltip, L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME)
-      addDoubleLine(tooltip, L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME)
-      addDoubleLine(tooltip, Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING)
-      addDoubleLine(tooltip, Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM))
+      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+      tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME))
+      tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+      tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING))
+      tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
     end
   })
 

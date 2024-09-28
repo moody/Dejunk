@@ -19,6 +19,9 @@ local Widgets = Addon:GetModule("Widgets")
 function Widgets:ScrollableTitleFrame(options)
   local SPACING = self:Padding()
 
+  -- Defaults.
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("ScrollableTitleFrame"))
+
   --- @class ScrollableTitleFrameWidget : TitleFrameWidget
   local frame = self:TitleFrame(options)
 
