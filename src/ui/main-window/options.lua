@@ -13,7 +13,7 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Initializes options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:Initialize(optionsFrame)
-  self:AddCharacterOptions(optionsFrame)
+  -- self:AddCharacterOptions(optionsFrame)
   self:AddGeneralOptions(optionsFrame)
   self:AddIncludeOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
@@ -24,7 +24,14 @@ end
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:AddCharacterOptions(optionsFrame)
   -- Character heading.
-  -- optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.CHARACTER }))
+  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.CHARACTER }))
+end
+
+--- Adds general options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddGeneralOptions(optionsFrame)
+  -- General heading.
+  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GENERAL }))
 
   -- Character specific settings.
   optionsFrame:AddChild(Widgets:OptionButton({
@@ -33,13 +40,6 @@ function MainWindowOptions:AddCharacterOptions(optionsFrame)
     get = function() return StateManager:GetPercharState().characterSpecificSettings end,
     set = function() StateManager:GetStore():Dispatch(Actions:ToggleCharacterSpecificSettings()) end
   }))
-end
-
---- Adds general options to the given `optionsFrame`.
---- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddGeneralOptions(optionsFrame)
-  -- General heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GENERAL }))
 
   -- Auto junk frame.
   optionsFrame:AddChild(Widgets:OptionButton({
