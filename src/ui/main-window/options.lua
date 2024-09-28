@@ -98,7 +98,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
   do -- Exclude unbound equipment.
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
-      tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
+      tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
       get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
     })
@@ -133,7 +133,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
   if Addon.IS_RETAIL then
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
-      tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP,
+      tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
       get = function() return StateManager:GetCurrentState().excludeWarbandEquipment end,
       set = function(value) StateManager:Dispatch(Actions:SetExcludeWarbandEquipment(value)) end
     })
@@ -202,6 +202,8 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
         tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(Colors.White(getItemLevel())))
+        tooltip:AddLine(" ")
+        tooltip:AddLine(Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT))
         tooltip:AddLine(" ")
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
       end,
@@ -285,7 +287,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
   do -- Include unsuitable equipment.
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
-      tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
+      tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
       get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
     })
