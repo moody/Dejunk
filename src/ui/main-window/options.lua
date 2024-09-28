@@ -253,7 +253,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
   do -- Include by quality.
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BY_QUALITY_TEXT,
-      tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP,
+      tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP .. "|n|n" .. Colors.Pink(L.OPTION_WARNING_BE_CAREFUL),
       get = function() return StateManager:GetCurrentState().includeByQuality end,
       set = function(value) StateManager:Dispatch(Actions:SetIncludeByQuality(value)) end
     })
