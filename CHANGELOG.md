@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Changed the `Destroy Next Item` action for the minimap icon to `Alt + Right-Click` (previously `Shift + Left-Click`)
+- Updated minimap icon's tooltip to display the next item to be destroyed when hovering while holding `Alt`
+
 ## [2.0.0] - 2024-09-28
 
 ### Added
