@@ -78,14 +78,40 @@ end
 -- JunkFilter
 -- ============================================================================
 
---- Creates or updates an array of sellable items.
+do -- Convenience methods.
+  local items = {}
+
+  --- Returns the number of sellable and destroyable junk items.
+  --- @return integer numSellable, integer numDestroyable
+  function JunkFilter:GetNumJunkItems()
+    local numSellable = #self:GetSellableJunkItems(items)
+    local numDestroyable = #self:GetDestroyableJunkItems(items)
+    return numSellable, numDestroyable
+  end
+
+  --- Returns the next sellable junk item if one exists.
+  --- @return BagItem|nil
+  function JunkFilter:GetNextSellableJunkItem()
+    self:GetSellableJunkItems(items)
+    return items[1]
+  end
+
+  --- Returns the next destroyable junk item if one exists.
+  --- @return BagItem|nil
+  function JunkFilter:GetNextDestroyableJunkItem()
+    self:GetDestroyableJunkItems(items)
+    return items[1]
+  end
+end
+
+--- Creates or updates an array of sellable junk items.
 --- @param items? BagItem[]
 --- @return BagItem[] sellableItems
 function JunkFilter:GetSellableJunkItems(items)
   return getJunkItems(self.IsSellableJunkItem, items)
 end
 
---- Creates or updates an array of destroyable items.
+--- Creates or updates an array of destroyable junk items.
 --- @param items? BagItem[]
 --- @return BagItem[] destroyableItems
 function JunkFilter:GetDestroyableJunkItems(items)
