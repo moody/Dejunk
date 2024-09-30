@@ -107,9 +107,10 @@ JunkFrame.frame = (function()
     labelText = L.DESTROY_NEXT_ITEM,
     onClick = Commands.destroy,
     onUpdateTooltip = function(self, tooltip)
-      local items = self:GetParent().items
-      if items and items[1] then
-        tooltip:SetBagItem(items[1].bag, items[1].slot)
+      tooltip:SetOwner(self, "ANCHOR_RIGHT")
+      local item = JunkFilter:GetNextDestroyableJunkItem()
+      if item then
+        tooltip:SetBagItem(item.bag, item.slot)
       end
     end
   })
