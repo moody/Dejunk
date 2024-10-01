@@ -31,12 +31,9 @@ function Destroyer:Start()
   -- Don't start if busy.
   if Addon:IsBusy() then return end
 
-  -- Get items.
-  local items = JunkFilter:GetDestroyableJunkItems()
-  if #items == 0 then return Addon:Print(L.NO_JUNK_ITEMS_TO_DESTROY) end
-
-  -- Get least expensive item.
-  local item = table.remove(items, 1)
+  -- Get item.
+  local item = JunkFilter:GetNextDestroyableJunkItem()
+  if not item then return Addon:Print(L.NO_JUNK_ITEMS_TO_DESTROY) end
 
   -- Handle item.
   handleItem(item)

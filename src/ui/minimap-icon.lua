@@ -5,14 +5,56 @@ local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local LDB = Addon:GetLibrary("LDB") ---@type LibDataBroker-1.1
 local LDBIcon = Addon:GetLibrary("LDBIcon") ---@type LibDBIcon-1.0
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
+local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class MinimapIcon
 local MinimapIcon = Addon:GetModule("MinimapIcon")
+
+-- =============================================================================
+-- Local Functions
+-- =============================================================================
+
+--- Ripped from LibDBIcon to keep tooltip positioning behavior consistent.
+local function getAnchors(frame)
+  local x, y = frame:GetCenter()
+  if not x or not y then return "CENTER" end
+  local hhalf = (x > UIParent:GetWidth() * 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
+  local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
+  return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
+end
+
+local function onUpdateTooltip(frame)
+  Tooltip:SetOwner(frame, "ANCHOR_NONE")
+  Tooltip:SetPoint(getAnchors(frame))
+
+  if IsAltKeyDown() then
+    local item = JunkFilter:GetNextDestroyableJunkItem()
+    if item then
+      Tooltip:SetBagItem(item.bag, item.slot)
+      Tooltip:AddLine(" ")
+      Tooltip:AddDoubleLine(L.RIGHT_CLICK, Colors.Red(L.DESTROY))
+      Tooltip:Show()
+      return
+    end
+  end
+
+  Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME))
+  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING))
+  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
+  Tooltip:Show()
+end
+
+-- =============================================================================
+-- LibDBIcon
+-- =============================================================================
 
 EventManager:Once(E.StoreCreated, function()
   local object = LDB:NewDataObject(ADDON_NAME, {
@@ -26,17 +68,20 @@ EventManager:Once(E.StoreCreated, function()
       end
 
       if button == "RightButton" then
-        if IsShiftKeyDown() then Commands.destroy() else Commands.options() end
+        if IsAltKeyDown() then Commands.destroy() else Commands.options() end
       end
     end,
 
-    OnTooltipShow = function(tooltip)
-      tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
-      tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME))
-      tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
-      tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING))
-      tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
-    end
+    --- @param frame Frame|any
+    OnEnter = function(frame)
+      -- GameTooltip will repeatedly call `UpdateTooltip()` on the frame passed to `SetOwner()`.
+      frame.UpdateTooltip = onUpdateTooltip
+      frame:UpdateTooltip()
+    end,
+
+    OnLeave = function()
+      Tooltip:Hide()
+    end,
   })
 
   local debouncePatchMinimapIcon
