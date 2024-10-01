@@ -16,9 +16,6 @@ local Tooltip = Addon:GetModule("Tooltip")
 --- @class MinimapIcon
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 
---- @type Ticker
-local tooltipTicker = nil
-
 -- =============================================================================
 -- Local Functions
 -- =============================================================================
@@ -32,7 +29,7 @@ local function getAnchors(frame)
   return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 end
 
-local function refreshTooltip(frame)
+local function onUpdateTooltip(frame)
   Tooltip:SetOwner(frame, "ANCHOR_NONE")
   Tooltip:SetPoint(getAnchors(frame))
 
@@ -75,17 +72,14 @@ EventManager:Once(E.StoreCreated, function()
       end
     end,
 
+    --- @param frame Frame|any
     OnEnter = function(frame)
-      refreshTooltip(frame)
-      if not tooltipTicker then
-        tooltipTicker = TickerManager:NewTicker(0.2, function() refreshTooltip(frame) end)
-      else
-        tooltipTicker:Restart()
-      end
+      -- GameTooltip will repeatedly call `UpdateTooltip()` on the frame passed to `SetOwner()`.
+      frame.UpdateTooltip = onUpdateTooltip
+      frame:UpdateTooltip()
     end,
 
     OnLeave = function()
-      tooltipTicker:Cancel()
       Tooltip:Hide()
     end,
   })
