@@ -4,8 +4,9 @@
 
 ### Changed
 
-- Changed the `Destroy Next Item` action for the minimap icon to `Alt + Right-Click` (previously `Shift + Left-Click`)
-- Updated minimap icon's tooltip to display the next item to be destroyed when hovering while holding `Alt`
+- Updated the Merchant Button to perform the `Destroy Next Item` action using `Alt + Right-Click`
+- Updated the Minimap Icon to perform the `Destroy Next Item` action using `Alt + Right-Click` (was `Shift + Left-Click`)
+- Updated tooltips for the Merchant Button and Minimap Icon to display the next destroyable junk item while holding `Alt`
 
 ## [2.0.0] - 2024-09-28
 
