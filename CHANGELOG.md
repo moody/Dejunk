@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Updated item buttons on the Junk Frame to destroy the item using `Alt + Right-Click`
 - Updated the Merchant Button to perform the `Destroy Next Item` action using `Alt + Right-Click`
 - Updated the Minimap Icon to perform the `Destroy Next Item` action using `Alt + Right-Click` (was `Shift + Left-Click`)
 - Updated tooltips for the Merchant Button and Minimap Icon to display the next destroyable junk item while holding `Alt`
