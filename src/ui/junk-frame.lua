@@ -169,21 +169,24 @@ JunkFrame.frame = (function()
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
       tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
-      tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), Colors.Red(L.DESTROY))
       tooltip:AddDoubleLine(
         Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
         L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
       )
+      tooltip:AddDoubleLine(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
     end,
     itemButtonOnClick = function(self, button)
       if button == "LeftButton" then
-        local handler = IsShiftKeyDown() and Destroyer or Seller
-        handler:HandleItem(self.item)
+        Seller:HandleItem(self.item)
       end
 
       if button == "RightButton" then
-        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
-        list:Add(self.item.id)
+        if IsAltKeyDown() then
+          Destroyer:HandleItem(self.item)
+        else
+          local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
+          list:Add(self.item.id)
+        end
       end
     end,
     getItems = function() return frame.items end,
