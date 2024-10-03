@@ -29,9 +29,9 @@ local function getAnchors(frame)
   return vhalf .. hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP") .. hhalf
 end
 
+--- @param frame Frame
 local function onUpdateTooltip(frame)
-  Tooltip:SetOwner(frame, "ANCHOR_NONE")
-  Tooltip:SetPoint(getAnchors(frame))
+  Tooltip:ClearLines()
 
   if IsAltKeyDown() then
     local item = JunkFilter:GetNextDestroyableJunkItem()
@@ -74,7 +74,9 @@ EventManager:Once(E.StoreCreated, function()
 
     --- @param frame Frame|any
     OnEnter = function(frame)
-      -- GameTooltip will repeatedly call `UpdateTooltip()` on the frame passed to `SetOwner()`.
+      -- Tooltip will repeatedly call `UpdateTooltip()` on the frame when passed to `SetOwner()`.
+      Tooltip:SetOwner(frame, "ANCHOR_NONE")
+      Tooltip:SetPoint(getAnchors(frame))
       frame.UpdateTooltip = onUpdateTooltip
       frame:UpdateTooltip()
     end,

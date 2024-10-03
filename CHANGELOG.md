@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.2] - 2024-10-03
+
+### Fixed
+
+- Minimap icon compatibility with HidingBar ([#232](https://github.com/moody/Dejunk/issues/232))
+
 ## [2.0.1] - 2024-10-01
 
 ### Changed
