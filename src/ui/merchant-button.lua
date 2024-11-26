@@ -112,7 +112,7 @@ end)
 -- ============================================================================
 
 TickerManager:NewTicker(0.01, function()
-  if MerchantFrame and MerchantFrame:IsShown() and StateManager:GetGlobalState().merchantButton then
+  if Addon:IsAtMerchant() and StateManager:GetGlobalState().merchantButton then
     frame:Show()
   else
     frame:Hide()

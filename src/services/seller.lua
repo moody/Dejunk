@@ -89,7 +89,7 @@ function Seller:Start(auto)
   -- Don't start if busy.
   if Addon:IsBusy() then return end
   -- Don't start without merchant.
-  if not (MerchantFrame and MerchantFrame:IsShown()) then
+  if not Addon:IsAtMerchant() then
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
@@ -122,7 +122,7 @@ end
 function Seller:HandleItem(item)
   if Addon:IsBusy() then return end
 
-  if not (MerchantFrame and MerchantFrame:IsShown()) then
+  if not Addon:IsAtMerchant() then
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 

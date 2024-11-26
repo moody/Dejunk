@@ -131,7 +131,7 @@ JunkFrame.frame = (function()
       self.startSellingButton:SetEnabled(false)
       self.destroyNextItemButton:SetEnabled(false)
     else
-      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
+      self.startSellingButton:SetEnabled(Addon:IsAtMerchant() and hasSellableItems(self.items))
       self.destroyNextItemButton:SetEnabled(#self.items > 0)
     end
   end)

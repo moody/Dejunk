@@ -116,6 +116,12 @@ do
   end
 end
 
+--- Returns `true` if the player is interacting with a merchant.
+--- @return boolean
+function Addon:IsAtMerchant()
+  return (MerchantFrame and MerchantFrame:IsShown()) or false
+end
+
 -- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
 do
   local Colors = Addon:GetModule("Colors")
