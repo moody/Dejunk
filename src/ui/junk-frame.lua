@@ -6,6 +6,7 @@ local Commands = Addon:GetModule("Commands")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
@@ -131,7 +132,7 @@ JunkFrame.frame = (function()
       self.startSellingButton:SetEnabled(false)
       self.destroyNextItemButton:SetEnabled(false)
     else
-      self.startSellingButton:SetEnabled(MerchantFrame and MerchantFrame:IsShown() and hasSellableItems(self.items))
+      self.startSellingButton:SetEnabled(Addon:IsAtMerchant() and hasSellableItems(self.items))
       self.destroyNextItemButton:SetEnabled(#self.items > 0)
     end
   end)

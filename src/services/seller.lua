@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
@@ -89,7 +90,7 @@ function Seller:Start(auto)
   -- Don't start if busy.
   if Addon:IsBusy() then return end
   -- Don't start without merchant.
-  if not (MerchantFrame and MerchantFrame:IsShown()) then
+  if not Addon:IsAtMerchant() then
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
@@ -122,7 +123,7 @@ end
 function Seller:HandleItem(item)
   if Addon:IsBusy() then return end
 
-  if not (MerchantFrame and MerchantFrame:IsShown()) then
+  if not Addon:IsAtMerchant() then
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 

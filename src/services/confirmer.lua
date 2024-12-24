@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local TickerManager = Addon:GetModule("TickerManager")
