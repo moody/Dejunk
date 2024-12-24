@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.3] - 2024-12-24
+
+### Fixed
+
+- Addon out of date errors
+
 ## [2.0.2] - 2024-10-03
 
 ### Fixed
