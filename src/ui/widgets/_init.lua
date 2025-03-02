@@ -1,6 +1,7 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local Actions = Addon:GetModule("Actions")
+local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local StateManager = Addon:GetModule("StateManager")
@@ -62,23 +63,30 @@ function Widgets:ConfigureForPointSync(frame, stateType)
     getPoint = function() return StateManager:GetGlobalState().points.transportFrame end
     setPoint = function(point) StateManager:Dispatch(Actions:SetTransportFramePoint(point)) end
   elseif stateType == "MerchantButton" then
-    getPoint = function() return StateManager:GetGlobalState().points.merchantButton end
+    getPoint = function()
+      local point = StateManager:GetGlobalState().points.merchantButton
+      return (point.relativeTo ~= DefaultStates.Global.points.merchantButton.relativeTo) and
+          DefaultStates.Global.points.merchantButton or
+          point
+    end
     setPoint = function(point) StateManager:Dispatch(Actions:SetMerchantButtonPoint(point)) end
   end
 
   local function refresh()
     local p = getPoint()
+    local relativeTo = p.relativeTo and _G[p.relativeTo] or UIParent
     frame:ClearAllPoints()
-    frame:SetPoint(p.point, nil, p.relativePoint, p.offsetX, p.offsetY)
+    frame:SetPoint(p.point, relativeTo, p.relativePoint, p.offsetX, p.offsetY)
   end
 
   local function save()
-    local point, _, relativePoint, offsetX, offsetY = frame:GetPoint()
+    local parent = frame:GetParent() or UIParent
     setPoint({
-      point = point,
-      relativePoint = relativePoint,
-      offsetX = offsetX,
-      offsetY = offsetY
+      point = "TOPLEFT",
+      relativeTo = parent:GetName(),
+      relativePoint = "TOPLEFT",
+      offsetX = frame:GetLeft() - parent:GetLeft(),
+      offsetY = frame:GetTop() - parent:GetTop()
     })
   end
 
