@@ -18,6 +18,7 @@ local LABEL_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colo
 --- @class MerchantButtonWidget : ButtonWidget
 local frame = Widgets:Button({
   name = ADDON_NAME .. "_MerchantButton",
+  parent = _G.MerchantFrame,
   width = 108,
   labelText = LABEL_TEXT_FORMAT:format(0, 0),
   labelColor = Colors.Blue,

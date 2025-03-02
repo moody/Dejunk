@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.4] - 2025-03-01
+
+### Changed
+
+- Updated the Merchant Button to be attached to the merchant frame ([#236](https://github.com/moody/Dejunk/issues/236))
+
 ## [2.0.3] - 2024-12-24
 
 ### Fixed
