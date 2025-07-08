@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.5] - 2025-07-08
+
+- Version updates
+
 ## [2.0.4] - 2025-03-01
 
 ### Changed
