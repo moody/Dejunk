@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.6] - 2025-08-02
+
+- Updated suitable items table for MoP Classic
+
 ## [2.0.5] - 2025-07-08
 
 - Version updates
