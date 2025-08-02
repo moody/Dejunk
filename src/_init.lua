@@ -12,6 +12,7 @@ Addon.VERSION = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
 Addon.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 Addon.IS_VANILLA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 Addon.IS_CATA = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
+Addon.IS_MISTS = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
 
 -- ============================================================================
 -- Addon - Methods
