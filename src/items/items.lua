@@ -358,7 +358,7 @@ Items.suitable = {
 --- Updates the `Items.suitable` table.
 --- @param playerLevel integer
 local function updateSuitableTable(playerLevel)
-  local IS_LESSER_ARMOR_TYPE_SUITABLE = Addon.IS_VANILLA or (Addon.IS_CATA and playerLevel < 50)
+  local IS_LESSER_ARMOR_TYPE_SUITABLE = Addon.IS_VANILLA or ((Addon.IS_CATA or Addon.IS_MISTS) and playerLevel < 50)
   local _, class = UnitClass("player")
 
   -- Generic armor.
