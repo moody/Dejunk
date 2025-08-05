@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.7] - 2025-08-05
+
+### Fixed
+
+- Resolved errors with popup code for 11.2.0
+
 ## [2.0.6] - 2025-08-02
 
 - Updated suitable items table for MoP Classic

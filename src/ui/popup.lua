@@ -11,11 +11,19 @@ Popup.keys = {}
 -- Events
 -- ============================================================================
 
+local function handlePopup(popup)
+  if popup and popup:IsShown() and Popup.keys[popup.which] then
+    popup:Hide()
+  end
+end
+
 EventManager:On(E.StateUpdated, function()
-  for i = 1, STATICPOPUP_NUMDIALOGS do
-    local popup = _G["StaticPopup" .. i]
-    if popup and popup:IsShown() and Popup.keys[popup.which] then
-      popup:Hide()
+  if type(StaticPopup_ForEachShownDialog) == "function" then
+    StaticPopup_ForEachShownDialog(handlePopup)
+  else
+    for i = 1, STATICPOPUP_NUMDIALOGS do
+      local popup = _G["StaticPopup" .. i]
+      handlePopup(popup)
     end
   end
 end)
@@ -41,6 +49,16 @@ do -- Popup:GetInteger()
     return isInt and floor(value) or nil
   end
 
+  local function getButton1(popup)
+    if type(popup.GetButton1) == "function" then return popup:GetButton1() end
+    return popup.button1
+  end
+
+  local function getEditBox(popup)
+    if type(popup.GetEditBox) == "function" then return popup:GetEditBox() end
+    return popup.editBox
+  end
+
   local popupKey, popup = registerPopup("DEJUNK_GET_INTEGER_POPUP", {
     button1 = ACCEPT,
     button2 = CANCEL,
@@ -52,7 +70,7 @@ do -- Popup:GetInteger()
     EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
     EditBoxOnTextChanged = function(self)
       local isInt = toInt(self:GetText()) ~= nil
-      self:GetParent().button1:SetEnabled(isInt)
+      getButton1(self:GetParent()):SetEnabled(isInt)
     end,
   })
 
@@ -73,7 +91,7 @@ do -- Popup:GetInteger()
 
     popup.EditBoxOnEnterPressed = function(self)
       local parent = self:GetParent()
-      if parent.button1:IsEnabled() then
+      if getButton1(parent):IsEnabled() then
         if options.onAccept then options.onAccept(self, toInt(self:GetText())) end
         parent:Hide()
       end
@@ -81,15 +99,16 @@ do -- Popup:GetInteger()
 
     popup.OnAccept = function(self)
       if options.onAccept then
-        options.onAccept(self, toInt(self.editBox:GetText()))
+        options.onAccept(self, toInt(getEditBox(self):GetText()))
       end
     end
     popup.OnCancel = options.onCancel
 
     popup.OnShow = function(self)
-      self.editBox:SetText(tostring(options.initialValue or ""))
-      self.editBox:HighlightText()
-      self.editBox:SetCursorPosition(self.editBox:GetNumLetters())
+      local editBox = getEditBox(self)
+      editBox:SetText(tostring(options.initialValue or ""))
+      editBox:HighlightText()
+      editBox:SetCursorPosition(editBox:GetNumLetters())
       if options.onShow then options.onShow(self) end
     end
     popup.OnHide = options.onHide
