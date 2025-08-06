@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.8] - 2025-08-06
+
+### Fixed
+
+- Error when selling tradable items in Retail ([#248](https://github.com/moody/Dejunk/issues/248))
+
 ## [2.0.7] - 2025-08-05
 
 ### Fixed

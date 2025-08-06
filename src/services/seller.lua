@@ -50,18 +50,22 @@ end)
 -- Local Functions
 -- ============================================================================
 
+local function handlePopup(popup)
+  if popup and popup:IsShown() and popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL" then
+    local button = popup.GetButton1 and popup:GetButton1() or popup.button1
+    button:Click()
+  end
+end
+
 local function handleStaticPopup()
   if Addon.IS_VANILLA then return end
 
-  local popup
-  for i = 1, STATICPOPUP_NUMDIALOGS do
-    popup = _G["StaticPopup" .. i]
-    if popup and
-        popup:IsShown() and
-        popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL"
-    then
-      popup.button1:Click()
-      return
+  if type(StaticPopup_ForEachShownDialog) == "function" then
+    StaticPopup_ForEachShownDialog(handlePopup)
+  else
+    for i = 1, STATICPOPUP_NUMDIALOGS do
+      local popup = _G["StaticPopup" .. i]
+      handlePopup(popup)
     end
   end
 end
