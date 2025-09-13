@@ -50,7 +50,11 @@ function ReducerFactories.includeByTsmDisenchant(defaultState, actionTypes)
     end
 
     if action.type == actionTypes.PATCH_INCLUDE_BY_TSM_DISENCHANT then
-      return Wux:Merge(state, action.payload)
+      local newState = Wux:DeepCopy(state)
+      for k, v in pairs(action.payload) do
+        newState[k] = v
+      end
+      return newState
     end
 
     return state
