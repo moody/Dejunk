@@ -22,12 +22,10 @@ local DEFAULT_STATE = {
   includeArtifactRelics = false,
   includeByTsmDisenchant = {
     enabled = false,
-    autoJunkOnLoot = false,
   },
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },
   exclusions = { --[[ ["itemId"] = true, ... ]] },
-  tsmJunkItems = { --[[ ["itemId"] = true, ... ]] },
 
   itemQualityCheckBoxes = {
     excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },

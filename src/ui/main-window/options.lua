@@ -340,14 +340,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ enabled = value })) end
     })
     optionsFrame:AddChild(frame)
-
-    local autoJunk = Widgets:OptionButton({
-      labelText = "Auto Junk on Loot",
-      tooltipText = "Automatically mark items as junk when they are looted.",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.autoJunkOnLoot end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ autoJunkOnLoot = value })) end
-    })
-    optionsFrame:AddChild(autoJunk)
   end
 end
 

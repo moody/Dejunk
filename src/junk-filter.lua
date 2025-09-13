@@ -179,8 +179,13 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.LISTS, Lists.GlobalInclusions.name)
   end
 
-  if currentState.tsmJunkItems[item.id] then
-    return true, "TSM Auto Junk"
+  -- Include by TSM disenchant value.
+  local tsmSettings = currentState.includeByTsmDisenchant
+  if tsmSettings.enabled then
+    local disenchantValue = TSM:GetDisenchantValue(item.link)
+    if disenchantValue and item.price > disenchantValue then
+      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_TSM_DISENCHANT_TEXT)
+    end
   end
 
   -- Exclude equipment sets.

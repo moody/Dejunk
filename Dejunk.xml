@@ -34,8 +34,7 @@
   <Script file="src\store\reducers\includeByTsmDisenchant.lua"/>
   <Script file="src\store\reducers\includeUnsuitableEquipment.lua"/>
   <Script file="src\store\reducers\inclusions.lua"/>
-  <Script file="src\store\reducers\tsmJunkItems.lua"/>
-  <Script file="src\store\reducers\itemQualityCheckBoxes.lua"/>
+  <Script file="src/store/reducers/itemQualityCheckBoxes.lua"/>
   <Script file="src\store\reducers\safeMode.lua"/>
 
   <Script file="src\store\reducers\global\chatMessages.lua"/>
@@ -61,7 +60,6 @@
   <Script file="src\services\destroyer.lua"/>
   <Script file="src\services\confirmer.lua"/>
   <Script file="src\services\looter.lua"/>
-  <Script file="src\services\tsm-auto-junker.lua"/>
 
   <Script file="src\ui\widgets\_init.lua"/>
   <Script file="src\ui\widgets\button.lua"/>

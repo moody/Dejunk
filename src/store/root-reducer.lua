@@ -35,7 +35,6 @@ function RootReducer:Build()
 
     inclusions = ReducerFactories.inclusions(DefaultStates.Global, ActionTypes.Global),
     exclusions = ReducerFactories.exclusions(DefaultStates.Global, ActionTypes.Global),
-    tsmJunkItems = ReducerFactories.tsmJunkItems(DefaultStates.Global, ActionTypes.Global),
 
     itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(DefaultStates.Global, ActionTypes.Global)
   })
@@ -61,7 +60,6 @@ function RootReducer:Build()
 
     inclusions = ReducerFactories.inclusions(DefaultStates.Perchar, ActionTypes.Perchar),
     exclusions = ReducerFactories.exclusions(DefaultStates.Perchar, ActionTypes.Perchar),
-    tsmJunkItems = ReducerFactories.tsmJunkItems(DefaultStates.Perchar, ActionTypes.Perchar),
 
     itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(DefaultStates.Perchar, ActionTypes.Perchar)
   })
