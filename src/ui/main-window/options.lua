@@ -357,7 +357,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ retail = value })) end
     })
     retail:SetPoint("TOPLEFT")
-    subOptionsFrame:AddChild(retail)
 
     local classic = Widgets:OptionButton({
       parent = subOptionsFrame,
@@ -366,7 +365,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ classic = value })) end
     })
     classic:SetPoint("TOPLEFT", retail, "BOTTOMLEFT", 0, -10)
-    subOptionsFrame:AddChild(classic)
 
     local wrath = Widgets:OptionButton({
       parent = subOptionsFrame,
@@ -375,7 +373,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ wrath = value })) end
     })
     wrath:SetPoint("TOPLEFT", classic, "BOTTOMLEFT", 0, -10)
-    subOptionsFrame:AddChild(wrath)
 
     local cata = Widgets:OptionButton({
       parent = subOptionsFrame,
@@ -384,7 +381,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ cata = value })) end
     })
     cata:SetPoint("TOPLEFT", wrath, "BOTTOMLEFT", 0, -10)
-    subOptionsFrame:AddChild(cata)
 
     local mop = Widgets:OptionButton({
       parent = subOptionsFrame,
@@ -393,7 +389,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ mop = value })) end
     })
     mop:SetPoint("TOPLEFT", cata, "BOTTOMLEFT", 0, -10)
-    subOptionsFrame:AddChild(mop)
 
     subOptionsFrame:SetScript("OnUpdate", function(self)
       local show = StateManager:GetCurrentState().includeByTsmDisenchant.enabled
