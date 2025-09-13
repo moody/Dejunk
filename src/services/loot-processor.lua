@@ -1,7 +1,4 @@
 local Addon = select(2, ...) ---@type Addon
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
-local Items = Addon:GetModule("Items")
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local TSM = Addon:GetModule("TSM")
@@ -47,12 +44,17 @@ local function processItem(itemLink)
 end
 
 -- ============================================================================
--- Events
+-- TSM ChatEvent
 -- ============================================================================
 
-EventManager:On(E.Wow.ChatMsgLoot, function(_, msg)
-  local _, _, itemLink = strfind(msg, "(|Hitem:.-|h%[.-%]|h)")
-  if itemLink then
-    processItem(itemLink)
+if TSM_API and TSM_API.LibTSMWoW and TSM_API.LibTSMWoW.Include then
+  local ChatEvent = TSM_API.LibTSMWoW:Include("Service.ChatEvent")
+  if ChatEvent then
+    ChatEvent.Register("CHAT_MSG_LOOT", function(_, msg)
+      local _, _, itemLink = strfind(msg, "(|Hitem:.-|h%[.-%]|h)")
+      if itemLink then
+        processItem(itemLink)
+      end
+    end)
   end
-end)
+end
