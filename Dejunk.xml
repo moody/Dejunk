@@ -60,7 +60,7 @@
   <Script file="src\services\destroyer.lua"/>
   <Script file="src\services\confirmer.lua"/>
   <Script file="src\services\looter.lua"/>
-  <Script file="src\services\loot-processor.lua"/>
+  <Script file="src\services\tsm-auto-junker.lua"/>
 
   <Script file="src\ui\widgets\_init.lua"/>
   <Script file="src\ui\widgets\button.lua"/>

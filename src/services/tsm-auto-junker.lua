@@ -1,17 +1,24 @@
 local Addon = select(2, ...) ---@type Addon
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local TSM = Addon:GetModule("TSM")
 local TickerManager = Addon:GetModule("TickerManager")
 
---- @class LootProcessor
-local LootProcessor = Addon:GetModule("LootProcessor")
+--- @class TsmAutoJunker
+local TsmAutoJunker = Addon:GetModule("TsmAutoJunker")
+
+local processedItems = {}
 
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
 
-local function processItem(itemLink)
+local function processItem(item)
+  if processedItems[item.id] then return end
+
   local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
   if not (tsmSettings.enabled and tsmSettings.autoJunkOnLoot) then return end
 
@@ -23,14 +30,11 @@ local function processItem(itemLink)
   local retryDelay = 1
 
   local function tryGetTsmValue()
-    local disenchantValue = TSM:GetDisenchantValue(itemLink)
+    local disenchantValue = TSM:GetDisenchantValue(item.link)
     if disenchantValue then
-      local itemInfo = C_Item.GetItemInfo(itemLink)
-      if itemInfo and itemInfo.itemSellPrice and itemInfo.itemSellPrice > disenchantValue then
-        local itemId = itemInfo.itemID
-        if itemId then
-          Lists:Add(Lists.PerCharInclusions, itemId)
-        end
+      if item.price > disenchantValue then
+        Lists:Add(Lists.PerCharInclusions, item.id)
+        processedItems[item.id] = true
       end
     else
       retryCount = retryCount + 1
@@ -44,17 +48,15 @@ local function processItem(itemLink)
 end
 
 -- ============================================================================
--- TSM ChatEvent
+-- Events
 -- ============================================================================
 
-if TSM_API and TSM_API.LibTSMWoW and TSM_API.LibTSMWoW.Include then
-  local ChatEvent = TSM_API.LibTSMWoW:Include("Service.ChatEvent")
-  if ChatEvent then
-    ChatEvent.Register("CHAT_MSG_LOOT", function(_, msg)
-      local _, _, itemLink = strfind(msg, "(|Hitem:.-|h%[.-%]|h)")
-      if itemLink then
-        processItem(itemLink)
-      end
-    end)
+EventManager:On(E.BagsUpdated, function()
+  local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
+  if not (tsmSettings.enabled and tsmSettings.autoJunkOnLoot) then return end
+
+  local items = Items:GetItems()
+  for _, item in ipairs(items) do
+    processItem(item)
   end
-end
+end)

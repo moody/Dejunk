@@ -23,7 +23,6 @@ E.StoreCreated = "Dejunk_StoreCreated"
 E.Wow = {
   BagUpdate = "BAG_UPDATE",
   BagUpdateDelayed = "BAG_UPDATE_DELAYED",
-  CHAT_MSG_LOOT = "CHAT_MSG_LOOT",
   EquipmentSetsChanged = "EQUIPMENT_SETS_CHANGED",
   InventorySearchUpdate = "INVENTORY_SEARCH_UPDATE",
   ItemLocked = "ITEM_LOCKED",
