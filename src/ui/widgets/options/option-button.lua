@@ -46,6 +46,7 @@ function Widgets:OptionButton(options)
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
   frame.itemQualityCheckBoxes = {}
+  frame.subOptionButtons = {}
 
   -- Check box.
   frame.checkBox = self:CheckBox({
@@ -121,6 +122,25 @@ function Widgets:OptionButton(options)
     end
   end
 
+  function frame:InitializeSubOptions(subOptions)
+    local previousButton = nil
+
+    for _, subOptionsData in ipairs(subOptions) do
+      local subButton = Widgets:OptionButton(subOptionsData)
+      subButton:SetParent(frame)
+
+      if previousButton then
+        subButton:SetPoint("TOPLEFT", previousButton, "BOTTOMLEFT", 0, -5)
+      else
+        subButton:SetPoint("TOPLEFT", frame.label, "BOTTOMLEFT", 20, -10)
+      end
+      subButton:SetPoint("RIGHT", frame, "RIGHT", -20, 0)
+
+      table.insert(frame.subOptionButtons, subButton)
+      previousButton = subButton
+    end
+  end
+
   frame:HookScript("OnEnter", function()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
@@ -138,12 +158,24 @@ function Widgets:OptionButton(options)
   frame:SetScript("OnUpdate", function()
     frame:SetAlpha(options.get() and 1 or 0.5)
 
-    -- Set frame height.
+    local baseHeight = CHECK_BOX_SIZE + Widgets:Padding(2)
     if #frame.itemQualityCheckBoxes > 0 then
-      frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2))
-    else
-      frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding(2))
+      baseHeight = CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2)
     end
+
+    local totalHeight = baseHeight
+    local showSubOptions = options.get()
+
+    for _, subButton in ipairs(frame.subOptionButtons) do
+      if showSubOptions then
+        subButton:Show()
+        totalHeight = totalHeight + subButton:GetHeight() + 5
+      else
+        subButton:Hide()
+      end
+    end
+
+    frame:SetHeight(totalHeight)
   end)
 
   do -- Hack to fix a bug where check boxes are sometimes invisible.

@@ -341,73 +341,38 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
     })
     optionsFrame:AddChild(frame)
 
-    local autoJunk = Widgets:OptionButton({
-      parent = optionsFrame,
-      labelText = "Auto Junk on Loot",
-      tooltipText = "Automatically mark items as junk when they are looted.",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.autoJunkOnLoot end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ autoJunkOnLoot = value })) end
+    frame:InitializeSubOptions({
+      {
+        labelText = "Auto Junk on Loot",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.autoJunkOnLoot end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ autoJunkOnLoot = value })) end,
+      },
+      {
+        labelText = "Retail",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.retail end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ retail = value })) end,
+      },
+      {
+        labelText = "Classic",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.classic end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ classic = value })) end,
+      },
+      {
+        labelText = "Wrath",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.wrath end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ wrath = value })) end,
+      },
+      {
+        labelText = "Cata",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.cata end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ cata = value })) end,
+      },
+      {
+        labelText = "MoP",
+        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.mop end,
+        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ mop = value })) end,
+      },
     })
-    autoJunk:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 20, -10)
-    optionsFrame:AddChild(autoJunk)
-
-    local subOptionsFrame = Widgets:Frame({
-      parent = optionsFrame,
-      name = "$parent_TsmSubOptions",
-      height = 100,
-    })
-    subOptionsFrame:SetPoint("TOPLEFT", autoJunk, "BOTTOMLEFT", 0, -10)
-    subOptionsFrame:SetPoint("RIGHT", frame, "RIGHT", -10, 0)
-    optionsFrame:AddChild(subOptionsFrame)
-
-    local retail = Widgets:OptionButton({
-      parent = subOptionsFrame,
-      labelText = "Retail",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.retail end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ retail = value })) end
-    })
-    retail:SetPoint("TOPLEFT")
-
-    local classic = Widgets:OptionButton({
-      parent = subOptionsFrame,
-      labelText = "Classic",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.classic end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ classic = value })) end
-    })
-    classic:SetPoint("TOPLEFT", retail, "BOTTOMLEFT", 0, -10)
-
-    local wrath = Widgets:OptionButton({
-      parent = subOptionsFrame,
-      labelText = "Wrath",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.wrath end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ wrath = value })) end
-    })
-    wrath:SetPoint("TOPLEFT", classic, "BOTTOMLEFT", 0, -10)
-
-    local cata = Widgets:OptionButton({
-      parent = subOptionsFrame,
-      labelText = "Cata",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.cata end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ cata = value })) end
-    })
-    cata:SetPoint("TOPLEFT", wrath, "BOTTOMLEFT", 0, -10)
-
-    local mop = Widgets:OptionButton({
-      parent = subOptionsFrame,
-      labelText = "MoP",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.mop end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ mop = value })) end
-    })
-    mop:SetPoint("TOPLEFT", cata, "BOTTOMLEFT", 0, -10)
-
-    subOptionsFrame:SetScript("OnUpdate", function(self)
-      local show = StateManager:GetCurrentState().includeByTsmDisenchant.enabled
-      if show then
-        self:Show()
-      else
-        self:Hide()
-      end
-    end)
   end
 end
 

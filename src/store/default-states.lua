@@ -32,6 +32,7 @@ local DEFAULT_STATE = {
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },
   exclusions = { --[[ ["itemId"] = true, ... ]] },
+  tsmJunkItems = { --[[ ["itemId"] = true, ... ]] },
 
   itemQualityCheckBoxes = {
     excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },

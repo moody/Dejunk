@@ -2,10 +2,10 @@ local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
-local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local TSM = Addon:GetModule("TSM")
 local TickerManager = Addon:GetModule("TickerManager")
+local Actions = Addon:GetModule("Actions")
 
 --- @class TsmAutoJunker
 local TsmAutoJunker = Addon:GetModule("TsmAutoJunker")
@@ -33,9 +33,11 @@ local function processItem(item)
     local disenchantValue = TSM:GetDisenchantValue(item.link)
     if disenchantValue then
       if item.price > disenchantValue then
-        Lists:Add(Lists.PerCharInclusions, item.id)
-        processedItems[item.id] = true
+        StateManager:GetStore():Dispatch(Actions:AddTsmJunkItem(item.id))
+      else
+        StateManager:GetStore():Dispatch(Actions:RemoveTsmJunkItem(item.id))
       end
+      processedItems[item.id] = true
     else
       retryCount = retryCount + 1
       if retryCount <= maxRetries then
@@ -55,6 +57,7 @@ EventManager:On(E.BagsUpdated, function()
   local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
   if not (tsmSettings.enabled and tsmSettings.autoJunkOnLoot) then return end
 
+  processedItems = {}
   local items = Items:GetItems()
   for _, item in ipairs(items) do
     processItem(item)
