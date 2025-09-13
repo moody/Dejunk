@@ -28,9 +28,9 @@ local function processItem(itemLink)
   local function tryGetTsmValue()
     local disenchantValue = TSM:GetDisenchantValue(itemLink)
     if disenchantValue then
-      local _, _, _, _, _, _, _, _, _, _, price = GetItemInfo(itemLink)
-      if price and price > disenchantValue then
-        local itemId = select(3, GetItemInfo(itemLink))
+      local itemInfo = C_Item.GetItemInfo(itemLink)
+      if itemInfo and itemInfo.itemSellPrice and itemInfo.itemSellPrice > disenchantValue then
+        local itemId = itemInfo.itemID
         if itemId then
           Lists:Add(Lists.PerCharInclusions, itemId)
         end
