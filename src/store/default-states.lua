@@ -23,11 +23,6 @@ local DEFAULT_STATE = {
   includeByTsmDisenchant = {
     enabled = false,
     autoJunkOnLoot = false,
-    retail = true,
-    classic = false,
-    wrath = false,
-    cata = false,
-    mop = false,
   },
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },

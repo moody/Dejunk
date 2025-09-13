@@ -341,38 +341,13 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
     })
     optionsFrame:AddChild(frame)
 
-    frame:InitializeSubOptions({
-      {
-        labelText = "Auto Junk on Loot",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.autoJunkOnLoot end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ autoJunkOnLoot = value })) end,
-      },
-      {
-        labelText = "Retail",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.retail end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ retail = value })) end,
-      },
-      {
-        labelText = "Classic",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.classic end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ classic = value })) end,
-      },
-      {
-        labelText = "Wrath",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.wrath end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ wrath = value })) end,
-      },
-      {
-        labelText = "Cata",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.cata end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ cata = value })) end,
-      },
-      {
-        labelText = "MoP",
-        get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.mop end,
-        set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ mop = value })) end,
-      },
+    local autoJunk = Widgets:OptionButton({
+      labelText = "Auto Junk on Loot",
+      tooltipText = "Automatically mark items as junk when they are looted.",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.autoJunkOnLoot end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ autoJunkOnLoot = value })) end
     })
+    optionsFrame:AddChild(autoJunk)
   end
 end
 

@@ -239,18 +239,6 @@ function JunkFilter:IsJunkItem(item)
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 
-  -- Include by TSM disenchant value.
-  local tsmSettings = currentState.includeByTsmDisenchant
-  if tsmSettings.enabled then
-    local expansion = Addon.IS_RETAIL and "retail" or Addon.IS_WRATH and "wrath" or Addon.IS_CATA and "cata" or Addon.IS_MISTS and "mop" or "classic"
-    if tsmSettings[expansion] then
-      local disenchantValue = TSM:GetDisenchantValue(item.link)
-      if disenchantValue and item.price > disenchantValue then
-        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_TSM_DISENCHANT_TEXT)
-      end
-    end
-  end
-
   -- No filters matched.
   return false, L.NO_FILTERS_MATCHED
 end

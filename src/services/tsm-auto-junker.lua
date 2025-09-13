@@ -22,9 +22,6 @@ local function processItem(item)
   local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
   if not (tsmSettings.enabled and tsmSettings.autoJunkOnLoot) then return end
 
-  local expansion = Addon.IS_RETAIL and "retail" or Addon.IS_WRATH and "wrath" or Addon.IS_CATA and "cata" or Addon.IS_MISTS and "mop" or "classic"
-  if not tsmSettings[expansion] then return end
-
   local retryCount = 0
   local maxRetries = 5
   local retryDelay = 1
