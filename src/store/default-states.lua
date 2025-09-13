@@ -22,6 +22,7 @@ local DEFAULT_STATE = {
   includeArtifactRelics = false,
   includeByTsmDisenchant = {
     enabled = false,
+    autoJunkOnLoot = false,
     retail = true,
     classic = false,
     wrath = false,
