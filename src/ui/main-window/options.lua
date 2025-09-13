@@ -16,6 +16,7 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- self:AddCharacterOptions(optionsFrame)
   self:AddGeneralOptions(optionsFrame)
   self:AddIncludeOptions(optionsFrame)
+  self:AddTsmOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
   self:AddGlobalOptions(optionsFrame)
 end
@@ -316,6 +317,92 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     })
 
     optionsFrame:AddChild(frame)
+  end
+end
+
+--- Adds TSM options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddTsmOptions(optionsFrame)
+  -- TSM heading.
+  optionsFrame:AddChild(Widgets:OptionHeading({
+    headingText = "TSM",
+    headingTemplate = "GameFontNormalSmall",
+    headingColor = Colors.Green,
+    headingJustify = "CENTER"
+  }))
+
+  -- Include by TSM disenchant value.
+  do
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BY_TSM_DISENCHANT_TEXT,
+      tooltipText = "Include items based on their TSM disenchant value.",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.enabled end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ enabled = value })) end
+    })
+    optionsFrame:AddChild(frame)
+
+    local subOptionsFrame = Widgets:Frame({
+      parent = optionsFrame,
+      name = "$parent_TsmSubOptions",
+      height = 100,
+    })
+    subOptionsFrame:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 20, -10)
+    subOptionsFrame:SetPoint("RIGHT", frame, "RIGHT", -10, 0)
+    optionsFrame:AddChild(subOptionsFrame)
+
+    local retail = Widgets:OptionButton({
+      parent = subOptionsFrame,
+      labelText = "Retail",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.retail end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ retail = value })) end
+    })
+    retail:SetPoint("TOPLEFT")
+    subOptionsFrame:AddChild(retail)
+
+    local classic = Widgets:OptionButton({
+      parent = subOptionsFrame,
+      labelText = "Classic",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.classic end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ classic = value })) end
+    })
+    classic:SetPoint("TOPLEFT", retail, "BOTTOMLEFT", 0, -10)
+    subOptionsFrame:AddChild(classic)
+
+    local wrath = Widgets:OptionButton({
+      parent = subOptionsFrame,
+      labelText = "Wrath",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.wrath end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ wrath = value })) end
+    })
+    wrath:SetPoint("TOPLEFT", classic, "BOTTOMLEFT", 0, -10)
+    subOptionsFrame:AddChild(wrath)
+
+    local cata = Widgets:OptionButton({
+      parent = subOptionsFrame,
+      labelText = "Cata",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.cata end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ cata = value })) end
+    })
+    cata:SetPoint("TOPLEFT", wrath, "BOTTOMLEFT", 0, -10)
+    subOptionsFrame:AddChild(cata)
+
+    local mop = Widgets:OptionButton({
+      parent = subOptionsFrame,
+      labelText = "MoP",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.mop end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ mop = value })) end
+    })
+    mop:SetPoint("TOPLEFT", cata, "BOTTOMLEFT", 0, -10)
+    subOptionsFrame:AddChild(mop)
+
+    subOptionsFrame:SetScript("OnUpdate", function(self)
+      local show = StateManager:GetCurrentState().includeByTsmDisenchant.enabled
+      if show then
+        self:Show()
+      else
+        self:Hide()
+      end
+    end)
   end
 end
 

@@ -20,6 +20,14 @@ local DEFAULT_STATE = {
   includeByQuality = true,
   includeUnsuitableEquipment = false,
   includeArtifactRelics = false,
+  includeByTsmDisenchant = {
+    enabled = false,
+    retail = true,
+    classic = false,
+    wrath = false,
+    cata = false,
+    mop = false,
+  },
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },
   exclusions = { --[[ ["itemId"] = true, ... ]] },

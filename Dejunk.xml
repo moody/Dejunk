@@ -31,6 +31,7 @@
   <Script file="src\store\reducers\includeArtifactRelics.lua"/>
   <Script file="src\store\reducers\includeBelowItemLevel.lua"/>
   <Script file="src\store\reducers\includeByQuality.lua"/>
+  <Script file="src\store\reducers\includeByTsmDisenchant.lua"/>
   <Script file="src\store\reducers\includeUnsuitableEquipment.lua"/>
   <Script file="src\store\reducers\inclusions.lua"/>
   <Script file="src\store\reducers\itemQualityCheckBoxes.lua"/>
@@ -46,6 +47,7 @@
   <Script file="src\store\reducers\perchar\characterSpecificSettings.lua"/>
 
   <Script file="src\commands.lua"/>
+  <Script file="src\tsm.lua"/>
   <Script file="src\junk-filter.lua"/>
 
   <Script file="src\items\equipment-sets-cache.lua"/>

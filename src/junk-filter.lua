@@ -4,6 +4,7 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
+local TSM = Addon:GetModule("TSM")
 
 --- @class JunkFilter
 local JunkFilter = Addon:GetModule("JunkFilter")
@@ -232,6 +233,18 @@ function JunkFilter:IsJunkItem(item)
   -- Include artifact relics.
   if Addon.IS_RETAIL and currentState.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  end
+
+  -- Include by TSM disenchant value.
+  local tsmSettings = currentState.includeByTsmDisenchant
+  if tsmSettings.enabled then
+    local expansion = Addon.IS_RETAIL and "retail" or Addon.IS_WRATH and "wrath" or Addon.IS_CATA and "cata" or Addon.IS_MISTS and "mop" or "classic"
+    if tsmSettings[expansion] then
+      local disenchantValue = TSM:GetDisenchantValue(item.link)
+      if disenchantValue and item.price > disenchantValue then
+        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_TSM_DISENCHANT_TEXT)
+      end
+    end
   end
 
   -- No filters matched.
