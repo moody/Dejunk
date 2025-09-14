@@ -182,9 +182,14 @@ function JunkFilter:IsJunkItem(item)
   -- Include by TSM disenchant value.
   local tsmSettings = currentState.includeByTsmDisenchant
   if tsmSettings.enabled then
+    print("Dejunk TSM Debug: Checking item: " .. item.name)
+    print("Dejunk TSM Debug: Vendor price: " .. tostring(item.price))
     local disenchantValue = TSM:GetDisenchantValue(item.link)
     if disenchantValue and item.price > disenchantValue then
+      print("Dejunk TSM Debug: Marking as junk. Vendor price > disenchant value.")
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_TSM_DISENCHANT_TEXT)
+    else
+      print("Dejunk TSM Debug: Not marking as junk. Vendor price <= disenchant value or no disenchant value.")
     end
   end
 
