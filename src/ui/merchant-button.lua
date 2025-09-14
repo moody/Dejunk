@@ -119,3 +119,29 @@ TickerManager:NewTicker(0.01, function()
     frame:Hide()
   end
 end)
+
+-- ============================================================================
+-- TSM Junk Button
+-- ============================================================================
+
+local tsmJunkButton = Widgets:Button({
+  name = ADDON_NAME .. "_TsmJunkButton",
+  parent = _G.MerchantFrame,
+  width = 108,
+  labelText = "Sell TSM Junk",
+  labelColor = Colors.Blue,
+  enableClickHandling = true,
+})
+tsmJunkButton:SetPoint("LEFT", frame, "RIGHT", 10, 0)
+tsmJunkButton:SetScript("OnClick", function()
+  Seller:StartTsm()
+end)
+
+TickerManager:NewTicker(0.01, function()
+  local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
+  if Addon:IsAtMerchant() and tsmSettings.addVendorButton then
+    tsmJunkButton:Show()
+  else
+    tsmJunkButton:Hide()
+  end
+end)

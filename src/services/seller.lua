@@ -90,7 +90,38 @@ end
 -- Seller
 -- ============================================================================
 
+function Seller:StartTsm()
+  -- Don't start if busy.
+  if Addon:IsBusy() then return end
+  -- Don't start without merchant.
+  if not Addon:IsAtMerchant() then
+    return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
+  end
+
+  -- Get filtered items.
+  self.items = JunkFilter:GetSellableTsmJunkItems()
+
+  -- Return if no items.
+  if #self.items == 0 then
+    Addon:Print(L.NO_JUNK_ITEMS_TO_SELL)
+    return
+  end
+
+  -- Safe mode.
+  if StateManager:GetCurrentState().safeMode then
+    while #self.items > 12 do table.remove(self.items) end
+  end
+
+  -- Start ticker.
+  self.ticker = TickerManager:NewTicker(Addon:GetLatency(), tickerCallback)
+  EventManager:Fire(E.SellerStarted)
+end
+
 function Seller:Start(auto)
+  if IsKeyDown("DEJUNK_TSM_HOTKEY") then
+    return self:StartTsm()
+  end
+
   -- Don't start if busy.
   if Addon:IsBusy() then return end
   -- Don't start without merchant.

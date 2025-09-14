@@ -112,6 +112,19 @@ function JunkFilter:GetSellableJunkItems(items)
   return getJunkItems(self.IsSellableJunkItem, items)
 end
 
+--- Creates or updates an array of sellable TSM junk items.
+--- @param items? BagItem[]
+--- @return BagItem[] sellableItems
+function JunkFilter:GetSellableTsmJunkItems(items)
+  items = self:GetSellableJunkItems(items)
+  for i = #items, 1, -1 do
+    if items[i].reason ~= "TSM Junk" then
+      table.remove(items, i)
+    end
+  end
+  return items
+end
+
 --- Creates or updates an array of destroyable junk items.
 --- @param items? BagItem[]
 --- @return BagItem[] destroyableItems
@@ -182,9 +195,11 @@ function JunkFilter:IsJunkItem(item)
   -- Include by TSM disenchant value.
   local tsmSettings = currentState.includeByTsmDisenchant
   if tsmSettings.enabled then
-    local disenchantValue = TSM:GetDisenchantValue(item.link)
-    if disenchantValue and item.price > disenchantValue then
-      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_TSM_DISENCHANT_TEXT)
+    if not tsmSettings.onlyWithHotkey or IsKeyDown("DEJUNK_TSM_HOTKEY") then
+      local disenchantValue = TSM:GetDisenchantValue(item.link)
+      if disenchantValue and item.price > disenchantValue then
+        return true, "TSM Junk"
+      end
     end
   end
 
