@@ -80,6 +80,9 @@ end
 -- JunkFilter
 -- ============================================================================
 
+--- When `true`, the TSM disenchant check is performed regardless of hotkey status.
+JunkFilter.forceTsmCheck = false
+
 do -- Convenience methods.
   local items = {}
 
@@ -197,7 +200,7 @@ function JunkFilter:IsJunkItem(item)
   -- Include by TSM disenchant value.
   local tsmSettings = currentState.includeByTsmDisenchant
   if tsmSettings.enabled then
-    local hotkeyIsDown = IsKeyDown("DEJUNK_TSM_HOTKEY")
+    local hotkeyIsDown = IsKeyDown("DEJUNK_TSM_HOTKEY") or self.forceTsmCheck
     if hotkeyIsDown then
       print("Dejunk TSM Debug: Hotkey is down.")
     end

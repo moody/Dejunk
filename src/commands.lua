@@ -75,6 +75,14 @@ function Commands.sell()
   Seller:Start()
 end
 
+--- Starts the `Seller` for TSM items.
+function Commands.sellTsm()
+  local JunkFilter = Addon:GetModule("JunkFilter")
+  JunkFilter.forceTsmCheck = true
+  Seller:StartTsm()
+  JunkFilter.forceTsmCheck = false
+end
+
 --- Starts the `Destroyer`.
 function Commands.destroy()
   Destroyer:Start()
