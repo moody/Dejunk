@@ -9,6 +9,7 @@ local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
+local TSM_JUNK_TEXT_FORMAT = Colors.Grey("(%s)"):format(Colors.White("%s"))
 local LABEL_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colors.Red("%s"))
 
 -- ============================================================================
@@ -27,6 +28,21 @@ local frame = Widgets:Button({
   onUpdateTooltip = function(this, tooltip)
     tooltip:SetOwner(this, "ANCHOR_RIGHT")
 
+    if IsControlKeyDown() then
+      JunkFilter.forceTsmCheck = true
+      local tsmJunk = JunkFilter:GetSellableTsmJunkItems()
+      JunkFilter.forceTsmCheck = false
+
+      local item = tsmJunk[1]
+      if item then
+        tooltip:SetBagItem(item.bag, item.slot)
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.LEFT_CLICK, L.START_SELLING .. " TSM Junk")
+        tooltip:Show()
+        return
+      end
+    end
+
     if IsAltKeyDown() then
       local item = JunkFilter:GetNextDestroyableJunkItem()
       if item then
@@ -40,6 +56,7 @@ local frame = Widgets:Button({
 
     tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
     tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
+    tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.CONTROL_KEY, L.LEFT_CLICK), L.START_SELLING .. " TSM Junk"))
     tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
     tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.TOGGLE_JUNK_FRAME))
     tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), L.RESET_POSITION))
@@ -53,6 +70,7 @@ Widgets:ConfigureForPointSync(frame, "MerchantButton")
 -- Click handlers.
 frame:SetClickHandler("LeftButton", "NONE", Commands.sell)
 frame:SetClickHandler("LeftButton", "SHIFT", Commands.junk)
+frame:SetClickHandler("LeftButton", "CONTROL", Commands.sellTsm)
 frame:SetClickHandler("RightButton", "NONE", Commands.options)
 frame:SetClickHandler("RightButton", "SHIFT", function()
   StateManager:Dispatch(Actions:ResetMerchantButtonPoint())
@@ -88,8 +106,11 @@ frame:HookScript("OnUpdate", function(_, elapsed)
   frame.delayTimer = 0
 
   -- Update label text.
-  if IsKeyDown("DEJUNK_TSM_HOTKEY") then
-    frame.label:SetText("Sell TSM Junk")
+  if frame:IsMouseOver() and IsControlKeyDown() then
+    JunkFilter.forceTsmCheck = true
+    local tsmJunk = JunkFilter:GetSellableTsmJunkItems()
+    JunkFilter.forceTsmCheck = false
+    frame.label:SetText(TSM_JUNK_TEXT_FORMAT:format(#tsmJunk))
   else
     local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
     frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))

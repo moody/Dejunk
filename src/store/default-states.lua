@@ -22,7 +22,6 @@ local DEFAULT_STATE = {
   includeArtifactRelics = false,
   includeByTsmDisenchant = {
     enabled = false,
-    onlyWithHotkey = false,
   },
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },
