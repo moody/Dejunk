@@ -44,7 +44,7 @@ function Commands.help()
   Addon:ForcePrint(L.COMMANDS .. ":")
   Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
 
-  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
+  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), Colors.Grey("[tsm]"), "-", L.COMMAND_DESCRIPTION_SELL)
   Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
   Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
 
@@ -71,7 +71,10 @@ function Commands.junk()
 end
 
 --- Starts the `Seller`.
-function Commands.sell()
+function Commands.sell(arg)
+  if arg == "tsm" then
+    return Commands.sellTsm()
+  end
   Seller:Start()
 end
 
