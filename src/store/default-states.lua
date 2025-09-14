@@ -23,7 +23,6 @@ local DEFAULT_STATE = {
   includeByTsmDisenchant = {
     enabled = false,
     onlyWithHotkey = false,
-    addVendorButton = false,
   },
 
   inclusions = { --[[ ["itemId"] = true, ... ]] },

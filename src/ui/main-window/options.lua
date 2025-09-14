@@ -348,14 +348,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
       set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ onlyWithHotkey = value })) end
     })
     optionsFrame:AddChild(onlyWithHotkey)
-
-    local addVendorButton = Widgets:OptionButton({
-      labelText = "Add vendor button",
-      tooltipText = "Add a button to the vendor frame to sell only TSM junk.",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.addVendorButton end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ addVendorButton = value })) end
-    })
-    optionsFrame:AddChild(addVendorButton)
   end
 end
 

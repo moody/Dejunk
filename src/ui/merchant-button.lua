@@ -88,8 +88,12 @@ frame:HookScript("OnUpdate", function(_, elapsed)
   frame.delayTimer = 0
 
   -- Update label text.
-  local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
-  frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
+  if IsKeyDown("DEJUNK_TSM_HOTKEY") then
+    frame.label:SetText("Sell TSM Junk")
+  else
+    local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
+    frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
+  end
 
   -- Resize child frame.
   local width = frame.icon:GetWidth() + frame.label:GetStringWidth()
@@ -117,31 +121,5 @@ TickerManager:NewTicker(0.01, function()
     frame:Show()
   else
     frame:Hide()
-  end
-end)
-
--- ============================================================================
--- TSM Junk Button
--- ============================================================================
-
-local tsmJunkButton = Widgets:Button({
-  name = ADDON_NAME .. "_TsmJunkButton",
-  parent = _G.MerchantFrame,
-  width = 108,
-  labelText = "Sell TSM Junk",
-  labelColor = Colors.Blue,
-  enableClickHandling = true,
-})
-tsmJunkButton:SetPoint("LEFT", frame, "RIGHT", 10, 0)
-tsmJunkButton:SetScript("OnClick", function()
-  Seller:StartTsm()
-end)
-
-TickerManager:NewTicker(0.01, function()
-  local tsmSettings = StateManager:GetCurrentState().includeByTsmDisenchant
-  if Addon:IsAtMerchant() and tsmSettings.addVendorButton then
-    tsmJunkButton:Show()
-  else
-    tsmJunkButton:Hide()
   end
 end)
