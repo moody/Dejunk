@@ -52,6 +52,7 @@ local function getJunkItems(filterFunc, items)
 
     if isJunk then
       item.reason = reason
+      print("Dejunk TSM Debug: getJunkItems: Marked " .. item.name .. " as junk. Reason: " .. reason)
     else
       table.remove(items, i)
     end
@@ -87,6 +88,7 @@ do -- Convenience methods.
   function JunkFilter:GetNumJunkItems()
     local numSellable = #self:GetSellableJunkItems(items)
     local numDestroyable = #self:GetDestroyableJunkItems(items)
+    print("Dejunk TSM Debug: GetNumJunkItems: numSellable = " .. tostring(numSellable))
     return numSellable, numDestroyable
   end
 
@@ -195,9 +197,15 @@ function JunkFilter:IsJunkItem(item)
   -- Include by TSM disenchant value.
   local tsmSettings = currentState.includeByTsmDisenchant
   if tsmSettings.enabled then
-    if not tsmSettings.onlyWithHotkey or IsKeyDown("DEJUNK_TSM_HOTKEY") then
+    local hotkeyIsDown = IsKeyDown("DEJUNK_TSM_HOTKEY")
+    if hotkeyIsDown then
+      print("Dejunk TSM Debug: Hotkey is down.")
+    end
+    if not tsmSettings.onlyWithHotkey or hotkeyIsDown then
+      print("Dejunk TSM Debug: Performing TSM check for " .. item.name)
       local disenchantValue = TSM:GetDisenchantValue(item.link)
       if disenchantValue and item.price > disenchantValue then
+        print("Dejunk TSM Debug: TSM check passed for " .. item.name)
         return true, "TSM Junk"
       end
     end
