@@ -16,6 +16,7 @@ function MainWindowOptions:Initialize(optionsFrame)
   -- self:AddCharacterOptions(optionsFrame)
   self:AddGeneralOptions(optionsFrame)
   self:AddIncludeOptions(optionsFrame)
+  self:AddTsmOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
   self:AddGlobalOptions(optionsFrame)
 end
@@ -316,6 +317,37 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     })
 
     optionsFrame:AddChild(frame)
+  end
+end
+
+--- Adds TSM options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddTsmOptions(optionsFrame)
+  -- TSM heading.
+  optionsFrame:AddChild(Widgets:OptionHeading({
+    headingText = "TSM",
+    headingTemplate = "GameFontNormalSmall",
+    headingColor = Colors.Green,
+    headingJustify = "CENTER"
+  }))
+
+  -- Include by TSM disenchant value.
+  do
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BY_TSM_DISENCHANT_TEXT,
+      tooltipText = "Include items based on their TSM disenchant value.",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.enabled end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ enabled = value })) end
+    })
+    optionsFrame:AddChild(frame)
+
+    local onlyWithHotkey = Widgets:OptionButton({
+      labelText = "Only with hotkey",
+      tooltipText = "Only include items if the hotkey is held down.",
+      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.onlyWithHotkey end,
+      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ onlyWithHotkey = value })) end
+    })
+    optionsFrame:AddChild(onlyWithHotkey)
   end
 end
 

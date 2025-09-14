@@ -30,6 +30,7 @@ function RootReducer:Build()
     includeArtifactRelics = ReducerFactories.includeArtifactRelics(DefaultStates.Global, ActionTypes.Global),
     includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(DefaultStates.Global, ActionTypes.Global),
     includeByQuality = ReducerFactories.includeByQuality(DefaultStates.Global, ActionTypes.Global),
+    includeByTsmDisenchant = ReducerFactories.includeByTsmDisenchant(DefaultStates.Global, ActionTypes.Global),
     includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(DefaultStates.Global, ActionTypes.Global),
 
     inclusions = ReducerFactories.inclusions(DefaultStates.Global, ActionTypes.Global),
@@ -54,6 +55,7 @@ function RootReducer:Build()
     includeArtifactRelics = ReducerFactories.includeArtifactRelics(DefaultStates.Perchar, ActionTypes.Perchar),
     includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(DefaultStates.Perchar, ActionTypes.Perchar),
     includeByQuality = ReducerFactories.includeByQuality(DefaultStates.Perchar, ActionTypes.Perchar),
+    includeByTsmDisenchant = ReducerFactories.includeByTsmDisenchant(DefaultStates.Perchar, ActionTypes.Perchar),
     includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(DefaultStates.Perchar, ActionTypes.Perchar),
 
     inclusions = ReducerFactories.inclusions(DefaultStates.Perchar, ActionTypes.Perchar),

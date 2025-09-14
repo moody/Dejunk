@@ -88,8 +88,12 @@ frame:HookScript("OnUpdate", function(_, elapsed)
   frame.delayTimer = 0
 
   -- Update label text.
-  local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
-  frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
+  if IsKeyDown("DEJUNK_TSM_HOTKEY") then
+    frame.label:SetText("Sell TSM Junk")
+  else
+    local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
+    frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
+  end
 
   -- Resize child frame.
   local width = frame.icon:GetWidth() + frame.label:GetStringWidth()

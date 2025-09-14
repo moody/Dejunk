@@ -4,6 +4,7 @@ local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
+local TSM = Addon:GetModule("TSM")
 
 --- @class JunkFilter
 local JunkFilter = Addon:GetModule("JunkFilter")
@@ -51,6 +52,7 @@ local function getJunkItems(filterFunc, items)
 
     if isJunk then
       item.reason = reason
+      print("Dejunk TSM Debug: getJunkItems: Marked " .. item.name .. " as junk. Reason: " .. reason)
     else
       table.remove(items, i)
     end
@@ -86,6 +88,7 @@ do -- Convenience methods.
   function JunkFilter:GetNumJunkItems()
     local numSellable = #self:GetSellableJunkItems(items)
     local numDestroyable = #self:GetDestroyableJunkItems(items)
+    print("Dejunk TSM Debug: GetNumJunkItems: numSellable = " .. tostring(numSellable))
     return numSellable, numDestroyable
   end
 
@@ -109,6 +112,19 @@ end
 --- @return BagItem[] sellableItems
 function JunkFilter:GetSellableJunkItems(items)
   return getJunkItems(self.IsSellableJunkItem, items)
+end
+
+--- Creates or updates an array of sellable TSM junk items.
+--- @param items? BagItem[]
+--- @return BagItem[] sellableItems
+function JunkFilter:GetSellableTsmJunkItems(items)
+  items = self:GetSellableJunkItems(items)
+  for i = #items, 1, -1 do
+    if items[i].reason ~= "TSM Junk" then
+      table.remove(items, i)
+    end
+  end
+  return items
 end
 
 --- Creates or updates an array of destroyable junk items.
@@ -176,6 +192,23 @@ function JunkFilter:IsJunkItem(item)
   end
   if Lists.GlobalInclusions:Contains(item.id) then
     return true, concat(L.LISTS, Lists.GlobalInclusions.name)
+  end
+
+  -- Include by TSM disenchant value.
+  local tsmSettings = currentState.includeByTsmDisenchant
+  if tsmSettings.enabled then
+    local hotkeyIsDown = IsKeyDown("DEJUNK_TSM_HOTKEY")
+    if hotkeyIsDown then
+      print("Dejunk TSM Debug: Hotkey is down.")
+    end
+    if not tsmSettings.onlyWithHotkey or hotkeyIsDown then
+      print("Dejunk TSM Debug: Performing TSM check for " .. item.name)
+      local disenchantValue = TSM:GetDisenchantValue(item.link)
+      if disenchantValue and item.price > disenchantValue then
+        print("Dejunk TSM Debug: TSM check passed for " .. item.name)
+        return true, "TSM Junk"
+      end
+    end
   end
 
   -- Exclude equipment sets.
