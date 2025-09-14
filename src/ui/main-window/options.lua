@@ -341,13 +341,6 @@ function MainWindowOptions:AddTsmOptions(optionsFrame)
     })
     optionsFrame:AddChild(frame)
 
-    local onlyWithHotkey = Widgets:OptionButton({
-      labelText = "Only with hotkey",
-      tooltipText = "Only include items if the hotkey is held down.",
-      get = function() return StateManager:GetCurrentState().includeByTsmDisenchant.onlyWithHotkey end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:PatchIncludeByTsmDisenchant({ onlyWithHotkey = value })) end
-    })
-    optionsFrame:AddChild(onlyWithHotkey)
   end
 end
 

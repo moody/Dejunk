@@ -118,10 +118,6 @@ function Seller:StartTsm()
 end
 
 function Seller:Start(auto)
-  if IsKeyDown("DEJUNK_TSM_HOTKEY") then
-    return self:StartTsm()
-  end
-
   -- Don't start if busy.
   if Addon:IsBusy() then return end
   -- Don't start without merchant.

@@ -111,8 +111,6 @@ frame:HookScript("OnUpdate", function(_, elapsed)
     local tsmJunk = JunkFilter:GetSellableTsmJunkItems()
     JunkFilter.forceTsmCheck = false
     frame.label:SetText(TSM_JUNK_TEXT_FORMAT:format(#tsmJunk))
-  elseif IsKeyDown("DEJUNK_TSM_HOTKEY") then
-    frame.label:SetText("Sell TSM Junk")
   else
     local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
     frame.label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
