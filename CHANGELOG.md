@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.9] - 2025-11-05
+
+### Fixed
+
+- Junk icons not appearing with Bagnon ([#250](https://github.com/moody/Dejunk/issues/250))
+
 ## [2.0.8] - 2025-08-06
 
 ### Fixed
