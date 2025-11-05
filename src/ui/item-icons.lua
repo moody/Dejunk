@@ -184,9 +184,9 @@ addPlugin({
   getBagSlotFrame = function(bag, slot)
     local inventory = _G.BagnonInventory1
     local itemGroup = inventory and inventory.ItemGroup
-    local buttons = itemGroup and itemGroup.buttons
-    if buttons and buttons[bag] then
-      local frame = buttons[bag][slot]
+    local byBag = itemGroup and itemGroup.byBag
+    if byBag and byBag[bag] then
+      local frame = byBag[bag][slot]
       if frame and frame.SetParent then
         return frame
       end
