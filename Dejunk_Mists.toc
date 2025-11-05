@@ -1,4 +1,4 @@
-## Interface: 50500
+## Interface: 50502
 ## Title: Dejunk
 ## Version: @project-version@
 ## Author: https://github.com/moody
