@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.10] - 2025-12-30
+
+- Version updates
+
 ## [2.0.9] - 2025-11-05
 
 ### Fixed
