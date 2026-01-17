@@ -358,7 +358,7 @@ Items.suitable = {
 --- Updates the `Items.suitable` table.
 --- @param playerLevel integer
 local function updateSuitableTable(playerLevel)
-  local IS_LESSER_ARMOR_TYPE_SUITABLE = Addon.IS_VANILLA or ((Addon.IS_CATA or Addon.IS_MISTS) and playerLevel < 50)
+  local IS_LESSER_ARMOR_TYPE_SUITABLE = (Addon.IS_VANILLA or Addon.IS_TBC) or ((Addon.IS_CATA or Addon.IS_MISTS) and playerLevel < 50)
   local _, class = UnitClass("player")
 
   -- Generic armor.
@@ -379,17 +379,17 @@ local function updateSuitableTable(playerLevel)
     -- Weapons.
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe2H] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = Addon.IS_VANILLA or Addon.IS_CATA
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Dagger] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace2H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
   end
 
@@ -398,7 +398,7 @@ local function updateSuitableTable(playerLevel)
     -- Armor.
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = IS_LESSER_ARMOR_TYPE_SUITABLE
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = IS_LESSER_ARMOR_TYPE_SUITABLE
-    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Libram] = Addon.IS_VANILLA
+    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Libram] = (Addon.IS_VANILLA or Addon.IS_TBC)
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = IS_LESSER_ARMOR_TYPE_SUITABLE
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Plate] = true
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
@@ -430,7 +430,7 @@ local function updateSuitableTable(playerLevel)
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword2H] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
   end
 
@@ -440,14 +440,14 @@ local function updateSuitableTable(playerLevel)
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = IS_LESSER_ARMOR_TYPE_SUITABLE
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
     -- Weapons
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = not Addon.IS_VANILLA
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = Addon.IS_VANILLA or Addon.IS_CATA
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = not (Addon.IS_VANILLA or Addon.IS_TBC)
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bows] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Crossbow] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Dagger] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Guns] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Sword1H] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = Addon.IS_VANILLA or Addon.IS_CATA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Thrown] = (Addon.IS_VANILLA or Addon.IS_TBC) or Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
   end
 
@@ -485,7 +485,7 @@ local function updateSuitableTable(playerLevel)
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Mail] = true
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Shield] = true
-    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Totem] = Addon.IS_VANILLA
+    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Totem] = (Addon.IS_VANILLA or Addon.IS_TBC)
     -- Weapons.
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe1H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Axe2H] = true
@@ -524,7 +524,7 @@ local function updateSuitableTable(playerLevel)
   if class == "DRUID" then
     -- Armor.
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Cloth] = IS_LESSER_ARMOR_TYPE_SUITABLE
-    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Idol] = Addon.IS_VANILLA
+    Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Idol] = (Addon.IS_VANILLA or Addon.IS_TBC)
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Leather] = true
     Items.suitable[Enum.ItemClass.Armor][Enum.ItemArmorSubclass.Relic] = Addon.IS_CATA
     -- Weapons.
@@ -533,9 +533,9 @@ local function updateSuitableTable(playerLevel)
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Mace2H] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Staff] = true
     Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Unarmed] = true
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bearclaw] = not Addon.IS_VANILLA
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Catclaw] = not Addon.IS_VANILLA
-    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = not Addon.IS_VANILLA
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Bearclaw] = not (Addon.IS_VANILLA or Addon.IS_TBC)
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Catclaw] = not (Addon.IS_VANILLA or Addon.IS_TBC)
+    Items.suitable[Enum.ItemClass.Weapon][Enum.ItemWeaponSubclass.Polearm] = not (Addon.IS_VANILLA or Addon.IS_TBC)
   end
 
   -- Demon Hunter.

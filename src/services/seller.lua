@@ -58,7 +58,7 @@ local function handlePopup(popup)
 end
 
 local function handleStaticPopup()
-  if Addon.IS_VANILLA then return end
+  if (Addon.IS_VANILLA or Addon.IS_TBC) then return end
 
   if type(StaticPopup_ForEachShownDialog) == "function" then
     StaticPopup_ForEachShownDialog(handlePopup)

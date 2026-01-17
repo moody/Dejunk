@@ -22,7 +22,7 @@ end
 
 --- Refreshes the cache.
 function EquipmentSetsCache:Refresh()
-  if Addon.IS_VANILLA then return end
+  if Addon.IS_VANILLA or Addon.IS_TBC then return end
 
   for k in pairs(cache) do cache[k] = nil end
 
