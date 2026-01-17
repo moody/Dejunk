@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.11] - 2026-01-17
+
+- Add support for Burning Crusade Anniversary
+
 ## [2.0.10] - 2025-12-30
 
 - Version updates
