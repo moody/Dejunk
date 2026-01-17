@@ -86,7 +86,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
   }))
 
   -- Exclude equipment sets.
-  if not Addon.IS_VANILLA then
+  if not (Addon.IS_VANILLA or Addon.IS_TBC) then
     optionsFrame:AddChild(Widgets:OptionButton({
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
