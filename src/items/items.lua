@@ -88,7 +88,8 @@ local function getItem(bag, slot)
   end
 
   item.name = name
-  item.itemLevel = GetDetailedItemLevelInfo(item.link) or itemLevel
+  local detailedItemLevel = GetDetailedItemLevelInfo(item.link)
+  item.itemLevel = detailedItemLevel or itemLevel
   item.invType = invType
   item.price = price
   item.classId = classId
