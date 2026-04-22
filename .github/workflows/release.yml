@@ -2,7 +2,7 @@ name: Release
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   release:
@@ -22,10 +22,10 @@ jobs:
       - name: Validate Locales
         run: python .scripts/validate_locales.py
 
-      - name: Upload Locales
-        run: python .scripts/upload_locales.py
-        env:
-          CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      # - name: Upload Locales
+      #   run: python .scripts/upload_locales.py
+      #   env:
+      #     CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
       - name: Release
         uses: BigWigsMods/packager@master
