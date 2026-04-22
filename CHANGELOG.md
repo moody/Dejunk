@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.1.0] - 2026-04-21
+
+### Added
+
+- Support for all locales
+
+### Changed
+
+- Minimized the Transport Frame's title
+
 ## [2.0.13] - 2026-03-01
 
 - Version updates

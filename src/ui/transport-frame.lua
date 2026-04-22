@@ -75,8 +75,11 @@ TransportFrame.frame = (function()
   Widgets:ConfigureForPointSync(frame, "TransportFrame")
 
   frame:HookScript("OnUpdate", function(self)
-    if not self.list then return end
-    self.title:SetText(Colors.Yellow("%s (%s)"):format(L.TRANSPORT, self.list.name))
+    if self.list then
+      self.title:SetText(self.list.name)
+    else
+      self.title:SetText(Colors.Yellow(L.TRANSPORT))
+    end
   end)
 
   -- Import button.
