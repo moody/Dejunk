@@ -46,5 +46,7 @@ function Widgets:Window(options)
     onClick = function() frame:Hide() end
   })
 
+  frame.title:SetPoint("RIGHT", frame.closeButton, "LEFT", -self:Padding(0.5), 0)
+
   return frame
 end
