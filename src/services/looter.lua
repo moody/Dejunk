@@ -50,6 +50,16 @@ end
 -- Looter
 -- ============================================================================
 
+local doNotLootIDs = {
+	-- These "Encaged" Souls become "Docile" Souls after 15 minutes in the bags (different item ID).
+	-- The "Docile" variant contains the real loot (Soul reagent or a pet).
+	-- If opened prematurely (still "Encaged"), it just gives some minor reagents.
+	[200931] = true, -- Encaged Fiery Soul
+	[200932] = true, -- Encaged Airy Soul
+	[200934] = true, -- Encaged Frosty Soul
+	[200936] = true, -- Encaged Earthen Soul
+}
+	
 function Looter:Start()
   if self.ticker and not self.ticker:IsCancelled() then return end
 
@@ -61,7 +71,7 @@ function Looter:Start()
 
   -- Remove non-lootable items.
   for i = #self.items, 1, -1 do
-    if not self.items[i].lootable then
+    if not self.items[i].lootable or doNotLootIDs[self.items[i].id] then
       table.remove(self.items, i)
     end
   end
