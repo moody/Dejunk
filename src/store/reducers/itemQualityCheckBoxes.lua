@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
-local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
 
 --- @class Actions
@@ -27,46 +26,31 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT or
-      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT, payload = value }
 end
 
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT or
-      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT, payload = value }
 end
 
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL or
-      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL, payload = value }
 end
 
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesIncludeByQuality(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY or
-      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY, payload = value }
 end
 
 --- @param value ItemQualityCheckBoxValues
 --- @return WuxAction
 function Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT or
-      ActionTypes.Global.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT, payload = value }
 end
 
 -- ============================================================================
@@ -74,8 +58,8 @@ end
 -- ============================================================================
 
 --- Returns a new reducer for `itemQualityCheckBoxes` using the given `defaultState` and `actionTypes`.
---- @param defaultState GlobalState | PercharState
---- @param actionTypes ActionTypesGlobal | ActionTypesPerchar
+--- @param defaultState PercharState
+--- @param actionTypes ActionTypesPerchar
 function ReducerFactories.itemQualityCheckBoxes(defaultState, actionTypes)
   return Wux:CombineReducers({
     --- Reducer for `excludeUnboundEquipment`.

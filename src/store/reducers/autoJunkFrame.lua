@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
-local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
 
 --- @class Actions
@@ -16,10 +15,7 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetAutoJunkFrame(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.SET_AUTO_JUNK_FRAME or
-      ActionTypes.Global.SET_AUTO_JUNK_FRAME
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Global.SET_AUTO_JUNK_FRAME, payload = value }
 end
 
 -- ============================================================================
@@ -27,8 +23,8 @@ end
 -- ============================================================================
 
 --- Returns a new reducer for `autoJunkFrame` using the given `defaultState` and `actionTypes`.
---- @param defaultState GlobalState | PercharState
---- @param actionTypes ActionTypesGlobal | ActionTypesPerchar
+--- @param defaultState GlobalState
+--- @param actionTypes ActionTypesGlobal
 --- @return WuxReducer<boolean>
 function ReducerFactories.autoJunkFrame(defaultState, actionTypes)
   --- @param state boolean

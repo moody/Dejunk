@@ -1,17 +1,35 @@
 local Addon = select(2, ...) ---@type Addon
-local Wux = Addon.Wux
 
 --- @class DefaultStates
 local DefaultStates = Addon:GetModule("DefaultStates")
 
---- Base default state.
---- @class BaseDefaultState
-local DEFAULT_STATE = {
+--- Global default state.
+--- @class GlobalState
+DefaultStates.Global = {
   autoJunkFrame = false,
   autoRepair = false,
   autoSell = false,
+  chatMessages = true,
+  itemIcons = false,
+  itemTooltips = true,
+  merchantButton = true,
+  minimapIcon = { hide = false },
   safeMode = false,
 
+  inclusions = { --[[ ["itemId"] = true, ... ]] },
+  exclusions = { --[[ ["itemId"] = true, ... ]] },
+
+  points = {
+    mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+    junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+    transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+    merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
+  }
+}
+
+-- Per character default state.
+--- @class PercharState
+DefaultStates.Perchar = {
   excludeEquipmentSets = true,
   excludeUnboundEquipment = false,
   excludeWarbandEquipment = false,
@@ -32,23 +50,3 @@ local DEFAULT_STATE = {
     includeUnsuitableEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
   }
 }
-
---- Global default state.
---- @class GlobalState : BaseDefaultState
-DefaultStates.Global = Wux:DeepCopy(DEFAULT_STATE)
-DefaultStates.Global.chatMessages = true
-DefaultStates.Global.itemIcons = false
-DefaultStates.Global.itemTooltips = true
-DefaultStates.Global.merchantButton = true
-DefaultStates.Global.minimapIcon = { hide = false }
-DefaultStates.Global.points = {
-  mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-  junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-  transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-  merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
-}
-
--- Per character default state.
---- @class PercharState : BaseDefaultState
-DefaultStates.Perchar = Wux:DeepCopy(DEFAULT_STATE)
-DefaultStates.Perchar.characterSpecificSettings = false

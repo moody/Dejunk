@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
-local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
 
 --- @class Actions
@@ -16,10 +15,7 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 --- @param value boolean
 --- @return WuxAction
 function Actions:SetIncludeUnsuitableEquipment(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.SET_INCLUDE_UNSUITABLE_EQUIPMENT or
-      ActionTypes.Global.SET_INCLUDE_UNSUITABLE_EQUIPMENT
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.SET_INCLUDE_UNSUITABLE_EQUIPMENT, payload = value }
 end
 
 -- ============================================================================
@@ -27,8 +23,8 @@ end
 -- ============================================================================
 
 --- Returns a new reducer for `includeUnsuitableEquipment` using the given `defaultState` and `actionTypes`.
---- @param defaultState GlobalState | PercharState
---- @param actionTypes ActionTypesGlobal | ActionTypesPerchar
+--- @param defaultState PercharState
+--- @param actionTypes ActionTypesPerchar
 --- @return WuxReducer<boolean>
 function ReducerFactories.includeUnsuitableEquipment(defaultState, actionTypes)
   --- @param state boolean

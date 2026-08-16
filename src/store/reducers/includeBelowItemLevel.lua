@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
-local StateManager = Addon:GetModule("StateManager")
 local Wux = Addon.Wux
 
 --- @class Actions
@@ -16,10 +15,7 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 --- @param value table
 --- @return WuxAction
 function Actions:PatchIncludeBelowItemLevel(value)
-  local actionType = StateManager:IsCharacterSpecificSettings() and
-      ActionTypes.Perchar.PATCH_INCLUDE_BELOW_ITEM_LEVEL or
-      ActionTypes.Global.PATCH_INCLUDE_BELOW_ITEM_LEVEL
-  return { type = actionType, payload = value }
+  return { type = ActionTypes.Perchar.PATCH_INCLUDE_BELOW_ITEM_LEVEL, payload = value }
 end
 
 -- ============================================================================
@@ -27,8 +23,8 @@ end
 -- ============================================================================
 
 --- Returns a new reducer for `includeBelowItemLevel` using the given `defaultState` and `actionTypes`.
---- @param defaultState GlobalState | PercharState
---- @param actionTypes ActionTypesGlobal | ActionTypesPerchar
+--- @param defaultState PercharState
+--- @param actionTypes ActionTypesPerchar
 --- @return WuxReducer<table>
 function ReducerFactories.includeBelowItemLevel(defaultState, actionTypes)
   --- @param state table

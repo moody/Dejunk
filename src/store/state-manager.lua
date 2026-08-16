@@ -58,24 +58,6 @@ function StateManager:Dispatch(action)
   _Store:Dispatch(action)
 end
 
---- Returns true if `perchar.characterSpecificSettings` is enabled.
---- @return boolean
-function StateManager:IsCharacterSpecificSettings()
-  return _Store:GetState().perchar.characterSpecificSettings == true
-end
-
---- Returns either global state or perchar state depending on
---- the value of `perchar.characterSpecificSettings`.
---- @return GlobalState | PercharState
-function StateManager:GetCurrentState()
-  local state = _Store:GetState()
-  if state.perchar.characterSpecificSettings == true then
-    return state.perchar
-  else
-    return state.global
-  end
-end
-
 --- Returns the global state.
 --- @return GlobalState
 function StateManager:GetGlobalState()

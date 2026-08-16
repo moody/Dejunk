@@ -11,42 +11,24 @@ local RootReducer = Addon:GetModule("RootReducer")
 function RootReducer:Build()
   --- @type WuxReducer<GlobalState>
   local globalReducer = Wux:CombineReducers({
+    autoJunkFrame = ReducerFactories.autoJunkFrame(DefaultStates.Global, ActionTypes.Global),
+    autoRepair = ReducerFactories.autoRepair(DefaultStates.Global, ActionTypes.Global),
+    autoSell = ReducerFactories.autoSell(DefaultStates.Global, ActionTypes.Global),
     chatMessages = ReducerFactories.chatMessages(DefaultStates.Global, ActionTypes.Global),
     itemIcons = ReducerFactories.itemIcons(DefaultStates.Global, ActionTypes.Global),
     itemTooltips = ReducerFactories.itemTooltips(DefaultStates.Global, ActionTypes.Global),
     merchantButton = ReducerFactories.merchantButton(DefaultStates.Global, ActionTypes.Global),
     minimapIcon = ReducerFactories.minimapIcon(DefaultStates.Global, ActionTypes.Global),
-    points = ReducerFactories.points(DefaultStates.Global, ActionTypes.Global),
-
-    autoJunkFrame = ReducerFactories.autoJunkFrame(DefaultStates.Global, ActionTypes.Global),
-    autoRepair = ReducerFactories.autoRepair(DefaultStates.Global, ActionTypes.Global),
-    autoSell = ReducerFactories.autoSell(DefaultStates.Global, ActionTypes.Global),
     safeMode = ReducerFactories.safeMode(DefaultStates.Global, ActionTypes.Global),
-
-    excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(DefaultStates.Global, ActionTypes.Global),
-    excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(DefaultStates.Global, ActionTypes.Global),
-    excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(DefaultStates.Global, ActionTypes.Global),
-
-    includeArtifactRelics = ReducerFactories.includeArtifactRelics(DefaultStates.Global, ActionTypes.Global),
-    includeBelowItemLevel = ReducerFactories.includeBelowItemLevel(DefaultStates.Global, ActionTypes.Global),
-    includeByQuality = ReducerFactories.includeByQuality(DefaultStates.Global, ActionTypes.Global),
-    includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(DefaultStates.Global, ActionTypes.Global),
 
     inclusions = ReducerFactories.inclusions(DefaultStates.Global, ActionTypes.Global),
     exclusions = ReducerFactories.exclusions(DefaultStates.Global, ActionTypes.Global),
 
-    itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(DefaultStates.Global, ActionTypes.Global)
+    points = ReducerFactories.points(DefaultStates.Global, ActionTypes.Global),
   })
 
   --- @type WuxReducer<PercharState>
   local percharReducer = Wux:CombineReducers({
-    characterSpecificSettings = ReducerFactories.characterSpecificSettings(DefaultStates.Perchar, ActionTypes.Perchar),
-
-    autoJunkFrame = ReducerFactories.autoJunkFrame(DefaultStates.Perchar, ActionTypes.Perchar),
-    autoRepair = ReducerFactories.autoRepair(DefaultStates.Perchar, ActionTypes.Perchar),
-    autoSell = ReducerFactories.autoSell(DefaultStates.Perchar, ActionTypes.Perchar),
-    safeMode = ReducerFactories.safeMode(DefaultStates.Perchar, ActionTypes.Perchar),
-
     excludeEquipmentSets = ReducerFactories.excludeEquipmentSets(DefaultStates.Perchar, ActionTypes.Perchar),
     excludeUnboundEquipment = ReducerFactories.excludeUnboundEquipment(DefaultStates.Perchar, ActionTypes.Perchar),
     excludeWarbandEquipment = ReducerFactories.excludeWarbandEquipment(DefaultStates.Perchar, ActionTypes.Perchar),

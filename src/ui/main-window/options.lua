@@ -30,22 +30,16 @@ end
 --- Adds general options to the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:AddGeneralOptions(optionsFrame)
+  -- TODO: rename "General" options to "Character Settings", and move global options to "Global Settings"
+
   -- General heading.
   optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GENERAL }))
-
-  -- Character specific settings.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.CHARACTER_SPECIFIC_SETTINGS_TEXT,
-    tooltipText = L.CHARACTER_SPECIFIC_SETTINGS_TOOLTIP,
-    get = function() return StateManager:GetPercharState().characterSpecificSettings end,
-    set = function() StateManager:GetStore():Dispatch(Actions:ToggleCharacterSpecificSettings()) end
-  }))
 
   -- Auto junk frame.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().autoJunkFrame end,
+    get = function() return StateManager:GetGlobalState().autoJunkFrame end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoJunkFrame(value)) end
   }))
 
@@ -53,7 +47,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().autoRepair end,
+    get = function() return StateManager:GetGlobalState().autoRepair end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoRepair(value)) end
   }))
 
@@ -61,7 +55,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.AUTO_SELL_TEXT,
     tooltipText = L.AUTO_SELL_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().autoSell end,
+    get = function() return StateManager:GetGlobalState().autoSell end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoSell(value)) end
   }))
 
@@ -69,7 +63,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.SAFE_MODE_TEXT,
     tooltipText = L.SAFE_MODE_TOOLTIP,
-    get = function() return StateManager:GetCurrentState().safeMode end,
+    get = function() return StateManager:GetGlobalState().safeMode end,
     set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
   }))
 end
@@ -90,7 +84,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     optionsFrame:AddChild(Widgets:OptionButton({
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
-      get = function() return StateManager:GetCurrentState().excludeEquipmentSets end,
+      get = function() return StateManager:GetPercharState().excludeEquipmentSets end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeEquipmentSets(value)) end
     }))
   end
@@ -99,29 +93,29 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetCurrentState().excludeUnboundEquipment end,
+      get = function() return StateManager:GetPercharState().excludeUnboundEquipment end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.poor end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeUnboundEquipment.poor end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ poor = value })) end
       },
       common = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.common end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeUnboundEquipment.common end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ common = value })) end
       },
       uncommon = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.uncommon end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeUnboundEquipment.uncommon end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ uncommon = value })) end
       },
       rare = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.rare end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeUnboundEquipment.rare end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ rare = value })) end
       },
       epic = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeUnboundEquipment.epic end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeUnboundEquipment.epic end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeUnboundEquipment({ epic = value })) end
       }
     })
@@ -134,29 +128,29 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetCurrentState().excludeWarbandEquipment end,
+      get = function() return StateManager:GetPercharState().excludeWarbandEquipment end,
       set = function(value) StateManager:Dispatch(Actions:SetExcludeWarbandEquipment(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.poor end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeWarbandEquipment.poor end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ poor = value })) end
       },
       common = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.common end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeWarbandEquipment.common end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ common = value })) end
       },
       uncommon = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.uncommon end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeWarbandEquipment.uncommon end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ uncommon = value })) end
       },
       rare = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.rare end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeWarbandEquipment.rare end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ rare = value })) end
       },
       epic = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.excludeWarbandEquipment.epic end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.excludeWarbandEquipment.epic end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesExcludeWarbandEquipment({ epic = value })) end
       }
     })
@@ -181,7 +175,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     optionsFrame:AddChild(Widgets:OptionButton({
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
-      get = function() return StateManager:GetCurrentState().includeArtifactRelics end,
+      get = function() return StateManager:GetPercharState().includeArtifactRelics end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
     }))
   end
@@ -191,12 +185,12 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local LABEL_TEXT_FORMAT = Colors.White(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. " " .. Colors.Grey("(%s)")
 
     local function getItemLevel()
-      return StateManager:GetCurrentState().includeBelowItemLevel.value
+      return StateManager:GetPercharState().includeBelowItemLevel.value
     end
 
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
-      get = function() return StateManager:GetCurrentState().includeBelowItemLevel.enabled end,
+      get = function() return StateManager:GetPercharState().includeBelowItemLevel.enabled end,
       set = function(value) StateManager:Dispatch(Actions:PatchIncludeBelowItemLevel({ enabled = value })) end,
       enableClickHandling = true,
       onUpdateTooltip = function(self, tooltip)
@@ -214,10 +208,9 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     end)
 
     frame:SetClickHandler("RightButton", "NONE", function()
-      local currentState = StateManager:GetCurrentState()
       Popup:GetInteger({
         text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
-        initialValue = currentState.includeBelowItemLevel.value,
+        initialValue = StateManager:GetPercharState().includeBelowItemLevel.value,
         onAccept = function(self, value)
           StateManager:Dispatch(Actions:PatchIncludeBelowItemLevel({ value = value }))
         end
@@ -226,23 +219,23 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.poor end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeBelowItemLevel.poor end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ poor = value })) end
       },
       common = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.common end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeBelowItemLevel.common end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ common = value })) end
       },
       uncommon = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.uncommon end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeBelowItemLevel.uncommon end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ uncommon = value })) end
       },
       rare = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.rare end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeBelowItemLevel.rare end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ rare = value })) end
       },
       epic = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeBelowItemLevel.epic end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeBelowItemLevel.epic end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeBelowItemLevel({ epic = value })) end
       }
     })
@@ -254,29 +247,29 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BY_QUALITY_TEXT,
       tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP .. "|n|n" .. Colors.Pink(L.OPTION_WARNING_BE_CAREFUL),
-      get = function() return StateManager:GetCurrentState().includeByQuality end,
+      get = function() return StateManager:GetPercharState().includeByQuality end,
       set = function(value) StateManager:Dispatch(Actions:SetIncludeByQuality(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.poor end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeByQuality.poor end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ poor = value })) end
       },
       common = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.common end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeByQuality.common end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ common = value })) end
       },
       uncommon = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.uncommon end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeByQuality.uncommon end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ uncommon = value })) end
       },
       rare = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.rare end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeByQuality.rare end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ rare = value })) end
       },
       epic = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeByQuality.epic end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeByQuality.epic end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeByQuality({ epic = value })) end
       }
     })
@@ -288,29 +281,29 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
       tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetCurrentState().includeUnsuitableEquipment end,
+      get = function() return StateManager:GetPercharState().includeUnsuitableEquipment end,
       set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.poor end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeUnsuitableEquipment.poor end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ poor = value })) end
       },
       common = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.common end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeUnsuitableEquipment.common end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ common = value })) end
       },
       uncommon = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.uncommon end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeUnsuitableEquipment.uncommon end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ uncommon = value })) end
       },
       rare = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.rare end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeUnsuitableEquipment.rare end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ rare = value })) end
       },
       epic = {
-        get = function() return StateManager:GetCurrentState().itemQualityCheckBoxes.includeUnsuitableEquipment.epic end,
+        get = function() return StateManager:GetPercharState().itemQualityCheckBoxes.includeUnsuitableEquipment.epic end,
         set = function(value) StateManager:Dispatch(Actions:PatchItemQualityCheckBoxesIncludeUnsuitableEquipment({ epic = value })) end
       }
     })
