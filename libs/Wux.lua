@@ -1,5 +1,5 @@
 -- =============================================================================
--- Wux: 0.2.0 - https://github.com/moody/Wux
+-- Wux: 0.3.0 - https://github.com/moody/Wux
 -- =============================================================================
 
 local _, Addon = ...
@@ -9,16 +9,24 @@ Addon.Wux = {}
 local Wux = Addon.Wux
 
 -- =============================================================================
--- EmmyLua Annotations
+-- LuaCATS Annotations
 -- =============================================================================
 
 --- @class WuxAction
 --- @field type string Unique identifying type for the action.
 --- @field payload? any Optional data for the action.
 
---- @alias WuxReducer<T> fun(state?: T, action: WuxAction): T Function to return a new state based on the given action.
+--- @alias WuxDispatch fun(action: WuxAction): WuxAction
 
 --- @alias WuxListener<T> fun(state: T) Function to react to state changes.
+
+--- @alias WuxMiddleware<T> fun(store: WuxMiddlewareStore<T>, next: WuxDispatch, action: WuxAction): WuxAction Function that may inspect, transform, delay, or short-circuit an `action` before it reaches the next middleware (or the store's reducer) by choosing whether to call `next`.
+
+--- @class WuxMiddlewareStore<T>
+--- @field dispatch WuxDispatch
+--- @field getState fun(): T
+
+--- @alias WuxReducer<T> fun(state?: T, action: WuxAction): T Function to return a new state based on the given action.
 
 -- =============================================================================
 -- Wux - ActionTypes
@@ -69,8 +77,10 @@ end
 -- =============================================================================
 
 --- Returns the first non-nil value from the given list of arguments.
---- @vararg any
---- @return any
+--- If no non-nil value is found, returns `nil`.
+--- @generic T
+--- @param ... T
+--- @return T|nil
 function Wux:Coalesce(...)
   for i = 1, select("#", ...) do
     local value = select(i, ...)
@@ -78,6 +88,7 @@ function Wux:Coalesce(...)
       return value
     end
   end
+  return nil
 end
 
 -- =============================================================================
@@ -85,22 +96,25 @@ end
 -- =============================================================================
 
 --- Returns a shallow copy of the given table.
---- @param t table
---- @return table
+--- @generic T : table
+--- @param t T
+--- @return T
 function Wux:ShallowCopy(t)
   return copyTable(t, false)
 end
 
 --- Returns a deep copy of the given table.
---- @param t table
---- @return table
+--- @generic T : table
+--- @param t T
+--- @return T
 function Wux:DeepCopy(t)
   return copyTable(t, true)
 end
 
 --- Returns an array consisting of the given table's values. Element order is not guaranteed.
---- @param t table
---- @return any[] values
+--- @generic T
+--- @param t table<any, T>
+--- @return T[] values
 function Wux:Values(t)
   local values = {}
   for _, v in pairs(t) do table.insert(values, v) end
@@ -112,17 +126,19 @@ end
 -- =============================================================================
 
 --- Executes the given callback for each element within an array.
---- @param arr any[]
---- @param callback fun(value: any, index: integer)
+--- @generic T
+--- @param arr T[]
+--- @param callback fun(value: T, index: integer)
 function Wux:ForEach(arr, callback)
   for i, v in ipairs(arr) do callback(v, i) end
 end
 
 --- Returns a filtered array of elements based on the given callback's boolean response.
 --- If the callback returns true for an element, the element will be included in the resulting array.
---- @param arr any[]
---- @param callback fun(value: any, index: integer): boolean
---- @return any[] filtered
+--- @generic T
+--- @param arr T[]
+--- @param callback fun(value: T, index: integer): boolean
+--- @return T[] filtered
 function Wux:Filter(arr, callback)
   local filtered = {}
   for i, v in ipairs(arr) do
@@ -134,9 +150,10 @@ function Wux:Filter(arr, callback)
 end
 
 --- Returns a new array with elements returned by the given callback.
---- @param arr any[]
---- @param callback fun(value: any, index: integer): any
---- @return any[] mapped
+--- @generic T, R
+--- @param arr T[]
+--- @param callback fun(value: T, index: integer): R
+--- @return R[] mapped
 function Wux:Map(arr, callback)
   local mapped = {}
   for i, v in ipairs(arr) do
@@ -146,10 +163,11 @@ function Wux:Map(arr, callback)
 end
 
 --- Returns the result of reducing an array into an accumulated value using the given callback.
---- @param arr any[]
---- @param callback fun(accumulator: any, value: any, index: integer): any
---- @param initialValue? any If provided, accumulation begins at the first index; otherwise, defaults to the first index value, and accumulation begins at the second index.
---- @return any accumulator
+--- @generic T, R
+--- @param arr T[]
+--- @param callback fun(accumulator: R, value: T, index: integer): R
+--- @param initialValue? R If provided, accumulation begins at the first index; otherwise, defaults to the first index value, and accumulation begins at the second index.
+--- @return R accumulator
 function Wux:Reduce(arr, callback, initialValue)
   local initialIndex = 1
   if type(initialValue) == "nil" then
@@ -170,7 +188,7 @@ end
 -- =============================================================================
 
 --- Returns a root reducer composed of all given reducers.
---- @param reducers { [string]: WuxReducer }
+--- @param reducers { [string]: WuxReducer<any> }
 --- @return WuxReducer<table> reducer
 function Wux:CombineReducers(reducers)
   return function(state, action)
@@ -191,17 +209,19 @@ function Wux:CombineReducers(reducers)
 end
 
 --- Returns a new store based on the given reducer.
---- @param reducer WuxReducer
---- @param initialState? table
---- @return WuxStore
-function Wux:CreateStore(reducer, initialState)
-  --- @class WuxStore
+--- @generic T : table
+--- @param reducer WuxReducer<T>
+--- @param initialState? T
+--- @param middlewares? WuxMiddleware<T>[] Applied in list order; the first middleware receives each action first.
+--- @return WuxStore<T>
+function Wux:CreateStore(reducer, initialState, middlewares)
+  --- @class WuxStore<T>
   local Store = {}
 
-  --- @type WuxListener[]
+  --- @type WuxListener<any>[]
   local listeners = {}
 
-  --- @type table
+  --- @type table?
   local state = nil
 
   if type(initialState) == "table" then
@@ -209,15 +229,16 @@ function Wux:CreateStore(reducer, initialState)
   end
 
   --- Returns the current state of the store.
-  --- @return table state
+  --- @return T state
   function Store:GetState()
     return state
   end
 
-  --- Dispatches the given `action` to the store's reducer.
-  --- If the state changes, all listeners will be notified.
+  --- Applies `action` to the store's reducer and notifies listeners if the
+  --- state changed. Middleware wraps this function; it is never called directly.
   --- @param action WuxAction
-  function Store:Dispatch(action)
+  --- @return WuxAction action
+  local function baseDispatch(action)
     local prevState = state
 
     -- Handle batched actions.
@@ -236,10 +257,44 @@ function Wux:CreateStore(reducer, initialState)
         listener(state)
       end
     end
+
+    return action
+  end
+
+  --- @type WuxDispatch
+  local dispatch
+
+  --- @type WuxMiddlewareStore<any>
+  local middlewareStore = {
+    getState = function() return state end,
+    dispatch = function(action) return dispatch(action) end
+  }
+
+  -- Compose the middleware chain around baseDispatch. Declaration order is
+  -- execution order; the first middleware in `middlewares` runs first.
+  --- @type WuxMiddleware<any>[]
+  middlewares = middlewares or {}
+  --- @type WuxDispatch
+  local chain = baseDispatch
+  for i = #middlewares, 1, -1 do
+    local middleware = middlewares[i]
+    local next = chain
+    chain = function(action)
+      return middleware(middlewareStore, next, action)
+    end
+  end
+  dispatch = chain
+
+  --- Dispatches the given `action` through any middleware, then to the
+  --- store's reducer. If the state changes, all listeners will be notified.
+  --- @param action WuxAction
+  --- @return WuxAction action
+  function Store:Dispatch(action)
+    return dispatch(action)
   end
 
   --- Registers the given `listener` to be called when the store's state changes.
-  --- @param listener WuxListener<table>
+  --- @param listener WuxListener<T>
   --- @return fun() unsubscribe Unsubscribes the `listener`.
   function Store:Subscribe(listener)
     table.insert(listeners, listener)
