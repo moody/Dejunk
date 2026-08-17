@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
+local DefaultStates = Addon:GetModule("DefaultStates")
 local Wux = Addon.Wux
 
 --- @class Actions
@@ -12,33 +13,23 @@ local ReducerFactories = Addon:GetModule("ReducerFactories")
 -- Actions - exclusions
 -- ============================================================================
 
---- @param value table
+--- @param value ItemIdMap
 --- @return WuxAction
 function Actions:SetGlobalExclusions(value)
   return { type = ActionTypes.Global.SET_EXCLUSIONS, payload = value }
-end
-
---- @param value table
---- @return WuxAction
-function Actions:SetPercharExclusions(value)
-  return { type = ActionTypes.Perchar.SET_EXCLUSIONS, payload = value }
 end
 
 -- ============================================================================
 -- ReducerFactories - exclusions
 -- ============================================================================
 
---- Returns a new reducer for `exclusions` using the given `defaultState` and `actionTypes`.
---- @param defaultState GlobalState | PercharState
---- @param actionTypes ActionTypesGlobal | ActionTypesPerchar
---- @return WuxReducer<table>
-function ReducerFactories.exclusions(defaultState, actionTypes)
-  --- @param state table
-  --- @param action WuxAction
+--- Returns a new reducer for global `exclusions`.
+--- @return WuxReducer<ItemIdMap>
+function ReducerFactories.globalExclusions()
   return function(state, action)
-    state = Wux:Coalesce(state, defaultState.exclusions)
+    state = Wux:Coalesce(state, DefaultStates.Global.exclusions)
 
-    if action.type == actionTypes.SET_EXCLUSIONS then
+    if action.type == ActionTypes.Global.SET_EXCLUSIONS then
       return Wux:ShallowCopy(action.payload)
     end
 

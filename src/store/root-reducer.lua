@@ -21,8 +21,8 @@ function RootReducer:Build()
     minimapIcon = ReducerFactories.minimapIcon(DefaultStates.Global, ActionTypes.Global),
     safeMode = ReducerFactories.safeMode(DefaultStates.Global, ActionTypes.Global),
 
-    inclusions = ReducerFactories.inclusions(DefaultStates.Global, ActionTypes.Global),
-    exclusions = ReducerFactories.exclusions(DefaultStates.Global, ActionTypes.Global),
+    inclusions = ReducerFactories.globalInclusions(),
+    exclusions = ReducerFactories.globalExclusions(),
 
     points = ReducerFactories.points(DefaultStates.Global, ActionTypes.Global),
   })
@@ -38,8 +38,8 @@ function RootReducer:Build()
     includeByQuality = ReducerFactories.includeByQuality(DefaultStates.Perchar, ActionTypes.Perchar),
     includeUnsuitableEquipment = ReducerFactories.includeUnsuitableEquipment(DefaultStates.Perchar, ActionTypes.Perchar),
 
-    inclusions = ReducerFactories.inclusions(DefaultStates.Perchar, ActionTypes.Perchar),
-    exclusions = ReducerFactories.exclusions(DefaultStates.Perchar, ActionTypes.Perchar),
+    inclusions = ReducerFactories.percharInclusions(),
+    exclusions = ReducerFactories.percharExclusions(),
 
     itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(DefaultStates.Perchar, ActionTypes.Perchar)
   })
