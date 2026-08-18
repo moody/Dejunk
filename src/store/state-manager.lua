@@ -24,11 +24,12 @@ end
 -- Store
 -- ============================================================================
 
---- @type WuxStore
-local _Store = nil
+--- @type WuxStore<DejunkRootState>
+local _Store
 
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
+  --- @type DejunkRootState
   local initialState = {
     global = _G[GLOBAL_SV_KEY],
     perchar = _G[PERCHAR_SV_KEY]
@@ -47,13 +48,13 @@ end)
 -- ============================================================================
 
 --- Returns the underlying Wux store.
---- @return WuxStore
+--- @return WuxStore<DejunkRootState>
 function StateManager:GetStore()
   return _Store
 end
 
 --- Convenience method. Equivalent to `StateManager:GetStore():Dispatch()`.
---- @param action WuxAction
+--- @param action WuxAction<any>
 function StateManager:Dispatch(action)
   _Store:Dispatch(action)
 end
