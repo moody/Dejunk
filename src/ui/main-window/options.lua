@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
@@ -40,7 +41,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoJunkFrame end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoJunkFrame(value)) end
+    set = function(value) StateManager:GetStore():Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
   }))
 
   -- Auto repair.

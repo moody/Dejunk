@@ -2,16 +2,18 @@ local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local ReducerFactories = Addon:GetModule("ReducerFactories")
+local Reducers = Addon:GetModule("Reducers")
 local Wux = Addon.Wux
 
 --- @class RootReducer
 local RootReducer = Addon:GetModule("RootReducer")
 
 --- Builds the root reducer for the store.
+--- @return WuxReducer<DejunkRootState>
 function RootReducer:Build()
   --- @type WuxReducer<GlobalState>
   local globalReducer = Wux:CombineReducers({
-    autoJunkFrame = ReducerFactories.autoJunkFrame(DefaultStates.Global, ActionTypes.Global),
+    autoJunkFrame = Reducers.Global.autoJunkFrame,
     autoRepair = ReducerFactories.autoRepair(DefaultStates.Global, ActionTypes.Global),
     autoSell = ReducerFactories.autoSell(DefaultStates.Global, ActionTypes.Global),
     chatMessages = ReducerFactories.chatMessages(DefaultStates.Global, ActionTypes.Global),
@@ -44,7 +46,6 @@ function RootReducer:Build()
     itemQualityCheckBoxes = ReducerFactories.itemQualityCheckBoxes(DefaultStates.Perchar, ActionTypes.Perchar)
   })
 
-  --- @type WuxReducer<{ global: GlobalState, perchar: PercharState }>
   return Wux:CombineReducers({
     global = globalReducer,
     perchar = percharReducer

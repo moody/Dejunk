@@ -27,8 +27,10 @@
   <Script file="src\events\events.lua"/>
   <Script file="src\events\event-manager.lua"/>
 
+  <Script file="src\store\action-creators.lua"/>
   <Script file="src\store\action-types.lua"/>
   <Script file="src\store\default-states.lua"/>
+  <Script file="src\store\reducers.lua"/>
   <Script file="src\store\root-reducer.lua"/>
   <Script file="src\store\state-manager.lua"/>
 

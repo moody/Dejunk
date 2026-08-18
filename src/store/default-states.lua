@@ -3,6 +3,10 @@ local Addon = select(2, ...) ---@type Addon
 --- @class DefaultStates
 local DefaultStates = Addon:GetModule("DefaultStates")
 
+--- @class DejunkRootState
+--- @field global GlobalState
+--- @field perchar PercharState
+
 --- Example: `{ ["itemId"] = true, ... }`
 --- @alias ItemIdMap table<string, boolean>
 
