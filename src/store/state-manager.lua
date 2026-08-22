@@ -14,6 +14,7 @@ local PERCHAR_SV_KEY = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
 -- Local Functions
 -- ============================================================================
 
+--- @type WuxListener<DejunkRootState>
 local function updateSavedVariables(state)
   _G[GLOBAL_SV_KEY] = state.global
   _G[PERCHAR_SV_KEY] = state.perchar

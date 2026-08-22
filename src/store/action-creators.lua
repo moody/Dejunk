@@ -11,9 +11,17 @@ ActionCreators.Perchar = {}
 -- ============================================================================
 
 --- Action creator for `ActionTypes.Global.SET_AUTO_JUNK_FRAME`.
---- @type WuxActionCreator<boolean>
+--- @param value boolean
+--- @return WuxPayloadAction<boolean>
 function ActionCreators.Global.setAutoJunkFrame(value)
   return { type = ActionTypes.Global.SET_AUTO_JUNK_FRAME, payload = value }
+end
+
+--- Action creator for `ActionTypes.Global.SET_AUTO_REPAIR`.
+--- @param value boolean
+--- @return WuxPayloadAction<boolean>
+function ActionCreators.Global.setAutoRepair(value)
+  return { type = ActionTypes.Global.SET_AUTO_REPAIR, payload = value }
 end
 
 -- ============================================================================

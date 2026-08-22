@@ -49,7 +49,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoRepair end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoRepair(value)) end
+    set = function(value) StateManager:GetStore():Dispatch(ActionCreators.Global.setAutoRepair(value)) end
   }))
 
   -- Auto sell.

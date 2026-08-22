@@ -13,11 +13,23 @@ Reducers.Perchar = {}
 -- ============================================================================
 
 --- Reducer for `ActionTypes.Global.SET_AUTO_JUNK_FRAME`.
---- @type WuxReducer<boolean>
+--- @type WuxReducer<boolean, WuxPayloadAction<boolean>>
 function Reducers.Global.autoJunkFrame(state, action)
   state = Wux:Coalesce(state, DefaultStates.Global.autoJunkFrame)
 
   if action.type == ActionTypes.Global.SET_AUTO_JUNK_FRAME then
+    return action.payload
+  end
+
+  return state
+end
+
+--- Reducer for `ActionTypes.Global.SET_AUTO_REPAIR`.
+--- @type WuxReducer<boolean, WuxPayloadAction<boolean>>
+function Reducers.Global.autoRepair(state, action)
+  state = Wux:Coalesce(state, DefaultStates.Global.autoRepair)
+
+  if action.type == ActionTypes.Global.SET_AUTO_REPAIR then
     return action.payload
   end
 
