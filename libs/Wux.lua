@@ -12,31 +12,51 @@ local Wux = Addon.Wux
 -- LuaCATS Annotations
 -- =============================================================================
 
---- The action dispatched to a store and passed to its reducer.
---- @class WuxAction<T>
---- @field type string Unique identifying type for the action.
---- @field payload? T Optional data for the action.
+-- Actions
 
---- Function to create a `WuxAction` from a given value.
---- @alias WuxActionCreator<T> fun(value: T): WuxAction<T>
+--- The action dispatched to a store and passed to its reducer.
+--- @class WuxAction
+--- @field type string Unique identifying type for the action.
+
+--- A `WuxAction` with data attached.
+--- @class WuxPayloadAction<P> : WuxAction
+--- @field payload P Data for the action.
+
+-- Store
+
+--- Function to return a new state based on the given action. `state` is typed
+--- as always present, matching the common case of an `initialState`; a
+--- reducer that might see a `nil` state should still handle it, e.g. with
+--- `Wux:Coalesce`.
+--- @alias WuxReducer<S, A> fun(state: S, action: A): S
+
+--- Function to react to state changes.
+--- @alias WuxListener<S> fun(state: S)
+
+--- Maps root state to SavedVariables globals. A string maps the whole state
+--- to one global; a table maps each state key to its own.
+--- @alias WuxSavedVariablesMapping string | table<string, string>
+
+--- The store returned by `CreateStore()`.
+--- @class WuxStore<S>
+--- @field GetState fun(self: WuxStore<S>): S Returns the current state of the store.
+--- @field Dispatch fun(self: WuxStore<S>, action: WuxAction): WuxAction Runs `action` through any middleware, then the store's reducer, then notifies listeners if the state changed.
+--- @field Subscribe fun(self: WuxStore<S>, listener: WuxListener<S>): fun() Registers `listener` to be called when the store's state changes. Returns an `unsubscribe` function.
+--- @field ConnectSavedVariables fun(self: WuxStore<S>, mapping: WuxSavedVariablesMapping): fun() Writes state to its mapped SavedVariables globals immediately, then again on every change. Returns an `unsubscribe` function.
+
+-- Middleware
 
 --- Function that processes a single action, used internally by a store and
 --- passed to middleware as `next`.
---- @alias WuxDispatch fun(action: WuxAction<any>): WuxAction<any>
-
---- Function to react to state changes.
---- @alias WuxListener<T> fun(state: T)
-
---- Function that may inspect, transform, delay, or short-circuit an `action` before it reaches the next middleware (or the store's reducer) by choosing whether to call `next`.
---- @alias WuxMiddleware<T> fun(store: WuxMiddlewareStore<T>, next: WuxDispatch, action: WuxAction<any>): WuxAction<any>
+--- @alias WuxDispatch fun(action: WuxAction): WuxAction
 
 --- The subset of a store passed to middleware.
---- @class WuxMiddlewareStore<T>
+--- @class WuxMiddlewareStore<S>
 --- @field dispatch WuxDispatch Dispatches through the full middleware chain, not just the middleware after the current one.
---- @field getState fun(): T Returns the store's current state.
+--- @field getState fun(): S Returns the store's current state.
 
---- Function to return a new state based on the given action.
---- @alias WuxReducer<T> fun(state?: T, action: WuxAction<any>): T
+--- Function that may inspect, transform, delay, or short-circuit an `action` before it reaches the next middleware (or the store's reducer) by choosing whether to call `next`.
+--- @alias WuxMiddleware<S> fun(store: WuxMiddlewareStore<S>, next: WuxDispatch, action: WuxAction): WuxAction
 
 -- =============================================================================
 -- Wux - ActionTypes
@@ -200,8 +220,8 @@ end
 
 --- Returns a root reducer composed of all given reducers. If none of them
 --- change their slice of state, the previous state is returned as-is.
---- @param reducers { [string]: WuxReducer<any> }
---- @return WuxReducer<table> reducer
+--- @param reducers table<string, WuxReducer<table, any>>
+--- @return WuxReducer<table, any> reducer
 function Wux:CombineReducers(reducers)
   return function(state, action)
     state = state or {}
@@ -220,15 +240,42 @@ function Wux:CombineReducers(reducers)
   end
 end
 
+--- Reads SavedVariables globals into a table shaped for `CreateStore`'s
+--- `initialState`, based on the given mapping.
+--- @param mapping WuxSavedVariablesMapping
+--- @return table
+function Wux:ReadSavedVariables(mapping)
+  if type(mapping) == "string" then
+    return _G[mapping] or {}
+  end
+
+  local state = {}
+  for key, name in pairs(mapping) do
+    state[key] = _G[name] or {}
+  end
+  return state
+end
+
+--- Writes state to its mapped SavedVariables globals.
+--- @param mapping WuxSavedVariablesMapping
+--- @param state table
+function Wux:WriteSavedVariables(mapping, state)
+  if type(mapping) == "string" then
+    _G[mapping] = state
+  else
+    for key, name in pairs(mapping) do
+      _G[name] = state[key]
+    end
+  end
+end
+
 --- Returns a new store based on the given reducer.
---- @generic T : table
---- @param reducer WuxReducer<T>
---- @param initialState? T
---- @param middlewares? WuxMiddleware<T>[] Applied in list order; the first middleware receives each action first.
---- @return WuxStore<T>
+--- @generic S : table
+--- @param reducer WuxReducer<S, any>
+--- @param initialState? S
+--- @param middlewares? WuxMiddleware<S>[] Applied in list order; the first middleware receives each action first.
+--- @return WuxStore<S>
 function Wux:CreateStore(reducer, initialState, middlewares)
-  --- The store returned by `CreateStore()`.
-  --- @class WuxStore<T>
   local Store = {}
 
   --- @type WuxListener<any>[]
@@ -242,26 +289,27 @@ function Wux:CreateStore(reducer, initialState, middlewares)
   end
 
   --- Returns the current state of the store.
-  --- @return T state
+  --- @return table state
   function Store:GetState()
     return state
   end
 
   --- Applies `action` to the store's reducer and notifies listeners if the
   --- state changed. Middleware wraps this function; it is never called directly.
-  --- @param action WuxAction<any>
-  --- @return WuxAction<any> action
+  --- @param action WuxAction
+  --- @return WuxAction action
   local function baseDispatch(action)
     local prevState = state
 
     -- Handle batched actions.
     if action.type == Wux.ActionTypes.Batch then
+      --- @cast action WuxPayloadAction<WuxAction[]>
       for _, batchedAction in ipairs(action.payload) do
         state = reducer(state, batchedAction)
       end
     else
       -- Handle single action.
-      state = reducer(prevState, action)
+      state = reducer(state, action)
     end
 
     -- Notify listeners if state changed.
@@ -306,14 +354,14 @@ function Wux:CreateStore(reducer, initialState, middlewares)
 
   --- Dispatches the given `action` through any middleware, then to the
   --- store's reducer. If the state changes, all listeners will be notified.
-  --- @param action WuxAction<any>
-  --- @return WuxAction<any> action
+  --- @param action WuxAction
+  --- @return WuxAction action
   function Store:Dispatch(action)
     return dispatch(action)
   end
 
   --- Registers the given `listener` to be called when the store's state changes.
-  --- @param listener WuxListener<T>
+  --- @param listener WuxListener<any>
   --- @return fun() unsubscribe Unsubscribes the `listener`.
   function Store:Subscribe(listener)
     table.insert(listeners, listener)
@@ -324,6 +372,17 @@ function Wux:CreateStore(reducer, initialState, middlewares)
         end
       end
     end
+  end
+
+  --- Writes state to its mapped SavedVariables globals immediately, then
+  --- again on every subsequent change.
+  --- @param mapping WuxSavedVariablesMapping
+  --- @return fun() unsubscribe
+  function Store:ConnectSavedVariables(mapping)
+    Wux:WriteSavedVariables(mapping, state)
+    return Store:Subscribe(function(newState)
+      Wux:WriteSavedVariables(mapping, newState)
+    end)
   end
 
   -- Seed the initial state. This also passes through any given middleware.
