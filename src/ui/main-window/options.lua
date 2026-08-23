@@ -340,7 +340,7 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     labelText = L.CHAT_MESSAGES_TEXT,
     tooltipText = L.CHAT_MESSAGES_TOOLTIP,
     get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:Dispatch(Actions:SetChatMessages(value)) end
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
   }))
 
   -- Merchant button.
