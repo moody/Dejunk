@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
+local Wux = Addon.Wux
 
 --- @class ActionCreators
 local ActionCreators = Addon:GetModule("ActionCreators")
@@ -10,32 +11,20 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 
 ActionCreators.Global = {
   --- Action creator for `ActionTypes.Global.SET_AUTO_JUNK_FRAME`.
-  --- @param value boolean
-  --- @return WuxPayloadAction<boolean>
-  setAutoJunkFrame = function(value)
-    return { type = ActionTypes.Global.SET_AUTO_JUNK_FRAME, payload = value }
-  end,
+  --- @type WuxActionCreator<boolean>
+  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_JUNK_FRAME),
 
   --- Action creator for `ActionTypes.Global.SET_AUTO_REPAIR`.
-  --- @param value boolean
-  --- @return WuxPayloadAction<boolean>
-  setAutoRepair = function(value)
-    return { type = ActionTypes.Global.SET_AUTO_REPAIR, payload = value }
-  end,
+  --- @type WuxActionCreator<boolean>
+  setAutoRepair = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_REPAIR),
 
   --- Action creator for `ActionTypes.Global.SET_AUTO_SELL`.
-  --- @param value boolean
-  --- @return WuxPayloadAction<boolean>
-  setAutoSell = function(value)
-    return { type = ActionTypes.Global.SET_AUTO_SELL, payload = value }
-  end,
+  --- @type WuxActionCreator<boolean>
+  setAutoSell = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_SELL),
 
   --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
-  --- @param value boolean
-  --- @return WuxPayloadAction<boolean>
-  setChatMessages = function(value)
-    return { type = ActionTypes.Global.SET_CHAT_MESSAGES, payload = value }
-  end
+  --- @type WuxActionCreator<boolean>
+  setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES)
 }
 
 -- ============================================================================
