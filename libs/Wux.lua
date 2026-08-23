@@ -218,6 +218,22 @@ end
 -- Wux - Store Methods
 -- =============================================================================
 
+--- Returns a reducer that replaces its state with `action.payload` when
+--- `action.type` matches `actionType`, or with `defaultState` when state is `nil`.
+--- @generic S
+--- @param actionType string
+--- @param defaultState S
+--- @return fun(state: S, action: WuxPayloadAction<S>): S
+function Wux:CreatePayloadReducer(actionType, defaultState)
+  return function(state, action)
+    state = Wux:Coalesce(state, defaultState)
+    if action.type == actionType then
+      return action.payload
+    end
+    return state
+  end
+end
+
 --- Returns a root reducer composed of all given reducers. If none of them
 --- change their slice of state, the previous state is returned as-is.
 --- @param reducers table<string, WuxReducer<table, any>>
