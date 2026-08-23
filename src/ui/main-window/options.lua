@@ -26,7 +26,10 @@ function MainWindowOptions:Initialize(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
 
   -- Add frame for vertical spacing.
-  optionsFrame:AddChild(Widgets:Frame({ height = Widgets:Padding() }))
+  local spacer = CreateFrame("Frame")
+  spacer:SetWidth(1)
+  spacer:SetHeight(Widgets:Padding())
+  optionsFrame:AddChild(spacer)
 
   -- Global.
   self:AddGlobalOptions(optionsFrame)
