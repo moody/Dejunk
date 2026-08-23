@@ -1,4 +1,4 @@
-## Interface: 120100
+## Interface: 120100, 50504, 20506, 11509
 ## Title: Dejunk
 ## Version: @project-version@
 ## Author: https://github.com/moody
