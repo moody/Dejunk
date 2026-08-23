@@ -7,20 +7,6 @@ local Wux = Addon.Wux
 ---@class StateManager
 local StateManager = Addon:GetModule("StateManager")
 
-local GLOBAL_SV_KEY = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__"
-local PERCHAR_SV_KEY = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
---- @type WuxListener<DejunkRootState>
-local function updateSavedVariables(state)
-  _G[GLOBAL_SV_KEY] = state.global
-  _G[PERCHAR_SV_KEY] = state.perchar
-  EventManager:Fire(E.StateUpdated, state)
-end
-
 -- ============================================================================
 -- Store
 -- ============================================================================
@@ -30,15 +16,16 @@ local _Store
 
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  --- @type DejunkRootState
-  local initialState = {
-    global = _G[GLOBAL_SV_KEY],
-    perchar = _G[PERCHAR_SV_KEY]
+  local savedVariables = {
+    global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
+    perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
   }
 
-  _Store = Wux:CreateStore(RootReducer:Build(), initialState)
-  _Store:Subscribe(updateSavedVariables)
-  updateSavedVariables(_Store:GetState())
+  _Store = Wux:CreateStore(RootReducer:Build(), Wux:ReadSavedVariables(savedVariables))
+  _Store:ConnectSavedVariables(savedVariables)
+  _Store:Subscribe(function(state)
+    EventManager:Fire(E.StateUpdated, state)
+  end)
 
   EventManager:Fire(E.StoreCreated, _Store)
   EventManager:Fire(E.StateUpdated, _Store:GetState())
