@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
@@ -69,7 +69,7 @@ TransportFrame.frame = (function()
   })
 
   frame:SetClickHandler("RightButton", "SHIFT", function()
-    StateManager:Dispatch(Actions:ResetTransportFramePoint())
+    StateManager:Dispatch(ActionCreators.Global.points.transportFrame.reset())
   end)
 
   Widgets:ConfigureForPointSync(frame, "TransportFrame")

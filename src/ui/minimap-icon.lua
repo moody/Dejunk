@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
@@ -90,7 +90,7 @@ EventManager:Once(E.StoreCreated, function()
   do
     local patchCache = {}
     local debounce = TickerManager:NewDebouncer(0.2, function()
-      StateManager:GetStore():Dispatch(Actions:PatchMinimapIcon(patchCache))
+      StateManager:GetStore():Dispatch(ActionCreators.Global.patchMinimapIcon(patchCache))
       for k in pairs(patchCache) do patchCache[k] = nil end
     end)
 
@@ -130,6 +130,6 @@ EventManager:Once(E.StoreCreated, function()
   --- Sets the visibility of the minimap icon.
   --- @param enabled boolean
   function MinimapIcon:SetEnabled(enabled)
-    StateManager:GetStore():Dispatch(Actions:PatchMinimapIcon({ hide = not enabled }))
+    StateManager:GetStore():Dispatch(ActionCreators.Global.patchMinimapIcon({ hide = not enabled }))
   end
 end)

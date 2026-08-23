@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local L = Addon:GetModule("Locale")
@@ -60,7 +60,7 @@ MainWindow.frame = (function()
   })
 
   frame:SetClickHandler("RightButton", "SHIFT", function()
-    StateManager:Dispatch(Actions:ResetMainWindowPoint())
+    StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset())
   end)
 
   Widgets:ConfigureForPointSync(frame, "MainWindow")

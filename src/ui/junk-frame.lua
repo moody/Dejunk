@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local Destroyer = Addon:GetModule("Destroyer")
@@ -78,7 +78,7 @@ JunkFrame.frame = (function()
   frame.items = {}
 
   frame:SetClickHandler("RightButton", "SHIFT", function()
-    StateManager:Dispatch(Actions:ResetJunkFramePoint())
+    StateManager:Dispatch(ActionCreators.Global.points.junkFrame.reset())
   end)
 
   Widgets:ConfigureForPointSync(frame, "JunkFrame")

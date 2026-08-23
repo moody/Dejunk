@@ -6,6 +6,17 @@ local Wux = Addon.Wux
 local ActionCreators = Addon:GetModule("ActionCreators")
 
 -- ============================================================================
+-- LuaCATS Annotations
+-- ============================================================================
+
+--- @class ItemQualityCheckBoxValues
+--- @field poor? boolean
+--- @field common? boolean
+--- @field uncommon? boolean
+--- @field rare? boolean
+--- @field epic? boolean
+
+-- ============================================================================
 -- ActionCreators - Global
 -- ============================================================================
 

@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -55,13 +55,13 @@ function Widgets:ConfigureForPointSync(frame, stateType)
 
   if stateType == "MainWindow" then
     getPoint = function() return StateManager:GetGlobalState().points.mainWindow end
-    setPoint = function(point) StateManager:Dispatch(Actions:SetMainWindowPoint(point)) end
+    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end
   elseif stateType == "JunkFrame" then
     getPoint = function() return StateManager:GetGlobalState().points.junkFrame end
-    setPoint = function(point) StateManager:Dispatch(Actions:SetJunkFramePoint(point)) end
+    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end
   elseif stateType == "TransportFrame" then
     getPoint = function() return StateManager:GetGlobalState().points.transportFrame end
-    setPoint = function(point) StateManager:Dispatch(Actions:SetTransportFramePoint(point)) end
+    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.transportFrame.set(point)) end
   elseif stateType == "MerchantButton" then
     getPoint = function()
       local point = StateManager:GetGlobalState().points.merchantButton
@@ -69,7 +69,7 @@ function Widgets:ConfigureForPointSync(frame, stateType)
           DefaultStates.Global.points.merchantButton or
           point
     end
-    setPoint = function(point) StateManager:Dispatch(Actions:SetMerchantButtonPoint(point)) end
+    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.merchantButton.set(point)) end
   end
 
   local function refresh()

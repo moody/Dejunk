@@ -1,5 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -291,7 +291,7 @@ do -- Create the lists.
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
     load = function() return StateManager:GetPercharState().inclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharInclusions(itemIds)) end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Perchar.setInclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalInclusions end,
     getOpposite = function() return Lists.PerCharExclusions end
   })
@@ -301,7 +301,7 @@ do -- Create the lists.
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
     description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
     load = function() return StateManager:GetPercharState().exclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharExclusions(itemIds)) end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Perchar.setExclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalExclusions end,
     getOpposite = function() return Lists.PerCharInclusions end
   })
@@ -311,7 +311,7 @@ do -- Create the lists.
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
     load = function() return StateManager:GetGlobalState().inclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalInclusions(itemIds)) end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Global.setInclusions(itemIds)) end,
     getSibling = function() return Lists.PerCharInclusions end,
     getOpposite = function() return Lists.GlobalExclusions end
   })
@@ -321,7 +321,7 @@ do -- Create the lists.
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
     description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
     load = function() return StateManager:GetGlobalState().exclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalExclusions(itemIds)) end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Global.setExclusions(itemIds)) end,
     getSibling = function() return Lists.PerCharExclusions end,
     getOpposite = function() return Lists.GlobalInclusions end
   })

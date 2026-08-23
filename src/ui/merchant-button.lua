@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local JunkFilter = Addon:GetModule("JunkFilter")
@@ -55,7 +55,7 @@ frame:SetClickHandler("LeftButton", "NONE", Commands.sell)
 frame:SetClickHandler("LeftButton", "SHIFT", Commands.junk)
 frame:SetClickHandler("RightButton", "NONE", Commands.options)
 frame:SetClickHandler("RightButton", "SHIFT", function()
-  StateManager:Dispatch(Actions:ResetMerchantButtonPoint())
+  StateManager:Dispatch(ActionCreators.Global.points.merchantButton.reset())
 end)
 frame:SetClickHandler("RightButton", "ALT", Commands.destroy)
 
