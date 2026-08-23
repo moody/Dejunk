@@ -1,7 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionTypes = Addon:GetModule("ActionTypes")
 local DefaultStates = Addon:GetModule("DefaultStates")
-local ReducerFactories = Addon:GetModule("ReducerFactories")
 local Wux = Addon.Wux
 
 --- @class RootReducer
@@ -10,6 +9,36 @@ local RootReducer = Addon:GetModule("RootReducer")
 --- @class DejunkRootState
 --- @field global GlobalState
 --- @field perchar PercharState
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Creates a reducer for `global.points` entries.
+--- @generic S
+--- @param setActionType string
+--- @param resetActionType string
+--- @param defaultState S
+--- @return WuxReducer<S, any>
+local function createPointsReducer(setActionType, resetActionType, defaultState)
+  return function(state, action)
+    state = Wux:Coalesce(state, defaultState)
+
+    if action.type == setActionType then
+      return action.payload
+    end
+
+    if action.type == resetActionType then
+      return Wux:ShallowCopy(defaultState)
+    end
+
+    return state
+  end
+end
+
+-- ============================================================================
+-- RootReducer
+-- ============================================================================
 
 --- Builds the root reducer for the store.
 --- @return WuxReducer<DejunkRootState, any>
@@ -32,7 +61,31 @@ function RootReducer:Build()
       inclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_INCLUSIONS, DefaultStates.Global.inclusions),
       exclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_EXCLUSIONS, DefaultStates.Global.exclusions),
 
-      points = ReducerFactories.points(DefaultStates.Global, ActionTypes.Global),
+      points = Wux:CombineReducers({
+        mainWindow = createPointsReducer(
+          ActionTypes.Global.SET_MAIN_WINDOW_POINT,
+          ActionTypes.Global.RESET_MAIN_WINDOW_POINT,
+          DefaultStates.Global.points.mainWindow
+        ),
+
+        junkFrame = createPointsReducer(
+          ActionTypes.Global.SET_JUNK_FRAME_POINT,
+          ActionTypes.Global.RESET_JUNK_FRAME_POINT,
+          DefaultStates.Global.points.junkFrame
+        ),
+
+        transportFrame = createPointsReducer(
+          ActionTypes.Global.SET_TRANSPORT_FRAME_POINT,
+          ActionTypes.Global.RESET_TRANSPORT_FRAME_POINT,
+          DefaultStates.Global.points.transportFrame
+        ),
+
+        merchantButton = createPointsReducer(
+          ActionTypes.Global.SET_MERCHANT_BUTTON_POINT,
+          ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT,
+          DefaultStates.Global.points.merchantButton
+        )
+      })
     }),
 
     --- @type WuxReducer<PercharState, any>
