@@ -55,7 +55,7 @@ function StateManager:GetStore()
 end
 
 --- Convenience method. Equivalent to `StateManager:GetStore():Dispatch()`.
---- @param action WuxAction<any>
+--- @param action WuxAction
 function StateManager:Dispatch(action)
   _Store:Dispatch(action)
 end

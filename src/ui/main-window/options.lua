@@ -41,7 +41,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoJunkFrame end,
-    set = function(value) StateManager:GetStore():Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
   }))
 
   -- Auto repair.
@@ -49,7 +49,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.AUTO_REPAIR_TEXT,
     tooltipText = L.AUTO_REPAIR_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoRepair end,
-    set = function(value) StateManager:GetStore():Dispatch(ActionCreators.Global.setAutoRepair(value)) end
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoRepair(value)) end
   }))
 
   -- Auto sell.
@@ -57,7 +57,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.AUTO_SELL_TEXT,
     tooltipText = L.AUTO_SELL_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoSell end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetAutoSell(value)) end
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoSell(value)) end
   }))
 
   -- Safe mode.
@@ -65,7 +65,7 @@ function MainWindowOptions:AddGeneralOptions(optionsFrame)
     labelText = L.SAFE_MODE_TEXT,
     tooltipText = L.SAFE_MODE_TOOLTIP,
     get = function() return StateManager:GetGlobalState().safeMode end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetSafeMode(value)) end
+    set = function(value) StateManager:Dispatch(Actions:SetSafeMode(value)) end
   }))
 end
 
@@ -86,7 +86,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       tooltipText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
       get = function() return StateManager:GetPercharState().excludeEquipmentSets end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeEquipmentSets(value)) end
+      set = function(value) StateManager:Dispatch(Actions:SetExcludeEquipmentSets(value)) end
     }))
   end
 
@@ -95,7 +95,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
       get = function() return StateManager:GetPercharState().excludeUnboundEquipment end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
+      set = function(value) StateManager:Dispatch(Actions:SetExcludeUnboundEquipment(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
@@ -177,7 +177,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       tooltipText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
       get = function() return StateManager:GetPercharState().includeArtifactRelics end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeArtifactRelics(value)) end
+      set = function(value) StateManager:Dispatch(Actions:SetIncludeArtifactRelics(value)) end
     }))
   end
 
@@ -283,7 +283,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
       tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
       get = function() return StateManager:GetPercharState().includeUnsuitableEquipment end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
+      set = function(value) StateManager:Dispatch(Actions:SetIncludeUnsuitableEquipment(value)) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
@@ -324,7 +324,7 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     labelText = L.BAG_ITEM_ICONS_TEXT,
     tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
     get = function() return StateManager:GetGlobalState().itemIcons end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemIcons(value)) end
+    set = function(value) StateManager:Dispatch(Actions:SetItemIcons(value)) end
   }))
 
   -- Bag item tooltips.
@@ -332,7 +332,7 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
     tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
     get = function() return StateManager:GetGlobalState().itemTooltips end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetItemTooltips(value)) end
+    set = function(value) StateManager:Dispatch(Actions:SetItemTooltips(value)) end
   }))
 
   -- Chat messages.
@@ -340,7 +340,7 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     labelText = L.CHAT_MESSAGES_TEXT,
     tooltipText = L.CHAT_MESSAGES_TOOLTIP,
     get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:GetStore():Dispatch(Actions:SetChatMessages(value)) end
+    set = function(value) StateManager:Dispatch(Actions:SetChatMessages(value)) end
   }))
 
   -- Merchant button.
@@ -348,7 +348,7 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.MERCHANT_BUTTON_TEXT,
       get = function() return StateManager:GetGlobalState().merchantButton end,
-      set = function(value) StateManager:GetStore():Dispatch(Actions:SetMerchantButton(value)) end,
+      set = function(value) StateManager:Dispatch(Actions:SetMerchantButton(value)) end,
       enableClickHandling = true,
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetText(L.MERCHANT_BUTTON_TEXT)

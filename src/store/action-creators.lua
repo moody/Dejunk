@@ -24,6 +24,13 @@ function ActionCreators.Global.setAutoRepair(value)
   return { type = ActionTypes.Global.SET_AUTO_REPAIR, payload = value }
 end
 
+--- Action creator for `ActionTypes.Global.SET_AUTO_SELL`.
+--- @param value boolean
+--- @return WuxPayloadAction<boolean>
+function ActionCreators.Global.setAutoSell(value)
+  return { type = ActionTypes.Global.SET_AUTO_SELL, payload = value }
+end
+
 -- ============================================================================
 -- ActionCreators - Perchar
 -- ============================================================================

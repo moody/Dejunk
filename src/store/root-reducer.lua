@@ -21,7 +21,7 @@ function RootReducer:Build()
     global = Wux:CombineReducers({
       autoJunkFrame = Reducers.Global.autoJunkFrame,
       autoRepair = Reducers.Global.autoRepair,
-      autoSell = ReducerFactories.autoSell(DefaultStates.Global, ActionTypes.Global),
+      autoSell = Reducers.Global.autoSell,
       chatMessages = ReducerFactories.chatMessages(DefaultStates.Global, ActionTypes.Global),
       itemIcons = ReducerFactories.itemIcons(DefaultStates.Global, ActionTypes.Global),
       itemTooltips = ReducerFactories.itemTooltips(DefaultStates.Global, ActionTypes.Global),
