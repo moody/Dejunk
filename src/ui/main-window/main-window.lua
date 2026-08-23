@@ -142,6 +142,8 @@ MainWindow.frame = (function()
     end
   })
 
+
+  --- Search box.
   --- @class MainWindowSearchBoxWidget : EditBox
   frame.searchBox = CreateFrame("EditBox", "$parent_SearchBox", frame.titleButton)
   frame.searchBox:SetFontObject("GameFontNormalLarge")
@@ -149,18 +151,28 @@ MainWindow.frame = (function()
   frame.searchBox:SetAutoFocus(false)
   frame.searchBox:SetMultiLine(false)
   frame.searchBox:SetCountInvisibleLetters(true)
-  frame.searchBox:SetPoint("TOPLEFT", Widgets:Padding(), 0)
-  frame.searchBox:SetPoint("BOTTOMLEFT", Widgets:Padding(), 0)
-  frame.searchBox:SetPoint("TOPRIGHT", frame.searchButton, "TOPLEFT", 0, 0)
-  frame.searchBox:SetPoint("BOTTOMRIGHT", frame.searchButton, "BOTTOMLEFT", 0, 0)
+  frame.searchBox:SetPoint("TOPLEFT", Widgets:Padding(), -Widgets:Padding(0.5))
+  frame.searchBox:SetPoint("BOTTOMLEFT", Widgets:Padding(), Widgets:Padding(0.5))
+  frame.searchBox:SetPoint("RIGHT", frame.searchButton, "LEFT", 0, 0)
+  -- frame.searchBox:SetPoint("BOTTOMRIGHT", frame.searchButton, "BOTTOMLEFT", 0, 0)
   frame.searchBox:Hide()
+
+  -- Search box backdrop.
+  Mixin(frame.searchBox, BackdropTemplateMixin)
+  frame.searchBox:SetBackdrop(Widgets.BORDER_BACKDROP)
+  frame.searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
+  frame.searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+
+  -- Search box text inset.
+  local searchBoxTextInset = Widgets:Padding(0.5)
+  frame.searchBox:SetTextInsets(searchBoxTextInset, -searchBoxTextInset, 0, 0)
 
   -- Search box placeholder text.
   frame.searchBox.placeholderText = frame.searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
     "GameFontNormalLarge")
   frame.searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
-  frame.searchBox.placeholderText:SetPoint("LEFT")
-  frame.searchBox.placeholderText:SetPoint("RIGHT")
+  frame.searchBox.placeholderText:SetPoint("LEFT", searchBoxTextInset, 0)
+  frame.searchBox.placeholderText:SetPoint("RIGHT", -searchBoxTextInset, 0)
   frame.searchBox.placeholderText:SetJustifyH("LEFT")
   frame.searchBox.placeholderText:SetAlpha(0.5)
 
