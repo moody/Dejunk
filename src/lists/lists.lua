@@ -9,6 +9,7 @@ local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
+local Wux = Addon.Wux
 
 --- @class Lists
 local Lists = Addon:GetModule("Lists")
@@ -280,7 +281,7 @@ do -- Create the lists.
     -- Debounce `save()` for performance reasons.
     local _save = list.save
     list.save = TickerManager:NewDebouncer(0.1, function()
-      _save(list.itemIds)
+      _save(Wux:ShallowCopy(list.itemIds))
     end)
 
     return list
