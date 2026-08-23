@@ -84,9 +84,10 @@ Wux.ActionTypes = {
 -- Local Functions
 -- =============================================================================
 
---- Returns a copy of the given table.
+--- Returns a copy of the given table. A non-table value is returned as-is.
 --- @param t table The table to copy.
 --- @param deep boolean If true, performs a deep copy.
+--- @return table
 local function copyTable(t, deep)
   if type(t) ~= "table" then return t end
 
@@ -126,16 +127,16 @@ end
 -- =============================================================================
 
 --- Returns a shallow copy of the given table. Nested tables are shared by
---- reference, not copied.
---- @generic T : table
+--- reference, not copied. A non-table value is returned as-is.
+--- @generic T
 --- @param t T
 --- @return T
 function Wux:ShallowCopy(t)
   return copyTable(t, false)
 end
 
---- Returns a deep copy of the given table.
---- @generic T : table
+--- Returns a deep copy of the given table. A non-table value is returned as-is.
+--- @generic T
 --- @param t T
 --- @return T
 function Wux:DeepCopy(t)
@@ -218,8 +219,9 @@ end
 -- Wux - Store Methods
 -- =============================================================================
 
---- Returns a reducer that replaces its state with `action.payload` when
---- `action.type` matches `actionType`, or with `defaultState` when state is `nil`.
+--- Returns a reducer that replaces its state with a shallow copy of
+--- `action.payload` when `action.type` matches `actionType`, or with
+--- `defaultState` when state is `nil`.
 --- @generic S
 --- @param actionType string
 --- @param defaultState S
@@ -228,7 +230,7 @@ function Wux:CreatePayloadReducer(actionType, defaultState)
   return function(state, action)
     state = Wux:Coalesce(state, defaultState)
     if action.type == actionType then
-      return action.payload
+      return Wux:ShallowCopy(action.payload)
     end
     return state
   end
