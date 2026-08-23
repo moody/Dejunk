@@ -22,6 +22,9 @@ local Wux = Addon.Wux
 --- @class WuxPayloadAction<P> : WuxAction
 --- @field payload P Data for the action.
 
+--- Function to create a `WuxPayloadAction` from a given value.
+--- @alias WuxActionCreator<P> fun(value: P): WuxPayloadAction<P>
+
 -- Store
 
 --- Function to return a new state based on the given action. `state` is typed
@@ -218,6 +221,23 @@ end
 -- =============================================================================
 -- Wux - Store Methods
 -- =============================================================================
+
+--- Returns an action creator: a function that builds a `WuxPayloadAction`
+--- with the given `actionType`, from whatever value it's called with.
+--- Calling it with no value produces a bare `WuxAction`. The returned
+--- function is untyped; cast it where you assign it.
+---
+--- ```
+--- --- @type WuxActionCreator<integer>
+--- local increment = Wux:CreateActionCreator("INCREMENT")
+--- ```
+--- @param actionType string
+--- @return fun(value: any): WuxPayloadAction<any>
+function Wux:CreateActionCreator(actionType)
+  return function(value)
+    return { type = actionType, payload = value }
+  end
+end
 
 --- Returns a reducer that replaces its state with a shallow copy of
 --- `action.payload` when `action.type` matches `actionType`, or with
