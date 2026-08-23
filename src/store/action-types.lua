@@ -3,6 +3,10 @@ local Addon = select(2, ...) ---@type Addon
 --- @class ActionTypes
 local ActionTypes = Addon:GetModule("ActionTypes")
 
+-- ============================================================================
+-- ActionTypes - Global
+-- ============================================================================
+
 --- @class ActionTypesGlobal
 ActionTypes.Global = {
   SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
@@ -27,6 +31,10 @@ ActionTypes.Global = {
   SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
   SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
 }
+
+-- ============================================================================
+-- ActionTypes - Perchar
+-- ============================================================================
 
 --- @class ActionTypesPerchar
 ActionTypes.Perchar = {
