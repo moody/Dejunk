@@ -236,9 +236,30 @@ function Wux:CreatePayloadReducer(actionType, defaultState)
   end
 end
 
+--- Returns a reducer that shallow-merges `action.payload`'s fields into its
+--- state when `action.type` matches `actionType`, or with `defaultState`
+--- when state is `nil`. Unlike `CreatePayloadReducer`, existing fields not
+--- present in `payload` are left as-is, rather than replaced wholesale.
+--- @generic S : table
+--- @param actionType string
+--- @param defaultState S
+--- @return fun(state: S, action: WuxPayloadAction<table<string, any>>): S
+function Wux:CreatePatchReducer(actionType, defaultState)
+  return function(state, action)
+    state = Wux:Coalesce(state, defaultState)
+    if action.type == actionType then
+      state = Wux:ShallowCopy(state)
+      for key, value in pairs(action.payload) do
+        state[key] = value
+      end
+    end
+    return state
+  end
+end
+
 --- Returns a root reducer composed of all given reducers. If none of them
 --- change their slice of state, the previous state is returned as-is.
---- @param reducers table<string, WuxReducer<table, any>>
+--- @param reducers table<string, WuxReducer<any, any>>
 --- @return WuxReducer<table, any> reducer
 function Wux:CombineReducers(reducers)
   return function(state, action)
