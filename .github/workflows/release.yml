@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.10"
 
@@ -28,7 +28,7 @@ jobs:
       #     CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
       - name: Release
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@v2
         with:
           args: -p 413260 -w 25313 -a e56nlDG9
         env:
