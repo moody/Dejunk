@@ -6,7 +6,7 @@ By default, all poor quality items are considered junk. Higher quality items can
 
 Once set up, Dejunk can handle the process of selling or destroying junk items with the press of a button.
 
-![Dejunk](/.images/Dejunk.png?raw=true)
+![Dejunk](/.github/images/Dejunk.png?raw=true)
 
 ## Features
 
@@ -48,8 +48,8 @@ Inclusions and Exclusions lists are available at both the global and per-charact
 
 Items can be added to lists by dragging them directly into the list frame or the Junk Frame. The Transport Frame can be used to import or export item IDs as plain text, making it easy to share or back up lists.
 
-![Junk Frame](/.images/JunkFrame.png?raw=true)
-![Transport Frame](/.images/TransportFrame.png?raw=true)
+![Junk Frame](/.github/images/JunkFrame.png?raw=true)
+![Transport Frame](/.github/images/TransportFrame.png?raw=true)
 
 ## Chat Commands
 
