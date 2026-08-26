@@ -9,15 +9,11 @@ local DefaultStates = Addon:GetModule("DefaultStates")
 --- Global default state.
 --- @class GlobalState
 DefaultStates.Global = {
-  autoJunkFrame = false,
-  autoRepair = false,
-  autoSell = false,
   chatMessages = true,
   itemIcons = false,
   itemTooltips = true,
   merchantButton = true,
   minimapIcon = { hide = false },
-  safeMode = false,
 
   --- @type ItemIdMap
   inclusions = {},
@@ -35,6 +31,11 @@ DefaultStates.Global = {
 -- Per character default state.
 --- @class PercharState
 DefaultStates.Perchar = {
+  autoJunkFrame = false,
+  autoRepair = false,
+  autoSell = false,
+  safeMode = false,
+
   excludeEquipmentSets = true,
   excludeUnboundEquipment = false,
   excludeWarbandEquipment = false,

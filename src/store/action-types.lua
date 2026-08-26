@@ -9,14 +9,10 @@ local ActionTypes = Addon:GetModule("ActionTypes")
 
 --- @class ActionTypesGlobal
 ActionTypes.Global = {
-  SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
-  SET_AUTO_REPAIR = "global/autoRepair/set",
-  SET_AUTO_SELL = "global/autoSell/set",
   SET_CHAT_MESSAGES = "global/chatMessages/set",
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
   SET_MERCHANT_BUTTON = "global/merchantButton/set",
-  SET_SAFE_MODE = "global/safeMode/set",
 
   SET_INCLUSIONS = "global/inclusions/set",
   SET_EXCLUSIONS = "global/exclusions/set",
@@ -38,6 +34,11 @@ ActionTypes.Global = {
 
 --- @class ActionTypesPerchar
 ActionTypes.Perchar = {
+  SET_AUTO_JUNK_FRAME = "perchar/autoJunkFrame/set",
+  SET_AUTO_REPAIR = "perchar/autoRepair/set",
+  SET_AUTO_SELL = "perchar/autoSell/set",
+  SET_SAFE_MODE = "perchar/safeMode/set",
+
   PATCH_INCLUDE_BELOW_ITEM_LEVEL = "perchar/includeBelowItemLevel/patch",
   SET_INCLUDE_ARTIFACT_RELICS = "perchar/includeArtifactRelics/set",
   SET_INCLUDE_BY_QUALITY = "perchar/includeByQuality/set",

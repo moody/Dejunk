@@ -21,18 +21,6 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 -- ============================================================================
 
 ActionCreators.Global = {
-  --- Action creator for `ActionTypes.Global.SET_AUTO_JUNK_FRAME`.
-  --- @type WuxActionCreator<boolean>
-  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_JUNK_FRAME),
-
-  --- Action creator for `ActionTypes.Global.SET_AUTO_REPAIR`.
-  --- @type WuxActionCreator<boolean>
-  setAutoRepair = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_REPAIR),
-
-  --- Action creator for `ActionTypes.Global.SET_AUTO_SELL`.
-  --- @type WuxActionCreator<boolean>
-  setAutoSell = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_SELL),
-
   --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
   --- @type WuxActionCreator<boolean>
   setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES),
@@ -52,10 +40,6 @@ ActionCreators.Global = {
   --- Action creator for `ActionTypes.Global.PATCH_MINIMAP_ICON`.
   --- @type WuxActionCreator<table<string, any>>
   patchMinimapIcon = Wux:CreateActionCreator(ActionTypes.Global.PATCH_MINIMAP_ICON),
-
-  --- Action creator for `ActionTypes.Global.SET_SAFE_MODE`.
-  --- @type WuxActionCreator<boolean>
-  setSafeMode = Wux:CreateActionCreator(ActionTypes.Global.SET_SAFE_MODE),
 
   --- Action creator for `ActionTypes.Global.SET_INCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>
@@ -113,6 +97,22 @@ ActionCreators.Global = {
 -- ============================================================================
 
 ActionCreators.Perchar = {
+  --- Action creator for `ActionTypes.Perchar.SET_AUTO_JUNK_FRAME`.
+  --- @type WuxActionCreator<boolean>
+  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_JUNK_FRAME),
+
+  --- Action creator for `ActionTypes.Perchar.SET_AUTO_REPAIR`.
+  --- @type WuxActionCreator<boolean>
+  setAutoRepair = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_REPAIR),
+
+  --- Action creator for `ActionTypes.Perchar.SET_AUTO_SELL`.
+  --- @type WuxActionCreator<boolean>
+  setAutoSell = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_SELL),
+
+  --- Action creator for `ActionTypes.Perchar.SET_SAFE_MODE`.
+  --- @type WuxActionCreator<boolean>
+  setSafeMode = Wux:CreateActionCreator(ActionTypes.Perchar.SET_SAFE_MODE),
+
   --- Action creator for `ActionTypes.Perchar.SET_EXCLUDE_EQUIPMENT_SETS`.
   --- @type WuxActionCreator<boolean>
   setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Perchar.SET_EXCLUDE_EQUIPMENT_SETS),

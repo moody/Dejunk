@@ -14,14 +14,7 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:Initialize(optionsFrame)
   -- Character.
-  optionsFrame:AddChild(Widgets:OptionHeading({
-    headingText = ("%s %s"):format(
-      L.CHARACTER,
-      Colors.Grey("(%s)"):format(
-        Colors.White(UnitName("player"))
-      )
-    )
-  }))
+  self:AddCharacterOptions(optionsFrame)
   self:AddIncludeOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
 
@@ -33,6 +26,52 @@ function MainWindowOptions:Initialize(optionsFrame)
 
   -- Global.
   self:AddGlobalOptions(optionsFrame)
+end
+
+--- Adds character-specific options to the given `optionsFrame`.
+--- @param optionsFrame OptionsFrameWidget
+function MainWindowOptions:AddCharacterOptions(optionsFrame)
+  -- Character heading.
+  optionsFrame:AddChild(Widgets:OptionHeading({
+    headingText = ("%s %s"):format(
+      L.CHARACTER,
+      Colors.Grey("(%s)"):format(
+        Colors.White(UnitName("player"))
+      )
+    )
+  }))
+
+  -- Auto junk frame.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.AUTO_JUNK_FRAME_TEXT,
+    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
+    get = function() return StateManager:GetPercharState().autoJunkFrame end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Perchar.setAutoJunkFrame(value)) end
+  }))
+
+  -- Auto repair.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.AUTO_REPAIR_TEXT,
+    tooltipText = L.AUTO_REPAIR_TOOLTIP,
+    get = function() return StateManager:GetPercharState().autoRepair end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Perchar.setAutoRepair(value)) end
+  }))
+
+  -- Auto sell.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.AUTO_SELL_TEXT,
+    tooltipText = L.AUTO_SELL_TOOLTIP,
+    get = function() return StateManager:GetPercharState().autoSell end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Perchar.setAutoSell(value)) end
+  }))
+
+  -- Safe mode.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.SAFE_MODE_TEXT,
+    tooltipText = L.SAFE_MODE_TOOLTIP,
+    get = function() return StateManager:GetPercharState().safeMode end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Perchar.setSafeMode(value)) end
+  }))
 end
 
 --- Adds exclude options to the given `optionsFrame`.
@@ -285,30 +324,6 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
   -- Global heading.
   optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GLOBAL }))
 
-  -- Auto junk frame.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.AUTO_JUNK_FRAME_TEXT,
-    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().autoJunkFrame end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
-  }))
-
-  -- Auto repair.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.AUTO_REPAIR_TEXT,
-    tooltipText = L.AUTO_REPAIR_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().autoRepair end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoRepair(value)) end
-  }))
-
-  -- Auto sell.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.AUTO_SELL_TEXT,
-    tooltipText = L.AUTO_SELL_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().autoSell end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoSell(value)) end
-  }))
-
   -- Bag item icons.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.BAG_ITEM_ICONS_TEXT,
@@ -361,13 +376,5 @@ function MainWindowOptions:AddGlobalOptions(optionsFrame)
     tooltipText = L.MINIMAP_ICON_TOOLTIP,
     get = function() return MinimapIcon:IsEnabled() end,
     set = function(value) MinimapIcon:SetEnabled(value) end
-  }))
-
-  -- Safe mode.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.SAFE_MODE_TEXT,
-    tooltipText = L.SAFE_MODE_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().safeMode end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeMode(value)) end
   }))
 end
