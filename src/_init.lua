@@ -15,6 +15,10 @@ Addon.IS_TBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 Addon.IS_CATA = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 Addon.IS_MISTS = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
 
+--@debug@
+Addon.IS_DEBUG = true
+--@end-debug@
+
 -- ============================================================================
 -- Addon - Methods
 -- ============================================================================
@@ -146,8 +150,14 @@ do
   --- Prints the given arguments with debug formatting.
   --- @param ... any
   function Addon:Debug(...)
-    --@debug@
+    if self.IS_DEBUG ~= true then return end
     print(date("%H:%M:%S"), Colors.Red("[Debug]"), ...)
-    --@end-debug@
+  end
+
+  --- Dumps the given value.
+  --- @param value any
+  function Addon:Dump(value)
+    if self.IS_DEBUG ~= true then return end
+    DevTools_Dump(value)
   end
 end

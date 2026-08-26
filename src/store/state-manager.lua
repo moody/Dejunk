@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local RootReducer = Addon:GetModule("RootReducer")
@@ -6,6 +7,20 @@ local Wux = Addon.Wux
 
 ---@class StateManager
 local StateManager = Addon:GetModule("StateManager")
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Debug logger for each dispatched action.
+--- @type WuxMiddleware<DejunkRootState>
+local function debugMiddleware(store, next, action)
+  Addon:Debug(Colors.Grey(("-"):rep(60)))
+  Addon:Debug("Dispatched:", Colors.Gold(action.type))
+  Addon:Dump({ action = action })
+  Addon:Debug(Colors.Grey(("-"):rep(60)))
+  return next(action)
+end
 
 -- ============================================================================
 -- Store
@@ -21,7 +36,11 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
   }
 
-  _Store = Wux:CreateStore(RootReducer:Build(), Wux:ReadSavedVariables(savedVariables))
+  _Store = Wux:CreateStore(
+    RootReducer:Build(),
+    Wux:ReadSavedVariables(savedVariables),
+    Addon.IS_DEBUG and { debugMiddleware } or nil
+  )
   _Store:ConnectSavedVariables(savedVariables)
   _Store:Subscribe(function(state)
     EventManager:Fire(E.StateUpdated, state)
