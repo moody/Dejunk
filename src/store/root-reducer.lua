@@ -133,9 +133,14 @@ function RootReducer:Build()
     --- @type WuxReducer<ProfilesState, any>
     profiles = function(state, action)
       state = Wux:Coalesce(state, DefaultStates.Profiles)
-      state.activeProfileId = Wux:Coalesce(state.activeProfileId, DefaultStates.DEFAULT_PROFILE_ID)
-      state.characterMap = Wux:Coalesce(state.characterMap, DefaultStates.Profiles.characterMap)
-      state.profileMap = Wux:Coalesce(state.profileMap, DefaultStates.Profiles.profileMap)
+
+      -- Ensure expected keys are present.
+      if state.activeProfileId == nil or state.characterMap == nil or state.profileMap == nil then
+        state = Wux:ShallowCopy(state)
+        state.activeProfileId = Wux:Coalesce(state.activeProfileId, DefaultStates.DEFAULT_PROFILE_ID)
+        state.characterMap = Wux:Coalesce(state.characterMap, DefaultStates.Profiles.characterMap)
+        state.profileMap = Wux:Coalesce(state.profileMap, DefaultStates.Profiles.profileMap)
+      end
 
       -- Create profile action.
       if action.type == ActionTypes.Profiles.CREATE_PROFILE then
