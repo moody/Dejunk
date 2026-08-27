@@ -1,10 +1,10 @@
 ## Interface: 120100, 50504, 20506, 11509
 ## Title: Dejunk
-## Version: @project-version@
+## Version: 3.0.0
 ## Author: https://github.com/moody
 ## IconTexture: Interface\AddOns\Dejunk\assets\dejunk-icon
 ## Notes: Simple junk selling and destroying.
-## SavedVariables: __DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__
+## SavedVariables: __DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__, __DEJUNK_ADDON_V3_SAVED_VARIABLES__
 ## SavedVariablesPerCharacter: __DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__
 
 Dejunk.xml
