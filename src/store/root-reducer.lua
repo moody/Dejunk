@@ -8,7 +8,7 @@ local RootReducer = Addon:GetModule("RootReducer")
 
 --- @class DejunkRootState
 --- @field global GlobalState
---- @field perchar PercharState
+--- @field profiles ProfilesState
 
 -- ============================================================================
 -- Local Functions
@@ -35,6 +35,53 @@ local function createPointsReducer(setActionType, resetActionType, defaultState)
     return state
   end
 end
+
+--- @type WuxReducer<ProfileState, any>
+local profileReducer = Wux:CombineReducers({
+  id = function(state, action) return state end,
+  name = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_PROFILE_NAME, DefaultStates.Profile.name),
+  settings = Wux:CombineReducers({
+    autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_JUNK_FRAME, DefaultStates.Profile.settings.autoJunkFrame),
+    autoRepair = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_REPAIR, DefaultStates.Profile.settings.autoRepair),
+    autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
+    safeMode = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_SAFE_MODE, DefaultStates.Profile.settings.safeMode),
+
+    excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
+    excludeUnboundEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
+    excludeWarbandEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
+
+    includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
+    includeBelowItemLevel = Wux:CreatePatchReducer(ActionTypes.Profile.PATCH_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
+    includeByQuality = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
+    includeUnsuitableEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Profile.settings.includeUnsuitableEquipment),
+
+    inclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUSIONS, DefaultStates.Profile.settings.inclusions),
+    exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions),
+
+    itemQualityCheckBoxes = Wux:CombineReducers({
+      excludeUnboundEquipment = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeUnboundEquipment
+      ),
+      excludeWarbandEquipment = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeWarbandEquipment
+      ),
+      includeBelowItemLevel = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.includeBelowItemLevel
+      ),
+      includeByQuality = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.includeByQuality
+      ),
+      includeUnsuitableEquipment = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.includeUnsuitableEquipment
+      )
+    })
+  })
+})
 
 -- ============================================================================
 -- RootReducer
@@ -83,47 +130,51 @@ function RootReducer:Build()
       })
     }),
 
-    --- @type WuxReducer<PercharState, any>
-    perchar = Wux:CombineReducers({
-      autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_AUTO_JUNK_FRAME, DefaultStates.Perchar.autoJunkFrame),
-      autoRepair = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_AUTO_REPAIR, DefaultStates.Perchar.autoRepair),
-      autoSell = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_AUTO_SELL, DefaultStates.Perchar.autoSell),
-      safeMode = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_SAFE_MODE, DefaultStates.Perchar.safeMode),
+    --- @type WuxReducer<ProfilesState, any>
+    profiles = function(state, action)
+      state = Wux:Coalesce(state, DefaultStates.Profiles)
+      state.activeProfileId = Wux:Coalesce(state.activeProfileId, DefaultStates.DEFAULT_PROFILE_ID)
+      state.characterMap = Wux:Coalesce(state.characterMap, DefaultStates.Profiles.characterMap)
+      state.profileMap = Wux:Coalesce(state.profileMap, DefaultStates.Profiles.profileMap)
 
-      excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Perchar.excludeEquipmentSets),
-      excludeUnboundEquipment = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Perchar.excludeUnboundEquipment),
-      excludeWarbandEquipment = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Perchar.excludeWarbandEquipment),
+      -- Create profile action.
+      if action.type == ActionTypes.Profiles.CREATE_PROFILE then
+        --- @cast action WuxPayloadAction<CreateProfilePayload>
+        state = Wux:ShallowCopy(state)
+        local profile = Wux:DeepCopy(DefaultStates.Profile)
+        profile.id = action.payload.profileId
+        profile.name = action.payload.profileName
+        state.profileMap = Wux:ShallowCopy(state.profileMap)
+        state.profileMap[profile.id] = profile
+        return state
+      end
 
-      includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Perchar.includeArtifactRelics),
-      includeBelowItemLevel = Wux:CreatePatchReducer(ActionTypes.Perchar.PATCH_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Perchar.includeBelowItemLevel),
-      includeByQuality = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_INCLUDE_BY_QUALITY, DefaultStates.Perchar.includeByQuality),
-      includeUnsuitableEquipment = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Perchar.includeUnsuitableEquipment),
+      -- Assign profile action.
+      if action.type == ActionTypes.Profiles.ASSIGN_PROFILE then
+        --- @cast action WuxPayloadAction<AssignProfilePayload>
+        state = Wux:ShallowCopy(state)
+        state.activeProfileId = action.payload.profileId
+        state.characterMap = Wux:ShallowCopy(state.characterMap)
+        state.characterMap[action.payload.characterKey] = action.payload.profileId
+        return state
+      end
 
-      inclusions = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_INCLUSIONS, DefaultStates.Perchar.inclusions),
-      exclusions = Wux:CreatePayloadReducer(ActionTypes.Perchar.SET_EXCLUSIONS, DefaultStates.Perchar.exclusions),
+      -- Ensure the active profile is not the default.
+      if state.activeProfileId ~= DefaultStates.DEFAULT_PROFILE_ID then
+        -- Ensure the active profile exists.
+        local profileState = state.profileMap[state.activeProfileId]
+        if type(profileState) == "table" then
+          -- Run the profile reducer, and update the profile map if the profile changed.
+          local newProfileState = profileReducer(profileState, action)
+          if newProfileState ~= profileState then
+            state = Wux:ShallowCopy(state)
+            state.profileMap = Wux:ShallowCopy(state.profileMap)
+            state.profileMap[state.activeProfileId] = newProfileState
+          end
+        end
+      end
 
-      itemQualityCheckBoxes = Wux:CombineReducers({
-        excludeUnboundEquipment = Wux:CreatePatchReducer(
-          ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT,
-          DefaultStates.Perchar.itemQualityCheckBoxes.excludeUnboundEquipment
-        ),
-        excludeWarbandEquipment = Wux:CreatePatchReducer(
-          ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT,
-          DefaultStates.Perchar.itemQualityCheckBoxes.excludeWarbandEquipment
-        ),
-        includeBelowItemLevel = Wux:CreatePatchReducer(
-          ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL,
-          DefaultStates.Perchar.itemQualityCheckBoxes.includeBelowItemLevel
-        ),
-        includeByQuality = Wux:CreatePatchReducer(
-          ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY,
-          DefaultStates.Perchar.itemQualityCheckBoxes.includeByQuality
-        ),
-        includeUnsuitableEquipment = Wux:CreatePatchReducer(
-          ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT,
-          DefaultStates.Perchar.itemQualityCheckBoxes.includeUnsuitableEquipment
-        )
-      })
-    })
+      return state
+    end
   })
 end

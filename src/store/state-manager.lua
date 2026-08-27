@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local RootReducer = Addon:GetModule("RootReducer")
@@ -7,6 +8,8 @@ local Wux = Addon.Wux
 
 ---@class StateManager
 local StateManager = Addon:GetModule("StateManager")
+
+local SAVED_VARIABLES_KEY = "__DEJUNK_ADDON_V3_SAVED_VARIABLES__"
 
 -- ============================================================================
 -- Local Functions
@@ -31,20 +34,33 @@ local _Store
 
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  local savedVariables = {
+  --- @type DejunkRootState
+  local savedVariables = Wux:ReadSavedVariables(SAVED_VARIABLES_KEY)
+  savedVariables.profiles.activeProfileId = savedVariables.profiles.characterMap[Addon:GetCharacterKey()]
+
+  local oldSavedVariables = Wux:ReadSavedVariables({
     global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
     perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
-  }
+  })
+
+  -- TODO: migration from oldSavedVariables
 
   _Store = Wux:CreateStore(
     RootReducer:Build(),
-    Wux:ReadSavedVariables(savedVariables),
+    savedVariables,
     Addon.IS_DEBUG and { debugMiddleware } or nil
   )
-  _Store:ConnectSavedVariables(savedVariables)
-  _Store:Subscribe(function(state)
-    EventManager:Fire(E.StateUpdated, state)
-  end)
+
+  do -- Wire up saved variables.
+    _Store:Subscribe(function(state)
+      state = Wux:ShallowCopy(state)
+      state.profiles = Wux:ShallowCopy(state.profiles)
+      state.profiles.activeProfileId = nil
+      _G[SAVED_VARIABLES_KEY] = state
+
+      EventManager:Fire(E.StateUpdated, state)
+    end)
+  end
 
   EventManager:Fire(E.StoreCreated, _Store)
   EventManager:Fire(E.StateUpdated, _Store:GetState())
@@ -72,8 +88,9 @@ function StateManager:GetGlobalState()
   return _Store:GetState().global
 end
 
---- Returns the perchar state.
---- @return PercharState
-function StateManager:GetPercharState()
-  return _Store:GetState().perchar
+--- Returns the active profile state.
+--- @return ProfileState
+function StateManager:GetProfileState()
+  local state = _Store:GetState()
+  return state.profiles.profileMap[state.profiles.activeProfileId] or DefaultStates.Profile
 end

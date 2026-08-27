@@ -16,6 +16,14 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 --- @field rare? boolean
 --- @field epic? boolean
 
+--- @class CreateProfilePayload
+--- @field profileId string
+--- @field profileName string
+
+--- @class AssignProfilePayload
+--- @field characterKey string
+--- @field profileId string
+
 -- ============================================================================
 -- ActionCreators - Global
 -- ============================================================================
@@ -93,81 +101,99 @@ ActionCreators.Global = {
 }
 
 -- ============================================================================
--- ActionCreators - Perchar
+-- ActionCreators - Profiles
 -- ============================================================================
 
-ActionCreators.Perchar = {
-  --- Action creator for `ActionTypes.Perchar.SET_AUTO_JUNK_FRAME`.
-  --- @type WuxActionCreator<boolean>
-  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_JUNK_FRAME),
+ActionCreators.Profiles = {
+  --- Action creator for `ActionTypes.Profiles.CREATE_PROFILE`.
+  --- @type WuxActionCreator<CreateProfilePayload>
+  createProfile = Wux:CreateActionCreator(ActionTypes.Profiles.CREATE_PROFILE),
 
-  --- Action creator for `ActionTypes.Perchar.SET_AUTO_REPAIR`.
-  --- @type WuxActionCreator<boolean>
-  setAutoRepair = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_REPAIR),
+  --- Action creator for `ActionTypes.Profiles.ASSIGN_PROFILE`.
+  --- @type WuxActionCreator<AssignProfilePayload>
+  assignProfile = Wux:CreateActionCreator(ActionTypes.Profiles.ASSIGN_PROFILE),
+}
 
-  --- Action creator for `ActionTypes.Perchar.SET_AUTO_SELL`.
-  --- @type WuxActionCreator<boolean>
-  setAutoSell = Wux:CreateActionCreator(ActionTypes.Perchar.SET_AUTO_SELL),
+-- ============================================================================
+-- ActionCreators - Profile
+-- ============================================================================
 
-  --- Action creator for `ActionTypes.Perchar.SET_SAFE_MODE`.
-  --- @type WuxActionCreator<boolean>
-  setSafeMode = Wux:CreateActionCreator(ActionTypes.Perchar.SET_SAFE_MODE),
+ActionCreators.Profile = {
+  --- Action creator for `ActionTypes.Profile.SET_PROFILE_NAME`.
+  --- @type WuxActionCreator<string>
+  setProfileName = Wux:CreateActionCreator(ActionTypes.Profile.SET_PROFILE_NAME),
 
-  --- Action creator for `ActionTypes.Perchar.SET_EXCLUDE_EQUIPMENT_SETS`.
+  --- Action creator for `ActionTypes.Profile.SET_AUTO_JUNK_FRAME`.
   --- @type WuxActionCreator<boolean>
-  setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Perchar.SET_EXCLUDE_EQUIPMENT_SETS),
+  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_JUNK_FRAME),
 
-  --- Action creator for `ActionTypes.Perchar.SET_EXCLUDE_UNBOUND_EQUIPMENT`.
+  --- Action creator for `ActionTypes.Profile.SET_AUTO_REPAIR`.
   --- @type WuxActionCreator<boolean>
-  setExcludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.SET_EXCLUDE_UNBOUND_EQUIPMENT),
+  setAutoRepair = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_REPAIR),
 
-  --- Action creator for `ActionTypes.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT`.
+  --- Action creator for `ActionTypes.Profile.SET_AUTO_SELL`.
   --- @type WuxActionCreator<boolean>
-  setExcludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.SET_EXCLUDE_WARBAND_EQUIPMENT),
+  setAutoSell = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_SELL),
 
-  --- Action creator for `ActionTypes.Perchar.SET_INCLUDE_ARTIFACT_RELICS`.
+  --- Action creator for `ActionTypes.Profile.SET_SAFE_MODE`.
   --- @type WuxActionCreator<boolean>
-  setIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Perchar.SET_INCLUDE_ARTIFACT_RELICS),
+  setSafeMode = Wux:CreateActionCreator(ActionTypes.Profile.SET_SAFE_MODE),
 
-  --- Action creator for `ActionTypes.Perchar.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
+  --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS`.
+  --- @type WuxActionCreator<boolean>
+  setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS),
+
+  --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT`.
+  --- @type WuxActionCreator<boolean>
+  setExcludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT),
+
+  --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT`.
+  --- @type WuxActionCreator<boolean>
+  setExcludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT),
+
+  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS`.
+  --- @type WuxActionCreator<boolean>
+  setIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS),
+
+  --- Action creator for `ActionTypes.Profile.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
-  patchIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Perchar.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
+  patchIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
 
-  --- Action creator for `ActionTypes.Perchar.SET_INCLUDE_BY_QUALITY`.
+  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_BY_QUALITY`.
   --- @type WuxActionCreator<boolean>
-  setIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Perchar.SET_INCLUDE_BY_QUALITY),
+  setIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_BY_QUALITY),
 
-  --- Action creator for `ActionTypes.Perchar.SET_INCLUDE_UNSUITABLE_EQUIPMENT`.
+  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_UNSUITABLE_EQUIPMENT`.
   --- @type WuxActionCreator<boolean>
-  setIncludeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.SET_INCLUDE_UNSUITABLE_EQUIPMENT),
+  setIncludeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_UNSUITABLE_EQUIPMENT),
 
-  --- Action creator for `ActionTypes.Perchar.SET_INCLUSIONS`.
+  --- Action creator for `ActionTypes.Profile.SET_INCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>
-  setInclusions = Wux:CreateActionCreator(ActionTypes.Perchar.SET_INCLUSIONS),
+  setInclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUSIONS),
 
-  --- Action creator for `ActionTypes.Perchar.SET_EXCLUSIONS`.
+  --- Action creator for `ActionTypes.Profile.SET_EXCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>
-  setExclusions = Wux:CreateActionCreator(ActionTypes.Perchar.SET_EXCLUSIONS),
+  setExclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUSIONS),
 
   itemQualityCheckBoxes = {
-    --- Action creator for `ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT`.
+    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    excludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT),
+    excludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT),
 
-    --- Action creator for `ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT`.
+    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    excludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT),
+    excludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT),
 
-    --- Action creator for `ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
+    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    includeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
+    includeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
 
-    --- Action creator for `ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY`.
+    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    includeByQuality = Wux:CreateActionCreator(ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY),
+    includeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY),
 
-    --- Action creator for `ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT`.
+    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    includeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Perchar.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT)
+    includeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT)
   }
 }

@@ -23,6 +23,12 @@ Addon.IS_DEBUG = true
 -- Addon - Methods
 -- ============================================================================
 
+--- Returns a string in the format: `"CharName-RealmName"`.
+--- @return string
+function Addon:GetCharacterKey()
+  return ("%s-%s"):format(UnitName("player"), GetNormalizedRealmName())
+end
+
 -- Addon:GetModule()
 do
   --- @type table<string, table>

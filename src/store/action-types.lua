@@ -29,33 +29,45 @@ ActionTypes.Global = {
 }
 
 -- ============================================================================
--- ActionTypes - Perchar
+-- ActionTypes - Profiles
 -- ============================================================================
 
---- @class ActionTypesPerchar
-ActionTypes.Perchar = {
-  SET_AUTO_JUNK_FRAME = "perchar/autoJunkFrame/set",
-  SET_AUTO_REPAIR = "perchar/autoRepair/set",
-  SET_AUTO_SELL = "perchar/autoSell/set",
-  SET_SAFE_MODE = "perchar/safeMode/set",
+--- @class ActionTypesProfiles
+ActionTypes.Profiles = {
+  CREATE_PROFILE = "profiles/create",
+  ASSIGN_PROFILE = "profiles/assign",
+}
 
-  PATCH_INCLUDE_BELOW_ITEM_LEVEL = "perchar/includeBelowItemLevel/patch",
-  SET_INCLUDE_ARTIFACT_RELICS = "perchar/includeArtifactRelics/set",
-  SET_INCLUDE_BY_QUALITY = "perchar/includeByQuality/set",
-  SET_INCLUDE_UNSUITABLE_EQUIPMENT = "perchar/includeUnsuitableEquipment/set",
+-- ============================================================================
+-- ActionTypes - Profile
+-- ============================================================================
 
-  SET_EXCLUDE_EQUIPMENT_SETS = "perchar/excludeEquipmentSets/set",
-  SET_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/excludeUnboundEquipment/set",
-  SET_EXCLUDE_WARBAND_EQUIPMENT = "perchar/excludeWarbandEquipment/set",
+--- @class ActionTypesProfile
+ActionTypes.Profile = {
+  SET_PROFILE_NAME = "profile/name/set",
 
-  SET_INCLUSIONS = "perchar/inclusions/set",
-  SET_EXCLUSIONS = "perchar/exclusions/set",
+  SET_AUTO_JUNK_FRAME = "profile/autoJunkFrame/set",
+  SET_AUTO_REPAIR = "profile/autoRepair/set",
+  SET_AUTO_SELL = "profile/autoSell/set",
+  SET_SAFE_MODE = "profile/safeMode/set",
+
+  PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/patch",
+  SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
+  SET_INCLUDE_BY_QUALITY = "profile/includeByQuality/set",
+  SET_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/set",
+
+  SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",
+  SET_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/set",
+  SET_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/set",
+
+  SET_INCLUSIONS = "profile/inclusions/set",
+  SET_EXCLUSIONS = "profile/exclusions/set",
 
   ItemQualityCheckBoxes = {
-    PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
-    PATCH_EXCLUDE_WARBAND_EQUIPMENT = "perchar/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
-    PATCH_INCLUDE_BELOW_ITEM_LEVEL = "perchar/itemQualityCheckBoxes/includeBelowItemLevel/patch",
-    PATCH_INCLUDE_BY_QUALITY = "perchar/itemQualityCheckBoxes/includeByQuality/patch",
-    PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "perchar/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
+    PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "profile/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
+    PATCH_EXCLUDE_WARBAND_EQUIPMENT = "profile/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
+    PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/itemQualityCheckBoxes/includeBelowItemLevel/patch",
+    PATCH_INCLUDE_BY_QUALITY = "profile/itemQualityCheckBoxes/includeByQuality/patch",
+    PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
   },
 }
