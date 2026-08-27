@@ -1,5 +1,5 @@
 -- =============================================================================
--- Wux: 0.3.0 - https://github.com/moody/Wux
+-- Wux: 0.3.1 - https://github.com/moody/Wux
 -- =============================================================================
 
 local _, Addon = ...
@@ -111,10 +111,9 @@ end
 -- =============================================================================
 
 --- Returns the first non-nil value from the given list of arguments.
---- If no non-nil value is found, returns `nil`.
 --- @generic T
 --- @param ... T
---- @return T|nil
+--- @return T
 function Wux:Coalesce(...)
   for i = 1, select("#", ...) do
     local value = select(i, ...)
