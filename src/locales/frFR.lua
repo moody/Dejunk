@@ -42,6 +42,7 @@ L["COMMAND_DESCRIPTION_TRANSPORT"] = "Active/désactive la fenêtre d'import/exp
 L["COMMANDS"] = "Commandes"
 L["COMMON"] = "Commun"
 L["CONTROL_KEY"] = "Ctrl"
+L["DEFAULT_PROFILE_NAME"] = "Par défaut"
 L["DESTROY_NEXT_ITEM"] = "Détruire l'objet suivant"
 L["DESTROY"] = "Détruire"
 L["DESTROYED_ITEM"] = "Détruit : %s."

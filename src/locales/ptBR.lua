@@ -42,6 +42,7 @@ L["COMMAND_DESCRIPTION_TRANSPORT"] = "Alterna a janela de importação/exportaç
 L["COMMANDS"] = "Comandos"
 L["COMMON"] = "Comum"
 L["CONTROL_KEY"] = "Ctrl"
+L["DEFAULT_PROFILE_NAME"] = "Padrão"
 L["DESTROY_NEXT_ITEM"] = "Destruir próximo item"
 L["DESTROY"] = "Destruir"
 L["DESTROYED_ITEM"] = "Destruído: %s."

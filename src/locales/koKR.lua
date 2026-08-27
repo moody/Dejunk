@@ -42,6 +42,7 @@ L["COMMAND_DESCRIPTION_TRANSPORT"] = "가져오기/내보내기 창을 전환합
 L["COMMANDS"] = "명령"
 L["COMMON"] = "일반"
 L["CONTROL_KEY"] = "Ctrl"
+L["DEFAULT_PROFILE_NAME"] = "기본"
 L["DESTROY_NEXT_ITEM"] = "다음 아이템 파괴"
 L["DESTROY"] = "파괴"
 L["DESTROYED_ITEM"] = "파괴됨: %s."

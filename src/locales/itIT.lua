@@ -42,6 +42,7 @@ L["COMMAND_DESCRIPTION_TRANSPORT"] = "Attiva/disattiva il riquadro di importazio
 L["COMMANDS"] = "Comandi"
 L["COMMON"] = "Comune"
 L["CONTROL_KEY"] = "Ctrl"
+L["DEFAULT_PROFILE_NAME"] = "Predefinito"
 L["DESTROY_NEXT_ITEM"] = "Distruggi l'oggetto successivo"
 L["DESTROY"] = "Distruggi"
 L["DESTROYED_ITEM"] = "Distrutto: %s."

@@ -42,6 +42,7 @@ L["COMMAND_DESCRIPTION_TRANSPORT"] = "Переключить окно импор
 L["COMMANDS"] = "Команды"
 L["COMMON"] = "Обычное"
 L["CONTROL_KEY"] = "Ctrl"
+L["DEFAULT_PROFILE_NAME"] = "По умолчанию"
 L["DESTROY_NEXT_ITEM"] = "Уничтожить следующий предмет"
 L["DESTROY"] = "Уничтожить"
 L["DESTROYED_ITEM"] = "Уничтожен: %s."
