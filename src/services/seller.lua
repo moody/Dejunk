@@ -17,10 +17,10 @@ local Seller = Addon:GetModule("Seller")
 
 EventManager:On(E.Wow.MerchantShow, function()
   TickerManager:After(0.1, function()
-    local percharState = StateManager:GetPercharState()
+    local profileSettings = StateManager:GetProfileState().settings
 
     -- Auto repair.
-    if percharState.autoRepair then
+    if profileSettings.autoRepair then
       local repairCost, canRepair = GetRepairAllCost()
       if canRepair and GetMoney() >= repairCost then
         RepairAllItems()
@@ -30,7 +30,7 @@ EventManager:On(E.Wow.MerchantShow, function()
     end
 
     -- Auto sell.
-    if percharState.autoSell then
+    if profileSettings.autoSell then
       Seller:Start(true)
     end
   end)
@@ -108,7 +108,7 @@ function Seller:Start(auto)
   end
 
   -- Safe mode.
-  if StateManager:GetPercharState().safeMode then
+  if StateManager:GetProfileState().settings.safeMode then
     while #self.items > 12 do table.remove(self.items) end
   end
 

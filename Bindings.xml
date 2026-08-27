@@ -16,18 +16,18 @@
     DejunkBindings_OpenLootables()
   </Binding>
 
-  <!-- Perchar Lists -->
-  <Binding name="DEJUNK_ADD_PERCHAR_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("PerCharInclusions")
+  <!-- Profile Lists -->
+  <Binding name="DEJUNK_ADD_PROFILE_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PERCHAR_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("PerCharInclusions")
+  <Binding name="DEJUNK_REM_PROFILE_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("PerCharExclusions")
+  <Binding name="DEJUNK_ADD_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("ProfileExclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("PerCharExclusions")
+  <Binding name="DEJUNK_REM_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("ProfileExclusions")
   </Binding>
 
   <!-- Global Lists -->

@@ -24,12 +24,12 @@ BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLE_ITEMS
 -- Lists.
 BINDING_NAME_DEJUNK_ADD_GLOBAL_INCLUSIONS = L.ADD_TO_LIST:format(Lists.GlobalInclusions.name)
 BINDING_NAME_DEJUNK_REM_GLOBAL_INCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.GlobalInclusions.name)
-BINDING_NAME_DEJUNK_ADD_PERCHAR_INCLUSIONS = L.ADD_TO_LIST:format(Lists.PerCharInclusions.name)
-BINDING_NAME_DEJUNK_REM_PERCHAR_INCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.PerCharInclusions.name)
+BINDING_NAME_DEJUNK_ADD_PROFILE_INCLUSIONS = L.ADD_TO_LIST:format(Lists.ProfileInclusions.name)
+BINDING_NAME_DEJUNK_REM_PROFILE_INCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.ProfileInclusions.name)
 BINDING_NAME_DEJUNK_ADD_GLOBAL_EXCLUSIONS = L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
 BINDING_NAME_DEJUNK_REM_GLOBAL_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.GlobalExclusions.name)
-BINDING_NAME_DEJUNK_ADD_PERCHAR_EXCLUSIONS = L.ADD_TO_LIST:format(Lists.PerCharExclusions.name)
-BINDING_NAME_DEJUNK_REM_PERCHAR_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.PerCharExclusions.name)
+BINDING_NAME_DEJUNK_ADD_PROFILE_EXCLUSIONS = L.ADD_TO_LIST:format(Lists.ProfileExclusions.name)
+BINDING_NAME_DEJUNK_REM_PROFILE_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.ProfileExclusions.name)
 
 -- ============================================================================
 -- Binding Functions

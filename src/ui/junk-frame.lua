@@ -25,10 +25,10 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 -- Auto Junk Frame.
 EventManager:Once(E.StoreCreated, function()
   EventManager:On(E.Wow.MerchantShow, function()
-    if StateManager:GetPercharState().autoJunkFrame then JunkFrame:Show() end
+    if StateManager:GetProfileState().settings.autoJunkFrame then JunkFrame:Show() end
   end)
   EventManager:On(E.Wow.MerchantClosed, function()
-    if StateManager:GetPercharState().autoJunkFrame then JunkFrame:Hide() end
+    if StateManager:GetProfileState().settings.autoJunkFrame then JunkFrame:Hide() end
   end)
 end)
 
@@ -150,14 +150,14 @@ JunkFrame.frame = (function()
     onUpdateTooltip = function(self, tooltip)
       tooltip:SetText(L.JUNK_ITEMS)
       tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
-        Lists.PerCharInclusions.name,
+        Lists.ProfileInclusions.name,
         Lists.GlobalInclusions.name,
         Colors.White(L.SHIFT_KEY)
       ))
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(
         Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK),
-        L.ADD_ALL_TO_LIST:format(Lists.PerCharExclusions.name)
+        L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
       )
       tooltip:AddDoubleLine(
         Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.SHIFT_KEY, L.RIGHT_CLICK),
@@ -169,7 +169,7 @@ JunkFrame.frame = (function()
       tooltip:SetBagItem(self.item.bag, self.item.slot)
       tooltip:AddLine(" ")
       tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
-      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.PerCharExclusions.name))
+      tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
       tooltip:AddDoubleLine(
         Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
         L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
@@ -185,18 +185,18 @@ JunkFrame.frame = (function()
         if IsAltKeyDown() then
           Destroyer:HandleItem(self.item)
         else
-          local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
+          local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
           list:Add(self.item.id)
         end
       end
     end,
     getItems = function() return frame.items end,
     addItem = function(itemId)
-      local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.PerCharInclusions
+      local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.ProfileInclusions
       list:Add(itemId)
     end,
     removeAllItems = function()
-      local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.PerCharExclusions
+      local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
       for _, item in pairs(frame.items) do list:Add(item.id) end
     end
   })

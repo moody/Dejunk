@@ -228,9 +228,9 @@ MainWindow.frame = (function()
     getListSearchState = getListSearchState
   })
 
-  -- Perchar inclusions frame.
-  frame.percharInclusionsFrame = Widgets:ListFrame({
-    name = "$parent_PercharInclusionsFrame",
+  -- Profile inclusions frame.
+  frame.profileInclusionsFrame = Widgets:ListFrame({
+    name = "$parent_ProfileInclusionsFrame",
     parent = frame,
     points = {
       { "TOPLEFT", frame.optionsFrame, "RIGHT", Widgets:Padding(0.5), -Widgets:Padding(0.25) },
@@ -238,21 +238,21 @@ MainWindow.frame = (function()
     },
     width = LIST_FRAME_WIDTH,
     numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.PerCharInclusions,
+    list = Lists.ProfileInclusions,
     getListSearchState = getListSearchState
   })
 
-  -- Perchar exclusions frame.
-  frame.percharExclusionsFrame = Widgets:ListFrame({
-    name = "$parent_PercharExclusionsFrame",
+  -- Profile exclusions frame.
+  frame.profileExclusionsFrame = Widgets:ListFrame({
+    name = "$parent_ProfileExclusionsFrame",
     parent = frame,
     points = {
-      { "TOPLEFT", frame.percharInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
-      { "BOTTOMLEFT", frame.percharInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
+      { "TOPLEFT", frame.profileInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
+      { "BOTTOMLEFT", frame.profileInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
     },
     width = LIST_FRAME_WIDTH,
     numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.PerCharExclusions,
+    list = Lists.ProfileExclusions,
     getListSearchState = getListSearchState
   })
 

@@ -97,11 +97,11 @@ end
 
 --- Toggles the `TransportFrame` based on the given `listName` and `listType`.
 --- @param listName "inclusions" | "exclusions"
----@param listType "global" | "perchar"
+--- @param listType "global" | "profile"
 function Commands.transport(listName, listType)
   local list = nil
-  if listName == "inclusions" then list = listType == "global" and Lists.GlobalInclusions or Lists.PerCharInclusions end
-  if listName == "exclusions" then list = listType == "global" and Lists.GlobalExclusions or Lists.PerCharExclusions end
+  if listName == "inclusions" then list = listType == "global" and Lists.GlobalInclusions or Lists.ProfileInclusions end
+  if listName == "exclusions" then list = listType == "global" and Lists.GlobalExclusions or Lists.ProfileExclusions end
   if list then TransportFrame:Toggle(list) else Commands.help() end
 end
 

@@ -145,7 +145,7 @@ end
 --- @param item BagItem
 --- @return boolean isJunk, string? reason
 function JunkFilter:IsJunkItem(item)
-  local percharState = StateManager:GetPercharState()
+  local profileSettings = StateManager:GetProfileState().settings
 
   -- Check if item can be sold or destroyed.
   if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
@@ -162,12 +162,12 @@ function JunkFilter:IsJunkItem(item)
     return false, L.ITEM_IS_LOCKED
   end
 
-  -- PerChar lists.
-  if Lists.PerCharExclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.PerCharExclusions.name)
+  -- Profile lists.
+  if Lists.ProfileExclusions:Contains(item.id) then
+    return false, concat(L.LISTS, Lists.ProfileExclusions.name)
   end
-  if Lists.PerCharInclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.PerCharInclusions.name)
+  if Lists.ProfileInclusions:Contains(item.id) then
+    return true, concat(L.LISTS, Lists.ProfileInclusions.name)
   end
 
   -- Global lists.
@@ -179,29 +179,29 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude equipment sets.
-  if not (Addon.IS_VANILLA or Addon.IS_TBC) and percharState.excludeEquipmentSets and item.isEquipmentSet then
+  if not (Addon.IS_VANILLA or Addon.IS_TBC) and profileSettings.excludeEquipmentSets and item.isEquipmentSet then
     return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 
   -- Exclude unbound equipment.
-  if percharState.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    local checkBoxValues = percharState.itemQualityCheckBoxes.excludeUnboundEquipment
+  if profileSettings.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+    local checkBoxValues = profileSettings.itemQualityCheckBoxes.excludeUnboundEquipment
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
     end
   end
 
   -- Exclude warband equipment.
-  if Addon.IS_RETAIL and percharState.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
-    local checkBoxValues = percharState.itemQualityCheckBoxes.excludeWarbandEquipment
+  if Addon.IS_RETAIL and profileSettings.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
+    local checkBoxValues = profileSettings.itemQualityCheckBoxes.excludeWarbandEquipment
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
     end
   end
 
   -- Include by quality.
-  if percharState.includeByQuality then
-    local checkBoxValues = percharState.itemQualityCheckBoxes.includeByQuality
+  if profileSettings.includeByQuality then
+    local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeByQuality
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
     end
@@ -210,10 +210,10 @@ function JunkFilter:IsJunkItem(item)
   -- Equipment-based include filters.
   if Items:IsItemEquipment(item) then
     -- Include below item level.
-    if percharState.includeBelowItemLevel.enabled then
-      local value = percharState.includeBelowItemLevel.value
+    if profileSettings.includeBelowItemLevel.enabled then
+      local value = profileSettings.includeBelowItemLevel.value
       if item.itemLevel < value then
-        local checkBoxValues = percharState.itemQualityCheckBoxes.includeBelowItemLevel
+        local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeBelowItemLevel
         if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
           local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
           return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
@@ -221,8 +221,8 @@ function JunkFilter:IsJunkItem(item)
       end
     end
     -- Include unsuitable equipment.
-    if percharState.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
-      local checkBoxValues = percharState.itemQualityCheckBoxes.includeUnsuitableEquipment
+    if profileSettings.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
+      local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeUnsuitableEquipment
       if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
         return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
       end
@@ -230,7 +230,7 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Include artifact relics.
-  if Addon.IS_RETAIL and percharState.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
+  if Addon.IS_RETAIL and profileSettings.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
     return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 
