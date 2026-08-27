@@ -57,6 +57,17 @@ EventManager:Once(E.Wow.PlayerLogin, function()
       state.profiles = Wux:ShallowCopy(state.profiles)
       state.profiles.activeProfileId = nil
       _G[SAVED_VARIABLES_KEY] = state
+    end)
+  end
+
+  do -- Wire up events.
+    local previousActiveProfileId = _Store:GetState().profiles.activeProfileId
+
+    _Store:Subscribe(function(state)
+      if state.profiles.activeProfileId ~= previousActiveProfileId then
+        previousActiveProfileId = state.profiles.activeProfileId
+        EventManager:Fire(E.ActiveProfileChanged)
+      end
 
       EventManager:Fire(E.StateUpdated, state)
     end)
