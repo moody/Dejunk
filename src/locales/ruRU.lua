@@ -114,6 +114,7 @@ L["OPEN_LOOTABLE_ITEMS"] = "Открыть запечатанную добычу
 L["OPTION_WARNING_BE_CAREFUL"] = "Пожалуйста, будьте осторожны с этой опцией."
 L["OPTIONS_TEXT"] = "Настройки"
 L["POOR"] = "Низкое"
+L["PROFILE"] = "Профиль"
 L["PROFIT"] = "Прибыль: %s"
 L["RARE"] = "Редкое"
 L["REMOVE_ALL_ITEMS"] = "Удалить все предметы"

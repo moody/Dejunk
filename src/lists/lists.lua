@@ -303,7 +303,7 @@ do -- Create the lists.
 
   -- ProfileInclusions.
   Lists.ProfileInclusions = createList({
-    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
+    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.PROFILE)),
     description = L.INCLUSIONS_DESCRIPTION_PROFILE,
     load = function() return StateManager:GetProfileState().settings.inclusions end,
     save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Profile.setInclusions(itemIds)) end,
@@ -313,7 +313,7 @@ do -- Create the lists.
 
   -- ProfileExclusions.
   Lists.ProfileExclusions = createList({
-    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
+    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.PROFILE)),
     description = L.EXCLUSIONS_DESCRIPTION_PROFILE,
     load = function() return StateManager:GetProfileState().settings.exclusions end,
     save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Profile.setExclusions(itemIds)) end,

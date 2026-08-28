@@ -13,8 +13,8 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Initializes options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:Initialize(optionsFrame)
-  -- Character.
-  self:AddCharacterOptions(optionsFrame)
+  -- Profile.
+  self:AddProfileOptions(optionsFrame)
   self:AddIncludeOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
 
@@ -28,18 +28,11 @@ function MainWindowOptions:Initialize(optionsFrame)
   self:AddGlobalOptions(optionsFrame)
 end
 
---- Adds character-specific options to the given `optionsFrame`.
+--- Adds profile options to the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddCharacterOptions(optionsFrame)
-  -- Character heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({
-    headingText = ("%s %s"):format(
-      L.CHARACTER,
-      Colors.Grey("(%s)"):format(
-        Colors.White(UnitName("player"))
-      )
-    )
-  }))
+function MainWindowOptions:AddProfileOptions(optionsFrame)
+  -- Profile heading.
+  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.PROFILE }))
 
   -- Auto junk frame.
   optionsFrame:AddChild(Widgets:OptionButton({
