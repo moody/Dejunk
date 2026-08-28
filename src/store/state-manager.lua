@@ -1,9 +1,9 @@
 local Addon = select(2, ...) ---@type Addon
-local Colors = Addon:GetModule("Colors")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local LegacyMigration = Addon:GetModule("LegacyMigration")
+local Middlewares = Addon:GetModule("Middlewares")
 local RootReducer = Addon:GetModule("RootReducer")
 local Wux = Addon.Wux
 
@@ -15,20 +15,6 @@ local LEGACY_SV_MAPPING = {
   global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
   perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
 }
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
---- Debug logger for each dispatched action.
---- @type WuxMiddleware<DejunkRootState>
-local function debugMiddleware(store, next, action)
-  Addon:Debug(Colors.Grey(("-"):rep(60)))
-  Addon:Debug("Dispatched:", Colors.Gold(action.type))
-  Addon:Dump({ action = action })
-  Addon:Debug(Colors.Grey(("-"):rep(60)))
-  return next(action)
-end
 
 -- ============================================================================
 -- Store
@@ -52,11 +38,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   if type(initialState.profiles.characterMap) ~= "table" then initialState.profiles.characterMap = {} end
   initialState.profiles.activeProfileId = initialState.profiles.characterMap[Addon:GetCharacterKey()]
 
-  _Store = Wux:CreateStore(
-    RootReducer:Build(),
-    initialState,
-    Addon.IS_DEBUG and { debugMiddleware } or nil
-  )
+  _Store = Wux:CreateStore(RootReducer:Build(), initialState, Middlewares:Build())
 
   do -- Wire up saved variables.
     local function write(state)
