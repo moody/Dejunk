@@ -3,6 +3,7 @@ local Colors = Addon:GetModule("Colors")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local LegacyMigration = Addon:GetModule("LegacyMigration")
 local RootReducer = Addon:GetModule("RootReducer")
 local Wux = Addon.Wux
 
@@ -10,6 +11,10 @@ local Wux = Addon.Wux
 local StateManager = Addon:GetModule("StateManager")
 
 local SAVED_VARIABLES_KEY = "__DEJUNK_ADDON_V3_SAVED_VARIABLES__"
+local LEGACY_SV_MAPPING = {
+  global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
+  perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
+}
 
 -- ============================================================================
 -- Local Functions
@@ -35,29 +40,33 @@ local _Store
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
   --- @type DejunkRootState
-  local savedVariables = Wux:ReadSavedVariables(SAVED_VARIABLES_KEY)
-  savedVariables.profiles.activeProfileId = savedVariables.profiles.characterMap[Addon:GetCharacterKey()]
+  local initialState = LegacyMigration:MigrateLegacyLists(
+    SAVED_VARIABLES_KEY,
+    LEGACY_SV_MAPPING,
+    Addon:GetCharacterKey(),
+    Addon:GetShortUID()
+  )
 
-  local oldSavedVariables = Wux:ReadSavedVariables({
-    global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
-    perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
-  })
-
-  -- TODO: migration from oldSavedVariables
+  -- Initialize the `activeProfileId` before creating the store.
+  if type(initialState.profiles) ~= "table" then initialState.profiles = Wux:DeepCopy(DefaultStates.Profiles) end
+  if type(initialState.profiles.characterMap) ~= "table" then initialState.profiles.characterMap = {} end
+  initialState.profiles.activeProfileId = initialState.profiles.characterMap[Addon:GetCharacterKey()]
 
   _Store = Wux:CreateStore(
     RootReducer:Build(),
-    savedVariables,
+    initialState,
     Addon.IS_DEBUG and { debugMiddleware } or nil
   )
 
   do -- Wire up saved variables.
-    _Store:Subscribe(function(state)
+    local function write(state)
       state = Wux:ShallowCopy(state)
       state.profiles = Wux:ShallowCopy(state.profiles)
       state.profiles.activeProfileId = nil
       _G[SAVED_VARIABLES_KEY] = state
-    end)
+    end
+    write(_Store:GetState())
+    _Store:Subscribe(write)
   end
 
   do -- Wire up events.

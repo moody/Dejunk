@@ -29,6 +29,17 @@ function Addon:GetCharacterKey()
   return ("%s-%s"):format(UnitName("player"), GetNormalizedRealmName())
 end
 
+--- Returns a 64-bit unique identifier.
+--- @return string
+function Addon:GetShortUID()
+  return ("%04x%04x%04x%04x"):format(
+    fastrandom(0, 0xFFFF),
+    fastrandom(0, 0xFFFF),
+    fastrandom(0, 0xFFFF),
+    fastrandom(0, 0xFFFF)
+  )
+end
+
 -- Addon:GetModule()
 do
   --- @type table<string, table>
