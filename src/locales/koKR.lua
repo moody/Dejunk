@@ -128,6 +128,7 @@ L["SAFE_MODE_TOOLTIP"] = "한 번에 최대 12개의 아이템만 판매합니�
 L["SEARCH_LISTS"] = "목록 검색"
 L["SELECT_ALL"] = "모두 선택"
 L["SELL"] = "판매"
+L["SET_PROFILE"] = "프로필 설정: %s"
 L["SHIFT_KEY"] = "Shift"
 L["SOLD_ITEM"] = "판매됨: %s."
 L["START_SELLING"] = "판매 시작"

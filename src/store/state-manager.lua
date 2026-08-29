@@ -1,8 +1,10 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local Colors = Addon:GetModule("Colors")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local L = Addon:GetModule("Locale")
 local LegacyMigration = Addon:GetModule("LegacyMigration")
 local Middlewares = Addon:GetModule("Middlewares")
 local RootReducer = Addon:GetModule("RootReducer")
@@ -118,3 +120,14 @@ end
 function StateManager:IsDefaultProfileActive()
   return _Store:GetState().profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID
 end
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+local function onActiveProfileChanged()
+  Addon:Print(L.SET_PROFILE:format(Colors.Gold(StateManager:GetProfileState().name)))
+end
+
+EventManager:Once(E.StoreCreated, onActiveProfileChanged)
+EventManager:On(E.ActiveProfileChanged, onActiveProfileChanged)
