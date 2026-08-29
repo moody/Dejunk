@@ -25,7 +25,7 @@ local Lists = Addon:GetModule("Lists")
 --- @field name string
 --- @field description string
 --- @field load fun(): ListItemIds
---- @field save fun(): nil
+--- @field save fun(itemIds: ListItemIds)
 --- @field getSibling fun(): List
 --- @field getOpposite fun(): List
 
@@ -79,6 +79,16 @@ local function reloadList(list)
   end
 end
 
+--- Returns `true` if this list is a profile list.
+--- @param list List
+--- @return boolean
+local function isProfileList(list)
+  return (
+    list == Lists.ProfileInclusions or
+    list == Lists.ProfileExclusions
+  )
+end
+
 -- ============================================================================
 -- Mixins
 -- ============================================================================
@@ -111,6 +121,10 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:Add(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then
+    StateManager:CreateNewProfile()
+  end
+
   itemId = tostring(itemId)
 
   if self:Contains(itemId) then
@@ -136,6 +150,8 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:Remove(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   self:RemoveItemId(itemId, silent)
   local index = self:GetIndex(itemId)
   if index ~= -1 then table.remove(self.items, index) end
@@ -145,6 +161,8 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:RemoveItemId(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   itemId = tostring(itemId)
   ListItemParser:CancelParse(self, itemId)
 
@@ -185,6 +203,8 @@ end
 
 --- Removes all items from the list.
 function Mixins:RemoveAll()
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   ListItemParser:StopParsing(self)
   if #self.items > 0 or next(self.itemIds) then
     for k in pairs(self.items) do self.items[k] = nil end

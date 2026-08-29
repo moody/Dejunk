@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local ActionCreators = Addon:GetModule("ActionCreators")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -95,4 +96,25 @@ end
 function StateManager:GetProfileState()
   local state = _Store:GetState()
   return state.profiles.profileMap[state.profiles.activeProfileId] or DefaultStates.Profile
+end
+
+--- Creates a new profile and immediately activates it.
+---@param profileName? string
+function StateManager:CreateNewProfile(profileName)
+  local profileId = Addon:GetShortUID()
+  local characterKey = Addon:GetCharacterKey()
+  profileName = profileName or characterKey
+  _Store:Dispatch({
+    type = Wux.ActionTypes.Batch,
+    payload = {
+      ActionCreators.Profiles.createProfile({ profileId = profileId, profileName = profileName }),
+      ActionCreators.Profiles.assignProfile({ profileId = profileId, characterKey = characterKey })
+    }
+  })
+end
+
+--- Returns `true` if the default profile is active.
+--- @return boolean
+function StateManager:IsDefaultProfileActive()
+  return _Store:GetState().profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID
 end
