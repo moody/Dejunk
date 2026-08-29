@@ -14,6 +14,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
 --- @field list List
 --- @field getListSearchState fun(): ListSearchState
+--- @field getItems nil
+--- @field addItem nil
+--- @field removeAllItems nil
 
 -- =============================================================================
 -- Widgets - List Frame
