@@ -14,6 +14,7 @@ local Middlewares = Addon:GetModule("Middlewares")
 --- Debug logger for each dispatched action.
 --- @type WuxMiddleware<DejunkRootState>
 local function debugMiddleware(store, next, action)
+  print(" ")
   Addon:Debug(Colors.Grey(("-"):rep(60)))
   Addon:Debug("Dispatched:", Colors.Gold(action.type))
   Addon:Dump({ action = action })
