@@ -26,8 +26,8 @@ function EquipmentSetsCache:Refresh()
 
   for k in pairs(cache) do cache[k] = nil end
 
-  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs()) do
-    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId)) do
+  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs() or {}) do
+    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId) or {}) do
       -- See: Blizzard_FrameXML/EquipmentManager.lua -> `EquipmentManager_UnpackLocation()`.
       if itemLocation and itemLocation >= 0 then
         local player = bit.band(itemLocation, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0
