@@ -1,6 +1,7 @@
 local ADDON_NAME = ... ---@type string
 
 --- @class Addon
+--- @field Waffle Waffle
 --- @field Wux Wux
 local Addon = select(2, ...)
 
