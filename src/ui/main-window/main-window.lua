@@ -38,22 +38,11 @@ end
 
 MainWindow.frame = (function()
   local NUM_LIST_FRAME_BUTTONS = 7
-  local OPTIONS_FRAME_WIDTH = 275
-  local LIST_FRAME_WIDTH = 250
-  local TOTAL_FRAME_WIDTH = (
-    Widgets:Padding() +
-    OPTIONS_FRAME_WIDTH +
-    Widgets:Padding(0.5) +
-    LIST_FRAME_WIDTH +
-    Widgets:Padding(0.5) +
-    LIST_FRAME_WIDTH +
-    Widgets:Padding()
-  )
 
   --- @class MainWindowWidget : WindowWidget
   local frame = Widgets:Window({
     name = ADDON_NAME .. "_MainWindow",
-    width = TOTAL_FRAME_WIDTH,
+    width = 800,
     height = 600,
     titleText = Colors.Blue(ADDON_NAME),
     enableClickHandling = true
@@ -187,74 +176,94 @@ MainWindow.frame = (function()
     end
   end)
 
-  -- Options frame.
-  frame.optionsFrame = Widgets:OptionsFrame({
-    name = "$parent_OptionsFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMLEFT", frame, "BOTTOMLEFT", Widgets:Padding(), Widgets:Padding() }
-    },
-    width = OPTIONS_FRAME_WIDTH,
-    titleText = L.OPTIONS_TEXT
-  })
-  MainWindowOptions:Initialize(frame.optionsFrame)
+  -- Content area, everything below the title bar.
+  frame.contentFrame = CreateFrame("Frame", "$parent_Content", frame)
+  frame.contentFrame:SetPoint("TOPLEFT", frame.titleButton, "BOTTOMLEFT", 0, 0)
+  frame.contentFrame:SetPoint("BOTTOMRIGHT", 0, 0)
 
-  -- Global inclusions frame.
-  frame.globalInclusionsFrame = Widgets:ListFrame({
-    name = "$parent_GlobalInclusionsFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.optionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
-      { "BOTTOMLEFT", frame.optionsFrame, "RIGHT", Widgets:Padding(0.5), Widgets:Padding(0.25) }
-    },
-    width = LIST_FRAME_WIDTH,
-    numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.GlobalInclusions,
-    getListSearchState = getListSearchState
+  -- Root row.
+  local root = Addon.Waffle:Flex({
+    frame = frame.contentFrame,
+    width = frame:GetWidth(),
+    height = frame:GetHeight() - frame.titleButton:GetHeight(),
+    direction = "ROW",
+    padding = Widgets:Padding(),
+    gap = Widgets:Padding(0.5),
+    defaultFrameFactory = function(parent)
+      return CreateFrame("Frame", nil, parent)
+    end
   })
 
-  -- Global exclusions frame.
-  frame.globalExclusionsFrame = Widgets:ListFrame({
-    name = "$parent_GlobalExclusionsFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.globalInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
-      { "BOTTOMLEFT", frame.globalInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
-    },
-    width = LIST_FRAME_WIDTH,
-    numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.GlobalExclusions,
-    getListSearchState = getListSearchState
+  -- Left column.
+  local leftColumn = root:AddColumn({ gap = Widgets:Padding(0.5), width = 300 })
+  leftColumn:AddChild({
+    frameFactory = function(parent)
+      local optionsFrame = Widgets:OptionsFrame({
+        parent = parent,
+        name = "$parent_OptionsFrame",
+        titleText = L.OPTIONS_TEXT
+      })
+      MainWindowOptions:Initialize(optionsFrame)
+      return optionsFrame
+    end
   })
 
-  -- Profile inclusions frame.
-  frame.profileInclusionsFrame = Widgets:ListFrame({
-    name = "$parent_ProfileInclusionsFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.optionsFrame, "RIGHT", Widgets:Padding(0.5), -Widgets:Padding(0.25) },
-      { "BOTTOMLEFT", frame.optionsFrame, "BOTTOMRIGHT", Widgets:Padding(0.5), 0 }
-    },
-    width = LIST_FRAME_WIDTH,
-    numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.ProfileInclusions,
-    getListSearchState = getListSearchState
+  -- Right column.
+  local rightColumn = root:AddColumn({ gap = Widgets:Padding(0.5) })
+
+  -- Global lists row.
+  local globalListsRow = rightColumn:AddRow({ gap = Widgets:Padding(0.5) })
+  globalListsRow:AddChild({
+    frameFactory = function(parent)
+      return Widgets:ListFrame({
+        parent = parent,
+        name = "$parent_GlobalInclusionsFrame",
+        numButtons = NUM_LIST_FRAME_BUTTONS,
+        list = Lists.GlobalInclusions,
+        getListSearchState = getListSearchState
+      })
+    end
+  })
+  globalListsRow:AddChild({
+    frameFactory = function(parent)
+      return Widgets:ListFrame({
+        parent = parent,
+        name = "$parent_GlobalExclusionsFrame",
+        numButtons = NUM_LIST_FRAME_BUTTONS,
+        list = Lists.GlobalExclusions,
+        getListSearchState = getListSearchState
+      })
+    end
   })
 
-  -- Profile exclusions frame.
-  frame.profileExclusionsFrame = Widgets:ListFrame({
-    name = "$parent_ProfileExclusionsFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.profileInclusionsFrame, "TOPRIGHT", Widgets:Padding(0.5), 0 },
-      { "BOTTOMLEFT", frame.profileInclusionsFrame, "BOTTOMLEFT", Widgets:Padding(0.5), 0 }
-    },
-    width = LIST_FRAME_WIDTH,
-    numButtons = NUM_LIST_FRAME_BUTTONS,
-    list = Lists.ProfileExclusions,
-    getListSearchState = getListSearchState
+  -- Profile lists row.
+  local profileListsRow = rightColumn:AddRow({ gap = Widgets:Padding(0.5) })
+  profileListsRow:AddChild({
+    frameFactory = function(parent)
+      return Widgets:ListFrame({
+        parent = parent,
+        name = "$parent_ProfileInclusionsFrame",
+        numButtons = NUM_LIST_FRAME_BUTTONS,
+        list = Lists.ProfileInclusions,
+        getListSearchState = getListSearchState
+      })
+    end
   })
+  profileListsRow:AddChild({
+    frameFactory = function(parent)
+      return Widgets:ListFrame({
+        parent = parent,
+        name = "$parent_ProfileExclusionsFrame",
+        numButtons = NUM_LIST_FRAME_BUTTONS,
+        list = Lists.ProfileExclusions,
+        getListSearchState = getListSearchState
+      })
+    end
+  })
+
+  root:Layout()
+
+  frame:SetScript("OnUpdate", function() root:Layout() end)
 
   return frame
 end)()
