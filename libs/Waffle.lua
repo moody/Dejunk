@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.7.0 - https://github.com/moody/Waffle
+-- Waffle: 0.7.1 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -14,17 +14,26 @@ local Waffle = Addon.Waffle
 
 --- @alias WafflePoint "TOPLEFT" | "TOP" | "TOPRIGHT" | "LEFT" | "CENTER" | "RIGHT" | "BOTTOMLEFT" | "BOTTOM" | "BOTTOMRIGHT"
 
---- Not necessarily an actual `Frame`: any WoW UI object exposing this
---- exact call surface (a `Region`) works, `Texture`/`FontString`/etc.
---- included.
---- @class WaffleFrame
---- @field ClearAllPoints fun(self: WaffleFrame)
---- @field Hide fun(self: WaffleFrame)
---- @field SetHeight fun(self: WaffleFrame, height: integer)
---- @field SetParent fun(self: WaffleFrame, parent: WaffleFrame)
---- @field SetPoint fun(self: WaffleFrame, point: WafflePoint, parent: WaffleFrame, relativePoint: WafflePoint, offsetX: integer, offsetY: integer)
---- @field SetWidth fun(self: WaffleFrame, width: integer)
---- @field Show fun(self: WaffleFrame)
+--- Not necessarily an actual `Frame`. Any table with this shape works:
+--- ```
+--- frame:ClearAllPoints()
+--- frame:Show()
+--- frame:Hide()
+--- frame:SetWidth(800)
+--- frame:SetHeight(600)
+--- frame:SetParent(parentFrame)
+--- frame:SetPoint("TOPLEFT", relativeFrame, "TOPLEFT", 4, -4)
+--- ```
+--- @class WaffleFrameShape
+--- @field ClearAllPoints fun(self: table)
+--- @field Hide fun(self: table)
+--- @field SetHeight fun(self: table, height: integer)
+--- @field SetParent fun(self: table, parent: table)
+--- @field SetPoint fun(self: table, point: WafflePoint, relativeTo: table, relativePoint: WafflePoint, offsetX: integer, offsetY: integer)
+--- @field SetWidth fun(self: table, width: integer)
+--- @field Show fun(self: table)
+
+--- @alias WaffleFrame table | WaffleFrameShape
 
 --- @alias WaffleFlexDirection "ROW" | "COLUMN" | "ROW_REVERSE" | "COLUMN_REVERSE"
 --- @alias WaffleFlexAlign "START" | "CENTER" | "END" | "STRETCH"
