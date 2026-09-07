@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.6.0 - https://github.com/moody/Waffle
+-- Waffle: 0.7.0 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -64,7 +64,7 @@ local Waffle = Addon.Waffle
 --- @field hidden? boolean Excludes this node from layout entirely; siblings reflow to fill the space. Default `false`.
 --- @field key? string For lookup via `GetChild(key)`. Duplicate keys aren't validated against, the first match wins.
 --- @field order? integer Visual position among siblings, independent of declaration order. Default `0`, ties broken by declaration order. No effect on the root.
---- @field onLayout? fun(component: WaffleFlexComponent, width: integer, height: integer) Fires after `children` (if any) are already laid out.
+--- @field onLayout? fun(component: WaffleFlexComponent, width: integer, height: integer) Fires once the whole `Layout()` pass is resolved and clean, not while it's still running, bottom-up, root last. Mutating a different node from here schedules a future `Layout()` call, the same as any other setter.
 
 -- =============================================================================
 -- Internal Data Table
@@ -391,6 +391,39 @@ end
 --- @param lines WaffleFlexNode[][]
 function _W.LayoutCache:SetWrapLines(node, lines)
   self.wrapLines[node] = lines
+end
+
+-- =============================================================================
+-- OnLayoutQueue
+-- =============================================================================
+
+--- Defers `onLayout` firing until its `Layout()` pass is fully resolved
+--- and clean, so a mutation made inside one schedules a future
+--- `Layout()` call rather than being lost.
+_W.OnLayoutQueue = {}
+
+--- Records `node`'s pending `onLayout` call in `queue`, a table from
+--- `_W.Scratch`, fired later by `FireAll`.
+--- @param queue table
+--- @param node WaffleFlexNode
+--- @param width integer
+--- @param height integer
+function _W.OnLayoutQueue:Add(queue, node, width, height)
+  local entry = _W.Scratch:Get()
+  entry.node, entry.width, entry.height = node, width, height
+  queue[#queue + 1] = entry
+end
+
+--- Fires every `onLayout` recorded in `queue`, in the order they were
+--- added (bottom-up, children before parents, visual sibling order),
+--- releasing each entry back to `_W.Scratch` right after.
+--- @param queue table
+function _W.OnLayoutQueue:FireAll(queue)
+  for i = 1, #queue do
+    local entry = queue[i]
+    entry.node.onLayout(_W.FlexComponentFactory:New(entry.node), entry.width, entry.height)
+    _W.Scratch:Release(entry)
+  end
 end
 
 -- =============================================================================
@@ -967,8 +1000,9 @@ end
 --- @param mainStart integer
 --- @param crossStart integer
 --- @param defaultFrameFactory? fun(parent: WaffleFrame): WaffleFrame
+--- @param onLayoutQueue table Passed through to a `children` recursion; a visited child's own `onLayout` (if any) is queued onto it, not fired yet.
 function _W.FlexLayout:LayoutFlexLine(node, frame, lineChildren, mainAxis, crossAxis, isReverse, mainSize, crossSize,
-                                      mainStart, crossStart, defaultFrameFactory)
+                                      mainStart, crossStart, defaultFrameFactory, onLayoutQueue)
   local gap = node.gap or 0
   local isRow = mainAxis == "width"
   local visibleCount = #lineChildren
@@ -1044,11 +1078,12 @@ function _W.FlexLayout:LayoutFlexLine(node, frame, lineChildren, mainAxis, cross
     childFrame:SetHeight(childHeight)
 
     if child.children then
-      self:Layout(child, childFrame, childWidth, childHeight, child.defaultFrameFactory or defaultFrameFactory)
+      self:Layout(child, childFrame, childWidth, childHeight, child.defaultFrameFactory or defaultFrameFactory,
+        onLayoutQueue)
     end
 
     if child.onLayout then
-      child.onLayout(_W.FlexComponentFactory:New(child), childWidth, childHeight)
+      _W.OnLayoutQueue:Add(onLayoutQueue, child, childWidth, childHeight)
     end
 
     mainOffset = mainOffset + marginMainLeading + size + marginMainTrailing + gap + justifyGap
@@ -1069,7 +1104,8 @@ end
 --- @param width integer
 --- @param height integer
 --- @param defaultFrameFactory? fun(parent: WaffleFrame): WaffleFrame
-function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory)
+--- @param onLayoutQueue table Passed through to `LayoutFlexLine`/nested `children` recursions; every visited node's own `onLayout` (if any) is queued onto it, not fired yet.
+function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory, onLayoutQueue)
   local isRow, isReverse = _W.Utils:ParseFlexDirection(node)
   local mainAxis = isRow and "width" or "height"
   local crossAxis = isRow and "height" or "width"
@@ -1142,7 +1178,7 @@ function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory)
 
       local thisLineCrossSize = _W.Sizing:LineCrossSize(lineChildren, crossAxis, crossSize)
       self:LayoutFlexLine(node, frame, lineChildren, mainAxis, crossAxis, isReverse, mainSize, thisLineCrossSize,
-        mainLeading, crossOffset, defaultFrameFactory)
+        mainLeading, crossOffset, defaultFrameFactory, onLayoutQueue)
       crossOffset = crossOffset + thisLineCrossSize + lineGap
 
       _W.Scratch:Release(lineChildren)
@@ -1154,7 +1190,7 @@ function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory)
     end
 
     self:LayoutFlexLine(node, frame, visibleChildren, mainAxis, crossAxis, isReverse, mainSize, crossSize, mainLeading,
-      crossLeading, defaultFrameFactory)
+      crossLeading, defaultFrameFactory, onLayoutQueue)
   end
 
   _W.Scratch:Release(visibleChildren)
@@ -1207,50 +1243,31 @@ function _W.FlexComponentFactory:FindNodeByKey(node, key)
   end
 end
 
---- Looks up a child anywhere in the tree by its `key`, erroring if none is
---- found. A duplicate key isn't validated against, the first match wins.
---- @param key string
---- @return WaffleFlexComponent
-function _W.FlexComponent:GetChild(key)
-  local root = _W.Ownership:FindRoot(self.node)
-  local found = _W.FlexComponentFactory:FindNodeByKey(root, key)
-  assert(found, "Waffle: no child registered under key '" .. key .. "'")
-  return _W.FlexComponentFactory:New(found)
-end
-
---- Returns this node's frame, `nil` if not resolved yet, e.g. a
---- `frameFactory` not yet laid out.
---- @return WaffleFrame?
-function _W.FlexComponent:GetFrame()
-  return self.node.frame
-end
-
---- Returns `true` if this node's tree has changed since its last `Layout()` call.
---- @return boolean
-function _W.FlexComponent:IsDirty()
-  return _W.DirtyRoots:IsDirty(_W.Ownership:FindRoot(self.node))
-end
-
---- Removes this node from the layout flow entirely, its siblings reflow
---- to fill the space. Position in the tree is preserved, `Show()` brings
---- it back.
-function _W.FlexComponent:Hide()
-  if not self.node.hidden then
-    self.node.hidden = true
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Reverses `Hide()`. No-ops if not currently hidden.
-function _W.FlexComponent:Show()
-  if self.node.hidden then
-    self.node.hidden = false
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
 -- Every setter below is a no-op unless the value actually changes, so
--- redundant calls (e.g. from a per-frame OnUpdate) stay cheap.
+-- redundant calls (e.g. from a per-frame OnUpdate) stay cheap. Ordered to
+-- match `WaffleFlexNode`'s own field declaration order above.
+
+--- Sets a frame factory for any descendant that gives neither `frame` nor
+--- its own `frameFactory`. `nil` removes it. An already-resolved
+--- descendant's own `frame` is unaffected either way, only one still
+--- waiting on a factory picks up the change.
+--- @param defaultFrameFactory? fun(parent: WaffleFrame): WaffleFrame
+function _W.FlexComponent:SetDefaultFrameFactory(defaultFrameFactory)
+  if self.node.defaultFrameFactory ~= defaultFrameFactory then
+    self.node.defaultFrameFactory = defaultFrameFactory
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets this node's own main axis for its own children. `nil` resets to
+--- the default (`"ROW"`).
+--- @param direction? WaffleFlexDirection
+function _W.FlexComponent:SetDirection(direction)
+  if self.node.direction ~= direction then
+    self.node.direction = direction
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
 
 --- Sets this node's own width. `nil` flexes/stretches instead; `"AUTO"`
 --- computes it from this node's own children (a sum along its main axis,
@@ -1271,6 +1288,15 @@ function _W.FlexComponent:SetHeight(height)
     self.node.height = height
     _W.DirtyRoots:Mark(self.node)
   end
+end
+
+--- Sets this node's own width and height together, equivalent to `SetWidth()`/`SetHeight()`.
+--- Omitting either argument passes nil, resetting that dimension instead of leaving it unchanged.
+--- @param width? integer | "AUTO" | string
+--- @param height? integer | "AUTO" | string
+function _W.FlexComponent:SetSize(width, height)
+  self:SetWidth(width)
+  self:SetHeight(height)
 end
 
 --- Sets this node's own share of its parent's leftover main-axis space,
@@ -1294,38 +1320,11 @@ function _W.FlexComponent:SetShrink(shrink)
   end
 end
 
---- Sets a floor on this node's own `width`. `nil` removes it.
---- @param minWidth? number
-function _W.FlexComponent:SetMinWidth(minWidth)
-  if self.node.minWidth ~= minWidth then
-    self.node.minWidth = minWidth
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets a ceiling on this node's own `width`. `nil` removes it.
---- @param maxWidth? number
-function _W.FlexComponent:SetMaxWidth(maxWidth)
-  if self.node.maxWidth ~= maxWidth then
-    self.node.maxWidth = maxWidth
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets a floor on this node's own `height`. `nil` removes it.
---- @param minHeight? number
-function _W.FlexComponent:SetMinHeight(minHeight)
-  if self.node.minHeight ~= minHeight then
-    self.node.minHeight = minHeight
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets a ceiling on this node's own `height`. `nil` removes it.
---- @param maxHeight? number
-function _W.FlexComponent:SetMaxHeight(maxHeight)
-  if self.node.maxHeight ~= maxHeight then
-    self.node.maxHeight = maxHeight
+--- Sets how this node aligns its own children along the cross axis by default.
+--- @param align? WaffleFlexAlign
+function _W.FlexComponent:SetAlign(align)
+  if self.node.align ~= align then
+    self.node.align = align
     _W.DirtyRoots:Mark(self.node)
   end
 end
@@ -1335,6 +1334,94 @@ end
 function _W.FlexComponent:SetAlignSelf(alignSelf)
   if self.node.alignSelf ~= alignSelf then
     self.node.alignSelf = alignSelf
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets how this node distributes leftover main-axis space among its own children.
+--- @param justify? WaffleFlexJustify
+function _W.FlexComponent:SetJustify(justify)
+  if self.node.justify ~= justify then
+    self.node.justify = justify
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets whether this node's overflowing children wrap onto a new line.
+--- @param wrap? boolean
+function _W.FlexComponent:SetWrap(wrap)
+  if self.node.wrap ~= wrap then
+    self.node.wrap = wrap
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets the space between this node's own children.
+--- @param gap? integer
+function _W.FlexComponent:SetGap(gap)
+  if self.node.gap ~= gap then
+    self.node.gap = gap
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets the space between this node's own wrapped lines, instead of
+--- `SetGap()`. `nil` falls back to it.
+--- @param lineGap? integer
+function _W.FlexComponent:SetLineGap(lineGap)
+  if self.node.lineGap ~= lineGap then
+    self.node.lineGap = lineGap
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets the space between this node's edge and its own children, on all
+--- four sides. Overridden per side by `SetPaddingTop()`/`SetPaddingRight()`/
+--- `SetPaddingBottom()`/`SetPaddingLeft()`.
+--- @param padding? integer
+function _W.FlexComponent:SetPadding(padding)
+  if self.node.padding ~= padding then
+    self.node.padding = padding
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Overrides `SetPadding()` for this node's top side only. `nil` reverts
+--- to it.
+--- @param paddingTop? integer
+function _W.FlexComponent:SetPaddingTop(paddingTop)
+  if self.node.paddingTop ~= paddingTop then
+    self.node.paddingTop = paddingTop
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Overrides `SetPadding()` for this node's right side only. `nil`
+--- reverts to it.
+--- @param paddingRight? integer
+function _W.FlexComponent:SetPaddingRight(paddingRight)
+  if self.node.paddingRight ~= paddingRight then
+    self.node.paddingRight = paddingRight
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Overrides `SetPadding()` for this node's bottom side only. `nil`
+--- reverts to it.
+--- @param paddingBottom? integer
+function _W.FlexComponent:SetPaddingBottom(paddingBottom)
+  if self.node.paddingBottom ~= paddingBottom then
+    self.node.paddingBottom = paddingBottom
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Overrides `SetPadding()` for this node's left side only. `nil` reverts
+--- to it.
+--- @param paddingLeft? integer
+function _W.FlexComponent:SetPaddingLeft(paddingLeft)
+  if self.node.paddingLeft ~= paddingLeft then
+    self.node.paddingLeft = paddingLeft
     _W.DirtyRoots:Mark(self.node)
   end
 end
@@ -1390,12 +1477,121 @@ function _W.FlexComponent:SetMarginLeft(marginLeft)
   end
 end
 
+--- Sets a floor on this node's own `width`. `nil` removes it.
+--- @param minWidth? number
+function _W.FlexComponent:SetMinWidth(minWidth)
+  if self.node.minWidth ~= minWidth then
+    self.node.minWidth = minWidth
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets a ceiling on this node's own `width`. `nil` removes it.
+--- @param maxWidth? number
+function _W.FlexComponent:SetMaxWidth(maxWidth)
+  if self.node.maxWidth ~= maxWidth then
+    self.node.maxWidth = maxWidth
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets a floor on this node's own `height`. `nil` removes it.
+--- @param minHeight? number
+function _W.FlexComponent:SetMinHeight(minHeight)
+  if self.node.minHeight ~= minHeight then
+    self.node.minHeight = minHeight
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets a ceiling on this node's own `height`. `nil` removes it.
+--- @param maxHeight? number
+function _W.FlexComponent:SetMaxHeight(maxHeight)
+  if self.node.maxHeight ~= maxHeight then
+    self.node.maxHeight = maxHeight
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets this node's own `key`, for lookup via `GetChild(key)`. `nil`
+--- removes it. Unlike every other setter, never marks the tree dirty:
+--- `GetChild` always searches live, there's nothing to recompute.
+--- @param key? string
+function _W.FlexComponent:SetKey(key)
+  self.node.key = key
+end
+
 --- Sets this node's visual position among siblings, independent of
 --- declaration order. `nil` resets to the default.
 --- @param order? integer
 function _W.FlexComponent:SetOrder(order)
   if self.node.order ~= order then
     self.node.order = order
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Sets the callback fired once this node's own `Layout()` pass is
+--- resolved and clean. `nil` removes it.
+--- @param onLayout? fun(component: WaffleFlexComponent, width: integer, height: integer)
+function _W.FlexComponent:SetOnLayout(onLayout)
+  if self.node.onLayout ~= onLayout then
+    self.node.onLayout = onLayout
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Looks up a child anywhere in the tree by its `key`, erroring if none is
+--- found. A duplicate key isn't validated against, the first match wins.
+--- @param key string
+--- @return WaffleFlexComponent
+function _W.FlexComponent:GetChild(key)
+  local root = _W.Ownership:FindRoot(self.node)
+  local found = _W.FlexComponentFactory:FindNodeByKey(root, key)
+  assert(found, "Waffle: no child registered under key '" .. key .. "'")
+  return _W.FlexComponentFactory:New(found)
+end
+
+--- Returns every one of this node's own children, wrapped, in declaration
+--- order, not necessarily visual `order`. Not recursive. Empty if this
+--- node has none.
+--- @return WaffleFlexComponent[]
+function _W.FlexComponent:GetChildren()
+  local children = {}
+  for i, node in ipairs(self.node.children or EMPTY_CHILDREN) do
+    _W.Ownership:Claim(node, self.node)
+    children[i] = _W.FlexComponentFactory:New(node)
+  end
+  return children
+end
+
+--- Returns this node's frame, `nil` if not resolved yet, e.g. a
+--- `frameFactory` not yet laid out.
+--- @return WaffleFrame?
+function _W.FlexComponent:GetFrame()
+  return self.node.frame
+end
+
+--- Returns `true` if this node's tree has changed since its last `Layout()` call.
+--- @return boolean
+function _W.FlexComponent:IsDirty()
+  return _W.DirtyRoots:IsDirty(_W.Ownership:FindRoot(self.node))
+end
+
+--- Removes this node from the layout flow entirely, its siblings reflow
+--- to fill the space. Position in the tree is preserved, `Show()` brings
+--- it back.
+function _W.FlexComponent:Hide()
+  if not self.node.hidden then
+    self.node.hidden = true
+    _W.DirtyRoots:Mark(self.node)
+  end
+end
+
+--- Reverses `Hide()`. No-ops if not currently hidden.
+function _W.FlexComponent:Show()
+  if self.node.hidden then
+    self.node.hidden = false
     _W.DirtyRoots:Mark(self.node)
   end
 end
@@ -1407,6 +1603,7 @@ function _W.FlexComponent:Layout()
   local root = _W.Ownership:FindRoot(self.node)
   if _W.DirtyRoots:IsDirty(root) then
     _W.LayoutCache.currentPass = _W.LayoutCache.currentPass + 1
+    local onLayoutQueue = _W.Scratch:Get()
 
     if root.hidden then
       if root.frame then
@@ -1430,15 +1627,19 @@ function _W.FlexComponent:Layout()
 
       -- Same rule as every other node: nothing to lay out without children.
       if root.children then
-        _W.FlexLayout:Layout(root, frame, width, height, root.defaultFrameFactory)
+        _W.FlexLayout:Layout(root, frame, width, height, root.defaultFrameFactory, onLayoutQueue)
       end
 
       if root.onLayout then
-        root.onLayout(_W.FlexComponentFactory:New(root), width, height)
+        _W.OnLayoutQueue:Add(onLayoutQueue, root, width, height)
       end
     end
 
+    -- Cleared before firing, not after: a mutation `onLayout` makes below
+    -- isn't wiped out along with it.
     _W.DirtyRoots:Clear(root)
+    _W.OnLayoutQueue:FireAll(onLayoutQueue)
+    _W.Scratch:Release(onLayoutQueue)
   end
 end
 
@@ -1528,19 +1729,6 @@ function _W.FlexComponent:DetachComponent(component)
   return _W.Ownership:Detach(component.node, self.node)
 end
 
---- Returns every one of this node's own children, wrapped, in declaration
---- order, not necessarily visual `order`. Not recursive. Empty if this
---- node has none.
---- @return WaffleFlexComponent[]
-function _W.FlexComponent:GetChildren()
-  local children = {}
-  for i, node in ipairs(self.node.children or EMPTY_CHILDREN) do
-    _W.Ownership:Claim(node, self.node)
-    children[i] = _W.FlexComponentFactory:New(node)
-  end
-  return children
-end
-
 --- Removes every child from this node, same as calling `DetachComponent`
 --- on each one.
 function _W.FlexComponent:Clear()
@@ -1552,107 +1740,6 @@ function _W.FlexComponent:Clear()
     _W.Ownership:Release(child)
   end
   _W.DirtyRoots:Mark(self.node)
-end
-
--- Every setter below is a no-op unless the value actually changes, same
--- convention as this node's other setters above. None of them need this
--- node to already have children, only relevant once it does.
-
---- Sets the space between this node's own children.
---- @param gap? integer
-function _W.FlexComponent:SetGap(gap)
-  if self.node.gap ~= gap then
-    self.node.gap = gap
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets the space between this node's own wrapped lines, instead of
---- `SetGap()`. `nil` falls back to it.
---- @param lineGap? integer
-function _W.FlexComponent:SetLineGap(lineGap)
-  if self.node.lineGap ~= lineGap then
-    self.node.lineGap = lineGap
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets the space between this node's edge and its own children, on all
---- four sides. Overridden per side by `SetPaddingTop()`/`SetPaddingRight()`/
---- `SetPaddingBottom()`/`SetPaddingLeft()`.
---- @param padding? integer
-function _W.FlexComponent:SetPadding(padding)
-  if self.node.padding ~= padding then
-    self.node.padding = padding
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Overrides `SetPadding()` for this node's top side only. `nil` reverts
---- to it.
---- @param paddingTop? integer
-function _W.FlexComponent:SetPaddingTop(paddingTop)
-  if self.node.paddingTop ~= paddingTop then
-    self.node.paddingTop = paddingTop
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Overrides `SetPadding()` for this node's right side only. `nil`
---- reverts to it.
---- @param paddingRight? integer
-function _W.FlexComponent:SetPaddingRight(paddingRight)
-  if self.node.paddingRight ~= paddingRight then
-    self.node.paddingRight = paddingRight
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Overrides `SetPadding()` for this node's bottom side only. `nil`
---- reverts to it.
---- @param paddingBottom? integer
-function _W.FlexComponent:SetPaddingBottom(paddingBottom)
-  if self.node.paddingBottom ~= paddingBottom then
-    self.node.paddingBottom = paddingBottom
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Overrides `SetPadding()` for this node's left side only. `nil` reverts
---- to it.
---- @param paddingLeft? integer
-function _W.FlexComponent:SetPaddingLeft(paddingLeft)
-  if self.node.paddingLeft ~= paddingLeft then
-    self.node.paddingLeft = paddingLeft
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets how this node aligns its own children along the cross axis by default.
---- @param align? WaffleFlexAlign
-function _W.FlexComponent:SetAlign(align)
-  if self.node.align ~= align then
-    self.node.align = align
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets how this node distributes leftover main-axis space among its own children.
---- @param justify? WaffleFlexJustify
-function _W.FlexComponent:SetJustify(justify)
-  if self.node.justify ~= justify then
-    self.node.justify = justify
-    _W.DirtyRoots:Mark(self.node)
-  end
-end
-
---- Sets whether this node's overflowing children wrap onto a new line.
---- @param wrap? boolean
-function _W.FlexComponent:SetWrap(wrap)
-  if self.node.wrap ~= wrap then
-    self.node.wrap = wrap
-    _W.DirtyRoots:Mark(self.node)
-  end
 end
 
 -- =============================================================================
