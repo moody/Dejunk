@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.8.0 - https://github.com/moody/Waffle
+-- Waffle: 0.8.1 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -12,8 +12,6 @@ local Waffle = Addon.Waffle
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @alias WafflePoint "TOPLEFT" | "TOP" | "TOPRIGHT" | "LEFT" | "CENTER" | "RIGHT" | "BOTTOMLEFT" | "BOTTOM" | "BOTTOMRIGHT"
-
 --- Not necessarily an actual `Frame`. Any table with this shape works:
 --- ```
 --- frame:ClearAllPoints()
@@ -24,16 +22,7 @@ local Waffle = Addon.Waffle
 --- frame:SetParent(parentFrame)
 --- frame:SetPoint("TOPLEFT", relativeFrame, "TOPLEFT", 4, -4)
 --- ```
---- @class WaffleFrameShape
---- @field ClearAllPoints fun(self: table)
---- @field Hide fun(self: table)
---- @field SetHeight fun(self: table, height: integer)
---- @field SetParent fun(self: table, parent: table)
---- @field SetPoint fun(self: table, point: WafflePoint, relativeTo: table, relativePoint: WafflePoint, offsetX: integer, offsetY: integer)
---- @field SetWidth fun(self: table, width: integer)
---- @field Show fun(self: table)
-
---- @alias WaffleFrame table | WaffleFrameShape
+--- @alias WaffleFrame table
 
 --- @alias WaffleFlexDirection "ROW" | "COLUMN" | "ROW_REVERSE" | "COLUMN_REVERSE"
 --- @alias WaffleFlexAlign "START" | "CENTER" | "END" | "STRETCH"
