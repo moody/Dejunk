@@ -94,3 +94,25 @@ function Widgets:ConfigureForPointSync(frame, stateType)
   frame:HookScript("OnShow", refresh)
   frame:HookScript("OnDragStop", save)
 end
+
+--- Returns the width and height `fontString`'s current text actually
+--- needs, ignoring any existing `SetWidth()`/`SetHeight()` constraint.
+--- Not a cheap read: briefly resizes `fontString` to measure it before
+--- restoring its previous size, avoid calling more than once per text
+--- change.
+--- @param fontString FontString
+--- @return number width, number height
+function Widgets:MeasureFontStringSize(fontString)
+  local prevWidth = fontString:GetStringWidth()
+  local prevHeight = fontString:GetStringHeight()
+
+  -- Get new sizes.
+  fontString:SetTextToFit(fontString:GetText())
+  local newWidth = fontString:GetStringWidth()
+  local newHeight = fontString:GetStringHeight()
+
+  -- Restore.
+  fontString:SetSize(prevWidth, prevHeight)
+
+  return newWidth, newHeight
+end
