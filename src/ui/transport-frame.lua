@@ -9,23 +9,154 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class TransportFrame
 local TransportFrame = Addon:GetModule("TransportFrame")
 
+local Components = {}
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
 
---- Sets the edit box text for the `frame` to comma-separated item IDs from the associated list.
---- @param frame TransportFrameWidget
-local function export(frame)
-  -- Set edit box text.
-  local editBox = frame.textFrame.editBox
-  local itemIds = frame.list:GetItemIds()
-  editBox:SetText(table.concat(itemIds, ","))
-  -- Select all.
+--- Always set before the frame is shown or either button is usable.
+--- @type List
+local currentList
+
+--- Fills the edit box with the current list's item IDs and selects them.
+local function export()
+  local editBox = Components.TextFrame:GetFrame().editBox
+  editBox:SetText(table.concat(currentList:GetItemIds(), ","))
+
   local numLetters = editBox:GetNumLetters()
   editBox:SetFocus()
   editBox:HighlightText(0, numLetters)
   editBox:SetCursorPosition(numLetters)
 end
+
+-- ============================================================================
+-- Root Component
+-- ============================================================================
+
+Components.Root = Addon.Waffle:Flex({
+  width = 325,
+  height = 375,
+  direction = "COLUMN",
+  hidden = true,
+
+  defaultFrameFactory = function(parent)
+    return CreateFrame("Frame")
+  end,
+
+  frameFactory = function(parent)
+    local frame = Widgets:Frame({
+      name = ADDON_NAME .. "_TransportFrame",
+      enableClickHandling = true,
+      enableDragging = true
+    })
+
+    frame:SetClickHandler("RightButton", "SHIFT", function()
+      StateManager:Dispatch(ActionCreators.Global.points.transportFrame.reset())
+    end)
+
+    Widgets:ConfigureForPointSync(frame, "TransportFrame")
+
+    table.insert(UISpecialFrames, frame:GetName())
+
+    frame:Hide()
+    return frame
+  end
+})
+
+-- ============================================================================
+-- Title Components
+-- ============================================================================
+
+Components.TitleRow = Components.Root:AddRow({
+  height = 32,
+  paddingLeft = Widgets:Padding(),
+  frameFactory = function(parent)
+    local frame = Widgets:Frame({ parent = parent })
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
+    return frame
+  end
+})
+
+Components.TitleText = Components.TitleRow:AddChild({
+  --- @param parent Frame
+  frameFactory = function(parent)
+    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
+    fontString:SetJustifyH("LEFT")
+    fontString:SetText(Colors.Yellow(L.TRANSPORT))
+    return fontString
+  end
+})
+
+Components.CloseButton = Components.TitleRow:AddChild({
+  width = 46,
+  frameFactory = function(parent)
+    return Widgets:TitleFrameIconButton({
+      name = "$parent_CloseButton",
+      texture = Addon:GetAsset("x-icon"),
+      textureSize = 14,
+      highlightColor = Colors.Red,
+      onClick = function() TransportFrame:Hide() end
+    })
+  end
+})
+
+-- ============================================================================
+-- Content Components
+-- ============================================================================
+
+Components.Content = Components.Root:AddChild({
+  direction = "COLUMN",
+  padding = Widgets:Padding(),
+  gap = Widgets:Padding(0.5),
+})
+
+Components.TextFrame = Components.Content:AddChild({
+  frameFactory = function()
+    return Widgets:TextFrame({
+      name = "$parent_TextFrame",
+      titleText = L.ITEM_IDS,
+      descriptionText = L.TRANSPORT_FRAME_TOOLTIP
+    })
+  end
+})
+
+Components.ButtonRow = Components.Content:AddRow({
+  maxHeight = 30,
+  gap = Widgets:Padding(0.5)
+})
+
+Components.ImportButton = Components.ButtonRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:Button({
+      name = "$parent_ImportButton",
+      labelText = L.IMPORT,
+      labelColor = Colors.Yellow,
+      onClick = function()
+        local editBox = Components.TextFrame:GetFrame().editBox
+        for itemId in editBox:GetText():gmatch("%d+") do
+          itemId = tonumber(itemId)
+          if itemId and itemId > 0 and itemId <= 2147483647 then
+            currentList:Add(itemId, true)
+          end
+        end
+        editBox:ClearFocus()
+        editBox:HighlightText(0, 0)
+      end
+    })
+  end
+})
+
+Components.ExportButton = Components.ButtonRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:Button({
+      name = "$parent_ExportButton",
+      labelText = L.EXPORT,
+      labelColor = Colors.Yellow,
+      onClick = export
+    })
+  end
+})
 
 -- ============================================================================
 -- TransportFrame
@@ -34,103 +165,25 @@ end
 --- Shows the frame for the given `list`.
 --- @param list List
 function TransportFrame:Show(list)
-  self.frame.list = list
-  self.frame:Show()
-  export(self.frame)
+  currentList = list
+  Components.Root:SetHidden(false)
+  Components.Root:Layout()
+  Components.TitleText:GetFrame():SetText(list.name)
+  export()
 end
 
 --- Hides the frame.
 function TransportFrame:Hide()
-  self.frame:Hide()
+  Components.Root:SetHidden(true)
+  Components.Root:Layout()
 end
 
 --- Toggles the frame for the given `list`.
 --- @param list List
 function TransportFrame:Toggle(list)
-  if list == self.frame.list and self.frame:IsShown() then
+  if list == currentList and not Components.Root:GetHidden() then
     self:Hide()
   else
     self:Show(list)
   end
 end
-
--- ============================================================================
--- Initialize
--- ============================================================================
-
-TransportFrame.frame = (function()
-  --- @class TransportFrameWidget : WindowWidget
-  --- @field list? List
-  local frame = Widgets:Window({
-    name = ADDON_NAME .. "_TransportFrame",
-    width = 325,
-    height = 375,
-    enableClickHandling = true
-  })
-
-  frame:SetClickHandler("RightButton", "SHIFT", function()
-    StateManager:Dispatch(ActionCreators.Global.points.transportFrame.reset())
-  end)
-
-  Widgets:ConfigureForPointSync(frame, "TransportFrame")
-
-  frame:HookScript("OnUpdate", function(self)
-    if self.list then
-      self.title:SetText(self.list.name)
-    else
-      self.title:SetText(Colors.Yellow(L.TRANSPORT))
-    end
-  end)
-
-  -- Import button.
-  frame.importButton = Widgets:Button({
-    name = "$parent_ImportButton",
-    parent = frame,
-    points = {
-      { "BOTTOMLEFT", Widgets:Padding(), Widgets:Padding() },
-      { "BOTTOMRIGHT", frame, "BOTTOM", -Widgets:Padding(0.25), Widgets:Padding() }
-    },
-    labelText = L.IMPORT,
-    labelColor = Colors.Yellow,
-    onClick = function(self)
-      -- Import ids.
-      local editBox = frame.textFrame.editBox
-      for itemId in editBox:GetText():gmatch("%d+") do
-        itemId = tonumber(itemId)
-        if itemId and itemId > 0 and itemId <= 2147483647 then
-          frame.list:Add(itemId, true)
-        end
-      end
-      -- Clear.
-      editBox:ClearFocus()
-      editBox:HighlightText(0, 0)
-    end
-  })
-
-  -- Export button.
-  frame.exportButton = Widgets:Button({
-    name = "$parent_ExportButton",
-    parent = frame,
-    points = {
-      { "BOTTOMLEFT", frame, "BOTTOM", Widgets:Padding(0.25), Widgets:Padding() },
-      { "BOTTOMRIGHT", -Widgets:Padding(), Widgets:Padding() }
-    },
-    labelText = L.EXPORT,
-    labelColor = Colors.Yellow,
-    onClick = function() export(frame) end
-  })
-
-  -- Text frame.
-  frame.textFrame = Widgets:TextFrame({
-    name = "$parent_TextFrame",
-    parent = frame,
-    points = {
-      { "TOPLEFT", frame.titleButton, "BOTTOMLEFT", Widgets:Padding(), 0 },
-      { "BOTTOMRIGHT", frame.exportButton, "TOPRIGHT", 0, Widgets:Padding(0.5) }
-    },
-    titleText = L.ITEM_IDS,
-    descriptionText = L.TRANSPORT_FRAME_TOOLTIP
-  })
-
-  return frame
-end)()
