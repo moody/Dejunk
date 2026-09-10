@@ -82,7 +82,7 @@ function Widgets:Frame(options)
   options.height = Addon:IfNil(options.height, 1)
   options.clipChildren = Addon:IfNil(options.clipChildren, true)
 
-  --- @class FrameWidget : Frame, BackdropTemplate, WaffleFrame
+  --- @class FrameWidget : Frame, BackdropTemplate
   local frame = CreateFrame(options.frameType, options.name, options.parent)
 
   -- Clip children.
