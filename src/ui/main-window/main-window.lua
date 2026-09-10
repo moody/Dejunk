@@ -3,267 +3,355 @@ local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class MainWindow
 local MainWindow = Addon:GetModule("MainWindow")
+
+local NUM_LIST_FRAME_BUTTONS = 7
+
+local Components = {}
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- @class ListSearchState
+local listSearchState = {
+  isSearching = false,
+  searchText = ""
+}
+
+local function getListSearchState()
+  return listSearchState
+end
+
+local function startSearching()
+  listSearchState.isSearching = true
+  listSearchState.searchText = ""
+  Components.TitleText:SetHidden(true)
+  Components.VersionText:SetHidden(true)
+  Components.SearchBarRow:SetHidden(false)
+  Components.TitleRowButtons:SetWidth("AUTO")
+  if Components.SearchButton:GetFrame() then
+    Components.SearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("ban-icon"))
+  end
+end
+
+local function stopSearching()
+  listSearchState.isSearching = false
+  listSearchState.searchText = ""
+  Components.TitleText:SetHidden(false)
+  Components.VersionText:SetHidden(false)
+  Components.SearchBarRow:SetHidden(true)
+  Components.TitleRowButtons:SetWidth(nil)
+  if Components.SearchButton:GetFrame() then
+    Components.SearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("search-icon"))
+  end
+end
+
+local function toggleSearching()
+  if not listSearchState.isSearching then
+    startSearching()
+  else
+    stopSearching()
+  end
+end
+
+-- ============================================================================
+-- Root Component
+-- ============================================================================
+
+Components.Root = Addon.Waffle:Flex({
+  width = 800,
+  height = 600,
+  direction = "COLUMN",
+  hidden = true,
+
+  defaultFrameFactory = function(parent)
+    return CreateFrame("Frame")
+  end,
+
+  frameFactory = function(parent)
+    local frame = Widgets:Frame({
+      name = ADDON_NAME .. "_MainWindowNew",
+      enableClickHandling = true,
+      enableDragging = true
+    })
+
+    frame:SetClickHandler("RightButton", "SHIFT", function()
+      StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset())
+    end)
+
+    Widgets:ConfigureForPointSync(frame, "MainWindow")
+
+    table.insert(UISpecialFrames, frame:GetName())
+
+    frame:HookScript("OnHide", function()
+      Components.Root:SetHidden(true)
+      stopSearching()
+    end)
+
+    frame:Hide()
+    return frame
+  end
+})
+
+TickerManager:NewTicker(1 / 30, function()
+  Components.Root:Layout()
+end)
+
+-- ============================================================================
+-- Title Components
+-- ============================================================================
+
+Components.TitleRow = Components.Root:AddRow({
+  height = 32,
+  frameFactory = function(parent)
+    local frame = Widgets:Frame({ parent = parent })
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
+    return frame
+  end
+})
+
+Components.TitleText = Components.TitleRow:AddRow({ paddingLeft = Widgets:Padding() })
+Components.TitleText:AddChild({
+  --- @param parent Frame
+  frameFactory = function(parent)
+    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
+    fontString:SetJustifyH("LEFT")
+    fontString:SetText(Colors.Blue(ADDON_NAME))
+    return fontString
+  end
+})
+
+Components.VersionText = Components.TitleRow:AddRow({ justify = "CENTER" })
+Components.VersionText:AddChild({
+  --- @param parent Frame
+  frameFactory = function(parent)
+    local fontString = parent:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
+    fontString:SetText(Colors.Grey(Addon.VERSION))
+    return fontString
+  end
+})
+
+Components.SearchBarRow = Components.TitleRow:AddRow({ hidden = true })
+Components.SearchBarRow:AddChild({
+  --- @param parent Frame
+  frameFactory = function(parent)
+    --- @class MainWindowSearchBoxWidget : EditBox
+    local searchBox = CreateFrame("EditBox", "$parent_SearchBox", parent)
+    searchBox:SetFontObject("GameFontNormalLarge")
+    searchBox:SetTextColor(1, 1, 1)
+    searchBox:SetAutoFocus(false)
+    searchBox:SetMultiLine(false)
+    searchBox:SetCountInvisibleLetters(true)
+    searchBox:Hide()
+
+    -- Search box backdrop.
+    Mixin(searchBox, BackdropTemplateMixin)
+    searchBox:SetBackdrop(Widgets.BORDER_BACKDROP)
+    searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
+    searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+
+    -- Search box text inset.
+    local searchBoxTextInset = Widgets:Padding()
+    searchBox:SetTextInsets(searchBoxTextInset, searchBoxTextInset, 0, 0)
+
+    -- Search box placeholder text.
+    searchBox.placeholderText = searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
+      "GameFontNormalLarge")
+    searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
+    searchBox.placeholderText:SetPoint("LEFT", searchBoxTextInset, 0)
+    searchBox.placeholderText:SetPoint("RIGHT", -searchBoxTextInset, 0)
+    searchBox.placeholderText:SetJustifyH("LEFT")
+    searchBox.placeholderText:SetAlpha(0.5)
+
+    searchBox:SetScript("OnEscapePressed", stopSearching)
+    searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+    searchBox:SetScript("OnTextChanged", function(self)
+      listSearchState.searchText = self:GetText()
+      if listSearchState.searchText == "" then
+        self.placeholderText:Show()
+      else
+        self.placeholderText:Hide()
+      end
+    end)
+    searchBox:SetScript("OnShow", function(self)
+      searchBox:SetText("")
+      searchBox:SetFocus()
+    end)
+    searchBox:SetScript("OnHide", function(self)
+      searchBox:SetText("")
+      searchBox:ClearFocus()
+    end)
+
+    return searchBox
+  end
+})
+
+-- ============================================================================
+-- Title Row Button Components
+-- ============================================================================
+
+Components.TitleRowButtons = Components.TitleRow:AddRow({ justify = "END" })
+
+Components.SearchButton = Components.TitleRowButtons:AddChild({
+  width = 46,
+  frameFactory = function(parent)
+    return Widgets:TitleFrameIconButton({
+      name = "$parent_SearchButton",
+      texture = Addon:GetAsset("search-icon"),
+      textureSize = 16,
+      highlightColor = Colors.Yellow,
+      onClick = toggleSearching,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
+      end
+    })
+  end
+})
+
+Components.KeybindsButton = Components.TitleRowButtons:AddChild({
+  width = 46,
+  frameFactory = function(parent)
+    return Widgets:TitleFrameIconButton({
+      name = "$parent_KeybindsButton",
+      texture = Addon:GetAsset("keyboard-icon"),
+      textureSize = 18,
+      highlightColor = Colors.Blue,
+      onClick = Commands.keybinds,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.KEYBINDS)
+      end
+    })
+  end
+})
+
+Components.CloseButton = Components.TitleRowButtons:AddChild({
+  width = 46,
+  frameFactory = function(parent)
+    return Widgets:TitleFrameIconButton({
+      name = "$parent_CloseButton",
+      texture = Addon:GetAsset("x-icon"),
+      textureSize = 14,
+      highlightColor = Colors.Red,
+      onClick = function() MainWindow:Hide() end
+    })
+  end
+})
+
+-- ============================================================================
+-- Content Components
+-- ============================================================================
+
+Components.ContentRow = Components.Root:AddRow({ padding = Widgets:Padding(), gap = Widgets:Padding(0.5) })
+
+-- Left column.
+Components.ContentRowLeftColumn = Components.ContentRow:AddColumn({ gap = Widgets:Padding(0.5), width = "35%" })
+
+-- Options frame.
+Components.OptionsFrame = Components.ContentRowLeftColumn:AddChild({
+  frameFactory = function(parent)
+    local optionsFrame = Widgets:OptionsFrame({
+      parent = parent,
+      name = "$parent_OptionsFrame",
+      titleText = L.OPTIONS_TEXT
+    })
+    MainWindowOptions:Initialize(optionsFrame)
+    return optionsFrame
+  end
+})
+
+-- Right column.
+Components.ContentRowRightColumn = Components.ContentRow:AddColumn({ gap = Widgets:Padding(0.5) })
+
+-- Global lists row.
+local globalListsRow = Components.ContentRowRightColumn:AddRow({ gap = Widgets:Padding(0.5) })
+globalListsRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:ListFrame({
+      parent = parent,
+      name = "$parent_GlobalInclusionsFrame",
+      numButtons = NUM_LIST_FRAME_BUTTONS,
+      list = Lists.GlobalInclusions,
+      getListSearchState = getListSearchState
+    })
+  end
+})
+globalListsRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:ListFrame({
+      parent = parent,
+      name = "$parent_GlobalExclusionsFrame",
+      numButtons = NUM_LIST_FRAME_BUTTONS,
+      list = Lists.GlobalExclusions,
+      getListSearchState = getListSearchState
+    })
+  end
+})
+
+-- Profile lists row.
+local profileListsRow = Components.ContentRowRightColumn:AddRow({ gap = Widgets:Padding(0.5) })
+profileListsRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:ListFrame({
+      parent = parent,
+      name = "$parent_ProfileInclusionsFrame",
+      numButtons = NUM_LIST_FRAME_BUTTONS,
+      list = Lists.ProfileInclusions,
+      getListSearchState = getListSearchState
+    })
+  end
+})
+profileListsRow:AddChild({
+  frameFactory = function(parent)
+    return Widgets:ListFrame({
+      parent = parent,
+      name = "$parent_ProfileExclusionsFrame",
+      numButtons = NUM_LIST_FRAME_BUTTONS,
+      list = Lists.ProfileExclusions,
+      getListSearchState = getListSearchState
+    })
+  end
+})
 
 -- ============================================================================
 -- MainWindow
 -- ============================================================================
 
 function MainWindow:Show()
-  self.frame:Show()
+  Components.Root:SetHidden(false)
+  Components.Root:Layout()
 end
 
 function MainWindow:Hide()
-  self.frame:Hide()
+  Components.Root:SetHidden(true)
+  Components.Root:Layout()
 end
 
 function MainWindow:Toggle()
-  if self.frame:IsShown() then
-    self.frame:Hide()
+  if Components.Root:GetHidden() then
+    self:Show()
   else
-    self.frame:Show()
+    self:Hide()
   end
 end
 
 -- ============================================================================
--- Initialize
+-- Events
 -- ============================================================================
 
-MainWindow.frame = (function()
-  local NUM_LIST_FRAME_BUTTONS = 7
-
-  --- @class MainWindowWidget : WindowWidget
-  local frame = Widgets:Window({
-    name = ADDON_NAME .. "_MainWindow",
-    width = 800,
-    height = 600,
-    titleText = Colors.Blue(ADDON_NAME),
-    enableClickHandling = true
-  })
-
-  frame:SetClickHandler("RightButton", "SHIFT", function()
-    StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset())
-  end)
-
-  Widgets:ConfigureForPointSync(frame, "MainWindow")
-
-  -- Version text.
-  frame.versionText = frame.titleButton:CreateFontString("$parent_VersionText", "ARTWORK", "GameFontNormalSmall")
-  frame.versionText:SetPoint("CENTER")
-  frame.versionText:SetText(Colors.White(Addon.VERSION))
-  frame.versionText:SetAlpha(0.5)
-
-  -- Keybinds button.
-  frame.keybindsButton = Widgets:TitleFrameIconButton({
-    name = "$parent_KeybindsButton",
-    parent = frame.titleButton,
-    points = {
-      { "TOPRIGHT", frame.closeButton, "TOPLEFT", 0, 0 },
-      { "BOTTOMRIGHT", frame.closeButton, "BOTTOMLEFT", 0, 0 }
-    },
-    texture = Addon:GetAsset("keyboard-icon"),
-    textureSize = frame.title:GetStringHeight(),
-    highlightColor = Colors.Blue,
-    onClick = Commands.keybinds,
-    onUpdateTooltip = function(self, tooltip)
-      tooltip:SetText(L.KEYBINDS)
-    end
-  })
-
-  --- @class ListSearchState
-  local listSearchState = {
-    isSearching = false,
-    searchText = ""
-  }
-
-  local function getListSearchState()
-    return listSearchState
-  end
-
-  local function startSearching()
-    frame.searchBox:Show()
-    frame.searchBox:SetText("")
-    frame.searchBox:SetFocus()
-    frame.searchButton.texture:SetTexture(Addon:GetAsset("ban-icon"))
-    frame.title:Hide()
-    frame.versionText:Hide()
-    listSearchState.isSearching = true
-  end
-
-  local function stopSearching()
-    frame.title:Show()
-    frame.versionText:Show()
-    frame.searchBox:Hide()
-    frame.searchButton.texture:SetTexture(Addon:GetAsset("search-icon"))
-    listSearchState.isSearching = false
-  end
-  frame:HookScript("OnHide", stopSearching)
-
-  local function toggleSearching()
-    if not listSearchState.isSearching then
-      startSearching()
-    else
-      stopSearching()
-    end
-  end
-
-  -- Search button.
-  frame.searchButton = Widgets:TitleFrameIconButton({
-    name = "$parent_SearchButton",
-    parent = frame.titleButton,
-    points = {
-      { "TOPRIGHT", frame.keybindsButton, "TOPLEFT", 0, 0 },
-      { "BOTTOMRIGHT", frame.keybindsButton, "BOTTOMLEFT", 0, 0 }
-    },
-    texture = Addon:GetAsset("search-icon"),
-    textureSize = frame.title:GetStringHeight(),
-    highlightColor = Colors.Yellow,
-    onClick = toggleSearching,
-    onUpdateTooltip = function(self, tooltip)
-      tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
-    end
-  })
-
-
-  --- Search box.
-  --- @class MainWindowSearchBoxWidget : EditBox
-  frame.searchBox = CreateFrame("EditBox", "$parent_SearchBox", frame.titleButton)
-  frame.searchBox:SetFontObject("GameFontNormalLarge")
-  frame.searchBox:SetTextColor(1, 1, 1)
-  frame.searchBox:SetAutoFocus(false)
-  frame.searchBox:SetMultiLine(false)
-  frame.searchBox:SetCountInvisibleLetters(true)
-  frame.searchBox:SetPoint("TOPLEFT", Widgets:Padding(), -Widgets:Padding(0.5))
-  frame.searchBox:SetPoint("BOTTOMLEFT", Widgets:Padding(), Widgets:Padding(0.5))
-  frame.searchBox:SetPoint("RIGHT", frame.searchButton, "LEFT", 0, 0)
-  -- frame.searchBox:SetPoint("BOTTOMRIGHT", frame.searchButton, "BOTTOMLEFT", 0, 0)
-  frame.searchBox:Hide()
-
-  -- Search box backdrop.
-  Mixin(frame.searchBox, BackdropTemplateMixin)
-  frame.searchBox:SetBackdrop(Widgets.BORDER_BACKDROP)
-  frame.searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
-  frame.searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-
-  -- Search box text inset.
-  local searchBoxTextInset = Widgets:Padding(0.5)
-  frame.searchBox:SetTextInsets(searchBoxTextInset, -searchBoxTextInset, 0, 0)
-
-  -- Search box placeholder text.
-  frame.searchBox.placeholderText = frame.searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
-    "GameFontNormalLarge")
-  frame.searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
-  frame.searchBox.placeholderText:SetPoint("LEFT", searchBoxTextInset, 0)
-  frame.searchBox.placeholderText:SetPoint("RIGHT", -searchBoxTextInset, 0)
-  frame.searchBox.placeholderText:SetJustifyH("LEFT")
-  frame.searchBox.placeholderText:SetAlpha(0.5)
-
-  frame.searchBox:SetScript("OnEscapePressed", stopSearching)
-  frame.searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-  frame.searchBox:SetScript("OnTextChanged", function(self)
-    listSearchState.searchText = self:GetText()
-    if listSearchState.searchText == "" then
-      self.placeholderText:Show()
-    else
-      self.placeholderText:Hide()
-    end
-  end)
-
-  -- Content area, everything below the title bar.
-  frame.contentFrame = CreateFrame("Frame", "$parent_Content", frame)
-  frame.contentFrame:SetPoint("TOPLEFT", frame.titleButton, "BOTTOMLEFT", 0, 0)
-  frame.contentFrame:SetPoint("BOTTOMRIGHT", 0, 0)
-
-  -- Root row.
-  local root = Addon.Waffle:Flex({
-    frame = frame.contentFrame,
-    width = frame:GetWidth(),
-    height = frame:GetHeight() - frame.titleButton:GetHeight(),
-    direction = "ROW",
-    padding = Widgets:Padding(),
-    gap = Widgets:Padding(0.5),
-    defaultFrameFactory = function(parent)
-      return CreateFrame("Frame", nil, parent)
-    end
-  })
-
-  -- Left column.
-  local leftColumn = root:AddColumn({ gap = Widgets:Padding(0.5), width = 300 })
-  leftColumn:AddChild({
-    frameFactory = function(parent)
-      local optionsFrame = Widgets:OptionsFrame({
-        parent = parent,
-        name = "$parent_OptionsFrame",
-        titleText = L.OPTIONS_TEXT
-      })
-      MainWindowOptions:Initialize(optionsFrame)
-      return optionsFrame
-    end
-  })
-
-  -- Right column.
-  local rightColumn = root:AddColumn({ gap = Widgets:Padding(0.5) })
-
-  -- Global lists row.
-  local globalListsRow = rightColumn:AddRow({ gap = Widgets:Padding(0.5) })
-  globalListsRow:AddChild({
-    frameFactory = function(parent)
-      return Widgets:ListFrame({
-        parent = parent,
-        name = "$parent_GlobalInclusionsFrame",
-        numButtons = NUM_LIST_FRAME_BUTTONS,
-        list = Lists.GlobalInclusions,
-        getListSearchState = getListSearchState
-      })
-    end
-  })
-  globalListsRow:AddChild({
-    frameFactory = function(parent)
-      return Widgets:ListFrame({
-        parent = parent,
-        name = "$parent_GlobalExclusionsFrame",
-        numButtons = NUM_LIST_FRAME_BUTTONS,
-        list = Lists.GlobalExclusions,
-        getListSearchState = getListSearchState
-      })
-    end
-  })
-
-  -- Profile lists row.
-  local profileListsRow = rightColumn:AddRow({ gap = Widgets:Padding(0.5) })
-  profileListsRow:AddChild({
-    frameFactory = function(parent)
-      return Widgets:ListFrame({
-        parent = parent,
-        name = "$parent_ProfileInclusionsFrame",
-        numButtons = NUM_LIST_FRAME_BUTTONS,
-        list = Lists.ProfileInclusions,
-        getListSearchState = getListSearchState
-      })
-    end
-  })
-  profileListsRow:AddChild({
-    frameFactory = function(parent)
-      return Widgets:ListFrame({
-        parent = parent,
-        name = "$parent_ProfileExclusionsFrame",
-        numButtons = NUM_LIST_FRAME_BUTTONS,
-        list = Lists.ProfileExclusions,
-        getListSearchState = getListSearchState
-      })
-    end
-  })
-
-  root:Layout()
-
-  frame:SetScript("OnUpdate", function() root:Layout() end)
-
-  return frame
-end)()
+-- Some elements of the UI do not appear correctly without an initial load,
+-- so we force one here once the Wux store is ready.
+EventManager:Once(E.StoreCreated, function()
+  MainWindow:Show()
+  MainWindow:Hide()
+end)
