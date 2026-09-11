@@ -6,6 +6,7 @@ local L = Addon:GetModule("Locale")
 -- Russian (Русский)
 -- ============================================================================
 
+L["ACTIVE_PROFILE"] = "Активный профиль:"
 L["ADD_ALL_TO_LIST"] = "Добавить всё в %s"
 L["ADD_TO_LIST"] = "Добавить в %s"
 L["ALL_ITEMS_REMOVED_FROM_LIST"] = "Все предметы удалены из %s."
@@ -24,9 +25,6 @@ L["CANNOT_OPEN_LOOTABLE_ITEMS"] = "Сейчас нельзя открыть пр
 L["CANNOT_SELL_OR_DESTROY_ITEM"] = "Невозможно продать или уничтожить %s."
 L["CANNOT_SELL_WITHOUT_MERCHANT"] = "Нельзя продавать предметы без торговца."
 L["CHANGE_VALUE"] = "Изменить значение"
-L["CHARACTER_SPECIFIC_SETTINGS_TEXT"] = "Настройки персонажа"
-L["CHARACTER_SPECIFIC_SETTINGS_TOOLTIP"] = "Включить настройки, специфичные для этого персонажа."
-L["CHARACTER"] = "Персонаж"
 L["CHAT_MESSAGES_TEXT"] = "Сообщения в чате"
 L["CHAT_MESSAGES_TOOLTIP"] = "Включить сообщения в чате."
 L["CLEAR_SEARCH"] = "Очистить поиск"
@@ -61,7 +59,6 @@ L["EXCLUSIONS_TEXT"] = "Исключения"
 L["EXPORT"] = "Экспорт"
 L["FAILED_TO_DESTROY_ITEM"] = "Не удалось уничтожить %s."
 L["FAILED_TO_SELL_ITEM"] = "Не удалось продать %s."
-L["GENERAL"] = "Общие"
 L["GLOBAL"] = "Глобальный"
 L["IMPORT"] = "Импорт"
 L["INCLUDE_ARTIFACT_RELICS_TEXT"] = "Включить реликвии артефакта"
@@ -115,6 +112,7 @@ L["OPTION_WARNING_BE_CAREFUL"] = "Пожалуйста, будьте остор�
 L["OPTIONS_TEXT"] = "Настройки"
 L["POOR"] = "Низкое"
 L["PROFILE"] = "Профиль"
+L["PROFILES"] = "Профили"
 L["PROFIT"] = "Прибыль: %s"
 L["RARE"] = "Редкое"
 L["REMOVE_ALL_ITEMS"] = "Удалить все предметы"
