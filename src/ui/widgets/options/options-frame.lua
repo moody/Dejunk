@@ -21,7 +21,6 @@ function Widgets:OptionsFrame(options)
 
   -- Defaults.
   options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("OptionsFrame"))
-  options.titleJustify = "CENTER"
 
   --- @class OptionsFrameWidget : ScrollableTitleFrameWidget
   local frame = self:ScrollableTitleFrame(options)

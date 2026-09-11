@@ -10,30 +10,67 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindowOptions
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 
---- Initializes options for the given `optionsFrame`.
+--- Initializes global-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:Initialize(optionsFrame)
-  -- Profile.
-  self:AddProfileOptions(optionsFrame)
-  self:AddIncludeOptions(optionsFrame)
-  self:AddExcludeOptions(optionsFrame)
+function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
+  -- Bag item icons.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.BAG_ITEM_ICONS_TEXT,
+    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemIcons end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
+  }))
 
-  -- Add frame for vertical spacing.
-  local spacer = CreateFrame("Frame")
-  spacer:SetWidth(1)
-  spacer:SetHeight(Widgets:Padding())
-  optionsFrame:AddChild(spacer)
+  -- Bag item tooltips.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
+    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemTooltips end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
+  }))
 
-  -- Global.
-  self:AddGlobalOptions(optionsFrame)
+  -- Chat messages.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.CHAT_MESSAGES_TEXT,
+    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().chatMessages end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
+  }))
+
+  -- Merchant button.
+  do
+    local frame = Widgets:OptionButton({
+      labelText = L.MERCHANT_BUTTON_TEXT,
+      get = function() return StateManager:GetGlobalState().merchantButton end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Global.setMerchantButton(value)) end,
+      enableClickHandling = true,
+      onUpdateTooltip = function(self, tooltip)
+        tooltip:SetText(L.MERCHANT_BUTTON_TEXT)
+        tooltip:AddLine(L.MERCHANT_BUTTON_TOOLTIP)
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RESET_POSITION)
+      end
+    })
+
+    frame:SetClickHandler("RightButton", "NONE", function()
+      StateManager:Dispatch(ActionCreators.Global.points.merchantButton.reset())
+    end)
+
+    optionsFrame:AddChild(frame)
+  end
+
+  -- Minimap icon.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.MINIMAP_ICON_TEXT,
+    tooltipText = L.MINIMAP_ICON_TOOLTIP,
+    get = function() return MinimapIcon:IsEnabled() end,
+    set = function(value) MinimapIcon:SetEnabled(value) end
+  }))
 end
 
---- Adds profile options to the given `optionsFrame`.
+--- Initializes profile-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddProfileOptions(optionsFrame)
-  -- Profile heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.PROFILE }))
-
+function MainWindowOptions:InitializeProfileOptions(optionsFrame)
   -- Auto junk frame.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
@@ -65,6 +102,9 @@ function MainWindowOptions:AddProfileOptions(optionsFrame)
     get = function() return StateManager:GetProfileState().settings.safeMode end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setSafeMode(value)) end
   }))
+
+  self:AddIncludeOptions(optionsFrame)
+  self:AddExcludeOptions(optionsFrame)
 end
 
 --- Adds exclude options to the given `optionsFrame`.
@@ -309,65 +349,4 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
 
     optionsFrame:AddChild(frame)
   end
-end
-
---- Adds global options to the given `optionsFrame`.
---- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddGlobalOptions(optionsFrame)
-  -- Global heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({ headingText = L.GLOBAL }))
-
-  -- Bag item icons.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.BAG_ITEM_ICONS_TEXT,
-    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().itemIcons end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
-  }))
-
-  -- Bag item tooltips.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
-    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().itemTooltips end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
-  }))
-
-  -- Chat messages.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.CHAT_MESSAGES_TEXT,
-    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
-  }))
-
-  -- Merchant button.
-  do
-    local frame = Widgets:OptionButton({
-      labelText = L.MERCHANT_BUTTON_TEXT,
-      get = function() return StateManager:GetGlobalState().merchantButton end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Global.setMerchantButton(value)) end,
-      enableClickHandling = true,
-      onUpdateTooltip = function(self, tooltip)
-        tooltip:SetText(L.MERCHANT_BUTTON_TEXT)
-        tooltip:AddLine(L.MERCHANT_BUTTON_TOOLTIP)
-        tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RESET_POSITION)
-      end
-    })
-
-    frame:SetClickHandler("RightButton", "NONE", function()
-      StateManager:Dispatch(ActionCreators.Global.points.merchantButton.reset())
-    end)
-
-    optionsFrame:AddChild(frame)
-  end
-
-  -- Minimap icon.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.MINIMAP_ICON_TEXT,
-    tooltipText = L.MINIMAP_ICON_TOOLTIP,
-    get = function() return MinimapIcon:IsEnabled() end,
-    set = function(value) MinimapIcon:SetEnabled(value) end
-  }))
 end
