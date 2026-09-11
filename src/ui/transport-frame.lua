@@ -50,6 +50,7 @@ Components.Root = Addon.Waffle:Flex({
       enableClickHandling = true,
       enableDragging = true
     })
+    frame:SetFrameLevel(10)
 
     frame:SetClickHandler("RightButton", "SHIFT", function()
       StateManager:Dispatch(ActionCreators.Global.points.transportFrame.reset())
