@@ -17,6 +17,7 @@ end)
 
 --- @class Ticker
 --- @field package callback function
+--- @field package frame Region
 --- @field package isActive boolean
 --- @field package maxTicks number
 --- @field package ticks number
@@ -45,10 +46,25 @@ function Ticker:IsCancelled()
   return not self.isActive
 end
 
+--- Binds the ticker to `frame`: it only advances while `frame` is visible.
+--- @param frame Region
+--- @return Ticker
+function Ticker:BindFrame(frame)
+  self.frame = frame
+  self.timer = self.timePerTick
+  return self
+end
+
 --- Updates the ticker's timer and executes its callback as necessary.
 --- @param elapsed number The time since the last update
 function Ticker:OnUpdate(elapsed)
   if not self.isActive then return end
+
+  if self.frame and not self.frame:IsVisible() then
+    self.timer = self.timePerTick
+    return
+  end
+
   if self.maxTicks > 0 and self.ticks >= self.maxTicks then
     return self:Cancel()
   end
