@@ -99,14 +99,15 @@ Components.Root = Addon.Waffle:Flex({
       stopSearching()
     end)
 
+    TickerManager:NewTicker(1 / 30, function()
+      Components.Root:Layout()
+    end):BindFrame(frame)
+
     frame:Hide()
     return frame
   end
 })
 
-TickerManager:NewTicker(1 / 30, function()
-  Components.Root:Layout()
-end)
 
 -- ============================================================================
 -- Title Components
