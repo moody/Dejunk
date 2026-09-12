@@ -164,6 +164,19 @@ function RootReducer:Build()
         return state
       end
 
+      -- Delete profile action.
+      if action.type == ActionTypes.Profiles.DELETE_PROFILE then
+        --- @cast action WuxPayloadAction<DeleteProfilePayload>
+        state = Wux:ShallowCopy(state)
+        state.profileMap = Wux:ShallowCopy(state.profileMap)
+        state.profileMap[action.payload.profileId] = nil
+        -- Fall back to the default profile if it was the active one.
+        if state.activeProfileId == action.payload.profileId then
+          state.activeProfileId = DefaultStates.DEFAULT_PROFILE_ID
+        end
+        return state
+      end
+
       -- Ensure the active profile is not the default.
       if state.activeProfileId ~= DefaultStates.DEFAULT_PROFILE_ID then
         -- Ensure the active profile exists.
