@@ -21,10 +21,12 @@ ActionTypes.Global = {
   RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
   RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
   RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
+  RESET_PROFILES_FRAME_POINT = "global/points/profilesFrame/reset",
   RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
   SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
   SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
   SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
+  SET_PROFILES_FRAME_POINT = "global/points/profilesFrame/set",
   SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
 }
 

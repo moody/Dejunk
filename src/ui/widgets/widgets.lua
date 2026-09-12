@@ -49,7 +49,7 @@ end
 
 --- Configures a draggable `frame` to refresh or save its point based on certain events.
 --- @param frame Frame | any
---- @param stateType "MainWindow" | "JunkFrame" | "TransportFrame" | "MerchantButton"
+--- @param stateType "MainWindow" | "JunkFrame" | "TransportFrame" | "MerchantButton" | "ProfilesFrame"
 function Widgets:ConfigureForPointSync(frame, stateType)
   local getPoint, setPoint
 
@@ -62,6 +62,9 @@ function Widgets:ConfigureForPointSync(frame, stateType)
   elseif stateType == "TransportFrame" then
     getPoint = function() return StateManager:GetGlobalState().points.transportFrame end
     setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.transportFrame.set(point)) end
+  elseif stateType == "ProfilesFrame" then
+    getPoint = function() return StateManager:GetGlobalState().points.profilesFrame end
+    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.set(point)) end
   elseif stateType == "MerchantButton" then
     getPoint = function()
       local point = StateManager:GetGlobalState().points.merchantButton

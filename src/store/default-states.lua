@@ -27,6 +27,7 @@ DefaultStates.Global = {
     mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
+    profilesFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
   }
 }

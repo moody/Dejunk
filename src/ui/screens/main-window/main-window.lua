@@ -8,6 +8,7 @@ local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
+local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -400,7 +401,7 @@ footerRow:AddRow({ justify = "END" }):AddChild({
       texture = Addon:GetAsset("gear-icon"),
       textureSize = 14,
       highlightColor = Colors.Yellow,
-      onClick = function() Addon:Debug("ProfilesFrame:Toggle()") end,
+      onClick = function() ProfilesFrame:Toggle() end,
       onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(L.PROFILES)
       end

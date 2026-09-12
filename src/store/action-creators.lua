@@ -99,6 +99,16 @@ ActionCreators.Global = {
       --- Action creator for `ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT`.
       --- @type fun(): WuxAction
       reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT)
+    },
+
+    profilesFrame = {
+      --- Action creator for `ActionTypes.Global.SET_PROFILES_FRAME_POINT`.
+      --- @type WuxActionCreator<table>
+      set = Wux:CreateActionCreator(ActionTypes.Global.SET_PROFILES_FRAME_POINT),
+
+      --- Action creator for `ActionTypes.Global.RESET_PROFILES_FRAME_POINT`.
+      --- @type fun(): WuxAction
+      reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_PROFILES_FRAME_POINT)
     }
   }
 }

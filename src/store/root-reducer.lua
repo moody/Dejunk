@@ -126,6 +126,12 @@ function RootReducer:Build()
           ActionTypes.Global.SET_MERCHANT_BUTTON_POINT,
           ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT,
           DefaultStates.Global.points.merchantButton
+        ),
+
+        profilesFrame = createPointsReducer(
+          ActionTypes.Global.SET_PROFILES_FRAME_POINT,
+          ActionTypes.Global.RESET_PROFILES_FRAME_POINT,
+          DefaultStates.Global.points.profilesFrame
         )
       })
     }),
