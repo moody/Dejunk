@@ -112,6 +112,7 @@ local function newTextInputPopup(popupKey, parse)
       editBox:SetText(tostring(options.initialValue or ""))
       editBox:HighlightText()
       editBox:SetCursorPosition(editBox:GetNumLetters())
+      getButton1(self):SetEnabled(parse(editBox:GetText()) ~= nil)
       if options.onShow then options.onShow(self) end
     end
     popup.OnHide = options.onHide
