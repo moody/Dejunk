@@ -3,6 +3,8 @@ local Addon = select(2, ...) ---@type Addon
 --- @class EquipmentSetsCache
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 
+local EMPTY = {}
+
 local cache = {}
 
 -- ============================================================================
@@ -26,8 +28,8 @@ function EquipmentSetsCache:Refresh()
 
   for k in pairs(cache) do cache[k] = nil end
 
-  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs() or {}) do
-    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId) or {}) do
+  for _, equipmentSetId in pairs(C_EquipmentSet.GetEquipmentSetIDs() or EMPTY) do
+    for _, itemLocation in pairs(C_EquipmentSet.GetItemLocations(equipmentSetId) or EMPTY) do
       -- See: Blizzard_FrameXML/EquipmentManager.lua -> `EquipmentManager_UnpackLocation()`.
       if itemLocation and itemLocation >= 0 then
         local player = bit.band(itemLocation, ITEM_INVENTORY_LOCATION_PLAYER) ~= 0
