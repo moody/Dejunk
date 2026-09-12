@@ -50,31 +50,32 @@
   <Script file="src\services\confirmer.lua"/>
   <Script file="src\services\looter.lua"/>
 
-  <Script file="src\ui\widgets\_init.lua"/>
-  <Script file="src\ui\widgets\button.lua"/>
-  <Script file="src\ui\widgets\check-box.lua"/>
-  <Script file="src\ui\widgets\frame.lua"/>
-  <Script file="src\ui\widgets\items-frame.lua"/>
-  <Script file="src\ui\widgets\list-frame.lua"/>
-  <Script file="src\ui\widgets\slider.lua"/>
-  <Script file="src\ui\widgets\title-frame.lua"/>
-  <Script file="src\ui\widgets\text-frame.lua"/>
-  <Script file="src\ui\widgets\scrollable-title-frame.lua"/>
+  <Script file="src\ui\widgets\widgets.lua"/>
 
-  <Script file="src\ui\widgets\options\option-button.lua"/>
-  <Script file="src\ui\widgets\options\option-heading.lua"/>
-  <Script file="src\ui\widgets\options\options-frame.lua"/>
+  <Script file="src\ui\widgets\primitives\button.lua"/>
+  <Script file="src\ui\widgets\primitives\check-box.lua"/>
+  <Script file="src\ui\widgets\primitives\frame.lua"/>
+  <Script file="src\ui\widgets\primitives\slider.lua"/>
 
-  <Script file="src\ui\main-window\options.lua"/>
-  <Script file="src\ui\main-window\main-window.lua"/>
+  <Script file="src\ui\widgets\composites\items-frame.lua"/>
+  <Script file="src\ui\widgets\composites\list-frame.lua"/>
+  <Script file="src\ui\widgets\composites\options\option-button.lua"/>
+  <Script file="src\ui\widgets\composites\options\option-heading.lua"/>
+  <Script file="src\ui\widgets\composites\options\options-frame.lua"/>
+  <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
+  <Script file="src\ui\widgets\composites\text-frame.lua"/>
+  <Script file="src\ui\widgets\composites\title-frame.lua"/>
+
+  <Script file="src\ui\screens\junk-frame.lua"/>
+  <Script file="src\ui\screens\main-window\main-window-options.lua"/>
+  <Script file="src\ui\screens\main-window\main-window.lua"/>
+  <Script file="src\ui\screens\merchant-button.lua"/>
+  <Script file="src\ui\screens\transport-frame.lua"/>
 
   <Script file="src\ui\addon-compartment.lua"/>
-  <Script file="src\ui\junk-frame.lua"/>
-  <Script file="src\ui\transport-frame.lua"/>
-  <Script file="src\ui\merchant-button.lua"/>
-  <Script file="src\ui\minimap-icon.lua"/>
   <Script file="src\ui\item-icons.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>
+  <Script file="src\ui\minimap-icon.lua"/>
   <Script file="src\ui\popup.lua"/>
 
   <!-- Bindings -->
