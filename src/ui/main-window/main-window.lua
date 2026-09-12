@@ -71,7 +71,7 @@ end
 
 Components.Root = Addon.Waffle:Flex({
   width = 800,
-  height = 600,
+  height = 640,
   direction = "COLUMN",
   hidden = true,
 
