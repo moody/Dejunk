@@ -145,7 +145,7 @@ addPlugin({
   end,
   getBagSlotFrame = function(bag, slot)
     if Addon.IS_RETAIL then
-      return ContainerFrameUtil_GetItemButtonAndContainer(bag, slot)
+      return (ContainerFrameUtil_GetItemButtonAndContainer(bag, slot))
     end
 
     local containerBag = bag + 1
