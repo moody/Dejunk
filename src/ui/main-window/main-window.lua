@@ -211,7 +211,7 @@ Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AddChild({
       name = "$parent_SearchButton",
       texture = Addon:GetAsset("search-icon"),
       textureSize = 16,
-      highlightColor = Colors.Yellow,
+      highlightColor = Colors.Pink,
       onClick = toggleSearching,
       onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
@@ -381,7 +381,7 @@ footerRow:AddRow({ justify = "CENTER" }):AddChild({
     local fontString = parent:CreateFontString("$parent_ActiveProfileName", "ARTWORK", "GameFontNormal")
     fontString:SetJustifyH("CENTER")
     fontString:SetText(L.DEFAULT_PROFILE_NAME)
-    fontString:SetTextColor(Colors.Pink:GetRGB())
+    fontString:SetTextColor(Colors.Yellow:GetRGB())
 
     TickerManager:NewTicker(1 / 30, function()
       fontString:SetText(StateManager:GetProfileState().name)
@@ -399,7 +399,7 @@ footerRow:AddRow({ justify = "END" }):AddChild({
       name = "$parent_EditProfilesButton",
       texture = Addon:GetAsset("gear-icon"),
       textureSize = 14,
-      highlightColor = Colors.Pink,
+      highlightColor = Colors.Yellow,
       onClick = function() Addon:Debug("ProfilesFrame:Toggle()") end,
       onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(L.PROFILES)
