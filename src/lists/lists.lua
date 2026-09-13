@@ -133,16 +133,9 @@ function Mixins:Add(itemId, silent)
       if link then Addon:Print(L.ITEM_ALREADY_ON_LIST:format(link, self.name)) end
     end
   else
-    ListItemParser:Parse(self, itemId)
+    ListItemParser:Parse(self, itemId, silent)
     self.itemIds[itemId] = true
     self.save()
-
-    self.getOpposite():RemoveItemId(itemId, true)
-
-    if not silent then
-      local _, link = GetItemInfo(itemId)
-      if link then Addon:Print(L.ITEM_ADDED_TO_LIST:format(link, self.name)) end
-    end
   end
 end
 
@@ -245,12 +238,11 @@ function Mixins:GetSearchItems(searchText)
   return self.searchItems
 end
 
---- Returns the percentage of parsed items relative to total item IDs, or `100` if there are no item IDs.
+--- Returns the percentage of items resolved so far, or `100` if nothing is pending.
 --- @return integer percentage
 function Mixins:GetParsedItemPercentage()
-  local totalItemIds = 0
-  for _ in pairs(self.itemIds) do totalItemIds = totalItemIds + 1 end
-  return totalItemIds > 0 and math.floor((#self.items / totalItemIds) * 100) or 100
+  local total = #self.items + ListItemParser:GetPendingCount(self)
+  return total > 0 and math.floor((#self.items / total) * 100) or 100
 end
 
 -- ============================================================================
@@ -279,6 +271,7 @@ EventManager:On(E.ListItemParsed, function(list, item, silent)
       table.insert(list.items, getSortedIndex(list.items, item), item)
     end
     list.itemIds[tostring(item.id)] = true
+    if not silent then Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name)) end
   else
     list:RemoveItemId(item.id, true)
     if not silent then Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link)) end
