@@ -5,11 +5,9 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
-local Lists = Addon:GetModule("Lists")
 local Looter = Addon:GetModule("Looter")
 local MainWindow = Addon:GetModule("MainWindow")
 local Seller = Addon:GetModule("Seller")
-local TransportFrame = Addon:GetModule("TransportFrame")
 
 --- @class Commands
 local Commands = Addon:GetModule("Commands")
@@ -49,13 +47,6 @@ function Commands.help()
   Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
 
   Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
-  Addon:ForcePrint(Colors.Gold("  /dejunk keybinds"), "-", L.COMMAND_DESCRIPTION_KEYBINDS)
-  Addon:ForcePrint(Colors.Gold("  /dejunk transport"),
-    Colors.Grey(("{%s||%s}"):format(Colors.Gold("inclusions"), Colors.Gold("exclusions"))),
-    Colors.Grey(("{%s||%s}"):format(Colors.Gold("global"), Colors.Gold("character"))),
-    "-",
-    L.COMMAND_DESCRIPTION_TRANSPORT
-  )
 
   Addon:ForcePrint(Colors.Gold("  /dejunk help"), "-", L.COMMAND_DESCRIPTION_HELP)
 end
@@ -84,26 +75,3 @@ end
 function Commands.loot()
   Looter:Start()
 end
-
---- Opens the game's settings window for keybindings.
-function Commands.keybinds()
-  CloseMenus()
-  CloseAllWindows()
-
-  -- Open the settings panel.
-  local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
-  Settings.OpenToCategory(keybindingsCategoryId)
-end
-
---- Toggles the `TransportFrame` based on the given `listName` and `listType`.
---- @param listName "inclusions" | "exclusions"
---- @param listType "global" | "profile"
-function Commands.transport(listName, listType)
-  local list = nil
-  if listName == "inclusions" then list = listType == "global" and Lists.GlobalInclusions or Lists.ProfileInclusions end
-  if listName == "exclusions" then list = listType == "global" and Lists.GlobalExclusions or Lists.ProfileExclusions end
-  if list then TransportFrame:Toggle(list) else Commands.help() end
-end
-
-Commands.import = Commands.transport
-Commands.export = Commands.transport

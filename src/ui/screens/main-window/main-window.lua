@@ -2,7 +2,6 @@ local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
-local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
@@ -64,6 +63,15 @@ local function toggleSearching()
   else
     stopSearching()
   end
+end
+
+local function openKeybindings()
+  CloseMenus()
+  CloseAllWindows()
+
+  -- Open the settings panel.
+  local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
+  Settings.OpenToCategory(keybindingsCategoryId)
 end
 
 -- ============================================================================
@@ -230,7 +238,7 @@ Components.TitleBarButtonsRow:AddChild({
       texture = Addon:GetAsset("keyboard-icon"),
       textureSize = 18,
       highlightColor = Colors.Blue,
-      onClick = Commands.keybinds,
+      onClick = openKeybindings,
       onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(L.KEYBINDS)
       end
