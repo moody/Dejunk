@@ -17,6 +17,7 @@ Once set up, Dejunk can handle the process of selling or destroying junk items w
 - Overlay icons on junk items in your bags
 - Add Dejunk information to item tooltips, including the reason an item is considered junk
 - Set up keybindings or use chat commands for most operations
+- Manage separate settings and lists per profile, shared across characters as needed
 
 ### Filters
 
@@ -35,16 +36,24 @@ Filters determine what items are considered junk. Several filters support per-qu
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
 
+### Profiles
+
+Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, safe mode, and include/exclude filter settings. Multiple characters can share the same profile.
+
+Every character starts on the `Default` profile. Adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
+
+Profiles can also be created, switched, renamed, and deleted directly from the Profiles frame, opened via the gear icon in the main window's footer, which also shows the name of the active profile. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
+
 ### Lists
 
-Inclusions and Exclusions lists are available at both the global and per-character level. Per-character lists take priority over global ones.
+Inclusions and Exclusions lists are available at both the global and per-profile level. Per-profile lists take priority over global ones.
 
-| List                 | Behaviour                                                                         |
-| -------------------- | --------------------------------------------------------------------------------- |
-| Global Inclusions    | Always junk across all characters, unless overridden by a per-character exclusion |
-| Global Exclusions    | Never junk across all characters, unless overridden by a per-character inclusion  |
-| Character Inclusions | Always junk for this character only, regardless of any other setting              |
-| Character Exclusions | Never junk for this character only, regardless of any other setting               |
+| List               | Behaviour                                                                       |
+| ------------------ | ------------------------------------------------------------------------------- |
+| Global Inclusions  | Always junk across all characters, unless overridden by a per-profile exclusion |
+| Global Exclusions  | Never junk across all characters, unless overridden by a per-profile inclusion  |
+| Profile Inclusions | Always junk for the active profile only, regardless of any other setting        |
+| Profile Exclusions | Never junk for the active profile only, regardless of any other setting         |
 
 Items can be added to lists by dragging them directly into the list frame or the Junk Frame. The Transport Frame can be used to import or export item IDs as plain text, making it easy to share or back up lists.
 
