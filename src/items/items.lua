@@ -95,6 +95,10 @@ local function getItem(bag, slot)
   item.subclassId = subclassId
   item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
 
+  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(bag, slot, false)
+  local refundSeconds = purchaseInfo and purchaseInfo.refundSeconds
+  item.refundExpirationTime = refundSeconds and refundSeconds > 0 and (GetTime() + refundSeconds) or nil
+
   return item
 end
 
@@ -163,6 +167,22 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   EventManager:On(E.Wow.EquipmentSetsChanged, debounce)
   EventManager:On(E.BagsUpdated, function(allItemsCached)
     if not allItemsCached then TickerManager:After(0.01, debounce) end
+  end)
+
+  -- A refund window can expire with no bag event to catch it, so poll for
+  -- that and fire `BagsUpdated` when it happens.
+  TickerManager:NewTicker(1, function()
+    local now = GetTime()
+    local anyExpired = false
+
+    for _, item in pairs(bagItemCache) do
+      if item.refundExpirationTime and item.refundExpirationTime <= now then
+        item.refundExpirationTime = nil
+        anyExpired = true
+      end
+    end
+
+    if anyExpired then EventManager:Fire(E.BagsUpdated, true) end
   end)
 end)
 
@@ -279,8 +299,7 @@ end
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemRefundable(item)
-  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false)
-  return purchaseInfo and purchaseInfo.refundSeconds > 0
+  return item.refundExpirationTime ~= nil and item.refundExpirationTime > GetTime()
 end
 
 -- Items:IsItemEquipment()
