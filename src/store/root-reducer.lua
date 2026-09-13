@@ -176,7 +176,13 @@ function RootReducer:Build()
         state = Wux:ShallowCopy(state)
         state.profileMap = Wux:ShallowCopy(state.profileMap)
         state.profileMap[action.payload.profileId] = nil
-        -- Fall back to the default profile if it was the active one.
+        -- Fall back to the default profile for any character assigned to the deleted one.
+        state.characterMap = Wux:ShallowCopy(state.characterMap)
+        for characterKey, profileId in pairs(state.characterMap) do
+          if profileId == action.payload.profileId then
+            state.characterMap[characterKey] = DefaultStates.DEFAULT_PROFILE_ID
+          end
+        end
         if state.activeProfileId == action.payload.profileId then
           state.activeProfileId = DefaultStates.DEFAULT_PROFILE_ID
         end
