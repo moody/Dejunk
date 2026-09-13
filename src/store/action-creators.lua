@@ -56,6 +56,10 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setMerchantButton = Wux:CreateActionCreator(ActionTypes.Global.SET_MERCHANT_BUTTON),
 
+  --- Action creator for `ActionTypes.Global.SET_SAFE_SELL`.
+  --- @type WuxActionCreator<boolean>
+  setSafeSell = Wux:CreateActionCreator(ActionTypes.Global.SET_SAFE_SELL),
+
   --- Action creator for `ActionTypes.Global.PATCH_MINIMAP_ICON`.
   --- @type WuxActionCreator<table<string, any>>
   patchMinimapIcon = Wux:CreateActionCreator(ActionTypes.Global.PATCH_MINIMAP_ICON),
@@ -159,10 +163,6 @@ ActionCreators.Profile = {
   --- Action creator for `ActionTypes.Profile.SET_AUTO_SELL`.
   --- @type WuxActionCreator<boolean>
   setAutoSell = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_SELL),
-
-  --- Action creator for `ActionTypes.Profile.SET_SAFE_MODE`.
-  --- @type WuxActionCreator<boolean>
-  setSafeMode = Wux:CreateActionCreator(ActionTypes.Profile.SET_SAFE_MODE),
 
   --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS`.
   --- @type WuxActionCreator<boolean>

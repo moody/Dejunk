@@ -14,6 +14,7 @@ ActionTypes.Global = {
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
   SET_MERCHANT_BUTTON = "global/merchantButton/set",
+  SET_SAFE_SELL = "global/safeSell/set",
 
   SET_INCLUSIONS = "global/inclusions/set",
   SET_EXCLUSIONS = "global/exclusions/set",
@@ -53,7 +54,6 @@ ActionTypes.Profile = {
 
   SET_AUTO_REPAIR = "profile/autoRepair/set",
   SET_AUTO_SELL = "profile/autoSell/set",
-  SET_SAFE_MODE = "profile/safeMode/set",
 
   PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/patch",
   SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",

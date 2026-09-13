@@ -18,6 +18,7 @@ DefaultStates.Global = {
   itemTooltips = true,
   merchantButton = true,
   minimapIcon = { hide = false },
+  safeSell = false,
 
   --- @type ItemIdMap
   inclusions = {},
@@ -56,7 +57,6 @@ DefaultStates.Profile = {
   settings = {
     autoRepair = false,
     autoSell = false,
-    safeMode = false,
 
     excludeEquipmentSets = true,
     excludeUnboundEquipment = false,

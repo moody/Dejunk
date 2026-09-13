@@ -74,6 +74,14 @@ function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
     get = function() return MinimapIcon:IsEnabled() end,
     set = function(value) MinimapIcon:SetEnabled(value) end
   }))
+
+  -- Safe sell.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.SAFE_SELL_TEXT,
+    tooltipText = L.SAFE_SELL_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().safeSell end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
+  }))
 end
 
 --- Initializes profile-scoped options for the given `optionsFrame`.
@@ -93,14 +101,6 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
     tooltipText = L.AUTO_SELL_TOOLTIP,
     get = function() return StateManager:GetProfileState().settings.autoSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoSell(value)) end
-  }))
-
-  -- Safe mode.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.SAFE_MODE_TEXT,
-    tooltipText = L.SAFE_MODE_TOOLTIP,
-    get = function() return StateManager:GetProfileState().settings.safeMode end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Profile.setSafeMode(value)) end
   }))
 
   self:AddIncludeOptions(optionsFrame)

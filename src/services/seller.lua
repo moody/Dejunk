@@ -107,8 +107,8 @@ function Seller:Start(auto)
     return
   end
 
-  -- Safe mode.
-  if StateManager:GetProfileState().settings.safeMode then
+  -- Safe sell.
+  if StateManager:GetGlobalState().safeSell then
     while #self.items > 12 do table.remove(self.items) end
   end
 

@@ -43,7 +43,6 @@ local profileReducer = Wux:CombineReducers({
   settings = Wux:CombineReducers({
     autoRepair = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_REPAIR, DefaultStates.Profile.settings.autoRepair),
     autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
-    safeMode = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_SAFE_MODE, DefaultStates.Profile.settings.safeMode),
 
     excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
     excludeUnboundEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
@@ -99,6 +98,7 @@ function RootReducer:Build()
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
       merchantButton = Wux:CreatePayloadReducer(ActionTypes.Global.SET_MERCHANT_BUTTON, DefaultStates.Global.merchantButton),
       minimapIcon = Wux:CreatePatchReducer(ActionTypes.Global.PATCH_MINIMAP_ICON, DefaultStates.Global.minimapIcon),
+      safeSell = Wux:CreatePayloadReducer(ActionTypes.Global.SET_SAFE_SELL, DefaultStates.Global.safeSell),
 
       inclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_INCLUSIONS, DefaultStates.Global.inclusions),
       exclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_EXCLUSIONS, DefaultStates.Global.exclusions),
