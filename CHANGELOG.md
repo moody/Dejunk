@@ -29,3 +29,7 @@
 ### Removed
 
 - The `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the transport frame.
+
+### Fixed
+
+- Fixed excessive memory usage with refundable items in specific conditions.
