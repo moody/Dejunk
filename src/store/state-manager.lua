@@ -100,6 +100,28 @@ function StateManager:GetProfileState()
   return state.profiles.profileMap[state.profiles.activeProfileId] or DefaultStates.Profile
 end
 
+-- StateManager:GetAllProfiles()
+do
+  local profiles = {}
+
+  local function sortProfiles(a, b)
+    return a.name < b.name
+  end
+
+  --- Returns every profile, including the synthetic default profile (which is
+  --- never actually stored in `profileMap`), sorted by name.
+  --- @return ProfileState[]
+  function StateManager:GetAllProfiles()
+    for k in pairs(profiles) do profiles[k] = nil end
+    for _, profile in pairs(_Store:GetState().profiles.profileMap) do
+      profiles[#profiles + 1] = profile
+    end
+    table.sort(profiles, sortProfiles)
+    table.insert(profiles, 1, DefaultStates.Profile)
+    return profiles
+  end
+end
+
 --- Creates a new profile and immediately activates it.
 ---@param profileName? string
 function StateManager:CreateNewProfile(profileName)
