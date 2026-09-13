@@ -170,6 +170,17 @@ function RootReducer:Build()
         return state
       end
 
+      -- Rename profile action.
+      if action.type == ActionTypes.Profiles.RENAME_PROFILE then
+        --- @cast action WuxPayloadAction<RenameProfilePayload>
+        state = Wux:ShallowCopy(state)
+        state.profileMap = Wux:ShallowCopy(state.profileMap)
+        local profile = Wux:ShallowCopy(state.profileMap[action.payload.profileId])
+        profile.name = action.payload.profileName
+        state.profileMap[action.payload.profileId] = profile
+        return state
+      end
+
       -- Delete profile action.
       if action.type == ActionTypes.Profiles.DELETE_PROFILE then
         --- @cast action WuxPayloadAction<DeleteProfilePayload>

@@ -24,6 +24,10 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 --- @field characterKey string
 --- @field profileId string
 
+--- @class RenameProfilePayload
+--- @field profileId string
+--- @field profileName string
+
 --- @class DeleteProfilePayload
 --- @field profileId string
 
@@ -125,6 +129,10 @@ ActionCreators.Profiles = {
   --- Action creator for `ActionTypes.Profiles.ASSIGN_PROFILE`.
   --- @type WuxActionCreator<AssignProfilePayload>
   assignProfile = Wux:CreateActionCreator(ActionTypes.Profiles.ASSIGN_PROFILE),
+
+  --- Action creator for `ActionTypes.Profiles.RENAME_PROFILE`.
+  --- @type WuxActionCreator<RenameProfilePayload>
+  renameProfile = Wux:CreateActionCreator(ActionTypes.Profiles.RENAME_PROFILE),
 
   --- Action creator for `ActionTypes.Profiles.DELETE_PROFILE`.
   --- @type WuxActionCreator<DeleteProfilePayload>

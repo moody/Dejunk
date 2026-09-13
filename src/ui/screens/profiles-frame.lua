@@ -245,12 +245,10 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           text = L.RENAME_PROFILE_POPUP_HELP:format(Colors.Yellow(button.profile.name)),
           onAccept = function(self, value)
             if value ~= button.profile.name then
-              Addon:Debug("Would have renamed to:", value)
-              -- TODO: implement later
-              -- StateManager:Dispatch(ActionCreators.Profiles.renameProfile({
-              --   profileId = button.profile.id,
-              --   newProfileName = value
-              -- }))
+              StateManager:Dispatch(ActionCreators.Profiles.renameProfile({
+                profileId = button.profile.id,
+                profileName = value
+              }))
             end
           end
         })

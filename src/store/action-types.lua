@@ -38,6 +38,7 @@ ActionTypes.Global = {
 ActionTypes.Profiles = {
   CREATE_PROFILE = "profiles/create",
   ASSIGN_PROFILE = "profiles/assign",
+  RENAME_PROFILE = "profiles/rename",
   DELETE_PROFILE = "profiles/delete",
 }
 
