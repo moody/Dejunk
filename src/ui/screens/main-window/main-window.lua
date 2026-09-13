@@ -272,11 +272,16 @@ local mainScreenLeftColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:
 -- Global options.
 mainScreenLeftColumn:AddChild({
   frameFactory = function(parent)
+    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.GLOBAL)))
     local optionsFrame = Widgets:OptionsFrame({
       parent = parent,
       name = "$parent_GlobalOptionsFrame",
-      titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.GLOBAL))),
-      titleJustify = "LEFT"
+      titleText = titleText,
+      titleJustify = "LEFT",
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(titleText)
+        tooltip:AddLine(L.GLOBAL_OPTIONS_TOOLTIP)
+      end
     })
     MainWindowOptions:InitializeGlobalOptions(optionsFrame)
     return optionsFrame
@@ -286,11 +291,16 @@ mainScreenLeftColumn:AddChild({
 -- Profile options.
 mainScreenLeftColumn:AddChild({
   frameFactory = function(parent)
+    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.PROFILE)))
     local optionsFrame = Widgets:OptionsFrame({
       parent = parent,
       name = "$parent_ProfileOptionsFrame",
-      titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.PROFILE))),
-      titleJustify = "LEFT"
+      titleText = titleText,
+      titleJustify = "LEFT",
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(titleText)
+        tooltip:AddLine(L.PROFILE_OPTIONS_TOOLTIP:format(Colors.White(StateManager:GetProfileState().name)))
+      end
     })
     MainWindowOptions:InitializeProfileOptions(optionsFrame)
     return optionsFrame

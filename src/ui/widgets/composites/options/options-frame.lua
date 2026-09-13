@@ -24,7 +24,6 @@ function Widgets:OptionsFrame(options)
 
   --- @class OptionsFrameWidget : ScrollableTitleFrameWidget
   local frame = self:ScrollableTitleFrame(options)
-  frame.titleButton:EnableMouse(false)
   frame.children = {}
 
   -- Scroll child.
