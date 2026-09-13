@@ -7,6 +7,7 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
 local Looter = Addon:GetModule("Looter")
 local MainWindow = Addon:GetModule("MainWindow")
+local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local Seller = Addon:GetModule("Seller")
 
 --- @class Commands
@@ -34,21 +35,31 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 end)
 
 -- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Prints a `/dejunk <suffix>` line followed by its description.
+--- @param suffix string
+--- @param description string
+local function printCommand(suffix, description)
+  local cmd = suffix ~= "" and ("/dejunk " .. suffix) or "/dejunk"
+  Addon:ForcePrint(Colors.Gold("  " .. cmd), Colors.Grey("-"), description)
+end
+
+-- ============================================================================
 -- Commands
 -- ============================================================================
 
 --- Prints a list of commands.
 function Commands.help()
   Addon:ForcePrint(L.COMMANDS .. ":")
-  Addon:ForcePrint(Colors.Gold("  /dejunk"), "-", L.COMMAND_DESCRIPTION_OPTIONS)
-
-  Addon:ForcePrint(Colors.Gold("  /dejunk sell"), "-", L.COMMAND_DESCRIPTION_SELL)
-  Addon:ForcePrint(Colors.Gold("  /dejunk destroy"), "-", L.COMMAND_DESCRIPTION_DESTROY)
-  Addon:ForcePrint(Colors.Gold("  /dejunk loot"), "-", L.COMMAND_DESCRIPTION_LOOT)
-
-  Addon:ForcePrint(Colors.Gold("  /dejunk junk"), "-", L.COMMAND_DESCRIPTION_JUNK)
-
-  Addon:ForcePrint(Colors.Gold("  /dejunk help"), "-", L.COMMAND_DESCRIPTION_HELP)
+  printCommand("", L.COMMAND_DESCRIPTION_OPTIONS)
+  printCommand("sell", L.COMMAND_DESCRIPTION_SELL)
+  printCommand("destroy", L.COMMAND_DESCRIPTION_DESTROY)
+  printCommand("loot", L.COMMAND_DESCRIPTION_LOOT)
+  printCommand("junk", L.COMMAND_DESCRIPTION_JUNK)
+  printCommand("profiles", L.COMMAND_DESCRIPTION_PROFILES)
+  printCommand("help", L.COMMAND_DESCRIPTION_HELP)
 end
 
 --- Toggles the `MainWindow`.
@@ -59,6 +70,11 @@ end
 --- Toggles the `JunkFrame`.
 function Commands.junk()
   JunkFrame:Toggle()
+end
+
+--- Toggles the `ProfilesFrame`.
+function Commands.profiles()
+  ProfilesFrame:Toggle()
 end
 
 --- Starts the `Seller`.
