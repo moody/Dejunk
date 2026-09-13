@@ -25,3 +25,7 @@
   11. `Include Unsuitable Equipment`
 
   If you had `Character Specific Settings` disabled and relied on a shared global value for any of these, set that option again on each character.
+
+### Removed
+
+- The `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the transport frame.
