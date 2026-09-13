@@ -96,6 +96,10 @@ Components.Root = Addon.Waffle:Flex({
     end)
 
     frame:Hide()
+    frame:HookScript("OnHide", function()
+      Components.Root:SetHidden(true)
+    end)
+
     return frame
   end
 })

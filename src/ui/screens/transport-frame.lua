@@ -61,6 +61,10 @@ Components.Root = Addon.Waffle:Flex({
     table.insert(UISpecialFrames, frame:GetName())
 
     frame:Hide()
+    frame:HookScript("OnHide", function()
+      Components.Root:SetHidden(true)
+    end)
+
     return frame
   end
 })

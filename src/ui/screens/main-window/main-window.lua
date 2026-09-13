@@ -95,16 +95,16 @@ Components.Root = Addon.Waffle:Flex({
 
     table.insert(UISpecialFrames, frame:GetName())
 
-    frame:HookScript("OnHide", function()
-      Components.Root:SetHidden(true)
-      stopSearching()
-    end)
-
     TickerManager:NewTicker(1 / 30, function()
       Components.Root:Layout()
     end):BindFrame(frame)
 
     frame:Hide()
+    frame:HookScript("OnHide", function()
+      Components.Root:SetHidden(true)
+      stopSearching()
+    end)
+
     return frame
   end
 })
