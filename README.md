@@ -78,15 +78,6 @@ Items can be added to lists by dragging them directly into the list frame or the
 # Toggle the junk frame.
 /dejunk junk
 
-# Open the key binding frame.
-/dejunk keybinds
-
-# Toggle the transport frame.
-/dejunk transport inclusions global
-/dejunk transport inclusions character
-/dejunk transport exclusions global
-/dejunk transport exclusions character
-
 # Display a list of commands.
 /dejunk help
 ```
