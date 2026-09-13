@@ -13,19 +13,19 @@
 - The `Inclusions (Character)` and `Exclusions (Character)` lists are now named `Inclusions (Profile)` and `Exclusions (Profile)`. Existing lists carry over automatically.
 - The options window is split into `Profile` and `Global` sections, each with a heading.
 - Removed the `Character Specific Settings` option. The options it controlled are now always part of the active profile:
-  1. `Auto Junk Frame`
-  2. `Auto Repair`
-  3. `Auto Sell`
-  4. `Safe Mode`
-  5. `Exclude Equipment Sets`
-  6. `Exclude Unbound Equipment`
-  7. `Exclude Warband Equipment`
-  8. `Include Artifact Relics`
-  9. `Include Below Item Level`
-  10. `Include By Quality`
-  11. `Include Unsuitable Equipment`
+  1. `Auto Repair`
+  2. `Auto Sell`
+  3. `Safe Mode`
+  4. `Exclude Equipment Sets`
+  5. `Exclude Unbound Equipment`
+  6. `Exclude Warband Equipment`
+  7. `Include Artifact Relics`
+  8. `Include Below Item Level`
+  9. `Include By Quality`
+  10. `Include Unsuitable Equipment`
 
   If you had `Character Specific Settings` disabled and relied on a shared global value for any of these, set that option again on each character.
+- `Auto Junk Frame` is now a `Global` option instead of a `Profile` option, so it applies to every character rather than only the active profile.
 
 ### Removed
 
