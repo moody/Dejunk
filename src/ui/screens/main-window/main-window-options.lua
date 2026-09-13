@@ -13,6 +13,14 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Initializes global-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
+  -- Auto junk frame.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.AUTO_JUNK_FRAME_TEXT,
+    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().autoJunkFrame end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
+  }))
+
   -- Bag item icons.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.BAG_ITEM_ICONS_TEXT,
@@ -71,14 +79,6 @@ end
 --- Initializes profile-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:InitializeProfileOptions(optionsFrame)
-  -- Auto junk frame.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.AUTO_JUNK_FRAME_TEXT,
-    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return StateManager:GetProfileState().settings.autoJunkFrame end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoJunkFrame(value)) end
-  }))
-
   -- Auto repair.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.AUTO_REPAIR_TEXT,

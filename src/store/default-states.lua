@@ -12,6 +12,7 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- Default state for global settings.
 --- @class GlobalState
 DefaultStates.Global = {
+  autoJunkFrame = false,
   chatMessages = true,
   itemIcons = false,
   itemTooltips = true,
@@ -53,7 +54,6 @@ DefaultStates.Profile = {
   id = DefaultStates.DEFAULT_PROFILE_ID,
   name = L.DEFAULT_PROFILE_NAME,
   settings = {
-    autoJunkFrame = false,
     autoRepair = false,
     autoSell = false,
     safeMode = false,

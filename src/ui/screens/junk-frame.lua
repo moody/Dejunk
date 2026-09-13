@@ -278,9 +278,9 @@ end
 -- Auto Junk Frame.
 EventManager:Once(E.StoreCreated, function()
   EventManager:On(E.Wow.MerchantShow, function()
-    if StateManager:GetProfileState().settings.autoJunkFrame then JunkFrame:Show() end
+    if StateManager:GetGlobalState().autoJunkFrame then JunkFrame:Show() end
   end)
   EventManager:On(E.Wow.MerchantClosed, function()
-    if StateManager:GetProfileState().settings.autoJunkFrame then JunkFrame:Hide() end
+    if StateManager:GetGlobalState().autoJunkFrame then JunkFrame:Hide() end
   end)
 end)

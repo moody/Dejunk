@@ -36,6 +36,10 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 -- ============================================================================
 
 ActionCreators.Global = {
+  --- Action creator for `ActionTypes.Global.SET_AUTO_JUNK_FRAME`.
+  --- @type WuxActionCreator<boolean>
+  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_JUNK_FRAME),
+
   --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
   --- @type WuxActionCreator<boolean>
   setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES),
@@ -147,10 +151,6 @@ ActionCreators.Profile = {
   --- Action creator for `ActionTypes.Profile.SET_PROFILE_NAME`.
   --- @type WuxActionCreator<string>
   setProfileName = Wux:CreateActionCreator(ActionTypes.Profile.SET_PROFILE_NAME),
-
-  --- Action creator for `ActionTypes.Profile.SET_AUTO_JUNK_FRAME`.
-  --- @type WuxActionCreator<boolean>
-  setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_JUNK_FRAME),
 
   --- Action creator for `ActionTypes.Profile.SET_AUTO_REPAIR`.
   --- @type WuxActionCreator<boolean>

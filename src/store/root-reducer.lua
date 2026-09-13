@@ -41,7 +41,6 @@ local profileReducer = Wux:CombineReducers({
   id = function(state, action) return state end,
   name = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_PROFILE_NAME, DefaultStates.Profile.name),
   settings = Wux:CombineReducers({
-    autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_JUNK_FRAME, DefaultStates.Profile.settings.autoJunkFrame),
     autoRepair = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_REPAIR, DefaultStates.Profile.settings.autoRepair),
     autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
     safeMode = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_SAFE_MODE, DefaultStates.Profile.settings.safeMode),
@@ -94,6 +93,7 @@ function RootReducer:Build()
 
     --- @type WuxReducer<GlobalState, any>
     global = Wux:CombineReducers({
+      autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_JUNK_FRAME, DefaultStates.Global.autoJunkFrame),
       chatMessages = Wux:CreatePayloadReducer(ActionTypes.Global.SET_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
       itemIcons = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICONS, DefaultStates.Global.itemIcons),
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),

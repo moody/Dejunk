@@ -9,6 +9,7 @@ local ActionTypes = Addon:GetModule("ActionTypes")
 
 --- @class ActionTypesGlobal
 ActionTypes.Global = {
+  SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
   SET_CHAT_MESSAGES = "global/chatMessages/set",
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
@@ -50,7 +51,6 @@ ActionTypes.Profiles = {
 ActionTypes.Profile = {
   SET_PROFILE_NAME = "profile/name/set",
 
-  SET_AUTO_JUNK_FRAME = "profile/autoJunkFrame/set",
   SET_AUTO_REPAIR = "profile/autoRepair/set",
   SET_AUTO_SELL = "profile/autoSell/set",
   SET_SAFE_MODE = "profile/safeMode/set",
