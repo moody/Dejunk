@@ -20,23 +20,24 @@ local Components = {}
 -- Local Functions
 -- ============================================================================
 
----@param button ProfilePanelButton
----@return boolean
+--- @param button ProfilePanelButton
+--- @return boolean
 local function isDefaultProfileSelected(button)
   return button.profile.id == DefaultStates.DEFAULT_PROFILE_ID
 end
 
----@param button ProfilePanelButton
----@return boolean
+--- @param button ProfilePanelButton
+--- @return boolean
 local function isProfileButtonSelected(button)
-  return button.profile and button.profile.id == StateManager:GetProfileState().id or false
+  return button.profile ~= nil and button.profile.id == StateManager:GetProfileState().id
 end
 
+-- Refresh components based on profile data.
 local function refresh()
   local profiles = StateManager:GetAllProfiles()
 
-  -- Update profile panel text.
-  Components.ProfilesPanelTitleText
+  -- Update active profile text.
+  Components.ProfilesPanelActiveProfileText
       :GetFrame()
       :SetText(L.ACTIVE_PROFILE .. " " .. Colors.Yellow(StateManager:GetProfileState().name))
 
@@ -108,7 +109,7 @@ Components.Root = Addon.Waffle:Flex({
 -- Title Components
 -- ============================================================================
 
-Components.TitleRow = Components.Root:AddRow({
+local titleRow = Components.Root:AddRow({
   height = 32,
   paddingLeft = Widgets:Padding(),
   frameFactory = function(parent)
@@ -118,7 +119,8 @@ Components.TitleRow = Components.Root:AddRow({
   end
 })
 
-Components.TitleText = Components.TitleRow:AddChild({
+-- Title text.
+titleRow:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
     local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
@@ -128,7 +130,8 @@ Components.TitleText = Components.TitleRow:AddChild({
   end
 })
 
-Components.CloseButton = Components.TitleRow:AddChild({
+-- Close button.
+titleRow:AddChild({
   width = 46,
   frameFactory = function(parent)
     return Widgets:TitleFrameIconButton({
@@ -151,13 +154,14 @@ local contentColumn = Components.Root:AddChild({
   gap = Widgets:Padding(0.5),
 })
 
+-- Container for the profiles header and content components.
 local profilesPanel = contentColumn:AddColumn({
   frameFactory = function(parent)
-    local frame = Widgets:Frame({ parent = parent })
+    local frame = Widgets:Frame({ parent = parent, name = "$parent_ProfilesPanel" })
 
     -- Scroll on mouse wheel.
     frame:EnableMouseWheel(true)
-    frame:SetScript("OnMouseWheel", function(self, delta)
+    frame:SetScript("OnMouseWheel", function(_, delta)
       local slider = Components.ProfilesPanelSlider:GetFrame()
       if slider then slider:SetValue(slider:GetValue() - delta) end
     end)
@@ -166,14 +170,15 @@ local profilesPanel = contentColumn:AddColumn({
   end
 })
 
-Components.ProfilesPanelTitleText = profilesPanel:AddRow({
+-- Active profile text.
+Components.ProfilesPanelActiveProfileText = profilesPanel:AddRow({
   height = 28,
   padding = Widgets:Padding(),
   frameFactory = function(parent)
     local frame = Widgets:Frame({
       parent = parent,
-      onUpdateTooltip = function(self, tooltip)
-        tooltip:SetText(Components.ProfilesPanelTitleText:GetFrame():GetText())
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(Components.ProfilesPanelActiveProfileText:GetFrame():GetText())
       end
     })
     frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
@@ -182,7 +187,7 @@ Components.ProfilesPanelTitleText = profilesPanel:AddRow({
 }):AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_ProfilesPanelTitleText", "ARTWORK", "GameFontNormal")
+    local fontString = parent:CreateFontString("$parent_ActiveProfileText", "ARTWORK", "GameFontNormal")
     fontString:SetTextColor(1, 1, 1)
     fontString:SetJustifyH("CENTER")
     fontString:SetWordWrap(false)
@@ -196,27 +201,29 @@ local profilesPanelContent = profilesPanel:AddRow({
   gap = Widgets:Padding(),
 })
 
+-- Container for the profile buttons.
 local profilesPanelButtonColumn = profilesPanelContent:AddColumn({ gap = Widgets:Padding() })
 
 Components.ProfilesPanelSlider = profilesPanelContent:AddChild({
   width = 12,
   frameFactory = function(parent)
-    return Widgets:Slider({ parent = parent })
+    return Widgets:Slider({ name = "$parent_Slider", parent = parent })
   end
 })
 
 Components.ProfilesPanelButtons = {}
 for i = 1, NUM_PROFILE_PANEL_BUTTONS do
-  Components.ProfilesPanelButtons[#Components.ProfilesPanelButtons + 1] = profilesPanelButtonColumn:AddChild({
-    frameFactory = function(parent)
+  Components.ProfilesPanelButtons[i] = profilesPanelButtonColumn:AddChild({
+    frameFactory = function()
       --- @class ProfilePanelButton : OptionButtonWidget
+      --- @field profile? ProfileState
       local button
       button = Widgets:OptionButton({
         labelText = "",
         get = function() return isProfileButtonSelected(button) end,
         set = function() end,
         enableClickHandling = true,
-        onUpdateTooltip = function(self, tooltip)
+        onUpdateTooltip = function(_, tooltip)
           tooltip:SetText(button.profile.name)
           if not isProfileButtonSelected(button) then
             tooltip:AddDoubleLine(L.LEFT_CLICK, L.ACTIVATE)
@@ -228,8 +235,11 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
         end
       })
 
+      -- Override OptionButton's default click/alpha handling.
       button:SetScript("OnClick", nil)
       button:SetScript("OnUpdate", nil)
+
+      -- Left-click: activate.
       button:SetClickHandler("LeftButton", "NONE", function()
         if button.profile.id ~= StateManager:GetProfileState().id then
           StateManager:Dispatch(ActionCreators.Profiles.assignProfile({
@@ -238,6 +248,8 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           }))
         end
       end)
+
+      -- Right-click: rename.
       button:SetClickHandler("RightButton", "NONE", function()
         if isDefaultProfileSelected(button) then return end
         Popup:GetString({
@@ -253,6 +265,8 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           end
         })
       end)
+
+      -- Alt+Right-click: delete.
       button:SetClickHandler("RightButton", "ALT", function()
         if isDefaultProfileSelected(button) then return end
         Popup:Confirm({
@@ -265,7 +279,7 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
         })
       end)
 
-      --- @param profile ProfileState
+      --- @param profile? ProfileState
       function button:SetProfile(profile)
         self.profile = profile
         self.label:SetText(Colors.White(profile and profile.name or ""))
@@ -281,11 +295,12 @@ end
 contentColumn:AddChild({
   maxHeight = 30,
   justify = "END",
-  frameFactory = function(parent)
+  frameFactory = function()
     return Widgets:Button({
+      name = "$parent_NewProfileButton",
       labelText = L.NEW_PROFILE,
       labelColor = Colors.Yellow,
-      onClick = function(self, button)
+      onClick = function()
         Popup:GetString({
           text = L.NEW_PROFILE_POPUP_HELP,
           onAccept = function(self, value)
