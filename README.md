@@ -78,6 +78,9 @@ Items can be added to lists by dragging them directly into the list frame or the
 # Toggle the junk frame.
 /dejunk junk
 
+# Toggle the profiles frame.
+/dejunk profiles
+
 # Display a list of commands.
 /dejunk help
 ```
