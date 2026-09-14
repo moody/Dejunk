@@ -117,6 +117,12 @@ function RootReducer:Build()
           DefaultStates.Global.points.junkFrame
         ),
 
+        lootableFrame = createPointsReducer(
+          ActionTypes.Global.SET_LOOTABLE_FRAME_POINT,
+          ActionTypes.Global.RESET_LOOTABLE_FRAME_POINT,
+          DefaultStates.Global.points.lootableFrame
+        ),
+
         transportFrame = createPointsReducer(
           ActionTypes.Global.SET_TRANSPORT_FRAME_POINT,
           ActionTypes.Global.RESET_TRANSPORT_FRAME_POINT,

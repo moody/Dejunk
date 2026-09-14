@@ -107,6 +107,16 @@ ActionCreators.Global = {
       reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_TRANSPORT_FRAME_POINT)
     },
 
+    lootableFrame = {
+      --- Action creator for `ActionTypes.Global.SET_LOOTABLE_FRAME_POINT`.
+      --- @type WuxActionCreator<table>
+      set = Wux:CreateActionCreator(ActionTypes.Global.SET_LOOTABLE_FRAME_POINT),
+
+      --- Action creator for `ActionTypes.Global.RESET_LOOTABLE_FRAME_POINT`.
+      --- @type fun(): WuxAction
+      reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_LOOTABLE_FRAME_POINT)
+    },
+
     merchantButton = {
       --- Action creator for `ActionTypes.Global.SET_MERCHANT_BUTTON_POINT`.
       --- @type WuxActionCreator<table>
