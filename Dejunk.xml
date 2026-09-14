@@ -67,6 +67,7 @@
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
 
   <Script file="src\ui\screens\junk-frame.lua"/>
+  <Script file="src\ui\screens\lootable-frame.lua"/>
   <Script file="src\ui\screens\main-window\main-window-options.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
