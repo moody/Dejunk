@@ -13,36 +13,20 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Initializes global-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
-  -- Auto junk frame.
+  -- Safe destroy.
   optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.AUTO_JUNK_FRAME_TEXT,
-    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().autoJunkFrame end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
+    labelText = L.SAFE_DESTROY_TEXT,
+    tooltipText = L.SAFE_DESTROY_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().safeDestroy end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeDestroy(value)) end
   }))
 
-  -- Bag item icons.
+  -- Safe sell.
   optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.BAG_ITEM_ICONS_TEXT,
-    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().itemIcons end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
-  }))
-
-  -- Bag item tooltips.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
-    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().itemTooltips end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
-  }))
-
-  -- Chat messages.
-  optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.CHAT_MESSAGES_TEXT,
-    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
+    labelText = L.SAFE_SELL_TEXT,
+    tooltipText = L.SAFE_SELL_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().safeSell end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
   }))
 
   -- Merchant button.
@@ -75,20 +59,36 @@ function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
     set = function(value) MinimapIcon:SetEnabled(value) end
   }))
 
-  -- Safe destroy.
+  -- Auto junk frame.
   optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.SAFE_DESTROY_TEXT,
-    tooltipText = L.SAFE_DESTROY_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().safeDestroy end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeDestroy(value)) end
+    labelText = L.AUTO_JUNK_FRAME_TEXT,
+    tooltipText = L.AUTO_JUNK_FRAME_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().autoJunkFrame end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
   }))
 
-  -- Safe sell.
+  -- Chat messages.
   optionsFrame:AddChild(Widgets:OptionButton({
-    labelText = L.SAFE_SELL_TEXT,
-    tooltipText = L.SAFE_SELL_TOOLTIP,
-    get = function() return StateManager:GetGlobalState().safeSell end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
+    labelText = L.CHAT_MESSAGES_TEXT,
+    tooltipText = L.CHAT_MESSAGES_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().chatMessages end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
+  }))
+
+  -- Bag item tooltips.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
+    tooltipText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemTooltips end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
+  }))
+
+  -- Bag item icons.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.BAG_ITEM_ICONS_TEXT,
+    tooltipText = L.BAG_ITEM_ICONS_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().itemIcons end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
   }))
 end
 
