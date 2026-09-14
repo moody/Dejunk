@@ -56,6 +56,10 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setMerchantButton = Wux:CreateActionCreator(ActionTypes.Global.SET_MERCHANT_BUTTON),
 
+  --- Action creator for `ActionTypes.Global.SET_SAFE_DESTROY`.
+  --- @type WuxActionCreator<boolean>
+  setSafeDestroy = Wux:CreateActionCreator(ActionTypes.Global.SET_SAFE_DESTROY),
+
   --- Action creator for `ActionTypes.Global.SET_SAFE_SELL`.
   --- @type WuxActionCreator<boolean>
   setSafeSell = Wux:CreateActionCreator(ActionTypes.Global.SET_SAFE_SELL),

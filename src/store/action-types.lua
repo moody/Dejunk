@@ -14,6 +14,7 @@ ActionTypes.Global = {
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
   SET_MERCHANT_BUTTON = "global/merchantButton/set",
+  SET_SAFE_DESTROY = "global/safeDestroy/set",
   SET_SAFE_SELL = "global/safeSell/set",
 
   SET_INCLUSIONS = "global/inclusions/set",

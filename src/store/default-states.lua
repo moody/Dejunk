@@ -18,6 +18,7 @@ DefaultStates.Global = {
   itemTooltips = true,
   merchantButton = true,
   minimapIcon = { hide = false },
+  safeDestroy = true,
   safeSell = false,
 
   --- @type ItemIdMap

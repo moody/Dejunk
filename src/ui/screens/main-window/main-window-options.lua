@@ -75,6 +75,14 @@ function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
     set = function(value) MinimapIcon:SetEnabled(value) end
   }))
 
+  -- Safe destroy.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.SAFE_DESTROY_TEXT,
+    tooltipText = L.SAFE_DESTROY_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().safeDestroy end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeDestroy(value)) end
+  }))
+
   -- Safe sell.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.SAFE_SELL_TEXT,

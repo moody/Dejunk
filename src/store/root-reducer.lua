@@ -98,6 +98,7 @@ function RootReducer:Build()
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
       merchantButton = Wux:CreatePayloadReducer(ActionTypes.Global.SET_MERCHANT_BUTTON, DefaultStates.Global.merchantButton),
       minimapIcon = Wux:CreatePatchReducer(ActionTypes.Global.PATCH_MINIMAP_ICON, DefaultStates.Global.minimapIcon),
+      safeDestroy = Wux:CreatePayloadReducer(ActionTypes.Global.SET_SAFE_DESTROY, DefaultStates.Global.safeDestroy),
       safeSell = Wux:CreatePayloadReducer(ActionTypes.Global.SET_SAFE_SELL, DefaultStates.Global.safeSell),
 
       inclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_INCLUSIONS, DefaultStates.Global.inclusions),
