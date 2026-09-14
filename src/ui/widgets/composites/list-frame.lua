@@ -73,10 +73,6 @@ function Widgets:ListFrame(options)
     end
   end
 
-  function options.isItemEnabled(item)
-    return options.list:Contains(item.id)
-  end
-
   function options.getItems()
     local searchState = options.getListSearchState()
     if searchState.isSearching and searchState.searchText ~= "" then
