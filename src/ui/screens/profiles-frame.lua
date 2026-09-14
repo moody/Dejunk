@@ -33,7 +33,7 @@ local function isProfileButtonSelected(button)
 end
 
 -- Refresh components based on profile data.
-local function refresh()
+local function refreshComponents()
   local profiles = StateManager:GetAllProfiles()
 
   -- Update active profile text.
@@ -98,8 +98,8 @@ Components.Root = Addon.Waffle:Flex({
       Components.Root:SetHidden(true)
     end)
 
-    -- Bind refresh() to the root frame.
-    TickerManager:NewTicker(1 / 30, refresh):BindFrame(frame)
+    -- Bind refreshComponents() to the root frame.
+    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
 
     return frame
   end

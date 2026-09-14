@@ -23,7 +23,7 @@ local Components = {}
 local lootableItems = {}
 
 -- Refresh components based on lootable item data.
-local function refresh()
+local function refreshComponents()
   Items:GetItems(lootableItems)
   for i = #lootableItems, 1, -1 do
     if not lootableItems[i].lootable then table.remove(lootableItems, i) end
@@ -98,8 +98,8 @@ Components.Root = Addon.Waffle:Flex({
       Components.Root:SetHidden(true)
     end)
 
-    -- Bind refresh() to the root frame.
-    TickerManager:NewTicker(1 / 30, refresh):BindFrame(frame)
+    -- Bind refreshComponents() to the root frame.
+    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
 
     return frame
   end
