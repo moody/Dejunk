@@ -7,6 +7,7 @@
 - Profiles. Each character has a profile holding its `Inclusions (Profile)` list, `Exclusions (Profile)` list, and its own copy of the character-specific options. Every character starts on the `Default` profile, whose lists cannot be edited directly; the first time you add an item to a profile list, Dejunk creates a profile for that character and switches to it. The active profile's name is printed to chat whenever it changes.
 - A `Profiles` frame for managing profiles directly, opened via the gear icon in the main window's footer (which also shows the active profile's name). Profiles can be created, switched, renamed, and deleted from this frame. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
 - The `/dejunk profiles` chat command, for opening the `Profiles` frame directly.
+- `Safe Destroy`, a `Global` option that shows a confirmation popup before destroying an item.
 
 ### Changed
 
