@@ -2,6 +2,7 @@ local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local L = Addon:GetModule("Locale")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -93,12 +94,13 @@ function Widgets:ItemsFrame(options)
     self.slider:SetValue(self.slider:GetValue() - delta)
   end)
 
-  frame:SetScript("OnUpdate", function(self)
+  -- Ticker for updating UI.
+  TickerManager:NewTicker(1 / 30, function()
     local items = options.getItems()
 
     -- Update buttons.
-    for i, button in ipairs(self.buttons) do
-      local sliderOffset = math.floor(self.slider:GetValue() + 0.5)
+    for i, button in ipairs(frame.buttons) do
+      local sliderOffset = math.floor(frame.slider:GetValue() + 0.5)
       local item = items[i + sliderOffset]
       if item then
         button:SetItem(item)
@@ -109,37 +111,37 @@ function Widgets:ItemsFrame(options)
 
       -- Points.
       if i == 1 then
-        button:SetPoint("TOPLEFT", self.titleButton, "BOTTOMLEFT", SPACING, -SPACING)
-        button:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
+        button:SetPoint("TOPLEFT", frame.titleButton, "BOTTOMLEFT", SPACING, -SPACING)
+        button:SetPoint("TOPRIGHT", frame.slider, "TOPLEFT", -SPACING, 0)
       else
-        button:SetPoint("TOPLEFT", self.buttons[i - 1], "BOTTOMLEFT", 0, -SPACING)
-        button:SetPoint("TOPRIGHT", self.buttons[i - 1], "BOTTOMRIGHT", 0, -SPACING)
+        button:SetPoint("TOPLEFT", frame.buttons[i - 1], "BOTTOMLEFT", 0, -SPACING)
+        button:SetPoint("TOPRIGHT", frame.buttons[i - 1], "BOTTOMRIGHT", 0, -SPACING)
       end
 
       -- Height.
-      local buttonArea = self:GetHeight() - self.titleButton:GetHeight() - (SPACING * 2)
+      local buttonArea = frame:GetHeight() - frame.titleButton:GetHeight() - (SPACING * 2)
       local buttonSpacing = (options.numButtons - 1) * SPACING
       button:SetHeight((buttonArea - buttonSpacing) / options.numButtons)
     end
 
     -- Update slider values.
-    local maxVal = max((#items - #self.buttons), 0)
-    self.slider:SetMinMaxValues(0, maxVal)
+    local maxVal = max((#items - #frame.buttons), 0)
+    frame.slider:SetMinMaxValues(0, maxVal)
     if maxVal == 0 then
-      self.slider:Hide()
-      self.buttons[1]:SetPoint("TOPRIGHT", self.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING)
+      frame.slider:Hide()
+      frame.buttons[1]:SetPoint("TOPRIGHT", frame.titleButton, "BOTTOMRIGHT", -SPACING, -SPACING)
     else
-      self.slider:Show()
-      self.buttons[1]:SetPoint("TOPRIGHT", self.slider, "TOPLEFT", -SPACING, 0)
+      frame.slider:Show()
+      frame.buttons[1]:SetPoint("TOPRIGHT", frame.slider, "TOPLEFT", -SPACING, 0)
     end
 
     -- Update "No items." text.
     if #items == 0 then
-      self.noItemsText:Show()
+      frame.noItemsText:Show()
     else
-      self.noItemsText:Hide()
+      frame.noItemsText:Hide()
     end
-  end)
+  end):BindFrame(frame)
 
   return frame
 end
@@ -186,32 +188,29 @@ function Widgets:ItemButton(options)
     frame.text:SetPoint("RIGHT", frame.price, "LEFT", -self:Padding(0.5), 0)
   end
 
-  function frame:OnUpdate()
-    if not self.item then return end
-    -- Icon.
-    local size = self:GetHeight() - Widgets:Padding()
-    self.icon:SetSize(size, size)
-    self.icon:SetTexture(self.item.texture)
-    self.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-    -- Text.
-    local quantity = self.item.quantity or 1
-    self.text:SetText(self.item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
-    -- Price.
-    if self.price then
-      local text = self.item.noValue and "" or Colors.White(GetCoinTextureString(self.item.price * quantity))
-      self.price:SetText(text)
-    end
-    -- Enabled.
-    if options.isItemEnabled then
-      local isEnabled = options.isItemEnabled(self.item)
-      self:SetEnabled(isEnabled)
-      self:SetAlpha(isEnabled and 1 or 0.3)
-    end
-  end
-
   --- @param item ListItem
   function frame:SetItem(item)
     self.item = item
+
+    -- Icon.
+    local size = frame:GetHeight() - Widgets:Padding()
+    frame.icon:SetSize(size, size)
+    frame.icon:SetTexture(item.texture)
+    frame.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    -- Text.
+    local quantity = item.quantity or 1
+    frame.text:SetText(item.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
+    -- Price.
+    if frame.price then
+      local text = item.noValue and "" or Colors.White(GetCoinTextureString(item.price * quantity))
+      frame.price:SetText(text)
+    end
+    -- Enabled.
+    if options.isItemEnabled then
+      local isEnabled = options.isItemEnabled(item)
+      frame:SetEnabled(isEnabled)
+      frame:SetAlpha(isEnabled and 1 or 0.3)
+    end
   end
 
   frame:HookScript("OnEnter", function(self)
@@ -233,8 +232,6 @@ function Widgets:ItemButton(options)
       options.onClick(self, button)
     end
   end)
-
-  frame:SetScript("OnUpdate", frame.OnUpdate)
 
   return frame
 end
