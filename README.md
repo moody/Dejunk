@@ -13,7 +13,7 @@ Once set up, Dejunk can handle the process of selling or destroying junk items w
 - Sell junk items at a merchant automatically or on demand
 - Destroy junk items one at a time
 - Auto-repair and auto-sell when opening a merchant
-- Open all lootable bag items with a single command
+- Open lootable bag items one at a time from a dedicated frame
 - Overlay icons on junk items in your bags
 - Add Dejunk information to item tooltips, including the reason an item is considered junk
 - Set up keybindings or use chat commands for most operations
@@ -38,7 +38,7 @@ Filters determine what items are considered junk. Several filters support per-qu
 
 ### Profiles
 
-Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, safe mode, and include/exclude filter settings. Multiple characters can share the same profile.
+Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and include/exclude filter settings. Multiple characters can share the same profile.
 
 Every character starts on the `Default` profile. Adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
 
@@ -72,11 +72,11 @@ Items can be added to lists by dragging them directly into the list frame or the
 # Destroy next item.
 /dejunk destroy
 
-# Open lootable items.
-/dejunk loot
-
 # Toggle the junk frame.
 /dejunk junk
+
+# Toggle the lootable items frame.
+/dejunk loot
 
 # Toggle the profiles frame.
 /dejunk profiles
