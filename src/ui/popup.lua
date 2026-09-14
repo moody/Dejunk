@@ -13,6 +13,7 @@ Popup.keys = {}
 
 --- @class PopupConfirmOptions
 --- @field text? string
+--- @field alert? boolean Shows a warning icon.
 --- @field onAccept? fun(self: table)
 --- @field onCancel? fun(self: table)
 --- @field onShow? fun(self: table)
@@ -128,8 +129,8 @@ end
 -- Popup:Confirm()
 do
   local popupKey, popup = registerPopup("DEJUNK_CONFIRM_POPUP", {
-    button1 = ACCEPT,
-    button2 = CANCEL,
+    button1 = YES,
+    button2 = NO,
     timeout = 0,
     exclusive = 1,
     whileDead = 1,
@@ -140,6 +141,7 @@ do
   --- @param options PopupConfirmOptions
   function Popup:Confirm(options)
     popup.text = options.text
+    popup.showAlert = options.alert
     popup.OnAccept = options.onAccept
     popup.OnCancel = options.onCancel
     popup.OnShow = options.onShow

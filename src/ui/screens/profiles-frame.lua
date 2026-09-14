@@ -271,6 +271,7 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
         if isDefaultProfileSelected(button) then return end
         Popup:Confirm({
           text = L.DELETE_PROFILE_POPUP_HELP:format(Colors.Yellow(button.profile.name)),
+          alert = true,
           onAccept = function()
             StateManager:Dispatch(ActionCreators.Profiles.deleteProfile({
               profileId = button.profile.id

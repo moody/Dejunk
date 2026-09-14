@@ -38,6 +38,7 @@ local function handleItem(item)
   local link = item.quantity > 1 and (item.link .. "x" .. item.quantity) or item.link
   Popup:Confirm({
     text = L.DESTROY_ITEM_POPUP_HELP:format(link),
+    alert = true,
     onAccept = function() attemptDestroy(item) end
   })
 end
