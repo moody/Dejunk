@@ -17,9 +17,9 @@ BINDING_HEADER_DEJUNK_HEADER_BLANK2 = ""
 -- General.
 BINDING_NAME_DEJUNK_TOGGLE_OPTIONS_FRAME = L.TOGGLE_OPTIONS_FRAME
 BINDING_NAME_DEJUNK_TOGGLE_JUNK_FRAME = L.TOGGLE_JUNK_FRAME
+BINDING_NAME_DEJUNK_TOGGLE_LOOTABLE_FRAME = L.TOGGLE_LOOTABLE_FRAME
 BINDING_NAME_DEJUNK_START_SELLING = L.START_SELLING
 BINDING_NAME_DEJUNK_DESTROY_NEXT_ITEM = L.DESTROY_NEXT_ITEM
-BINDING_NAME_DEJUNK_OPEN_LOOTABLES = L.OPEN_LOOTABLE_ITEMS
 
 -- Lists.
 BINDING_NAME_DEJUNK_ADD_GLOBAL_INCLUSIONS = L.ADD_TO_LIST:format(Lists.GlobalInclusions.name)
@@ -38,9 +38,9 @@ BINDING_NAME_DEJUNK_REM_PROFILE_EXCLUSIONS = L.REMOVE_FROM_LIST:format(Lists.Pro
 -- General.
 DejunkBindings_ToggleOptionsFrame = Commands.options
 DejunkBindings_ToggleJunkFrame = Commands.junk
+DejunkBindings_ToggleLootableFrame = Commands.loot
 DejunkBindings_StartSelling = Commands.sell
 DejunkBindings_DestroyNextItem = Commands.destroy
-DejunkBindings_OpenLootables = Commands.loot
 
 --- Adds an item to a list. If `itemId` is not given, then
 --- an attempt will be made to retrieve it from the `GameTooltip`.
