@@ -49,9 +49,7 @@ local rootComponent = Addon.Waffle:Flex({
 
         tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
-        tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
-        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.TOGGLE_JUNK_FRAME))
-        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), L.RESET_POSITION))
+        tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
         tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
         tooltip:Show()
       end
@@ -61,8 +59,7 @@ local rootComponent = Addon.Waffle:Flex({
 
     -- Click handlers.
     frame:SetClickHandler("LeftButton", "NONE", Commands.sell)
-    frame:SetClickHandler("LeftButton", "SHIFT", Commands.junk)
-    frame:SetClickHandler("RightButton", "NONE", Commands.options)
+    frame:SetClickHandler("RightButton", "NONE", Commands.junk)
     frame:SetClickHandler("RightButton", "SHIFT", function()
       StateManager:Dispatch(ActionCreators.Global.points.merchantButton.reset())
     end)

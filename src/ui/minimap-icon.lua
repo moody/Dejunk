@@ -45,9 +45,8 @@ local function onUpdateTooltip(frame)
   end
 
   Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
-  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING))
+  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
   Tooltip:Show()
 end
@@ -64,11 +63,11 @@ EventManager:Once(E.StoreCreated, function()
 
     OnClick = function(_, button)
       if button == "LeftButton" then
-        if IsShiftKeyDown() then Commands.sell() else Commands.junk() end
+        Commands.options()
       end
 
       if button == "RightButton" then
-        if IsAltKeyDown() then Commands.destroy() else Commands.options() end
+        if IsAltKeyDown() then Commands.destroy() else Commands.junk() end
       end
     end,
 
