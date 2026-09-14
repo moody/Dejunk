@@ -13,6 +13,7 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
+local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class JunkFrame
@@ -35,6 +36,7 @@ local function hasSellableItems(items)
   return false
 end
 
+-- Refresh components based on junk item data.
 local function refreshComponents()
   JunkFilter:GetJunkItems(junkItems)
 
@@ -87,18 +89,13 @@ Components.Root = Addon.Waffle:Flex({
 
     table.insert(UISpecialFrames, frame:GetName())
 
-    local delayTimer = 0
-    frame:SetScript("OnUpdate", function(_, elapsed)
-      delayTimer = delayTimer + elapsed
-      if delayTimer < 0.02 then return end
-      delayTimer = 0
-      refreshComponents()
-    end)
-
     frame:Hide()
     frame:HookScript("OnHide", function()
       Components.Root:SetHidden(true)
     end)
+
+    -- Bind refreshComponents() to the root frame.
+    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
 
     return frame
   end
