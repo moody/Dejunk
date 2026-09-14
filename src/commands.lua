@@ -5,7 +5,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
-local Looter = Addon:GetModule("Looter")
+local LootableFrame = Addon:GetModule("LootableFrame")
 local MainWindow = Addon:GetModule("MainWindow")
 local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local Seller = Addon:GetModule("Seller")
@@ -56,8 +56,8 @@ function Commands.help()
   printCommand("", L.COMMAND_DESCRIPTION_OPTIONS)
   printCommand("sell", L.COMMAND_DESCRIPTION_SELL)
   printCommand("destroy", L.COMMAND_DESCRIPTION_DESTROY)
-  printCommand("loot", L.COMMAND_DESCRIPTION_LOOT)
   printCommand("junk", L.COMMAND_DESCRIPTION_JUNK)
+  printCommand("loot", L.COMMAND_DESCRIPTION_LOOT)
   printCommand("profiles", L.COMMAND_DESCRIPTION_PROFILES)
   printCommand("help", L.COMMAND_DESCRIPTION_HELP)
 end
@@ -70,6 +70,11 @@ end
 --- Toggles the `JunkFrame`.
 function Commands.junk()
   JunkFrame:Toggle()
+end
+
+--- Toggles the `LootableFrame`.
+function Commands.loot()
+  LootableFrame:Toggle()
 end
 
 --- Toggles the `ProfilesFrame`.
@@ -85,9 +90,4 @@ end
 --- Starts the `Destroyer`.
 function Commands.destroy()
   Destroyer:Start()
-end
-
---- Starts the `Looter`.
-function Commands.loot()
-  Looter:Start()
 end
