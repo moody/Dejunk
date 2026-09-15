@@ -54,7 +54,6 @@ function ComponentFactory:Window(options)
         enableClickHandling = true,
         enableDragging = true
       })
-      frame:SetFrameLevel(10)
 
       frame:SetClickHandler("RightButton", "SHIFT", options.onResetPoint)
 
@@ -101,23 +100,18 @@ function ComponentFactory:Window(options)
     end
   })
 
-  -- High order keeps this rightmost if the caller adds more title buttons afterward.
-  root.CloseButton = root.TitleRow:AddChild({
-    width = 46,
-    order = 100,
-    frameFactory = function(parent)
-      return Widgets:TitleFrameIconButton({
-        name = "$parent_CloseButton",
-        texture = Addon:GetAsset("x-icon"),
-        textureSize = 14,
-        highlightColor = Colors.Red,
-        onClick = function()
-          root:SetHidden(true)
-          root:Layout()
-        end
-      })
-    end
-  })
+  root.CloseButton = root.TitleRow:AttachComponent(
+    ComponentFactory:WindowTitleButton({
+      name = "$parent_CloseButton",
+      texture = Addon:GetAsset("x-icon"),
+      textureSize = 14,
+      highlightColor = Colors.Red,
+      onClick = function()
+        root:SetHidden(true)
+        root:Layout()
+      end
+    })
+  )
 
   return root
 end
