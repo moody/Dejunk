@@ -50,6 +50,8 @@
   <Script file="src\services\confirmer.lua"/>
   <Script file="src\services\looter.lua"/>
 
+  <Script file="src\ui\components\window.lua"/>
+
   <Script file="src\ui\widgets\widgets.lua"/>
 
   <Script file="src\ui\widgets\primitives\button.lua"/>
