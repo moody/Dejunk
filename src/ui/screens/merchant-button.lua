@@ -3,6 +3,7 @@ local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
+local DefaultStates = Addon:GetModule("DefaultStates")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
@@ -55,7 +56,16 @@ local rootComponent = Addon.Waffle:Flex({
       end
     })
 
-    Widgets:ConfigureForPointSync(frame, "MerchantButton")
+    Widgets:ConfigureForPointSync({
+      frame = frame,
+      getPoint = function()
+        local point = StateManager:GetGlobalState().points.merchantButton
+        return (point.relativeTo ~= DefaultStates.Global.points.merchantButton.relativeTo) and
+            DefaultStates.Global.points.merchantButton or
+            point
+      end,
+      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.merchantButton.set(point)) end
+    })
 
     -- Click handlers.
     frame:SetClickHandler("LeftButton", "NONE", Commands.sell)

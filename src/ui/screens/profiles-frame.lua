@@ -89,7 +89,11 @@ Components.Root = Addon.Waffle:Flex({
       StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.reset())
     end)
 
-    Widgets:ConfigureForPointSync(frame, "ProfilesFrame")
+    Widgets:ConfigureForPointSync({
+      frame = frame,
+      getPoint = function() return StateManager:GetGlobalState().points.profilesFrame end,
+      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.set(point)) end
+    })
 
     table.insert(UISpecialFrames, frame:GetName())
 

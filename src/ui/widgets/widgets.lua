@@ -1,10 +1,7 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local ActionCreators = Addon:GetModule("ActionCreators")
-local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local StateManager = Addon:GetModule("StateManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -47,39 +44,18 @@ do -- Widget:GetUniqueName()
   end
 end
 
---- Configures a draggable `frame` to refresh or save its point based on certain events.
---- @param frame Frame | any
---- @param stateType "MainWindow" | "JunkFrame" | "TransportFrame" | "MerchantButton" | "ProfilesFrame" | "LootableFrame"
-function Widgets:ConfigureForPointSync(frame, stateType)
-  local getPoint, setPoint
+--- @class ConfigureForPointSyncOptions
+--- @field frame ScriptRegion
+--- @field getPoint fun(): table Returns the point to apply.
+--- @field setPoint fun(point: table) Called with the point to save after dragging.
 
-  if stateType == "MainWindow" then
-    getPoint = function() return StateManager:GetGlobalState().points.mainWindow end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end
-  elseif stateType == "JunkFrame" then
-    getPoint = function() return StateManager:GetGlobalState().points.junkFrame end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end
-  elseif stateType == "TransportFrame" then
-    getPoint = function() return StateManager:GetGlobalState().points.transportFrame end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.transportFrame.set(point)) end
-  elseif stateType == "LootableFrame" then
-    getPoint = function() return StateManager:GetGlobalState().points.lootableFrame end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.set(point)) end
-  elseif stateType == "ProfilesFrame" then
-    getPoint = function() return StateManager:GetGlobalState().points.profilesFrame end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.set(point)) end
-  elseif stateType == "MerchantButton" then
-    getPoint = function()
-      local point = StateManager:GetGlobalState().points.merchantButton
-      return (point.relativeTo ~= DefaultStates.Global.points.merchantButton.relativeTo) and
-          DefaultStates.Global.points.merchantButton or
-          point
-    end
-    setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.merchantButton.set(point)) end
-  end
+--- Configures a draggable frame to refresh or save its point based on certain events.
+--- @param options ConfigureForPointSyncOptions
+function Widgets:ConfigureForPointSync(options)
+  local frame = options.frame
 
   local function refresh()
-    local p = getPoint()
+    local p = options.getPoint()
     local relativeTo = p.relativeTo and _G[p.relativeTo] or UIParent
     frame:ClearAllPoints()
     frame:SetPoint(p.point, relativeTo, p.relativePoint, p.offsetX, p.offsetY)
@@ -87,7 +63,7 @@ function Widgets:ConfigureForPointSync(frame, stateType)
 
   local function save()
     local parent = frame:GetParent() or UIParent
-    setPoint({
+    options.setPoint({
       point = "TOPLEFT",
       relativeTo = parent:GetName(),
       relativePoint = "TOPLEFT",
