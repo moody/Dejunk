@@ -1,6 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
-local TickerManager = Addon:GetModule("TickerManager")
 local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class Widgets
@@ -26,14 +25,12 @@ local Widgets = Addon:GetModule("Widgets")
 -- Local Functions
 -- ============================================================================
 
-local assignFrameLevel
+local getNextFrameLevel
 do
-  local prevLevel = 0
-  assignFrameLevel = function(frame)
-    local level = prevLevel + 1
-    prevLevel = level
-    -- Delay to avoid overwrites from existing values in `{character}/layout-local.txt`.
-    TickerManager:After(1, function() frame:SetFrameLevel(level) end)
+  local level = 0
+  getNextFrameLevel = function()
+    level = level + 1
+    return level
   end
 end
 
@@ -151,7 +148,10 @@ function Widgets:Frame(options)
 
   -- Dragging.
   if options.enableDragging then
-    assignFrameLevel(frame)
+    local frameLevel = getNextFrameLevel()
+    frame:HookScript("OnShow", function() frame:SetFrameLevel(frameLevel) end)
+    frame:SetFrameLevel(frameLevel)
+
     frame:SetFrameStrata("HIGH")
     frame:SetMovable(true)
     frame:EnableMouse(true)
