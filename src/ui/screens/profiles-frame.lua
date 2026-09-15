@@ -1,12 +1,11 @@
-local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
+local ComponentFactory = Addon:GetModule("ComponentFactory")
 local DefaultStates = Addon:GetModule("DefaultStates")
 local L = Addon:GetModule("Locale")
 local Popup = Addon:GetModule("Popup")
 local StateManager = Addon:GetModule("StateManager")
-local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class ProfilesFrame
@@ -67,85 +66,15 @@ end
 -- Root Component
 -- ============================================================================
 
-Components.Root = Addon.Waffle:Flex({
+Components.Root = ComponentFactory:Window({
+  name = "ProfilesFrame",
   width = 325,
   height = 375,
-  direction = "COLUMN",
-  hidden = true,
-
-  defaultFrameFactory = function(parent)
-    return CreateFrame("Frame")
-  end,
-
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({
-      name = ADDON_NAME .. "_ProfilesFrame",
-      enableClickHandling = true,
-      enableDragging = true
-    })
-    frame:SetFrameLevel(10)
-
-    frame:SetClickHandler("RightButton", "SHIFT", function()
-      StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.reset())
-    end)
-
-    Widgets:ConfigureForPointSync({
-      frame = frame,
-      getPoint = function() return StateManager:GetGlobalState().points.profilesFrame end,
-      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.set(point)) end
-    })
-
-    table.insert(UISpecialFrames, frame:GetName())
-
-    frame:Hide()
-    frame:HookScript("OnHide", function()
-      Components.Root:SetHidden(true)
-    end)
-
-    -- Bind refreshComponents() to the root frame.
-    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
-
-    return frame
-  end
-})
-
--- ============================================================================
--- Title Components
--- ============================================================================
-
-local titleRow = Components.Root:AddRow({
-  height = 32,
-  paddingLeft = Widgets:Padding(),
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({ parent = parent })
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
-    return frame
-  end
-})
-
--- Title text.
-titleRow:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Yellow(L.PROFILES))
-    return fontString
-  end
-})
-
--- Close button.
-titleRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_CloseButton",
-      texture = Addon:GetAsset("x-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Red,
-      onClick = function() ProfilesFrame:Hide() end
-    })
-  end
+  titleText = Colors.Yellow(L.PROFILES),
+  getPoint = function() return StateManager:GetGlobalState().points.profilesFrame end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.profilesFrame.reset()) end,
+  refresh = refreshComponents
 })
 
 -- ============================================================================

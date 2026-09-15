@@ -1,12 +1,11 @@
-local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
+local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Looter = Addon:GetModule("Looter")
 local StateManager = Addon:GetModule("StateManager")
-local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class LootableFrame
@@ -29,7 +28,7 @@ local function refreshComponents()
     if not lootableItems[i].lootable then table.remove(lootableItems, i) end
   end
 
-  Components.TitleText:GetFrame():SetText(
+  Components.Root.TitleText:GetFrame():SetText(
     Colors.Yellow(("%s (%s)"):format(L.LOOTABLE_ITEMS, Colors.White(#lootableItems)))
   )
 
@@ -67,84 +66,15 @@ end
 -- Root Component
 -- ============================================================================
 
-Components.Root = Addon.Waffle:Flex({
+Components.Root = ComponentFactory:Window({
+  name = "LootableFrame",
   width = 282,
   height = 325,
-  direction = "COLUMN",
-  hidden = true,
-
-  defaultFrameFactory = function(parent)
-    return CreateFrame("Frame")
-  end,
-
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({
-      name = ADDON_NAME .. "_LootableFrame",
-      enableClickHandling = true,
-      enableDragging = true
-    })
-    frame:SetFrameLevel(10)
-
-    frame:SetClickHandler("RightButton", "SHIFT", function()
-      StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.reset())
-    end)
-
-    Widgets:ConfigureForPointSync({
-      frame = frame,
-      getPoint = function() return StateManager:GetGlobalState().points.lootableFrame end,
-      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.set(point)) end
-    })
-
-    table.insert(UISpecialFrames, frame:GetName())
-
-    frame:Hide()
-    frame:HookScript("OnHide", function()
-      Components.Root:SetHidden(true)
-    end)
-
-    -- Bind refreshComponents() to the root frame.
-    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
-
-    return frame
-  end
-})
-
--- ============================================================================
--- Title Components
--- ============================================================================
-
-Components.TitleRow = Components.Root:AddRow({
-  height = 32,
-  paddingLeft = Widgets:Padding(),
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({ parent = parent })
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
-    return frame
-  end
-})
-
-Components.TitleText = Components.TitleRow:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-    fontString:SetWordWrap(false)
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Yellow(L.LOOTABLE_ITEMS))
-    return fontString
-  end
-})
-
-Components.CloseButton = Components.TitleRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_CloseButton",
-      texture = Addon:GetAsset("x-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Red,
-      onClick = function() LootableFrame:Hide() end
-    })
-  end
+  titleText = Colors.Yellow(L.LOOTABLE_ITEMS),
+  getPoint = function() return StateManager:GetGlobalState().points.lootableFrame end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.reset()) end,
+  refresh = refreshComponents
 })
 
 -- ============================================================================

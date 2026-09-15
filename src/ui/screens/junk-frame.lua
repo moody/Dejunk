@@ -1,8 +1,8 @@
-local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
+local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -13,7 +13,6 @@ local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
-local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class JunkFrame
@@ -40,7 +39,7 @@ end
 local function refreshComponents()
   JunkFilter:GetJunkItems(junkItems)
 
-  Components.TitleText:GetFrame():SetText(
+  Components.Root.TitleText:GetFrame():SetText(
     Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#junkItems)))
   )
 
@@ -63,83 +62,15 @@ end
 -- Root Component
 -- ============================================================================
 
-Components.Root = Addon.Waffle:Flex({
+Components.Root = ComponentFactory:Window({
+  name = "JunkFrame",
   width = 325,
   height = 375,
-  direction = "COLUMN",
-  hidden = true,
-
-  defaultFrameFactory = function(parent)
-    return CreateFrame("Frame")
-  end,
-
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({
-      name = ADDON_NAME .. "_JunkFrame",
-      enableClickHandling = true,
-      enableDragging = true
-    })
-    frame:SetFrameLevel(10)
-
-    frame:SetClickHandler("RightButton", "SHIFT", function()
-      StateManager:Dispatch(ActionCreators.Global.points.junkFrame.reset())
-    end)
-
-    Widgets:ConfigureForPointSync({
-      frame = frame,
-      getPoint = function() return StateManager:GetGlobalState().points.junkFrame end,
-      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end
-    })
-
-    table.insert(UISpecialFrames, frame:GetName())
-
-    frame:Hide()
-    frame:HookScript("OnHide", function()
-      Components.Root:SetHidden(true)
-    end)
-
-    -- Bind refreshComponents() to the root frame.
-    TickerManager:NewTicker(1 / 30, refreshComponents):BindFrame(frame)
-
-    return frame
-  end
-})
-
--- ============================================================================
--- Title Components
--- ============================================================================
-
-Components.TitleRow = Components.Root:AddRow({
-  height = 32,
-  paddingLeft = Widgets:Padding(),
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({ parent = parent })
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
-    return frame
-  end
-})
-
-Components.TitleText = Components.TitleRow:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Yellow(L.JUNK_ITEMS))
-    return fontString
-  end
-})
-
-Components.CloseButton = Components.TitleRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_CloseButton",
-      texture = Addon:GetAsset("x-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Red,
-      onClick = function() JunkFrame:Hide() end
-    })
-  end
+  titleText = Colors.Yellow(L.JUNK_ITEMS),
+  getPoint = function() return StateManager:GetGlobalState().points.junkFrame end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.junkFrame.reset()) end,
+  refresh = refreshComponents
 })
 
 -- ============================================================================
