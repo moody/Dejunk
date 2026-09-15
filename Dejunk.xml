@@ -48,7 +48,6 @@
   <Script file="src\services\seller.lua"/>
   <Script file="src\services\destroyer.lua"/>
   <Script file="src\services\confirmer.lua"/>
-  <Script file="src\services\looter.lua"/>
 
   <Script file="src\ui\components\window-title-button.lua"/>
   <Script file="src\ui\components\window.lua"/>

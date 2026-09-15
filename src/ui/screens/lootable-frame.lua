@@ -4,7 +4,6 @@ local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
-local Looter = Addon:GetModule("Looter")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
@@ -21,11 +20,17 @@ local Components = {}
 
 local lootableItems = {}
 
+--- Item IDs ignored for the remainder of the session.
+--- @type table<number, true>
+local ignoredItemIds = {}
+
 -- Refresh components based on lootable item data.
 local function refreshComponents()
   Items:GetItems(lootableItems)
   for i = #lootableItems, 1, -1 do
-    if not lootableItems[i].lootable then table.remove(lootableItems, i) end
+    if not lootableItems[i].lootable or ignoredItemIds[lootableItems[i].id] then
+      table.remove(lootableItems, i)
+    end
   end
 
   Components.Root.TitleText:GetFrame():SetText(
@@ -36,16 +41,20 @@ local function refreshComponents()
   local slider = Components.LootablePanelSlider:GetFrame()
   local offset = math.floor(slider:GetValue() + 0.5)
 
-  -- Update buttons.
-  for i, button in ipairs(Components.LootablePanelButtons) do
+  -- Update button rows.
+  for i, lootablePanelButtonRow in ipairs(Components.LootablePanelButtonRows) do
     local item = lootableItems[i + offset]
     --- @type ItemButtonWidget
-    local f = button:GetFrame()
+    local itemButton = lootablePanelButtonRow.ItemButton:GetFrame()
+    --- @type TitleFrameIconButtonWidget
+    local ignoreButton = lootablePanelButtonRow.IgnoreButton:GetFrame()
     if item then
-      f:SetItem(item)
-      f:Show()
+      itemButton:SetItem(item)
+      itemButton:Show()
+      ignoreButton:Show()
     else
-      f:Hide()
+      itemButton:Hide()
+      ignoreButton:Hide()
     end
   end
 
@@ -118,12 +127,15 @@ Components.LootablePanelSlider = lootablePanelContent:AddChild({
   end
 })
 
-Components.LootablePanelButtons = {}
+Components.LootablePanelButtonRows = {}
 for i = 1, NUM_LOOTABLE_PANEL_BUTTONS do
-  Components.LootablePanelButtons[i] = lootablePanelButtonColumn:AddChild({
+  --- @class LootablePanelButtonRow : WaffleFlexComponent
+  local lootablePanelButtonRow = lootablePanelButtonColumn:AddRow({ gap = Widgets:Padding(0.5) })
+  Components.LootablePanelButtonRows[i] = lootablePanelButtonRow
+
+  lootablePanelButtonRow.ItemButton = lootablePanelButtonRow:AddChild({
     frameFactory = function()
-      local button = Widgets:ItemButton({
-        enableClickHandling = true,
+      local frame = Widgets:ItemButton({
         onUpdateTooltip = function(self, tooltip)
           if not self.item then return end
           tooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -133,14 +145,38 @@ for i = 1, NUM_LOOTABLE_PANEL_BUTTONS do
         end
       })
 
-      -- Override ItemButton's default click handling; dropping an item here isn't supported.
-      button:SetScript("OnClick", nil)
-
-      button:SetClickHandler("LeftButton", "NONE", function()
-        Looter:HandleItem(button.item)
+      frame:SetScript("OnClick", function(self, button)
+        if button == "LeftButton" then
+          if not self.item then return end
+          if Addon:IsBusy() then return end
+          if not Items:IsItemStillInBags(self.item) then return end
+          if Items:IsItemLocked(self.item) then return end
+          C_Container.UseContainerItem(self.item.bag, self.item.slot)
+        end
       end)
 
-      return button
+      return frame
+    end
+  })
+
+  -- Ignores every item sharing this item's ID for the remainder of the session.
+  lootablePanelButtonRow.IgnoreButton = lootablePanelButtonRow:AddChild({
+    width = 32,
+    frameFactory = function()
+      return Widgets:TitleFrameIconButton({
+        texture = Addon:GetAsset("eye-slash-icon"),
+        textureSize = 14,
+        highlightColor = Colors.Yellow,
+        onClick = function()
+          --- @type ItemButtonWidget
+          local itemButton = lootablePanelButtonRow.ItemButton:GetFrame()
+          if itemButton.item then ignoredItemIds[itemButton.item.id] = true end
+        end,
+        onUpdateTooltip = function(_, tooltip)
+          tooltip:SetText(L.IGNORE)
+          tooltip:AddLine(L.IGNORE_LOOTABLE_ITEM_TOOLTIP)
+        end
+      })
     end
   })
 end
