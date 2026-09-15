@@ -2,6 +2,7 @@ local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
+local ComponentFactory = Addon:GetModule("ComponentFactory")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
@@ -78,64 +79,29 @@ end
 -- Root Component
 -- ============================================================================
 
-Components.Root = Addon.Waffle:Flex({
+Components.Root = ComponentFactory:Window({
+  name = "MainWindow",
   width = 800,
   height = 640,
-  direction = "COLUMN",
-  hidden = true,
-
-  defaultFrameFactory = function(parent)
-    return CreateFrame("Frame")
-  end,
-
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({
-      name = ADDON_NAME .. "_MainWindowNew",
-      enableClickHandling = true,
-      enableDragging = true
-    })
-
-    frame:SetClickHandler("RightButton", "SHIFT", function()
-      StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset())
-    end)
-
-    Widgets:ConfigureForPointSync({
-      frame = frame,
-      getPoint = function() return StateManager:GetGlobalState().points.mainWindow end,
-      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end
-    })
-
-    table.insert(UISpecialFrames, frame:GetName())
-
-    TickerManager:NewTicker(1 / 30, function()
-      Components.Root:Layout()
-    end):BindFrame(frame)
-
-    frame:Hide()
-    frame:HookScript("OnHide", function()
-      Components.Root:SetHidden(true)
-      stopSearching()
-    end)
-
-    return frame
-  end
+  titleText = "", -- unused; MainWindow builds its own title-bar content below
+  getPoint = function() return StateManager:GetGlobalState().points.mainWindow end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset()) end,
+  refresh = function() Components.Root:Layout() end
 })
 
+-- Window()'s generic title text goes unused in favor of the title bar below.
+Components.Root.TitleText:Detach()
+Components.Root.TitleText = nil
 
 -- ============================================================================
 -- Title Bar Components
 -- ============================================================================
 
-local titleBarRow = Components.Root:AddRow({
-  height = 32,
-  frameFactory = function(parent)
-    local frame = Widgets:Frame({ parent = parent })
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
-    return frame
-  end
-})
+-- Padding moves to `TitleBarNameText` alone; the search row sits flush left instead.
+Components.Root.TitleRow:SetPaddingLeft(nil)
 
-Components.TitleBarNameText = titleBarRow:AddRow({ paddingLeft = Widgets:Padding() })
+Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ paddingLeft = Widgets:Padding() })
 Components.TitleBarNameText:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -146,7 +112,7 @@ Components.TitleBarNameText:AddChild({
   end
 })
 
-Components.TitleBarVersionText = titleBarRow:AddRow({ justify = "CENTER" })
+Components.TitleBarVersionText = Components.Root.TitleRow:AddRow({ justify = "CENTER" })
 Components.TitleBarVersionText:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -156,7 +122,7 @@ Components.TitleBarVersionText:AddChild({
   end
 })
 
-Components.TitleBarSearchRow = titleBarRow:AddRow({ hidden = true })
+Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ hidden = true })
 Components.TitleBarSearchRow:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -215,54 +181,38 @@ Components.TitleBarSearchRow:AddChild({
 -- Title Bar Button Components
 -- ============================================================================
 
-Components.TitleBarButtonsRow = titleBarRow:AddRow({ justify = "END" })
+Components.TitleBarButtonsRow = Components.Root.TitleRow:AddRow({ justify = "END" })
 
-Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_SearchButton",
-      texture = Addon:GetAsset("search-icon"),
-      textureSize = 16,
-      highlightColor = Colors.Pink,
-      onClick = toggleSearching,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
-      end
-    })
-  end
-})
+-- Search button.
+Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AttachComponent(
+  ComponentFactory:WindowTitleButton({
+    name = "$parent_SearchButton",
+    texture = Addon:GetAsset("search-icon"),
+    textureSize = 16,
+    highlightColor = Colors.Pink,
+    onClick = toggleSearching,
+    onUpdateTooltip = function(_, tooltip)
+      tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
+    end
+  })
+)
 
 -- Keybinds button.
-Components.TitleBarButtonsRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_KeybindsButton",
-      texture = Addon:GetAsset("keyboard-icon"),
-      textureSize = 18,
-      highlightColor = Colors.Blue,
-      onClick = openKeybindings,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(L.KEYBINDS)
-      end
-    })
-  end
-})
+Components.TitleBarButtonsRow:AttachComponent(
+  ComponentFactory:WindowTitleButton({
+    name = "$parent_KeybindsButton",
+    texture = Addon:GetAsset("keyboard-icon"),
+    textureSize = 18,
+    highlightColor = Colors.Blue,
+    onClick = openKeybindings,
+    onUpdateTooltip = function(_, tooltip)
+      tooltip:SetText(L.KEYBINDS)
+    end
+  })
+)
 
--- Close button.
-Components.TitleBarButtonsRow:AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_CloseButton",
-      texture = Addon:GetAsset("x-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Red,
-      onClick = function() MainWindow:Hide() end
-    })
-  end
-})
+-- Reuse Window()'s close button, just moved into this row alongside the others.
+Components.TitleBarButtonsRow:AttachComponent(Components.Root.CloseButton:Detach())
 
 -- ============================================================================
 -- Main Screen Components
@@ -461,5 +411,7 @@ end
 -- so we force one here once the Wux store is ready.
 EventManager:Once(E.StoreCreated, function()
   MainWindow:Show()
+  -- ESC-driven hides bypass MainWindow:Hide(); catch those here too.
+  Components.Root:GetFrame():HookScript("OnHide", stopSearching)
   MainWindow:Hide()
 end)
