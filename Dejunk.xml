@@ -76,6 +76,7 @@
   <Script file="src\ui\screens\profiles-frame.lua"/>
   <Script file="src\ui\screens\transport-frame.lua"/>
 
+  <Script file="src\ui\addon-category.lua"/>
   <Script file="src\ui\addon-compartment.lua"/>
   <Script file="src\ui\item-icons.lua"/>
   <Script file="src\ui\item-tooltip.lua"/>
