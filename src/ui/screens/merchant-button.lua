@@ -34,6 +34,7 @@ local rootComponent = Addon.Waffle:Flex({
       labelColor = Colors.Blue,
       enableClickHandling = true,
       enableDragging = true,
+      frameStrata = "HIGH",
       onUpdateTooltip = function(this, tooltip)
         tooltip:SetOwner(this, "ANCHOR_RIGHT")
 
