@@ -145,6 +145,10 @@ end
 --- @param item BagItem
 --- @return boolean isJunk, string? reason
 function JunkFilter:IsJunkItem(item)
+  if not Items:IsItemStillInBags(item) then
+    return false
+  end
+
   local profileSettings = StateManager:GetProfileState().settings
 
   -- Check if item can be sold or destroyed.
@@ -166,7 +170,7 @@ function JunkFilter:IsJunkItem(item)
   -- override an Inclusions match.
   if profileSettings.excludeAboveItemLevel.enabled and Items:IsItemEquipment(item) then
     local value = profileSettings.excludeAboveItemLevel.value
-    if item.itemLevel > value then
+    if Items:GetItemLevel(item) > value then
       local checkBoxValues = profileSettings.excludeAboveItemLevel.qualities
       if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
@@ -225,7 +229,7 @@ function JunkFilter:IsJunkItem(item)
     -- Include below item level.
     if profileSettings.includeBelowItemLevel.enabled then
       local value = profileSettings.includeBelowItemLevel.value
-      if item.itemLevel < value then
+      if Items:GetItemLevel(item) < value then
         local checkBoxValues = profileSettings.includeBelowItemLevel.qualities
         if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
           local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))

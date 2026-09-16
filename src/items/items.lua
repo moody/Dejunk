@@ -81,14 +81,14 @@ local function getItem(bag, slot)
   if item == nil then return nil end
 
   -- GetItemInfo.
-  local name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
+  local name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
   if name == nil then
-    name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
+    name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
     if name == nil then return nil end
   end
 
   item.name = name
-  item.itemLevel = GetDetailedItemLevelInfo(item.link) or itemLevel
+  item.baseItemLevel = baseItemLevel
   item.invType = invType
   item.price = price
   item.classId = classId
@@ -238,6 +238,17 @@ end
 --- @return boolean
 function Items:IsItemStillInBags(item)
   return item.id == C_Container.GetContainerItemID(item.bag, item.slot)
+end
+
+--- Returns the given `item`'s level using `C_Item.GetCurrentItemLevel`.
+--- Falls back to `GetDetailedItemLevelInfo`, then falls back to the base level.
+--- @param item BagItem
+--- @return number
+function Items:GetItemLevel(item)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  local success, itemLevel = pcall(C_Item.GetCurrentItemLevel, self.location)
+  if success and itemLevel then return itemLevel end
+  return GetDetailedItemLevelInfo(item.link) or item.baseItemLevel
 end
 
 --- Returns `true` if the given `item` is locked.
