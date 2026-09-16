@@ -226,7 +226,7 @@ function JunkFilter:IsJunkItem(item)
     if profileSettings.includeBelowItemLevel.enabled then
       local value = profileSettings.includeBelowItemLevel.value
       if item.itemLevel < value then
-        local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeBelowItemLevel
+        local checkBoxValues = profileSettings.includeBelowItemLevel.qualities
         if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
           local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
           return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)

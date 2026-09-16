@@ -58,7 +58,7 @@ ActionTypes.Profile = {
   SET_AUTO_REPAIR = "profile/autoRepair/set",
   SET_AUTO_SELL = "profile/autoSell/set",
 
-  PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/patch",
+  MERGE_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/merge",
   SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
   SET_INCLUDE_BY_QUALITY = "profile/includeByQuality/set",
   SET_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/set",
@@ -72,7 +72,6 @@ ActionTypes.Profile = {
   SET_EXCLUSIONS = "profile/exclusions/set",
 
   ItemQualityCheckBoxes = {
-    PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/itemQualityCheckBoxes/includeBelowItemLevel/patch",
     PATCH_INCLUDE_BY_QUALITY = "profile/itemQualityCheckBoxes/includeByQuality/patch",
     PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
   },

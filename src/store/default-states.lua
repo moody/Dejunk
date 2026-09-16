@@ -75,7 +75,11 @@ DefaultStates.Profile = {
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
 
-    includeBelowItemLevel = { enabled = false, value = 0 },
+    includeBelowItemLevel = {
+      enabled = false,
+      value = 0,
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
     includeByQuality = true,
     includeUnsuitableEquipment = false,
     includeArtifactRelics = false,
@@ -86,7 +90,6 @@ DefaultStates.Profile = {
     exclusions = {},
 
     itemQualityCheckBoxes = {
-      includeBelowItemLevel = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       includeByQuality = { poor = true, common = false, uncommon = false, rare = false, epic = false },
       includeUnsuitableEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
     }

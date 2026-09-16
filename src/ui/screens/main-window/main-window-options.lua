@@ -301,7 +301,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
       get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.enabled end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.patchIncludeBelowItemLevel({ enabled = value })) end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ enabled = value })) end,
       enableClickHandling = true,
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
@@ -322,31 +322,31 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
         text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
         initialValue = StateManager:GetProfileState().settings.includeBelowItemLevel.value,
         onAccept = function(self, value)
-          StateManager:Dispatch(ActionCreators.Profile.patchIncludeBelowItemLevel({ value = value }))
+          StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ value = value }))
         end
       })
     end)
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeBelowItemLevel.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeBelowItemLevel({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeBelowItemLevel.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeBelowItemLevel({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeBelowItemLevel.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeBelowItemLevel({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeBelowItemLevel.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeBelowItemLevel({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeBelowItemLevel.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeBelowItemLevel({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { epic = value } })) end
       }
     })
 

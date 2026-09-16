@@ -198,9 +198,9 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<boolean>
   setIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS),
 
-  --- Action creator for `ActionTypes.Profile.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
-  patchIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
+  mergeIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL),
 
   --- Action creator for `ActionTypes.Profile.SET_INCLUDE_BY_QUALITY`.
   --- @type WuxActionCreator<boolean>
@@ -219,10 +219,6 @@ ActionCreators.Profile = {
   setExclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUSIONS),
 
   itemQualityCheckBoxes = {
-    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL`.
-    --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    includeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BELOW_ITEM_LEVEL),
-
     --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
     includeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY),
