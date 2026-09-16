@@ -197,8 +197,8 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude unbound equipment.
-  if profileSettings.excludeUnboundEquipment and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    local checkBoxValues = profileSettings.itemQualityCheckBoxes.excludeUnboundEquipment
+  if profileSettings.excludeUnboundEquipment.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
+    local checkBoxValues = profileSettings.excludeUnboundEquipment.qualities
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
     end

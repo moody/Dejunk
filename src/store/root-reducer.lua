@@ -46,7 +46,7 @@ local profileReducer = Wux:CombineReducers({
 
     excludeAboveItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL, DefaultStates.Profile.settings.excludeAboveItemLevel),
     excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
-    excludeUnboundEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
+    excludeUnboundEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
     excludeWarbandEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
 
     includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
@@ -58,10 +58,6 @@ local profileReducer = Wux:CombineReducers({
     exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions),
 
     itemQualityCheckBoxes = Wux:CombineReducers({
-      excludeUnboundEquipment = Wux:CreatePatchReducer(
-        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT,
-        DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeUnboundEquipment
-      ),
       excludeWarbandEquipment = Wux:CreatePatchReducer(
         ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT,
         DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeWarbandEquipment

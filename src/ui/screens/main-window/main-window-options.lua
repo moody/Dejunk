@@ -203,30 +203,30 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setExcludeUnboundEquipment(value)) end
+      get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ enabled = value })) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeUnboundEquipment.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeUnboundEquipment({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeUnboundEquipment.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeUnboundEquipment({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeUnboundEquipment.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeUnboundEquipment({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeUnboundEquipment.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeUnboundEquipment({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeUnboundEquipment.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeUnboundEquipment({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { epic = value } })) end
       }
     })
 

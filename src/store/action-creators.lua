@@ -186,9 +186,9 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<boolean>
   setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS),
 
-  --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT`.
-  --- @type WuxActionCreator<boolean>
-  setExcludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT),
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT),
 
   --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT`.
   --- @type WuxActionCreator<boolean>
@@ -219,10 +219,6 @@ ActionCreators.Profile = {
   setExclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUSIONS),
 
   itemQualityCheckBoxes = {
-    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT`.
-    --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    excludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT),
-
     --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
     excludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_WARBAND_EQUIPMENT),

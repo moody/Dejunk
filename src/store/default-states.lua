@@ -66,7 +66,10 @@ DefaultStates.Profile = {
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     excludeEquipmentSets = true,
-    excludeUnboundEquipment = false,
+    excludeUnboundEquipment = {
+      enabled = false,
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
     excludeWarbandEquipment = false,
 
     includeBelowItemLevel = { enabled = false, value = 0 },
@@ -80,7 +83,6 @@ DefaultStates.Profile = {
     exclusions = {},
 
     itemQualityCheckBoxes = {
-      excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       excludeWarbandEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       includeBelowItemLevel = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       includeByQuality = { poor = true, common = false, uncommon = false, rare = false, epic = false },
