@@ -60,6 +60,7 @@ DefaultStates.Profile = {
     autoRepair = false,
     autoSell = false,
 
+    excludeAboveItemLevel = { enabled = false, value = 0 },
     excludeEquipmentSets = true,
     excludeUnboundEquipment = false,
     excludeWarbandEquipment = false,
@@ -75,6 +76,7 @@ DefaultStates.Profile = {
     exclusions = {},
 
     itemQualityCheckBoxes = {
+      excludeAboveItemLevel = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       excludeUnboundEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       excludeWarbandEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       includeBelowItemLevel = { poor = true, common = true, uncommon = true, rare = true, epic = true },

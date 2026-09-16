@@ -126,6 +126,69 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     headingJustify = "CENTER"
   }))
 
+  -- Exclude above item level.
+  do
+    local LABEL_TEXT_FORMAT = Colors.White(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT) .. " " .. Colors.Grey("(%s)")
+
+    local function getItemLevel()
+      return StateManager:GetProfileState().settings.excludeAboveItemLevel.value
+    end
+
+    local frame = Widgets:OptionButton({
+      labelText = L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT,
+      get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.patchExcludeAboveItemLevel({ enabled = value })) end,
+      enableClickHandling = true,
+      onUpdateTooltip = function(self, tooltip)
+        tooltip:SetText(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)
+        tooltip:AddLine(L.EXCLUDE_ABOVE_ITEM_LEVEL_TOOLTIP:format(Colors.White(getItemLevel())))
+        tooltip:AddLine(" ")
+        tooltip:AddLine(Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT))
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
+      end,
+    })
+
+    frame:HookScript("OnUpdate", function()
+      frame.label:SetText(LABEL_TEXT_FORMAT:format(Colors.Yellow(getItemLevel())))
+    end)
+
+    frame:SetClickHandler("RightButton", "NONE", function()
+      Popup:GetInteger({
+        text = Colors.Gold(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
+        initialValue = StateManager:GetProfileState().settings.excludeAboveItemLevel.value,
+        onAccept = function(self, value)
+          StateManager:Dispatch(ActionCreators.Profile.patchExcludeAboveItemLevel({ value = value }))
+        end
+      })
+    end)
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ poor = value })) end
+      },
+      common = {
+        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ common = value })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ uncommon = value })) end
+      },
+      rare = {
+        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ rare = value })) end
+      },
+      epic = {
+        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ epic = value })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
+
   -- Exclude equipment sets.
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
     optionsFrame:AddChild(Widgets:OptionButton({
@@ -256,7 +319,7 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
 
     frame:SetClickHandler("RightButton", "NONE", function()
       Popup:GetInteger({
-        text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.INCLUDE_BELOW_ITEM_LEVEL_POPUP_HELP,
+        text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
         initialValue = StateManager:GetProfileState().settings.includeBelowItemLevel.value,
         onAccept = function(self, value)
           StateManager:Dispatch(ActionCreators.Profile.patchIncludeBelowItemLevel({ value = value }))

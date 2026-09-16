@@ -44,6 +44,7 @@ local profileReducer = Wux:CombineReducers({
     autoRepair = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_REPAIR, DefaultStates.Profile.settings.autoRepair),
     autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
 
+    excludeAboveItemLevel = Wux:CreatePatchReducer(ActionTypes.Profile.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL, DefaultStates.Profile.settings.excludeAboveItemLevel),
     excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
     excludeUnboundEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
     excludeWarbandEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
@@ -57,6 +58,10 @@ local profileReducer = Wux:CombineReducers({
     exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions),
 
     itemQualityCheckBoxes = Wux:CombineReducers({
+      excludeAboveItemLevel = Wux:CreatePatchReducer(
+        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL,
+        DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeAboveItemLevel
+      ),
       excludeUnboundEquipment = Wux:CreatePatchReducer(
         ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT,
         DefaultStates.Profile.settings.itemQualityCheckBoxes.excludeUnboundEquipment
