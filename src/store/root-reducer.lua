@@ -7,6 +7,7 @@ local Wux = Addon.Wux
 local RootReducer = Addon:GetModule("RootReducer")
 
 --- @class DejunkRootState
+--- @field version integer
 --- @field global GlobalState
 --- @field profiles ProfilesState
 
@@ -67,6 +68,10 @@ local profileReducer = Wux:CombineReducers({
 --- @return WuxReducer<DejunkRootState, any>
 function RootReducer:Build()
   return Wux:CombineReducers({
+    -- Not dispatched; `version` is set by `LegacyMigration:MigrateVersion()` before store creation.
+    version = function(state)
+      return Wux:Coalesce(state, DefaultStates.CURRENT_VERSION)
+    end,
 
     --- @type WuxReducer<GlobalState, any>
     global = Wux:CombineReducers({

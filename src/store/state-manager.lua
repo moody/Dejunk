@@ -36,6 +36,8 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     Addon:GetShortUID()
   )
 
+  LegacyMigration:MigrateVersion(initialState)
+
   -- Initialize the `activeProfileId` before creating the store.
   if type(initialState.profiles) ~= "table" then initialState.profiles = Wux:DeepCopy(DefaultStates.Profiles) end
   if type(initialState.profiles.characterMap) ~= "table" then initialState.profiles.characterMap = {} end
