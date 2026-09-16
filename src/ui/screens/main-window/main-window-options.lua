@@ -238,30 +238,30 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
       tooltipText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setExcludeWarbandEquipment(value)) end
+      get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ enabled = value })) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeWarbandEquipment.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeWarbandEquipment({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeWarbandEquipment.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeWarbandEquipment({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeWarbandEquipment.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeWarbandEquipment({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeWarbandEquipment.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeWarbandEquipment({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeWarbandEquipment.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeWarbandEquipment({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { epic = value } })) end
       }
     })
 

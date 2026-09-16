@@ -66,13 +66,12 @@ ActionTypes.Profile = {
   MERGE_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/merge",
   SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",
   MERGE_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/merge",
-  SET_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/set",
+  MERGE_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/merge",
 
   SET_INCLUSIONS = "profile/inclusions/set",
   SET_EXCLUSIONS = "profile/exclusions/set",
 
   ItemQualityCheckBoxes = {
-    PATCH_EXCLUDE_WARBAND_EQUIPMENT = "profile/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
     PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/itemQualityCheckBoxes/includeBelowItemLevel/patch",
     PATCH_INCLUDE_BY_QUALITY = "profile/itemQualityCheckBoxes/includeByQuality/patch",
     PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",

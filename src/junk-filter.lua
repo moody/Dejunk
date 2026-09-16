@@ -205,8 +205,8 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude warband equipment.
-  if Addon.IS_RETAIL and profileSettings.excludeWarbandEquipment and Items:IsItemWarbandEquipment(item) then
-    local checkBoxValues = profileSettings.itemQualityCheckBoxes.excludeWarbandEquipment
+  if Addon.IS_RETAIL and profileSettings.excludeWarbandEquipment.enabled and Items:IsItemWarbandEquipment(item) then
+    local checkBoxValues = profileSettings.excludeWarbandEquipment.qualities
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
     end
