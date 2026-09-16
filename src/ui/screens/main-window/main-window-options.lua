@@ -111,8 +111,8 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoSell(value)) end
   }))
 
-  self:AddIncludeOptions(optionsFrame)
   self:AddExcludeOptions(optionsFrame)
+  self:AddIncludeOptions(optionsFrame)
 end
 
 --- Adds exclude options to the given `optionsFrame`.
