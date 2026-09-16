@@ -12,10 +12,12 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class WindowComponentOptions
---- @field name string Used for the frame's name.
+--- @field name string Used for the frame's name, gets prefixed with `Dejunk_`.
 --- @field width integer
 --- @field height integer
 --- @field titleText string
+--- @field isSpecialFrame? boolean Registers with `UISpecialFrames` so ESC closes it. Defaults to `true`.
+--- @field frameStrata? FrameStrata Defaults to `HIGH`.
 --- @field getPoint fun(): table Returns the point to apply.
 --- @field setPoint fun(point: table) Called with the point to save after dragging.
 --- @field onResetPoint fun() Called on Shift+Right-Click to reset the window's position.
@@ -52,7 +54,8 @@ function ComponentFactory:Window(options)
       local frame = Widgets:Frame({
         name = ADDON_NAME .. "_" .. options.name,
         enableClickHandling = true,
-        enableDragging = true
+        enableDragging = true,
+        frameStrata = options.frameStrata or "HIGH"
       })
 
       frame:SetClickHandler("RightButton", "SHIFT", options.onResetPoint)
@@ -63,7 +66,9 @@ function ComponentFactory:Window(options)
         setPoint = options.setPoint
       })
 
-      table.insert(UISpecialFrames, frame:GetName())
+      if options.isSpecialFrame ~= false then
+        table.insert(UISpecialFrames, frame:GetName())
+      end
 
       frame:Hide()
       frame:HookScript("OnHide", function()

@@ -16,6 +16,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field points? table[]
 --- @field width? integer
 --- @field height? integer
+--- @field frameStrata? FrameStrata
 --- @field clipChildren? boolean Defaults to `true`.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 --- @field enableClickHandling? boolean
@@ -81,6 +82,11 @@ function Widgets:Frame(options)
 
   --- @class FrameWidget : Frame, BackdropTemplate
   local frame = CreateFrame(options.frameType, options.name, options.parent)
+
+  -- Strata.
+  if type(options.frameStrata) == "string" then
+    frame:SetFrameStrata(options.frameStrata)
+  end
 
   -- Clip children.
   frame:SetClipsChildren(options.clipChildren)
@@ -151,8 +157,6 @@ function Widgets:Frame(options)
     local frameLevel = getNextFrameLevel()
     frame:HookScript("OnShow", function() frame:SetFrameLevel(frameLevel) end)
     frame:SetFrameLevel(frameLevel)
-
-    frame:SetFrameStrata("HIGH")
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:SetClampedToScreen(true)

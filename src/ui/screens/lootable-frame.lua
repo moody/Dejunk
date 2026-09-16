@@ -10,7 +10,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class LootableFrame
 local LootableFrame = Addon:GetModule("LootableFrame")
 
-local NUM_LOOTABLE_PANEL_BUTTONS = 8
+local NUM_LOOTABLE_PANEL_BUTTONS = 5
 
 local Components = {}
 
@@ -77,8 +77,10 @@ end
 
 Components.Root = ComponentFactory:Window({
   name = "LootableFrame",
-  width = 282,
-  height = 325,
+  width = 300,
+  height = 240,
+  frameStrata = "LOW",
+  isSpecialFrame = false,
   titleText = Colors.Yellow(L.LOOTABLE_ITEMS),
   getPoint = function() return StateManager:GetGlobalState().points.lootableFrame end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.set(point)) end,
