@@ -16,16 +16,8 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install requests
-        run: pip install requests
-
       - name: Validate Locales
         run: python .github/scripts/validate_locales.py
-
-      # - name: Upload Locales
-      #   run: python .github/scripts/upload_locales.py
-      #   env:
-      #     CF_API_KEY: ${{ secrets.CF_API_KEY }}
 
       - name: Release
         uses: BigWigsMods/packager@v2
