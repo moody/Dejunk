@@ -51,17 +51,13 @@ local profileReducer = Wux:CombineReducers({
 
     includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
     includeBelowItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
-    includeByQuality = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
+    includeByQuality = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
     includeUnsuitableEquipment = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Profile.settings.includeUnsuitableEquipment),
 
     inclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUSIONS, DefaultStates.Profile.settings.inclusions),
     exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions),
 
     itemQualityCheckBoxes = Wux:CombineReducers({
-      includeByQuality = Wux:CreatePatchReducer(
-        ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY,
-        DefaultStates.Profile.settings.itemQualityCheckBoxes.includeByQuality
-      ),
       includeUnsuitableEquipment = Wux:CreatePatchReducer(
         ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT,
         DefaultStates.Profile.settings.itemQualityCheckBoxes.includeUnsuitableEquipment

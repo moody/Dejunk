@@ -357,30 +357,30 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_BY_QUALITY_TEXT,
       tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP .. "|n|n" .. Colors.Pink(L.OPTION_WARNING_BE_CAREFUL),
-      get = function() return StateManager:GetProfileState().settings.includeByQuality end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeByQuality(value)) end
+      get = function() return StateManager:GetProfileState().settings.includeByQuality.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ enabled = value })) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeByQuality.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeByQuality({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeByQuality.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeByQuality({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeByQuality.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeByQuality({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeByQuality.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeByQuality({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeByQuality.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeByQuality({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = value } })) end
       }
     })
 

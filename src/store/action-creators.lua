@@ -202,9 +202,9 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL),
 
-  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_BY_QUALITY`.
-  --- @type WuxActionCreator<boolean>
-  setIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_BY_QUALITY),
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY),
 
   --- Action creator for `ActionTypes.Profile.SET_INCLUDE_UNSUITABLE_EQUIPMENT`.
   --- @type WuxActionCreator<boolean>
@@ -219,10 +219,6 @@ ActionCreators.Profile = {
   setExclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUSIONS),
 
   itemQualityCheckBoxes = {
-    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY`.
-    --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    includeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_BY_QUALITY),
-
     --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
     includeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_INCLUDE_UNSUITABLE_EQUIPMENT)

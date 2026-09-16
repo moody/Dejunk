@@ -213,8 +213,8 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Include by quality.
-  if profileSettings.includeByQuality then
-    local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeByQuality
+  if profileSettings.includeByQuality.enabled then
+    local checkBoxValues = profileSettings.includeByQuality.qualities
     if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
     end
