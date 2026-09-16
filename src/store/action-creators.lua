@@ -178,9 +178,9 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<boolean>
   setAutoSell = Wux:CreateActionCreator(ActionTypes.Profile.SET_AUTO_SELL),
 
-  --- Action creator for `ActionTypes.Profile.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL`.
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
-  patchExcludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL),
+  mergeExcludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL),
 
   --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS`.
   --- @type WuxActionCreator<boolean>
@@ -219,10 +219,6 @@ ActionCreators.Profile = {
   setExclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUSIONS),
 
   itemQualityCheckBoxes = {
-    --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL`.
-    --- @type WuxActionCreator<ItemQualityCheckBoxValues>
-    excludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_ABOVE_ITEM_LEVEL),
-
     --- Action creator for `ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT`.
     --- @type WuxActionCreator<ItemQualityCheckBoxValues>
     excludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.ItemQualityCheckBoxes.PATCH_EXCLUDE_UNBOUND_EQUIPMENT),

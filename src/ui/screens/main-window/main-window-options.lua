@@ -137,7 +137,7 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT,
       get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.enabled end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.patchExcludeAboveItemLevel({ enabled = value })) end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ enabled = value })) end,
       enableClickHandling = true,
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetText(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)
@@ -158,31 +158,31 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
         text = Colors.Gold(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
         initialValue = StateManager:GetProfileState().settings.excludeAboveItemLevel.value,
         onAccept = function(self, value)
-          StateManager:Dispatch(ActionCreators.Profile.patchExcludeAboveItemLevel({ value = value }))
+          StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ value = value }))
         end
       })
     end)
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.excludeAboveItemLevel.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.excludeAboveItemLevel({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { epic = value } })) end
       }
     })
 

@@ -63,7 +63,7 @@ ActionTypes.Profile = {
   SET_INCLUDE_BY_QUALITY = "profile/includeByQuality/set",
   SET_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/set",
 
-  PATCH_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/patch",
+  MERGE_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/merge",
   SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",
   SET_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/set",
   SET_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/set",
@@ -72,7 +72,6 @@ ActionTypes.Profile = {
   SET_EXCLUSIONS = "profile/exclusions/set",
 
   ItemQualityCheckBoxes = {
-    PATCH_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/itemQualityCheckBoxes/excludeAboveItemLevel/patch",
     PATCH_EXCLUDE_UNBOUND_EQUIPMENT = "profile/itemQualityCheckBoxes/excludeUnboundEquipment/patch",
     PATCH_EXCLUDE_WARBAND_EQUIPMENT = "profile/itemQualityCheckBoxes/excludeWarbandEquipment/patch",
     PATCH_INCLUDE_BELOW_ITEM_LEVEL = "profile/itemQualityCheckBoxes/includeBelowItemLevel/patch",
