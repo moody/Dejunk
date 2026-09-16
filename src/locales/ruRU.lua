@@ -141,7 +141,6 @@ L["SAFE_SELL_TOOLTIP"] = "Продаёт не более 12 предметов �
 L["SEARCH_LISTS"] = "Поиск по спискам"
 L["SELECT_ALL"] = "Выбрать всё"
 L["SELL"] = "Продать"
-L["SET_PROFILE"] = "Профиль установлен: %s"
 L["SHIFT_KEY"] = "Shift"
 L["SOLD_ITEM"] = "Продан: %s."
 L["START_SELLING"] = "Начать продажу"
