@@ -172,16 +172,6 @@ function RootReducer:Build()
         return state
       end
 
-      -- Assign profile action.
-      if action.type == ActionTypes.Profiles.ASSIGN_PROFILE then
-        --- @cast action WuxPayloadAction<AssignProfilePayload>
-        state = Wux:ShallowCopy(state)
-        state.activeProfileId = action.payload.profileId
-        state.characterMap = Wux:ShallowCopy(state.characterMap)
-        state.characterMap[action.payload.characterKey] = action.payload.profileId
-        return state
-      end
-
       -- Rename profile action.
       if action.type == ActionTypes.Profiles.RENAME_PROFILE then
         --- @cast action WuxPayloadAction<RenameProfilePayload>
@@ -210,6 +200,15 @@ function RootReducer:Build()
           state.activeProfileId = DefaultStates.DEFAULT_PROFILE_ID
         end
         return state
+      end
+
+      -- Assign profile action. Falls through, rather than returning.
+      if action.type == ActionTypes.Profiles.ASSIGN_PROFILE then
+        --- @cast action WuxPayloadAction<AssignProfilePayload>
+        state = Wux:ShallowCopy(state)
+        state.activeProfileId = action.payload.profileId
+        state.characterMap = Wux:ShallowCopy(state.characterMap)
+        state.characterMap[action.payload.characterKey] = action.payload.profileId
       end
 
       -- Ensure the active profile is not the default.
