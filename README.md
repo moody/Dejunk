@@ -32,6 +32,7 @@ Filters determine what items are considered junk. Several filters support per-qu
 
 **Exclude** (prevents matched items from being considered junk)
 
+- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
 - **Exclude Equipment Sets** — Exclude equipment saved to an equipment set
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
@@ -48,12 +49,12 @@ Profiles can also be created, switched, renamed, and deleted directly from the P
 
 Inclusions and Exclusions lists are available at both the global and per-profile level. Per-profile lists take priority over global ones.
 
-| List               | Behaviour                                                                       |
-| ------------------ | ------------------------------------------------------------------------------- |
-| Global Inclusions  | Always junk across all characters, unless overridden by a per-profile exclusion |
-| Global Exclusions  | Never junk across all characters, unless overridden by a per-profile inclusion  |
-| Profile Inclusions | Always junk for the active profile only, regardless of any other setting        |
-| Profile Exclusions | Never junk for the active profile only, regardless of any other setting         |
+| List               | Behaviour                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| Global Inclusions  | Always junk across all characters, unless overridden by a per-profile exclusion or `Exclude Above Item Level` |
+| Global Exclusions  | Never junk across all characters, unless overridden by a per-profile inclusion                                |
+| Profile Inclusions | Always junk for the active profile only, regardless of any other setting except `Exclude Above Item Level`    |
+| Profile Exclusions | Never junk for the active profile only, regardless of any other setting                                       |
 
 Items can be added to lists by dragging them directly into the list frame or the Junk Frame. The Transport Frame can be used to import or export item IDs as plain text, making it easy to share or back up lists.
 
