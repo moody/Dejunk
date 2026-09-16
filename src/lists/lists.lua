@@ -317,7 +317,7 @@ do -- Create the lists.
   -- ProfileInclusions.
   Lists.ProfileInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.PROFILE)),
-    description = L.INCLUSIONS_DESCRIPTION_PROFILE,
+    description = L.INCLUSIONS_DESCRIPTION_PROFILE:format(Colors.White(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)),
     load = function() return StateManager:GetProfileState().settings.inclusions end,
     save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Profile.setInclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalInclusions end,
@@ -337,7 +337,7 @@ do -- Create the lists.
   -- GlobalInclusions.
   Lists.GlobalInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
-    description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.ProfileExclusions.name),
+    description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.ProfileExclusions.name, Colors.White(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)),
     load = function() return StateManager:GetGlobalState().inclusions end,
     save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Global.setInclusions(itemIds)) end,
     getSibling = function() return Lists.ProfileInclusions end,
