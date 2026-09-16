@@ -1,5 +1,5 @@
 -- =============================================================================
--- Wux: 0.3.1 - https://github.com/moody/Wux
+-- Wux: 0.4.0 - https://github.com/moody/Wux
 -- =============================================================================
 
 local _, Addon = ...
@@ -104,6 +104,24 @@ local function copyTable(t, deep)
   end
 
   return copy
+end
+
+--- Returns a copy of `state` with `payload`'s fields merged in. A field
+--- present as a table in both `state` and `payload` is merged recursively;
+--- any other field is assigned directly, replacing `state`'s own value.
+--- @param state table
+--- @param payload table<string, any>
+--- @return table
+local function mergeTable(state, payload)
+  state = copyTable(state, false)
+  for key, value in pairs(payload) do
+    if type(value) == "table" and type(state[key]) == "table" then
+      state[key] = mergeTable(state[key], value)
+    else
+      state[key] = value
+    end
+  end
+  return state
 end
 
 -- =============================================================================
@@ -271,6 +289,25 @@ function Wux:CreatePatchReducer(actionType, defaultState)
       for key, value in pairs(action.payload) do
         state[key] = value
       end
+    end
+    return state
+  end
+end
+
+--- Returns a reducer that recursively merges `action.payload`'s fields into
+--- its state when `action.type` matches `actionType`, or with `defaultState`
+--- when state is `nil`. Unlike `CreatePatchReducer`, a field present as a
+--- table in both the existing state and the payload is merged into rather
+--- than replacing the existing nested table.
+--- @generic S : table
+--- @param actionType string
+--- @param defaultState S
+--- @return fun(state: S, action: WuxPayloadAction<table<string, any>>): S
+function Wux:CreateMergeReducer(actionType, defaultState)
+  return function(state, action)
+    state = Wux:Coalesce(state, defaultState)
+    if action.type == actionType then
+      state = mergeTable(state, action.payload)
     end
     return state
   end
