@@ -61,7 +61,7 @@ ActionTypes.Profile = {
   MERGE_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/merge",
   SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
   MERGE_INCLUDE_BY_QUALITY = "profile/includeByQuality/merge",
-  SET_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/set",
+  MERGE_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/merge",
 
   MERGE_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/merge",
   SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",
@@ -70,8 +70,4 @@ ActionTypes.Profile = {
 
   SET_INCLUSIONS = "profile/inclusions/set",
   SET_EXCLUSIONS = "profile/exclusions/set",
-
-  ItemQualityCheckBoxes = {
-    PATCH_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/itemQualityCheckBoxes/includeUnsuitableEquipment/patch",
-  },
 }

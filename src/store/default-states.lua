@@ -84,16 +84,15 @@ DefaultStates.Profile = {
       enabled = true,
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
-    includeUnsuitableEquipment = false,
+    includeUnsuitableEquipment = {
+      enabled = false,
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
     includeArtifactRelics = false,
 
     --- @type ItemIdMap
     inclusions = {},
     --- @type ItemIdMap
     exclusions = {},
-
-    itemQualityCheckBoxes = {
-      includeUnsuitableEquipment = { poor = true, common = true, uncommon = true, rare = true, epic = true },
-    }
   }
 }

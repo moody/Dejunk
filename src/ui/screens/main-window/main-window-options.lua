@@ -391,30 +391,30 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
     local frame = Widgets:OptionButton({
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
       tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeUnsuitableEquipment(value)) end
+      get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ enabled = value })) end
     })
 
     frame:InitializeItemQualityCheckBoxes({
       poor = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeUnsuitableEquipment.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeUnsuitableEquipment({ poor = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { poor = value } })) end
       },
       common = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeUnsuitableEquipment.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeUnsuitableEquipment({ common = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { common = value } })) end
       },
       uncommon = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeUnsuitableEquipment.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeUnsuitableEquipment({ uncommon = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { uncommon = value } })) end
       },
       rare = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeUnsuitableEquipment.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeUnsuitableEquipment({ rare = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { rare = value } })) end
       },
       epic = {
-        get = function() return StateManager:GetProfileState().settings.itemQualityCheckBoxes.includeUnsuitableEquipment.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.itemQualityCheckBoxes.includeUnsuitableEquipment({ epic = value })) end
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { epic = value } })) end
       }
     })
 

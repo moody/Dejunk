@@ -234,8 +234,8 @@ function JunkFilter:IsJunkItem(item)
       end
     end
     -- Include unsuitable equipment.
-    if profileSettings.includeUnsuitableEquipment and not Items:IsItemSuitable(item) then
-      local checkBoxValues = profileSettings.itemQualityCheckBoxes.includeUnsuitableEquipment
+    if profileSettings.includeUnsuitableEquipment.enabled and not Items:IsItemSuitable(item) then
+      local checkBoxValues = profileSettings.includeUnsuitableEquipment.qualities
       if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
         return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
       end
