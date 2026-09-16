@@ -26,6 +26,7 @@
   9. `Include Unsuitable Equipment`
 
   If you had `Character Specific Settings` disabled and relied on a shared global value for any of these, set that option again on each character.
+
 - `Safe Mode` is renamed to `Safe Sell`.
 - `Auto Junk Frame` and `Safe Sell` are now `Global` options instead of `Profile` options, so they apply to every character rather than only the active profile.
 - On the `Minimap Icon`, Left-Click now toggles the options frame (previously the junk frame) and Right-Click now toggles the junk frame (previously the options frame). Shift+Left-Click no longer starts selling.
@@ -39,3 +40,4 @@
 ### Fixed
 
 - Fixed excessive memory usage with refundable items in specific conditions.
+- Fixed junk filter checks occasionally evaluating the wrong item for a moment after swapping items between bag slots.
