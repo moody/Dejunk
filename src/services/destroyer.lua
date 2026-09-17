@@ -1,6 +1,8 @@
 local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
@@ -36,6 +38,8 @@ local function handleItem(item)
   end
 
   local link = item.quantity > 1 and (item.link .. "x" .. item.quantity) or item.link
+  local price = item.noValue and 0 or (item.price * item.quantity)
+  link = link .. " " .. Colors.Grey("(%s)"):format(Colors.White(GetCoinTextureString(price)))
   Popup:Confirm({
     text = L.DESTROY_ITEM_POPUP_HELP:format(link),
     alert = true,
