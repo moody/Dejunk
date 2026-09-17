@@ -10,7 +10,7 @@ LOCALE_REFERENCE_PATTERN = re.compile(r"\b(L|Locale)\.(\w+)\b")
 def getEntries():
     entries = []
 
-    with open("src/locales/_locale.lua") as f:
+    with open("src/locales/_enUS.lua") as f:
         for line in f.readlines():
             if line.strip().startswith("L."):
                 m = re.match(LOCALE_ENTRY_PATTERN, line)
