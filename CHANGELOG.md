@@ -7,7 +7,7 @@
 - Profiles. Each character has a profile holding its `Inclusions (Profile)` list, `Exclusions (Profile)` list, and its own copy of the character-specific options. Every character starts on the `Default` profile, whose lists cannot be edited directly; the first time you add an item to a profile list, Dejunk creates a profile for that character and switches to it. The active profile's name is printed to chat whenever it changes.
 - A `Profiles` frame for managing profiles directly, opened via the gear icon in the main window's footer (which also shows the active profile's name). Profiles can be created, switched, renamed, and deleted from this frame. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
 - The `/dejunk profiles` chat command, for opening the `Profiles` frame directly.
-- `Safe Destroy`, a `Global` option that shows a confirmation popup before destroying an item.
+- `Safe Destroy`, a `Global` option that shows a confirmation popup with the item's price before destroying it.
 - `Exclude Above Item Level`, a `Profile` option that excludes equipment above a set item level, even if it's on an Inclusions list.
 
 ### Changed
@@ -41,3 +41,5 @@
 
 - Fixed excessive memory usage with refundable items in specific conditions.
 - Fixed junk filter checks occasionally evaluating the wrong item for a moment after swapping items between bag slots.
+- Fixed "added to list" sometimes printing for an item that was actually rejected (not sellable or destroyable), including during silent bulk imports.
+- Fixed an item sometimes being removed from its opposite list even when adding it to the new list failed.
