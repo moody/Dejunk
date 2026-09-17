@@ -111,20 +111,39 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoSell(value)) end
   }))
 
-  self:AddExcludeOptions(optionsFrame)
-  self:AddIncludeOptions(optionsFrame)
-end
+  do -- Include by quality.
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BY_QUALITY_TEXT,
+      tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP .. "|n|n" .. Colors.Pink(L.OPTION_WARNING_BE_CAREFUL),
+      get = function() return StateManager:GetProfileState().settings.includeByQuality.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ enabled = value })) end
+    })
 
---- Adds exclude options to the given `optionsFrame`.
---- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddExcludeOptions(optionsFrame)
-  -- Exclude heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({
-    headingText = L.EXCLUDE,
-    headingTemplate = "GameFontNormalSmall",
-    headingColor = Colors.Green,
-    headingJustify = "CENTER"
-  }))
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { poor = value } })) end
+      },
+      common = {
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { common = value } })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { uncommon = value } })) end
+      },
+      rare = {
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { rare = value } })) end
+      },
+      epic = {
+        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = value } })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
 
   -- Exclude above item level.
   do
@@ -183,6 +202,103 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
       epic = {
         get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.epic end,
         set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { epic = value } })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
+
+  -- Include below item level.
+  do
+    local LABEL_TEXT_FORMAT = Colors.White(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. " " .. Colors.Grey("(%s)")
+
+    local function getItemLevel()
+      return StateManager:GetProfileState().settings.includeBelowItemLevel.value
+    end
+
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
+      get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ enabled = value })) end,
+      enableClickHandling = true,
+      onUpdateTooltip = function(self, tooltip)
+        tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
+        tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(Colors.White(getItemLevel())))
+        tooltip:AddLine(" ")
+        tooltip:AddLine(Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT))
+        tooltip:AddLine(" ")
+        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
+      end,
+    })
+
+    frame:HookScript("OnUpdate", function()
+      frame.label:SetText(LABEL_TEXT_FORMAT:format(Colors.Yellow(getItemLevel())))
+    end)
+
+    frame:SetClickHandler("RightButton", "NONE", function()
+      Popup:GetInteger({
+        text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
+        initialValue = StateManager:GetProfileState().settings.includeBelowItemLevel.value,
+        onAccept = function(self, value)
+          StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ value = value }))
+        end
+      })
+    end)
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { poor = value } })) end
+      },
+      common = {
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { common = value } })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { uncommon = value } })) end
+      },
+      rare = {
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { rare = value } })) end
+      },
+      epic = {
+        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { epic = value } })) end
+      }
+    })
+
+    optionsFrame:AddChild(frame)
+  end
+
+  do -- Include unsuitable equipment.
+    local frame = Widgets:OptionButton({
+      labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
+      tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
+      get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.enabled end,
+      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ enabled = value })) end
+    })
+
+    frame:InitializeItemQualityCheckBoxes({
+      poor = {
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.poor end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { poor = value } })) end
+      },
+      common = {
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.common end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { common = value } })) end
+      },
+      uncommon = {
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.uncommon end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { uncommon = value } })) end
+      },
+      rare = {
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.rare end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { rare = value } })) end
+      },
+      epic = {
+        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.epic end,
+        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { epic = value } })) end
       }
     })
 
@@ -267,18 +383,6 @@ function MainWindowOptions:AddExcludeOptions(optionsFrame)
 
     optionsFrame:AddChild(frame)
   end
-end
-
---- Adds include options to the given `optionsFrame`.
---- @param optionsFrame OptionsFrameWidget
-function MainWindowOptions:AddIncludeOptions(optionsFrame)
-  -- Include heading.
-  optionsFrame:AddChild(Widgets:OptionHeading({
-    headingText = L.INCLUDE,
-    headingTemplate = "GameFontNormalSmall",
-    headingColor = Colors.Red,
-    headingJustify = "CENTER"
-  }))
 
   -- Include artifact relics.
   if Addon.IS_RETAIL then
@@ -288,136 +392,5 @@ function MainWindowOptions:AddIncludeOptions(optionsFrame)
       get = function() return StateManager:GetProfileState().settings.includeArtifactRelics end,
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeArtifactRelics(value)) end
     }))
-  end
-
-  -- Include below item level.
-  do
-    local LABEL_TEXT_FORMAT = Colors.White(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. " " .. Colors.Grey("(%s)")
-
-    local function getItemLevel()
-      return StateManager:GetProfileState().settings.includeBelowItemLevel.value
-    end
-
-    local frame = Widgets:OptionButton({
-      labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
-      get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.enabled end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ enabled = value })) end,
-      enableClickHandling = true,
-      onUpdateTooltip = function(self, tooltip)
-        tooltip:SetText(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT)
-        tooltip:AddLine(L.INCLUDE_BELOW_ITEM_LEVEL_TOOLTIP:format(Colors.White(getItemLevel())))
-        tooltip:AddLine(" ")
-        tooltip:AddLine(Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT))
-        tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.CHANGE_VALUE)
-      end,
-    })
-
-    frame:HookScript("OnUpdate", function()
-      frame.label:SetText(LABEL_TEXT_FORMAT:format(Colors.Yellow(getItemLevel())))
-    end)
-
-    frame:SetClickHandler("RightButton", "NONE", function()
-      Popup:GetInteger({
-        text = Colors.Gold(L.INCLUDE_BELOW_ITEM_LEVEL_TEXT) .. "|n|n" .. L.ITEM_LEVEL_OPTION_POPUP_HELP,
-        initialValue = StateManager:GetProfileState().settings.includeBelowItemLevel.value,
-        onAccept = function(self, value)
-          StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ value = value }))
-        end
-      })
-    end)
-
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { epic = value } })) end
-      }
-    })
-
-    optionsFrame:AddChild(frame)
-  end
-
-  do -- Include by quality.
-    local frame = Widgets:OptionButton({
-      labelText = L.INCLUDE_BY_QUALITY_TEXT,
-      tooltipText = L.INCLUDE_BY_QUALITY_TOOLTIP .. "|n|n" .. Colors.Pink(L.OPTION_WARNING_BE_CAREFUL),
-      get = function() return StateManager:GetProfileState().settings.includeByQuality.enabled end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ enabled = value })) end
-    })
-
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = value } })) end
-      }
-    })
-
-    optionsFrame:AddChild(frame)
-  end
-
-  do -- Include unsuitable equipment.
-    local frame = Widgets:OptionButton({
-      labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
-      tooltipText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP .. "|n|n" .. Colors.Pink(L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT),
-      get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.enabled end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ enabled = value })) end
-    })
-
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { epic = value } })) end
-      }
-    })
-
-    optionsFrame:AddChild(frame)
   end
 end
