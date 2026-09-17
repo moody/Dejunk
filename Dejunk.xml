@@ -62,7 +62,6 @@
   <Script file="src\ui\widgets\composites\items-frame.lua"/>
   <Script file="src\ui\widgets\composites\list-frame.lua"/>
   <Script file="src\ui\widgets\composites\options\option-button.lua"/>
-  <Script file="src\ui\widgets\composites\options\option-heading.lua"/>
   <Script file="src\ui\widgets\composites\options\options-frame.lua"/>
   <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\composites\text-frame.lua"/>
