@@ -8,10 +8,10 @@
   <Script file="libs\Wux.lua"/>
 
   <!-- Src -->
-  <Script file="src\_init.lua"/>
+  <Script file="src\addon.lua"/>
 
   <!-- Locales -->
-  <Script file="src\locales\_locale.lua"/>
+  <Script file="src\locales\_enUS.lua"/>
   <Script file="src\locales\deDE.lua"/>
   <Script file="src\locales\esES.lua"/>
   <Script file="src\locales\esMX.lua"/>
@@ -41,10 +41,10 @@
   <Script file="src\store\state-manager.lua"/>
 
   <!-- Commands -->
-  <Script file="src\commands\_init.lua"/>
+  <Script file="src\commands\commands.lua"/>
 
   <!-- Junk Filter -->
-  <Script file="src\junk-filter\_init.lua"/>
+  <Script file="src\junk-filter\junk-filter.lua"/>
 
   <!-- Items -->
   <Script file="src\items\equipment-sets-cache.lua"/>
