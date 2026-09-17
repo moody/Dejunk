@@ -10,6 +10,31 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindowOptions
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+local QUALITIES = { "poor", "common", "uncommon", "rare", "epic" }
+
+--- Builds options for `OptionButton:InitializeItemQualityCheckBoxes()`.
+--- @param getQualities fun(): ItemQualitiesState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+--- @return OptionButtonItemQualityCheckBoxesOptions
+local function buildItemQualityCheckBoxesOptions(getQualities, mergeAction)
+  local options = {}
+  for _, quality in ipairs(QUALITIES) do
+    options[quality] = {
+      get = function() return getQualities()[quality] end,
+      set = function(value) StateManager:Dispatch(mergeAction({ qualities = { [quality] = value } })) end
+    }
+  end
+  return options
+end
+
+-- ============================================================================
+-- MainWindowOptions - Global
+-- ============================================================================
+
 --- Initializes global-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
@@ -92,6 +117,10 @@ function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
   }))
 end
 
+-- ============================================================================
+-- MainWindowOptions - Profile
+-- ============================================================================
+
 --- Initializes profile-scoped options for the given `optionsFrame`.
 --- @param optionsFrame OptionsFrameWidget
 function MainWindowOptions:InitializeProfileOptions(optionsFrame)
@@ -119,28 +148,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ enabled = value })) end
     })
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeByQuality.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.includeByQuality.qualities end,
+      ActionCreators.Profile.mergeIncludeByQuality
+    ))
 
     optionsFrame:AddChild(frame)
   end
@@ -182,28 +193,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       })
     end)
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeAboveItemLevel({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.excludeAboveItemLevel.qualities end,
+      ActionCreators.Profile.mergeExcludeAboveItemLevel
+    ))
 
     optionsFrame:AddChild(frame)
   end
@@ -245,28 +238,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       })
     end)
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeBelowItemLevel({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.includeBelowItemLevel.qualities end,
+      ActionCreators.Profile.mergeIncludeBelowItemLevel
+    ))
 
     optionsFrame:AddChild(frame)
   end
@@ -279,28 +254,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ enabled = value })) end
     })
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.includeUnsuitableEquipment.qualities end,
+      ActionCreators.Profile.mergeIncludeUnsuitableEquipment
+    ))
 
     optionsFrame:AddChild(frame)
   end
@@ -323,28 +280,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ enabled = value })) end
     })
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeUnboundEquipment({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.excludeUnboundEquipment.qualities end,
+      ActionCreators.Profile.mergeExcludeUnboundEquipment
+    ))
 
     optionsFrame:AddChild(frame)
   end
@@ -358,28 +297,10 @@ function MainWindowOptions:InitializeProfileOptions(optionsFrame)
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ enabled = value })) end
     })
 
-    frame:InitializeItemQualityCheckBoxes({
-      poor = {
-        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.poor end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { poor = value } })) end
-      },
-      common = {
-        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.common end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { common = value } })) end
-      },
-      uncommon = {
-        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.uncommon end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { uncommon = value } })) end
-      },
-      rare = {
-        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.rare end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { rare = value } })) end
-      },
-      epic = {
-        get = function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities.epic end,
-        set = function(value) StateManager:Dispatch(ActionCreators.Profile.mergeExcludeWarbandEquipment({ qualities = { epic = value } })) end
-      }
-    })
+    frame:InitializeItemQualityCheckBoxes(buildItemQualityCheckBoxesOptions(
+      function() return StateManager:GetProfileState().settings.excludeWarbandEquipment.qualities end,
+      ActionCreators.Profile.mergeExcludeWarbandEquipment
+    ))
 
     optionsFrame:AddChild(frame)
   end
