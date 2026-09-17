@@ -9,8 +9,23 @@ DefaultStates.CURRENT_VERSION = 1
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
+-- ============================================================================
+-- LuaCATS Annotations
+-- ============================================================================
+
 --- Example: `{ ["itemId"] = true, ... }`
 --- @alias ItemIdMap table<string, boolean>
+
+--- @class ItemQualitiesState
+--- @field poor boolean
+--- @field common boolean
+--- @field uncommon boolean
+--- @field rare boolean
+--- @field epic boolean
+
+-- ============================================================================
+-- DefaultStates - Global
+-- ============================================================================
 
 --- Default state for global settings.
 --- @class GlobalState
@@ -39,6 +54,10 @@ DefaultStates.Global = {
   }
 }
 
+-- ============================================================================
+-- DefaultStates - Profiles
+-- ============================================================================
+
 --- @class ProfilesState
 DefaultStates.Profiles = {
   activeProfileId = DefaultStates.DEFAULT_PROFILE_ID,
@@ -54,6 +73,10 @@ DefaultStates.Profiles = {
   profileMap = {}
 }
 
+-- ============================================================================
+-- DefaultStates - Profile
+-- ============================================================================
+
 --- Default state for a new profile.
 --- @class ProfileState
 DefaultStates.Profile = {
@@ -66,29 +89,35 @@ DefaultStates.Profile = {
     excludeAboveItemLevel = {
       enabled = false,
       value = 0,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     excludeEquipmentSets = true,
     excludeUnboundEquipment = {
       enabled = false,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     excludeWarbandEquipment = {
       enabled = false,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
 
     includeBelowItemLevel = {
       enabled = false,
       value = 0,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     includeByQuality = {
       enabled = true,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
     includeUnsuitableEquipment = {
       enabled = false,
+      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     includeArtifactRelics = false,
