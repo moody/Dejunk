@@ -12,29 +12,30 @@ local PARSE_DELAY_SECONDS = 0.1
 local PARSE_ATTEMPTS_PER_CALL = 25
 
 --- @class ParsingOptions
---- @field silent boolean
 --- @field maxParseAttempts number
 
 --- @type table<string, ParsingOptions>
 local PARSING_OPTIONS = {
   NEW_LIST_ITEM = {
-    silent = false,
     maxParseAttempts = math.ceil(5 / PARSE_DELAY_SECONDS) -- Fail after 5 seconds.
   },
   EXISTING_LIST_ITEM = {
-    silent = true,
     maxParseAttempts = math.ceil(30 / PARSE_DELAY_SECONDS) -- Fail after 30 seconds.
   }
 }
 
+--- Item IDs queued for parsing, keyed by ID. Unlike `ListItemIds`, the value
+--- means "suppress messages when this resolves," not presence.
+--- @alias ParseQueue table<string, boolean>
+
 --- Queue of item IDs to be parsed for lists where the item IDs are
 --- not yet saved in SavedVariables.
---- @type table<List, ListItemIds>
+--- @type table<List, ParseQueue>
 local newListItemQueue = {}
 
 --- Queue of item IDs to be parsed for lists where the item IDs are
 --- already saved in SavedVariables.
---- @type table<List, ListItemIds>
+--- @type table<List, ParseQueue>
 local existingListItemQueue = {}
 
 --- Parse attempts by list for each queued item ID.
@@ -60,9 +61,10 @@ end
 --- specifically for item IDs that are not yet part of saved variables.
 --- @param list List
 --- @param itemId string|number
-function ListItemParser:Parse(list, itemId)
+--- @param silent? boolean
+function ListItemParser:Parse(list, itemId, silent)
   if not newListItemQueue[list] then newListItemQueue[list] = {} end
-  newListItemQueue[list][tostring(itemId)] = true
+  newListItemQueue[list][tostring(itemId)] = not not silent
 end
 
 --- Initiates parsing for the given `list` and `itemId`,
@@ -99,6 +101,20 @@ function ListItemParser:IsParsing(list)
   if newListItemQueue[list] and next(newListItemQueue[list]) then return true end
   if existingListItemQueue[list] and next(existingListItemQueue[list]) then return true end
   return false
+end
+
+--- Returns the number of item IDs still queued for parsing for the given `list`.
+--- @param list List
+--- @return integer count
+function ListItemParser:GetPendingCount(list)
+  local count = 0
+  if newListItemQueue[list] then
+    for _ in pairs(newListItemQueue[list]) do count = count + 1 end
+  end
+  if existingListItemQueue[list] then
+    for _ in pairs(existingListItemQueue[list]) do count = count + 1 end
+  end
+  return count
 end
 
 -- ============================================================================
@@ -149,7 +165,7 @@ end
 
 --- Attempts to parse items for a list.
 --- @param list List
---- @param itemIds ListItemIds
+--- @param itemIds ParseQueue
 --- @param options ParsingOptions
 local function parse(list, itemIds, options)
   if not next(itemIds) then return end
@@ -158,24 +174,24 @@ local function parse(list, itemIds, options)
   local counter = 0
 
   -- Attempt to parse items.
-  for itemId in pairs(itemIds) do
+  for itemId, silent in pairs(itemIds) do
     if counter >= PARSE_ATTEMPTS_PER_CALL then break end
     counter = counter + 1
 
     if not GetItemInfoInstant(itemId) then
       itemIds[itemId] = nil
-      EventManager:Fire(E.ListItemCannotBeParsed, list, itemId, options.silent)
+      EventManager:Fire(E.ListItemCannotBeParsed, list, itemId, silent)
     else
       local item = getItemById(itemId)
       if item then
         itemIds[itemId] = nil
-        EventManager:Fire(E.ListItemParsed, list, item, options.silent)
+        EventManager:Fire(E.ListItemParsed, list, item, silent)
       else
         local parseAttempts = incrementParseAttempts(list, itemId)
         if parseAttempts >= options.maxParseAttempts then
           resetParseAttempts(list, itemId)
           itemIds[itemId] = nil
-          EventManager:Fire(E.ListItemFailedToParse, list, itemId, options.silent)
+          EventManager:Fire(E.ListItemFailedToParse, list, itemId, silent)
         end
       end
     end

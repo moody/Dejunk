@@ -6,28 +6,28 @@
   <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_ToggleJunkFrame()
   </Binding>
+  <Binding name="DEJUNK_TOGGLE_LOOTABLE_FRAME" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_ToggleLootableFrame()
+  </Binding>
   <Binding name="DEJUNK_START_SELLING" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_StartSelling()
   </Binding>
   <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="|cFF4FAFE3Dejunk|r">
     DejunkBindings_DestroyNextItem()
   </Binding>
-  <Binding name="DEJUNK_OPEN_LOOTABLES" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_OpenLootables()
-  </Binding>
 
-  <!-- Perchar Lists -->
-  <Binding name="DEJUNK_ADD_PERCHAR_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("PerCharInclusions")
+  <!-- Profile Lists -->
+  <Binding name="DEJUNK_ADD_PROFILE_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PERCHAR_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("PerCharInclusions")
+  <Binding name="DEJUNK_REM_PROFILE_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_AddToList("PerCharExclusions")
+  <Binding name="DEJUNK_ADD_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_AddToList("ProfileExclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PERCHAR_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
-    DejunkBindings_RemoveFromList("PerCharExclusions")
+  <Binding name="DEJUNK_REM_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+    DejunkBindings_RemoveFromList("ProfileExclusions")
   </Binding>
 
   <!-- Global Lists -->
