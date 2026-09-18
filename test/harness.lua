@@ -14,6 +14,7 @@ _G.LibStub = function(str) return {} end
 
 local Harness = {
   ADDON_NAME = "Dejunk",
+  --- @class Addon
   Addon = {}
 }
 
