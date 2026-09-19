@@ -7,7 +7,9 @@ local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local LegacyMigration = Addon:GetModule("LegacyMigration")
 local Middlewares = Addon:GetModule("Middlewares")
+local Migrations = Addon:GetModule("Migrations")
 local RootReducer = Addon:GetModule("RootReducer")
+local StateReconciler = Addon:GetModule("StateReconciler")
 local Wux = Addon.Wux
 
 ---@class StateManager
@@ -36,11 +38,10 @@ EventManager:Once(E.Wow.PlayerLogin, function()
     Addon:GetShortUID()
   )
 
-  LegacyMigration:MigrateVersion(initialState)
+  initialState = Migrations:Migrate(initialState)
+  initialState = StateReconciler:Reconcile(initialState)
 
   -- Initialize the `activeProfileId` before creating the store.
-  if type(initialState.profiles) ~= "table" then initialState.profiles = Wux:DeepCopy(DefaultStates.Profiles) end
-  if type(initialState.profiles.characterMap) ~= "table" then initialState.profiles.characterMap = {} end
   initialState.profiles.activeProfileId = initialState.profiles.characterMap[Addon:GetCharacterKey()]
 
   _Store = Wux:CreateStore(RootReducer:Build(), initialState, Middlewares:Build())

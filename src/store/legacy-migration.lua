@@ -1,5 +1,4 @@
 local Addon = select(2, ...) ---@type Addon
-local DefaultStates = Addon:GetModule("DefaultStates")
 local Wux = Addon.Wux
 
 --- @class LegacyMigration
@@ -63,13 +62,4 @@ function LegacyMigration:MigrateLegacyLists(newMapping, legacyMapping, character
   _G[legacyMapping.perchar] = nil
 
   return newState
-end
-
---- Runs migrations needed to bring `state.version` up to `DefaultStates.CURRENT_VERSION`.
---- @param state DejunkRootState
-function LegacyMigration:MigrateVersion(state)
-  -- Migrations will go here as necessary.
-  -- Example: `if state.version < 2 then ... end`
-
-  state.version = DefaultStates.CURRENT_VERSION
 end

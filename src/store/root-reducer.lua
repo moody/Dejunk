@@ -68,7 +68,7 @@ local profileReducer = Wux:CombineReducers({
 --- @return WuxReducer<DejunkRootState, any>
 function RootReducer:Build()
   return Wux:CombineReducers({
-    -- Not dispatched; `version` is set by `LegacyMigration:MigrateVersion()` before store creation.
+    -- Not dispatched; `version` is set by `Migrations:Migrate()` before store creation.
     version = function(state)
       return Wux:Coalesce(state, DefaultStates.CURRENT_VERSION)
     end,
