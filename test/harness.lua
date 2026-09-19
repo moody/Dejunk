@@ -33,4 +33,16 @@ function Harness:Load(path)
   assert(loadfile(path))(self.ADDON_NAME, self.Addon)
 end
 
+--- Reads a SavedVariables file and returns the table it assigns, without creating a global. The file must assign
+--- exactly one variable.
+--- @param path string
+--- @return table
+function Harness:ReadSavedVariablesFile(path)
+  local env = {}
+  setfenv(assert(loadfile(path)), env)()
+  local name, value = next(env)
+  assert(name and next(env, name) == nil, path .. " must assign exactly one variable")
+  return value
+end
+
 return Harness
