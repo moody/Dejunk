@@ -24,7 +24,7 @@ local PARSING_OPTIONS = {
   }
 }
 
---- Item IDs queued for parsing, keyed by ID. Unlike `ListItemIds`, the value
+--- Item IDs queued for parsing, keyed by ID. Unlike `ItemIdMap`, the value
 --- means "suppress messages when this resolves," not presence.
 --- @alias ParseQueue table<string, boolean>
 

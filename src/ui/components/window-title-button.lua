@@ -8,9 +8,6 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @class WindowTitleButtonWidget : FrameWidget, Button
---- @field texture Texture
-
 --- @class WindowTitleButtonOptions
 --- @field name string
 --- @field texture string
@@ -31,6 +28,7 @@ function ComponentFactory:WindowTitleButton(options)
     width = 46,
     frameFactory = function(parent)
       --- @class WindowTitleButtonWidget : FrameWidget, Button
+      --- @field texture Texture
       local frame = Widgets:Frame({
         parent = parent,
         name = options.name,

@@ -9,13 +9,6 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 -- LuaCATS Annotations
 -- ============================================================================
 
---- @class ItemQualityCheckBoxValues
---- @field poor? boolean
---- @field common? boolean
---- @field uncommon? boolean
---- @field rare? boolean
---- @field epic? boolean
-
 --- @class CreateProfilePayload
 --- @field profileId string
 --- @field profileName string

@@ -23,11 +23,6 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field onResetPoint fun() Called on Shift+Right-Click to reset the window's position.
 --- @field refresh? fun() Called repeatedly while the window is visible.
 
---- @class WindowComponent : WaffleFlexComponent
---- @field TitleRow WaffleFlexComponent
---- @field TitleText WaffleFlexComponent
---- @field CloseButton WaffleFlexComponent
-
 -- =============================================================================
 -- ComponentFactory - Window
 -- =============================================================================
@@ -40,6 +35,9 @@ function ComponentFactory:Window(options)
   local root
 
   --- @class WindowComponent : WaffleFlexComponent
+  --- @field TitleRow WaffleFlexComponent
+  --- @field TitleText WaffleFlexComponent
+  --- @field CloseButton WaffleFlexComponent
   root = Addon.Waffle:Flex({
     width = options.width,
     height = options.height,

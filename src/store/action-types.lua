@@ -7,7 +7,6 @@ local ActionTypes = Addon:GetModule("ActionTypes")
 -- ActionTypes - Global
 -- ============================================================================
 
---- @class ActionTypesGlobal
 ActionTypes.Global = {
   SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
   SET_CHAT_MESSAGES = "global/chatMessages/set",
@@ -39,7 +38,6 @@ ActionTypes.Global = {
 -- ActionTypes - Profiles
 -- ============================================================================
 
---- @class ActionTypesProfiles
 ActionTypes.Profiles = {
   CREATE_PROFILE = "profiles/create",
   ASSIGN_PROFILE = "profiles/assign",
@@ -51,7 +49,6 @@ ActionTypes.Profiles = {
 -- ActionTypes - Profile
 -- ============================================================================
 
---- @class ActionTypesProfile
 ActionTypes.Profile = {
   SET_PROFILE_NAME = "profile/name/set",
 

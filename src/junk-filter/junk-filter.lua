@@ -63,7 +63,7 @@ end
 
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkBoxValues`.
 --- @param itemQuality integer
---- @param checkBoxValues ItemQualityCheckBoxValues
+--- @param checkBoxValues ItemQualitiesState
 local function isItemQualityCheckBoxValueEnabled(itemQuality, checkBoxValues)
   return (
     (checkBoxValues.poor and itemQuality == Enum.ItemQuality.Poor) or

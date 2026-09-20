@@ -18,20 +18,19 @@ local Lists = Addon:GetModule("Lists")
 -- LuaCATS Annotations
 -- ============================================================================
 
---- @alias ListItemIds table<string, boolean>
 --- @alias ListKey "GlobalInclusions" | "GlobalExclusions" | "ProfileInclusions" | "ProfileExclusions"
 
 --- @class ListData
 --- @field name string
 --- @field description string
---- @field load fun(): ListItemIds
---- @field save fun(itemIds: ListItemIds)
+--- @field load fun(): ItemIdMap
+--- @field save fun(itemIds: ItemIdMap)
 --- @field getSibling fun(): List
 --- @field getOpposite fun(): List
 
 --- @class List : ListData
 --- @field items ListItem[]
---- @field itemIds ListItemIds
+--- @field itemIds ItemIdMap
 --- @field searchItems ListItem[]
 
 -- ============================================================================
