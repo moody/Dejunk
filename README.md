@@ -60,9 +60,9 @@ The Junk Items frame, opened via `/dejunk junk` or its keybind, lists items curr
 
 Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
 
-Every character starts on the `Default` profile. Adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
+Every character starts on the `Default` profile. Changing a profile option or adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
 
-Profiles can also be created, switched, renamed, and deleted directly from the Profiles Frame, opened via `/dejunk profiles`, its keybind, or the gear icon in the main window's footer. The footer also shows the name of the active profile. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
+Profiles can also be created, switched, renamed, and deleted directly from the Profiles Frame, opened via `/dejunk profiles` or the gear icon in the main window's footer. The footer also shows the name of the active profile. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
 
 ![Profiles Frame](/.github/images/ProfilesFrame.png?raw=true)
 
