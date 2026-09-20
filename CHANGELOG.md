@@ -23,7 +23,7 @@
 - On the `Minimap Icon`, Left-Click now toggles the options frame (previously the junk frame) and Right-Click now toggles the junk frame (previously the options frame). Shift+Left-Click no longer starts selling.
 - On the `Merchant Button`, Right-Click now toggles the junk frame (previously the options frame). Shift+Left-Click no longer toggles the junk frame, since Right-Click already does.
 - `/dejunk loot` and its keybind now open a `Lootable Items` frame instead of immediately attempting to open every lootable item. Click an item in the frame to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore every item sharing its ID for the remainder of the session.
-- Removed the `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the transport frame.
+- Removed the `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the Import/Export frame.
 
 ### Added
 
@@ -36,7 +36,7 @@
 ### Changed
 
 - The `Inclusions (Character)` and `Exclusions (Character)` lists are now named `Inclusions (Profile)` and `Exclusions (Profile)`. Existing lists carry over automatically.
-- The options window is split into `Profile` and `Global` sections, each with a heading.
+- The options window is split into `Options (Profile)` and `Options (Global)` sections.
 
 ### Fixed
 
