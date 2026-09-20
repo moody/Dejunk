@@ -20,20 +20,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field clipChildren? boolean Defaults to `true`.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
 --- @field enableClickHandling? boolean
---- @field enableDragging? boolean
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
-local getNextFrameLevel
-do
-  local level = 0
-  getNextFrameLevel = function()
-    level = level + 1
-    return level
-  end
-end
+--- @field enableDragging? boolean Lets the frame be dragged, and raises it above other frames when shown or clicked.
 
 -- =============================================================================
 -- Modifier (Click Handling)
@@ -154,9 +141,8 @@ function Widgets:Frame(options)
 
   -- Dragging.
   if options.enableDragging then
-    local frameLevel = getNextFrameLevel()
-    frame:HookScript("OnShow", function() frame:SetFrameLevel(frameLevel) end)
-    frame:SetFrameLevel(frameLevel)
+    frame:SetToplevel(true)
+    frame:HookScript("OnShow", frame.Raise)
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:SetClampedToScreen(true)
