@@ -21,6 +21,16 @@ jobs:
       - uses: actions/checkout@v7
       - name: Validate Locales
         run: python3 .github/scripts/validate_locales.py
+  validate-lua-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install Lua 5.1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1
+      - name: Validate Lua Syntax
+        run: python3 .github/scripts/validate_lua_syntax.py
   run-tests:
     runs-on: ubuntu-latest
     steps:
