@@ -262,9 +262,9 @@ function ProfilesFrame:Hide()
 end
 
 function ProfilesFrame:Toggle()
-  if Components.Root:GetVisibility() == "GONE" then
-    self:Show()
-  else
+  if Components.Root:IsVisible() then
     self:Hide()
+  else
+    self:Show()
   end
 end

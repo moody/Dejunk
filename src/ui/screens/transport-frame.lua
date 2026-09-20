@@ -124,7 +124,7 @@ end
 --- Toggles the frame for the given `list`.
 --- @param list List
 function TransportFrame:Toggle(list)
-  if list == currentList and Components.Root:GetVisibility() ~= "GONE" then
+  if list == currentList and Components.Root:IsVisible() then
     self:Hide()
   else
     self:Show(list)
