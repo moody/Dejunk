@@ -3,7 +3,7 @@
 ## Version: 3.0.0
 ## Author: https://github.com/moody
 ## IconTexture: Interface\AddOns\Dejunk\assets\dejunk-icon
-## Notes: Simple junk selling and destroying.
+## Notes: Configurable junk seller and destroyer.
 ## SavedVariables: __DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__, __DEJUNK_ADDON_V3_SAVED_VARIABLES__
 ## SavedVariablesPerCharacter: __DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__
 
