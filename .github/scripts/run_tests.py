@@ -2,21 +2,29 @@ from pathlib import Path
 import subprocess
 import sys
 
-passed = 0
-failed = 0
-
+results = []
 for path in sorted(Path("test").rglob("*-tests.lua")):
     result = subprocess.run(["lua", str(path)], capture_output=True, text=True)
-    if result.returncode == 0:
-        passed += 1
-        print(f"[PASS]: {path.as_posix()}")
-    else:
-        failed += 1
-        print(f"\n[FAIL]: {path.as_posix()}")
-        print(f"{result.stdout}{result.stderr}")
+    results.append((path.as_posix(), result))
+
+failures = [(path, result) for path, result in results if result.returncode != 0]
+
+for path, result in results:
+    status = "FAIL" if result.returncode != 0 else "PASS"
+    print(f"[{status}]: {path}")
+
+for path, result in failures:
+    print(f"\n{'=' * 60}")
+    print(f"[FAIL]: {path}")
+    print(f"{'=' * 60}")
+    print(f"{result.stdout}{result.stderr}".rstrip())
+
+total = len(results)
+numFailed = len(failures)
+numPassed = total - numFailed
 
 print(f"\n{'-' * 60}")
-print(f"[Test Results]: {passed} passed, {failed} failed, {passed + failed} total\n")
+print(f"[Test Results]: {numPassed} passed, {numFailed} failed, {total} total\n")
 
-if failed > 0:
+if numFailed > 0:
     sys.exit(1)
