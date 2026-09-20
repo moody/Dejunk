@@ -47,7 +47,7 @@ Each list has its own Import/Export frame, opened from a button on the list fram
 
 ### Junk Items
 
-The Junk Items frame, opened via `/dejunk junk` or its keybind, lists items currently considered junk along with their total sell value.
+The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
 
 - Left-click an item to sell it
 - Right-click an item to add it to an Exclusions list
