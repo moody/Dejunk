@@ -4,7 +4,7 @@
 
 ### Breaking
 
-- Options do not carry over when updating from 2.x. Every option starts at its default, so check options such as `Auto Sell`, `Auto Repair`, and `Safe Sell` after updating.
+- Updating from 2.x carries over your item lists but not your options. Every option starts at its default, so check options such as `Auto Sell`, `Auto Repair`, and `Safe Sell` after updating.
 - Removed the `Character Specific Settings` option. The options it controlled are now always part of the active profile:
   1. `Auto Repair`
   2. `Auto Sell`
