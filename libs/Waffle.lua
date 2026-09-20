@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.9.0 - https://github.com/moody/Waffle
+-- Waffle: 0.10.0 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -27,6 +27,10 @@ local Waffle = Addon.Waffle
 --- @alias WaffleFlexDirection "ROW" | "COLUMN" | "ROW_REVERSE" | "COLUMN_REVERSE"
 --- @alias WaffleFlexAlign "START" | "CENTER" | "END" | "STRETCH"
 --- @alias WaffleFlexJustify "START" | "CENTER" | "END" | "SPACE_BETWEEN" | "SPACE_AROUND" | "SPACE_EVENLY"
+
+--- The valid `visibility` values.
+--- @enum (key) WaffleFlexVisibility
+local VISIBILITIES = { VISIBLE = true, INVISIBLE = true, GONE = true }
 
 --- Shared by every node in the tree, root included.
 --- @class WaffleFlexNode
@@ -59,7 +63,7 @@ local Waffle = Addon.Waffle
 --- @field maxWidth? number A ceiling on this node's own `width`: the flexible main-axis share, if `width` is main; a `STRETCH`-ed cross-axis size, if cross. No effect on an explicit `width`, or `"AUTO"`. Errors if less than `minWidth`.
 --- @field minHeight? number Same as `minWidth`, for `height`.
 --- @field maxHeight? number Same as `maxWidth`, for `height`.
---- @field hidden? boolean Excludes this node from layout entirely; siblings reflow to fill the space. `Layout()` hides its own frame and every already-resolved frame in its subtree. An ancestor's own `hidden` hides this node's frame the same way; `GetHidden()` still only reports this node's own `hidden`, never an ancestor's. Default `false`.
+--- @field visibility? WaffleFlexVisibility `"VISIBLE"` shows this node's frame. `"INVISIBLE"` hides it but keeps its space in the layout, so siblings do not reflow. `"GONE"` excludes this node from the layout entirely; siblings reflow to fill the space, and `Layout()` hides its own frame and every already-resolved frame in its subtree. An ancestor's own `visibility` affects this node's frame the same way, without changing this node's own. On the root, `"INVISIBLE"` still creates its frame and lays out the tree, use `"GONE"` to defer that until it is first shown. Case does not matter, any other value throws an error. Default `"VISIBLE"`.
 --- @field key? string For lookup via `FindByKey(key)`. Duplicate keys aren't validated against, the first match wins.
 --- @field order? integer Visual position among siblings, independent of declaration order. Default `0`, ties broken by declaration order. No effect on the root.
 --- @field onLayout? fun(component: WaffleFlexComponent, width: integer, height: integer) Fires once the whole `Layout()` pass is resolved and clean, not while it's still running, bottom-up, root last. Mutating a different node from here schedules a future `Layout()` call, the same as any other setter.
@@ -138,6 +142,22 @@ function _W.Utils:ParseFlexDirection(node)
   return
       (direction == "ROW" or direction == "ROW_REVERSE"),
       (direction == "ROW_REVERSE" or direction == "COLUMN_REVERSE")
+end
+
+--- Parses a `visibility` value, defaulting to `"VISIBLE"`. Case does not
+--- matter. Errors on anything unrecognized.
+--- @param visibility? WaffleFlexVisibility
+--- @return WaffleFlexVisibility
+function _W.Utils:ParseVisibility(visibility)
+  if visibility == nil then return "VISIBLE" end
+  if VISIBILITIES[visibility] then return visibility end
+
+  local upper = type(visibility) == "string" and visibility:upper() or nil
+  if not (upper and VISIBILITIES[upper]) then
+    error("Waffle: invalid `visibility` '" .. tostring(visibility) ..
+      "', expected \"VISIBLE\", \"INVISIBLE\", or \"GONE\"", 0)
+  end
+  return upper
 end
 
 -- =============================================================================
@@ -529,7 +549,7 @@ function _W.Sizing:ComputeAutoSize(node, axis)
   local visibleCount = 0
 
   for _, child in ipairs(node.children) do
-    if not child.hidden then
+    if _W.Utils:ParseVisibility(child.visibility) ~= "GONE" then
       visibleCount = visibleCount + 1
       local size = self:ResolveOuterDimension(child, axis)
       if not size then
@@ -583,7 +603,7 @@ function _W.Sizing:ComputeAutoCrossSize(node, axis, parentWidth, parentHeight)
   --- @type WaffleFlexNode[]
   local visibleChildren = _W.Scratch:Get()
   for _, child in ipairs(node.children) do
-    if not child.hidden then
+    if _W.Utils:ParseVisibility(child.visibility) ~= "GONE" then
       table.insert(visibleChildren, child)
     end
   end
@@ -1067,7 +1087,11 @@ function _W.FlexLayout:LayoutFlexLine(node, frame, lineChildren, mainAxis, cross
   for _, child in ipairs(lineChildren) do
     local childFrame = _W.Utils:ResolveFrame(child, frame, defaultFrameFactory)
 
-    childFrame:Show()
+    if _W.Utils:ParseVisibility(child.visibility) == "INVISIBLE" then
+      childFrame:Hide()
+    else
+      childFrame:Show()
+    end
     childFrame:ClearAllPoints()
     childFrame:SetParent(frame)
 
@@ -1184,7 +1208,7 @@ function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory, o
   local wrapLines = _W.LayoutCache:GetWrapLines(node)
   local lines = node.wrap and wrapLines or nil
 
-  -- Hidden children, own subtree included, are hidden and dropped here,
+  -- `"GONE"` children, own subtree included, are hidden and dropped here,
   -- once, so neither `SplitFlexLines` nor `LayoutFlexLine` needs to care
   -- about them at all. Left `nil`, not built, when `lines` already covers
   -- `node`.
@@ -1196,7 +1220,7 @@ function _W.FlexLayout:Layout(node, frame, width, height, defaultFrameFactory, o
 
   local visibleCount = 0
   for _, child in ipairs(children) do
-    if child.hidden then
+    if _W.Utils:ParseVisibility(child.visibility) == "GONE" then
       _W.Utils:HideResolvedFrames(child)
     elseif visibleChildren then
       visibleCount = visibleCount + 1
@@ -1733,25 +1757,28 @@ function _W.FlexComponent:GetMaxHeight()
   return self.node.maxHeight
 end
 
---- Sets whether this node is excluded from the layout flow entirely; its
---- siblings reflow to fill the space, and `Layout()` hides its own frame
---- and every already-resolved frame in its subtree. An ancestor's own
---- `hidden` hides this node's frame the same way, without changing this
---- node's own `hidden`. `nil` resets to the default (`false`).
---- @param hidden? boolean
-function _W.FlexComponent:SetHidden(hidden)
-  if self.node.hidden ~= hidden then
-    self.node.hidden = hidden
+--- Sets this node's visibility. `"INVISIBLE"` hides its frame but keeps its
+--- space in the layout. `"GONE"` excludes it from the layout flow
+--- entirely; its siblings reflow to fill the space, and `Layout()` hides its
+--- own frame and every already-resolved frame in its subtree. An ancestor's
+--- own `visibility` affects this node's frame the same way, without changing
+--- this node's own. `nil` resets to the default (`"VISIBLE"`). Case does not
+--- matter, any other value throws an error.
+--- @param visibility? WaffleFlexVisibility
+function _W.FlexComponent:SetVisibility(visibility)
+  _W.Utils:ParseVisibility(visibility)
+  if self.node.visibility ~= visibility then
+    self.node.visibility = visibility
     _W.DirtyRoots:Mark(self.node)
   end
 end
 
---- Returns this node's own `hidden`, never an ancestor's: a node whose
---- ancestor is hidden still returns `nil`/`false` here, even though its
---- own frame is hidden too.
---- @return boolean?
-function _W.FlexComponent:GetHidden()
-  return self.node.hidden
+--- Returns this node's own `visibility` as given, never an ancestor's: a node
+--- whose ancestor is `"INVISIBLE"` or `"GONE"` still returns `nil`/`"VISIBLE"`
+--- here, even though its own frame is hidden too.
+--- @return WaffleFlexVisibility?
+function _W.FlexComponent:GetVisibility()
+  return self.node.visibility
 end
 
 --- Sets this node's own `key`, for lookup via `FindByKey(key)`. `nil`
@@ -1864,11 +1891,16 @@ function _W.FlexComponent:Layout()
     _W.LayoutCache.currentPass = _W.LayoutCache.currentPass + 1
     local onLayoutQueue = _W.Scratch:Get()
 
-    if root.hidden then
+    local rootVisibility = _W.Utils:ParseVisibility(root.visibility)
+    if rootVisibility == "GONE" then
       _W.Utils:HideResolvedFrames(root)
     else
       local frame = _W.Utils:ResolveFrame(root)
-      frame:Show()
+      if rootVisibility == "INVISIBLE" then
+        frame:Hide()
+      else
+        frame:Show()
+      end
 
       -- Root resolves its own width/height the same way
       -- `_W.Sizing:ResolveDimension` resolves any child's.
@@ -1978,7 +2010,7 @@ function _W.FlexComponent:Detach()
   return self
 end
 
---- Detaches from the tree entirely, unlike `Hide()`. Doesn't touch
+--- Detaches from the tree entirely, unlike `"GONE"`. Doesn't touch
 --- `component`'s own `frame`.
 --- @param component WaffleFlexComponent
 --- @return boolean detached
