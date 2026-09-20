@@ -19,8 +19,10 @@ local STEPS = {}
 -- ============================================================================
 
 --- Returns `state` migrated to `currentVersion`, without mutating the input. Runs each step above the saved version in
---- ascending order. A state without a valid version is treated as version 1, an empty state is only stamped, and a
---- newer state is returned unchanged since downgrades are unsupported.
+--- ascending order.
+--- - A version that is missing, not a number, or below 1 is treated as version 1.
+--- - An empty state is only stamped.
+--- - A newer state is returned unchanged, since downgrades are unsupported.
 --- @param state table
 --- @param steps? table<integer, fun(state: table): table> Defaults to this module's steps.
 --- @param currentVersion? integer Defaults to `DefaultStates.CURRENT_VERSION`.
@@ -32,7 +34,7 @@ function Migrations:Migrate(state, steps, currentVersion)
   if next(state) == nil then return { version = currentVersion } end
 
   state = Wux:DeepCopy(state)
-  local version = type(state.version) == "number" and state.version or 1
+  local version = type(state.version) == "number" and (state.version >= 1 and state.version) or 1
   if version > currentVersion then return state end
 
   for target = version + 1, currentVersion do
