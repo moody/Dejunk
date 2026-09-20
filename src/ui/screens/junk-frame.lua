@@ -186,17 +186,17 @@ Components.DestroyNextItemButton = Components.ButtonRow:AddChild({
 -- ============================================================================
 
 function JunkFrame:Show()
-  Components.Root:SetHidden(false)
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
 
 function JunkFrame:Hide()
-  Components.Root:SetHidden(true)
+  Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 function JunkFrame:Toggle()
-  if Components.Root:GetHidden() then
+  if Components.Root:GetVisibility() == "GONE" then
     self:Show()
   else
     self:Hide()

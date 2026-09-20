@@ -46,22 +46,14 @@ local function refreshComponents()
     local item = lootableItems[i + offset]
     --- @type ItemButtonWidget
     local itemButton = lootablePanelButtonRow.ItemButton:GetFrame()
-    --- @type TitleFrameIconButtonWidget
-    local ignoreButton = lootablePanelButtonRow.IgnoreButton:GetFrame()
-    if item then
-      itemButton:SetItem(item)
-      itemButton:Show()
-      ignoreButton:Show()
-    else
-      itemButton:Hide()
-      ignoreButton:Hide()
-    end
+    if item then itemButton:SetItem(item) end
+    lootablePanelButtonRow:SetVisibility(item and "VISIBLE" or "INVISIBLE")
   end
 
   -- Update slider.
   local maxScroll = math.max(#lootableItems - NUM_LOOTABLE_PANEL_BUTTONS, 0)
   if slider then slider:SetMinMaxValues(0, maxScroll) end
-  Components.LootablePanelSlider:SetHidden(maxScroll <= 0)
+  Components.LootablePanelSlider:SetVisibility(maxScroll <= 0 and "GONE" or "VISIBLE")
 
   -- Update "no items" text.
   --- @type LootablePanelWidget
@@ -132,7 +124,7 @@ Components.LootablePanelSlider = lootablePanelContent:AddChild({
 Components.LootablePanelButtonRows = {}
 for i = 1, NUM_LOOTABLE_PANEL_BUTTONS do
   --- @class LootablePanelButtonRow : WaffleFlexComponent
-  local lootablePanelButtonRow = lootablePanelButtonColumn:AddRow({ gap = Widgets:Padding(0.5) })
+  local lootablePanelButtonRow = lootablePanelButtonColumn:AddRow({ gap = Widgets:Padding(0.5), visibility = "INVISIBLE" })
   Components.LootablePanelButtonRows[i] = lootablePanelButtonRow
 
   lootablePanelButtonRow.ItemButton = lootablePanelButtonRow:AddChild({
@@ -188,17 +180,17 @@ end
 -- ============================================================================
 
 function LootableFrame:Show()
-  Components.Root:SetHidden(false)
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
 
 function LootableFrame:Hide()
-  Components.Root:SetHidden(true)
+  Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 function LootableFrame:Toggle()
-  if Components.Root:GetHidden() then
+  if Components.Root:GetVisibility() == "GONE" then
     self:Show()
   else
     self:Hide()

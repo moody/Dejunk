@@ -109,7 +109,7 @@ Components.ExportButton = Components.ButtonRow:AddChild({
 --- @param list List
 function TransportFrame:Show(list)
   currentList = list
-  Components.Root:SetHidden(false)
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
   Components.Root.TitleText:GetFrame():SetText(list.name)
   export()
@@ -117,14 +117,14 @@ end
 
 --- Hides the frame.
 function TransportFrame:Hide()
-  Components.Root:SetHidden(true)
+  Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 --- Toggles the frame for the given `list`.
 --- @param list List
 function TransportFrame:Toggle(list)
-  if list == currentList and not Components.Root:GetHidden() then
+  if list == currentList and Components.Root:GetVisibility() ~= "GONE" then
     self:Hide()
   else
     self:Show(list)

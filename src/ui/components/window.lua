@@ -42,7 +42,7 @@ function ComponentFactory:Window(options)
     width = options.width,
     height = options.height,
     direction = "COLUMN",
-    hidden = true,
+    visibility = "GONE",
 
     defaultFrameFactory = function(parent)
       return CreateFrame("Frame")
@@ -70,7 +70,7 @@ function ComponentFactory:Window(options)
 
       frame:Hide()
       frame:HookScript("OnHide", function()
-        root:SetHidden(true)
+        root:SetVisibility("GONE")
       end)
 
       -- Bind the refresh callback to the root frame, if given.
@@ -110,7 +110,7 @@ function ComponentFactory:Window(options)
       textureSize = 14,
       highlightColor = Colors.Red,
       onClick = function()
-        root:SetHidden(true)
+        root:SetVisibility("GONE")
         root:Layout()
       end
     })

@@ -50,13 +50,13 @@ local function refreshComponents()
     --- @type ProfilePanelButton
     local f = button:GetFrame()
     f:SetProfile(profile)
-    if profile ~= nil then f:Show() else f:Hide() end
+    button:SetVisibility(profile ~= nil and "VISIBLE" or "INVISIBLE")
   end
 
   -- Update slider.
   local maxScroll = math.max(#profiles - NUM_PROFILE_PANEL_BUTTONS, 0)
   if slider then slider:SetMinMaxValues(0, maxScroll) end
-  Components.ProfilesPanelSlider:SetHidden(maxScroll <= 0)
+  Components.ProfilesPanelSlider:SetVisibility(maxScroll <= 0 and "GONE" or "VISIBLE")
 
   -- Layout.
   Components.Root:Layout()
@@ -147,6 +147,7 @@ Components.ProfilesPanelSlider = profilesPanelContent:AddChild({
 Components.ProfilesPanelButtons = {}
 for i = 1, NUM_PROFILE_PANEL_BUTTONS do
   Components.ProfilesPanelButtons[i] = profilesPanelButtonColumn:AddChild({
+    visibility = "INVISIBLE",
     frameFactory = function()
       --- @class ProfilePanelButton : OptionButtonWidget
       --- @field profile? ProfileState
@@ -251,17 +252,17 @@ contentColumn:AddChild({
 -- ============================================================================
 
 function ProfilesFrame:Show()
-  Components.Root:SetHidden(false)
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
 
 function ProfilesFrame:Hide()
-  Components.Root:SetHidden(true)
+  Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 function ProfilesFrame:Toggle()
-  if Components.Root:GetHidden() then
+  if Components.Root:GetVisibility() == "GONE" then
     self:Show()
   else
     self:Hide()

@@ -37,9 +37,9 @@ end
 local function startSearching()
   listSearchState.isSearching = true
   listSearchState.searchText = ""
-  Components.TitleBarNameText:SetHidden(true)
-  Components.TitleBarVersionText:SetHidden(true)
-  Components.TitleBarSearchRow:SetHidden(false)
+  Components.TitleBarNameText:SetVisibility("GONE")
+  Components.TitleBarVersionText:SetVisibility("GONE")
+  Components.TitleBarSearchRow:SetVisibility("VISIBLE")
   Components.TitleBarButtonsRow:SetWidth("AUTO")
   if Components.TitleBarSearchButton:GetFrame() then
     Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("ban-icon"))
@@ -49,9 +49,9 @@ end
 local function stopSearching()
   listSearchState.isSearching = false
   listSearchState.searchText = ""
-  Components.TitleBarNameText:SetHidden(false)
-  Components.TitleBarVersionText:SetHidden(false)
-  Components.TitleBarSearchRow:SetHidden(true)
+  Components.TitleBarNameText:SetVisibility("VISIBLE")
+  Components.TitleBarVersionText:SetVisibility("VISIBLE")
+  Components.TitleBarSearchRow:SetVisibility("GONE")
   Components.TitleBarButtonsRow:SetWidth(nil)
   if Components.TitleBarSearchButton:GetFrame() then
     Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("search-icon"))
@@ -127,7 +127,7 @@ Components.TitleBarVersionText:AddChild({
   end
 })
 
-Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ hidden = true })
+Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ visibility = "GONE" })
 Components.TitleBarSearchRow:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -391,17 +391,17 @@ footerRow:AddRow({ justify = "END" }):AddChild({
 -- ============================================================================
 
 function MainWindow:Show()
-  Components.Root:SetHidden(false)
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
 
 function MainWindow:Hide()
-  Components.Root:SetHidden(true)
+  Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 function MainWindow:Toggle()
-  if Components.Root:GetHidden() then
+  if Components.Root:GetVisibility() == "GONE" then
     self:Show()
   else
     self:Hide()

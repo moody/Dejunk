@@ -129,7 +129,7 @@ rootComponent:Layout()
 -- Update visibility and components.
 TickerManager:NewTicker(1 / 30, function()
   local show = Addon:IsAtMerchant() and StateManager:GetGlobalState().merchantButton
-  rootComponent:SetHidden(not show)
+  rootComponent:SetVisibility(show and "VISIBLE" or "GONE")
 
   -- Update label text and component sizes.
   if show then
