@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.8.1 - https://github.com/moody/Waffle
+-- Waffle: 0.9.0 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -95,8 +95,9 @@ function _W.Utils:ReverseArray(t)
 end
 
 --- Resolves `node.frame` in place, creating it via `frameFactory`/
---- `defaultFrameFactory` if neither was already given. `parent` is `nil`
---- for the root, nothing sits above it to hand a factory.
+--- `defaultFrameFactory` if neither was already given, then calls the
+--- callbacks waiting on a frame it created. `parent` is `nil` for the
+--- root, nothing sits above it to hand a factory.
 --- @param node WaffleFlexNode
 --- @param parent WaffleFrame?
 --- @param defaultFrameFactory? fun(parent: WaffleFrame): WaffleFrame
@@ -110,6 +111,7 @@ function _W.Utils:ResolveFrame(node, parent, defaultFrameFactory)
     assert(factory, "Waffle: node has no `frame` and no `frameFactory`/`defaultFrameFactory` was provided")
     node.frame = factory(parent)
     node.frameFactory = nil
+    _W.FrameReadyQueue:Fire(node)
   end
 
   return node.frame
@@ -292,6 +294,41 @@ end
 --- @param child WaffleFlexNode
 function _W.DeclarationOrder:Unassign(child)
   self.byChild[child] = nil
+end
+
+-- =============================================================================
+-- FrameReadyQueue
+-- =============================================================================
+
+--- The `WhenFrameReady()` callbacks waiting on each node whose frame is not
+--- created yet. Weak keys so an unreferenced node can still be garbage
+--- collected.
+_W.FrameReadyQueue = {
+  byNode = setmetatable({}, { __mode = "k" })
+}
+
+--- Queues `callback` until `node`'s frame is created.
+--- @param node WaffleFlexNode
+--- @param callback fun(frame: WaffleFrame)
+function _W.FrameReadyQueue:Add(node, callback)
+  local callbacks = self.byNode[node]
+  if not callbacks then
+    callbacks = {}
+    self.byNode[node] = callbacks
+  end
+  callbacks[#callbacks + 1] = callback
+end
+
+--- Calls every callback queued for `node` with its frame, in the order they
+--- were added, then forgets them.
+--- @param node WaffleFlexNode
+function _W.FrameReadyQueue:Fire(node)
+  local callbacks = self.byNode[node]
+  if not callbacks then return end
+  self.byNode[node] = nil
+  for i = 1, #callbacks do
+    callbacks[i](node.frame)
+  end
 end
 
 -- =============================================================================
@@ -1794,6 +1831,22 @@ end
 --- @return WaffleFrame?
 function _W.FlexComponent:GetFrame()
   return self.node.frame
+end
+
+--- Calls `callback` once with this node's frame: immediately if the frame
+--- already exists, otherwise right after Waffle creates it, before it is
+--- parented, sized, or shown. Callbacks run in registration order. When one
+--- runs during a `Layout()` pass, touch only the frame; mutating the tree
+--- is unsupported.
+--- @param callback fun(frame: WaffleFrame)
+function _W.FlexComponent:WhenFrameReady(callback)
+  local node = self.node
+  if node.frame then
+    callback(node.frame)
+    return
+  end
+
+  _W.FrameReadyQueue:Add(node, callback)
 end
 
 --- Returns `true` if this node's tree has changed since its last `Layout()` call.
