@@ -2,18 +2,9 @@
 
 ## [Unreleased]
 
-### Added
+### Breaking
 
-- Profiles. Each character has a profile holding its `Inclusions (Profile)` list, `Exclusions (Profile)` list, and its own copy of the character-specific options. Every character starts on the `Default` profile, whose lists cannot be edited directly; the first time you add an item to a profile list, Dejunk creates a profile for that character and switches to it. The active profile's name is printed to chat whenever it changes.
-- A `Profiles` frame for managing profiles directly, opened via the gear icon in the main window's footer (which also shows the active profile's name). Profiles can be created, switched, renamed, and deleted from this frame. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
-- The `/dejunk profiles` chat command, for opening the `Profiles` frame directly.
-- `Safe Destroy`, a `Global` option that shows a confirmation popup with the item's price before destroying it.
-- `Exclude Above Item Level`, a `Profile` option that excludes equipment above a set item level, even if it's on an Inclusions list.
-
-### Changed
-
-- The `Inclusions (Character)` and `Exclusions (Character)` lists are now named `Inclusions (Profile)` and `Exclusions (Profile)`. Existing lists carry over automatically.
-- The options window is split into `Profile` and `Global` sections, each with a heading.
+- Options do not carry over when updating from 2.x. Every option starts at its default, so check options such as `Auto Sell`, `Auto Repair`, and `Safe Sell` after updating.
 - Removed the `Character Specific Settings` option. The options it controlled are now always part of the active profile:
   1. `Auto Repair`
   2. `Auto Sell`
@@ -32,14 +23,24 @@
 - On the `Minimap Icon`, Left-Click now toggles the options frame (previously the junk frame) and Right-Click now toggles the junk frame (previously the options frame). Shift+Left-Click no longer starts selling.
 - On the `Merchant Button`, Right-Click now toggles the junk frame (previously the options frame). Shift+Left-Click no longer toggles the junk frame, since Right-Click already does.
 - `/dejunk loot` and its keybind now open a `Lootable Items` frame instead of immediately attempting to open every lootable item. Click an item in the frame to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore every item sharing its ID for the remainder of the session.
+- Removed the `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the transport frame.
 
-### Removed
+### Added
 
-- The `/dejunk keybinds` and `/dejunk transport` chat commands. Key bindings are still reachable from the keybinds button in the main window's title bar, and each list frame still has its own button for opening the transport frame.
+- Profiles. Each character has a profile holding its `Inclusions (Profile)` list, its `Exclusions (Profile)` list, and its own copy of the `Profile` options. Every character starts on the `Default` profile. The first time you change a profile option or add an item to a profile list, Dejunk creates a profile for that character and switches to it. The active profile's name is printed to chat whenever it changes.
+- A `Profiles` frame for managing profiles directly, opened via the gear icon in the main window's footer (which also shows the active profile's name). Profiles can be created, switched, renamed, and deleted from this frame. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
+- The `/dejunk profiles` chat command, for opening the `Profiles` frame directly.
+- `Safe Destroy`, a `Global` option that shows a confirmation popup with the item's price before destroying it.
+- `Exclude Above Item Level`, a `Profile` option that excludes equipment above a set item level, even if it's on an Inclusions list.
+
+### Changed
+
+- The `Inclusions (Character)` and `Exclusions (Character)` lists are now named `Inclusions (Profile)` and `Exclusions (Profile)`. Existing lists carry over automatically.
+- The options window is split into `Profile` and `Global` sections, each with a heading.
 
 ### Fixed
 
-- Fixed excessive memory usage with refundable items in specific conditions.
+- Fixed excessive memory usage at merchants when your bags contain refundable items.
 - Fixed junk filter checks occasionally evaluating the wrong item for a moment after swapping items between bag slots.
 - Fixed "added to list" sometimes printing for an item that was actually rejected (not sellable or destroyable), including during silent bulk imports.
 - Fixed an item sometimes being removed from its opposite list even when adding it to the new list failed.
