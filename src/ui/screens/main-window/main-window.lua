@@ -90,6 +90,11 @@ Components.Root = ComponentFactory:Window({
   refresh = function() Components.Root:Layout() end
 })
 
+-- Stop searching whenever the window hides.
+Components.Root:WhenFrameReady(function(frame)
+  frame:HookScript("OnHide", stopSearching)
+end)
+
 -- Window()'s generic title text goes unused in favor of the title bar below.
 Components.Root.TitleText:Detach()
 Components.Root.TitleText = nil
@@ -98,7 +103,7 @@ Components.Root.TitleText = nil
 -- Title Bar Components
 -- ============================================================================
 
--- Padding moves to `TitleBarNameText` alone; the search row sits flush left instead.
+-- Padding moves to `TitleBarNameText` so `TitleBarSearchRow` sits flush left.
 Components.Root.TitleRow:SetPaddingLeft(nil)
 
 Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ paddingLeft = Widgets:Padding() })
@@ -411,7 +416,5 @@ end
 -- so we force one here once the Wux store is ready.
 EventManager:Once(E.StoreCreated, function()
   MainWindow:Show()
-  -- ESC-driven hides bypass MainWindow:Hide(); catch those here too.
-  Components.Root:GetFrame():HookScript("OnHide", stopSearching)
   MainWindow:Hide()
 end)
