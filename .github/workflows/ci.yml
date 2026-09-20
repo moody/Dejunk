@@ -9,19 +9,7 @@ on:
       - master
 
 jobs:
-  validate-dejunk-xml:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Validate Dejunk XML
-        run: python3 .github/scripts/validate_dejunk_xml.py
-  validate-locales:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Validate Locales
-        run: python3 .github/scripts/validate_locales.py
-  validate-lua-syntax:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -31,13 +19,12 @@ jobs:
           sudo apt-get install -y lua5.1
       - name: Validate Lua Syntax
         run: python3 .github/scripts/validate_lua_syntax.py
-  run-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - name: Install Lua 5.1
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y lua5.1
+      - name: Validate Dejunk XML
+        if: ${{ !cancelled() }}
+        run: python3 .github/scripts/validate_dejunk_xml.py
+      - name: Validate Locales
+        if: ${{ !cancelled() }}
+        run: python3 .github/scripts/validate_locales.py
       - name: Run Tests
+        if: ${{ !cancelled() }}
         run: python3 .github/scripts/run_tests.py
