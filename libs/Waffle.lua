@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.12.0 - https://github.com/moody/Waffle
+-- Waffle: 0.12.1 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -47,12 +47,12 @@ local VISIBILITIES = { VISIBLE = true, INVISIBLE = true, GONE = true }
 --- @field defaultFrameFactory? fun(parent: WaffleFrame): WaffleFrame Applies to descendants only, not this node itself.
 --- @field children? WaffleFlexNode[] Positioned in a row or column, per `direction`.
 --- @field direction? WaffleFlexDirection Default `ROW`. `_REVERSE` keeps the same main axis, only the starting edge (and visual order along it) flips. Case insensitive, any other value throws an error.
---- @field width? integer | "AUTO" | string Always physical/horizontal, regardless of `direction`. `"AUTO"` sums this node's own children's own `width` along its main axis (`direction` is `ROW`), maxes them along its cross axis instead. A percentage string (`"50%"`) resolves against the parent's own `width`, erroring without one available (the root, or a parent whose own `width` is itself still being computed from `"AUTO"`). Has no effect on `minWidth`/`maxWidth`, same as any other fixed `width`.
---- @field height? integer | "AUTO" | string Same as `width`, vertical instead; sums along its main axis when `direction` is `COLUMN`, maxes along its cross axis otherwise, a percentage resolves against the parent's own `height`.
+--- @field width? integer | "AUTO" | string Always physical/horizontal, regardless of `direction`. `"AUTO"` sums this node's own children's own `width` along its main axis (`direction` is `ROW`), maxes them along its cross axis instead. `"AUTO"` on a node with `wrap` (`direction` `COLUMN`) counts the lines its height produces instead, including a height it is stretched to or gets as a flexible node. A percentage string (`"50%"`) resolves against the parent's own `width`, erroring without one available (the root, or a parent whose own `width` is itself still being computed from `"AUTO"`). Has no effect on `minWidth`/`maxWidth`, same as any other fixed `width`.
+--- @field height? integer | "AUTO" | string Same as `width`, vertical instead; sums along its main axis when `direction` is `COLUMN`, maxes along its cross axis otherwise, a percentage resolves against the parent's own `height`. `"AUTO"` on a node with `wrap` (`direction` `ROW`) counts the lines its width produces instead, including a width it is stretched to or gets as a flexible node.
 --- @field grow? number This node's own share of its parent's leftover main-axis space, relative to its equally-flexible siblings. Default `1`. No effect on a node with its own explicit main-axis `width`/`height`, or on the root.
 --- @field shrink? number This node's own share of its parent's main-axis deficit, when its siblings' own sizes don't all fit. Weighted by this value times this node's own main-axis size, not the value alone. Default `1`; `0` never shrinks below this node's own stated size. No effect on a flexible node (nothing stated to reduce), or on the root.
 --- @field align? WaffleFlexAlign Cross-axis alignment for this node's own children. Default `STRETCH`. A child's own `alignSelf` overrides this. Case insensitive, any other value throws an error.
---- @field alignSelf? WaffleFlexAlign Overrides the parent's `align`. No effect on the root. Case insensitive, any other value throws an error.
+--- @field alignSelf? WaffleFlexAlign Overrides the parent's `align`. Requires this node's own cross-axis dimension if not `STRETCH`. No effect on the root. Case insensitive, any other value throws an error.
 --- @field justify? WaffleFlexJustify Main-axis distribution of leftover space among this node's own children. Default `START`. No effect if any child has a positive `grow` share, it already claims the leftover space. Case insensitive, any other value throws an error.
 --- @field wrap? boolean Overflowing children start a new line instead of continuing past the main axis size. Each line gets its own cross-size (a max over its own children) and stacks after the previous one, `lineGap` between lines too. Default `false`.
 --- @field gap? integer Between children only, not the edges. Default `0`.
@@ -855,7 +855,7 @@ end
 --- @param knownOtherAxisSize? integer See `ResolveDimension`.
 --- @return integer
 function _W.Sizing:ComputeAutoMainSize(node, axis, parentWidth, parentHeight, knownOtherAxisSize)
-  assert(node.children, "Waffle: `\"AUTO\"` needs `children` to compute a size from")
+  assert(node.children, "Waffle: `\"AUTO\"` needs `children` to compute a size from, or `onMeasure` on a leaf")
 
   local gap = node.gap or 0
   local total = 0
@@ -897,7 +897,7 @@ end
 --- @param knownOtherAxisSize? integer See `ResolveDimension`.
 --- @return integer
 function _W.Sizing:ComputeAutoCrossSize(node, axis, parentWidth, parentHeight, knownOtherAxisSize)
-  assert(node.children, "Waffle: `\"AUTO\"` needs `children` to compute a cross size from")
+  assert(node.children, "Waffle: `\"AUTO\"` needs `children` to compute a cross size from, or `onMeasure` on a leaf")
 
   local gap = node.gap or 0
   local lineGap = node.lineGap or gap
@@ -2157,7 +2157,8 @@ end
 
 --- Appends a new ROW child, returning it for further composition. Errors
 --- if `node` already belongs to a different component, call
---- `DetachComponent()` on that one first to move it here.
+--- `DetachComponent()` on that one first to move it here. No-ops if
+--- `node` is already this node's own, still returns a component.
 --- @param node? WaffleFlexNode
 --- @return WaffleFlexComponent
 function _W.FlexComponent:AddRow(node)
@@ -2173,7 +2174,8 @@ end
 
 --- Appends a new COLUMN child, returning it for further composition.
 --- Errors if `node` already belongs to a different component, call
---- `DetachComponent()` on that one first to move it here.
+--- `DetachComponent()` on that one first to move it here. No-ops if
+--- `node` is already this node's own, still returns a component.
 --- @param node? WaffleFlexNode
 --- @return WaffleFlexComponent
 function _W.FlexComponent:AddColumn(node)
@@ -2215,7 +2217,8 @@ function _W.FlexComponent:Detach()
 end
 
 --- Detaches from the tree entirely, unlike `"GONE"`. Doesn't touch
---- `component`'s own `frame`.
+--- `component`'s own `frame`. Succeeds only if `component` really is this
+--- node's own child, returns `false` without detaching it otherwise.
 --- @param component WaffleFlexComponent
 --- @return boolean detached
 function _W.FlexComponent:DetachComponent(component)
