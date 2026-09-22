@@ -107,9 +107,10 @@ local iconComponent = rootComponent:AddChild({
   end
 })
 
--- Label font string.
+-- Label font string, sized to its own text.
 local labelComponent = rootComponent:AddChild({
-  height = 12,
+  width = "AUTO",
+  height = "AUTO",
 
   --- @param parent MerchantButtonWidget
   frameFactory = function(parent)
@@ -117,6 +118,11 @@ local labelComponent = rootComponent:AddChild({
     label:ClearAllPoints()
     label:SetJustifyH("LEFT")
     return parent.label
+  end,
+
+  --- @param label FontString
+  onMeasure = function(label)
+    return label:GetStringWidth(), label:GetStringHeight()
   end
 })
 
@@ -131,19 +137,20 @@ TickerManager:NewTicker(1 / 30, function()
   local show = Addon:IsAtMerchant() and StateManager:GetGlobalState().merchantButton
   rootComponent:SetVisibility(show and "VISIBLE" or "GONE")
 
-  -- Update label text and component sizes.
   if show then
     --- @type FontString
     local label = labelComponent:GetFrame()
     local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
-    label:SetText(LABEL_TEXT_FORMAT:format(numSellable, numDestroyable))
+    local text = LABEL_TEXT_FORMAT:format(numSellable, numDestroyable)
 
-    local labelWidth, labelHeight = Widgets:MeasureFontStringSize(label)
-    labelComponent:SetMaxWidth(math.floor(labelWidth + 0.5))
-    labelComponent:SetHeight(math.floor(labelHeight + 0.5))
-
-    local iconSize = math.floor(labelHeight + Widgets:Padding(1.5) + 0.5)
-    iconComponent:SetSize(iconSize, iconSize)
+    -- Update label text and icon size, only when the text actually changes.
+    if text ~= label:GetText() then
+      label:SetTextToFit(text)
+      -- Since label's word-wrap is disabled, GetStringHeight() will always be one line tall.
+      local iconSize = math.floor(label:GetStringHeight() + Widgets:Padding(1.5) + 0.5)
+      iconComponent:SetSize(iconSize, iconSize)
+      rootComponent:MarkDirty()
+    end
   end
 
   rootComponent:Layout()
