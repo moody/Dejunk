@@ -17,7 +17,7 @@ Addon.IS_CATA = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 Addon.IS_MISTS = WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC
 
 --@debug@
-Addon.IS_DEBUG = true
+Addon.IS_DEBUG = false
 --@end-debug@
 
 -- ============================================================================
