@@ -5,7 +5,6 @@ local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
-local LegacyMigration = Addon:GetModule("LegacyMigration")
 local Middlewares = Addon:GetModule("Middlewares")
 local Migrations = Addon:GetModule("Migrations")
 local RootReducer = Addon:GetModule("RootReducer")
@@ -16,10 +15,6 @@ local Wux = Addon.Wux
 local StateManager = Addon:GetModule("StateManager")
 
 local SAVED_VARIABLES_KEY = "__DEJUNK_ADDON_V3_SAVED_VARIABLES__"
-local LEGACY_SV_MAPPING = {
-  global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
-  perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
-}
 
 -- ============================================================================
 -- Store
@@ -31,13 +26,7 @@ local _Store
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
   --- @type DejunkRootState
-  local initialState = LegacyMigration:MigrateLegacyLists(
-    SAVED_VARIABLES_KEY,
-    LEGACY_SV_MAPPING,
-    Addon:GetCharacterKey(),
-    Addon:GetShortUID()
-  )
-
+  local initialState = Wux:ReadSavedVariables(SAVED_VARIABLES_KEY)
   initialState = Migrations:Migrate(initialState)
   initialState = StateReconciler:Reconcile(initialState)
 

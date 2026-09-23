@@ -35,7 +35,6 @@
   <Script file="src\store\action-types.lua"/>
   <Script file="src\store\action-creators.lua"/>
   <Script file="src\store\default-states.lua"/>
-  <Script file="src\store\legacy-migration.lua"/>
   <Script file="src\store\migrations.lua"/>
   <Script file="src\store\state-reconciler.lua"/>
   <Script file="src\store\middlewares.lua"/>
