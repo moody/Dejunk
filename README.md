@@ -1,55 +1,76 @@
 # Dejunk
 
-Dejunk is an addon for automating some tedious aspects of selling and destroying items. It supports Retail, Classic Era, TBC Classic, Cataclysm Classic, and Mists Classic.
+Dejunk is an addon for World of Warcraft that helps determine which items are considered junk based on options and lists, then allows selling them in bulk or destroying them one at a time.
 
-By default, all poor quality items are considered junk. Higher quality items can be caught automatically using filters, or manually added to an `Inclusions` list. Items on an `Exclusions` list will never be considered junk.
-
-Once set up, Dejunk can handle the process of selling or destroying junk items with the press of a button.
-
-![Dejunk](/.images/Dejunk.png?raw=true)
+![Dejunk](/.github/images/Dejunk.png?raw=true)
 
 ## Features
 
-- Sell junk items at a merchant automatically or on demand
-- Destroy junk items one at a time
-- Auto-repair and auto-sell when opening a merchant
-- Open all lootable bag items with a single command
-- Overlay icons on junk items in your bags
-- Add Dejunk information to item tooltips, including the reason an item is considered junk
-- Set up keybindings or use chat commands for most operations
+- Sell junk automatically or on demand
+- Destroy junk one at a time, with optional confirmation
+- Separate settings and lists per profile, shareable across characters
+- Tooltips explain why an item is considered junk
+- Auto-repair equipment at merchants
+- Overlay icons on junk in your bags
+- Open lootable items one at a time from a dedicated frame
+- Use keybindings or chat commands for most actions
 
-### Filters
+### Options
 
-Filters determine what items are considered junk. Several filters support per-quality checkboxes, allowing them to apply only to specific quality tiers.
+These options, found under `Options (Profile)`, determine what's considered junk. Several support per-quality checkboxes, letting them apply only to specific quality tiers.
 
-**Include** (marks matched items as junk)
-
-- **Include By Quality** — Include items by quality tier
+- **Include By Quality** — Include items by quality tier (poor quality included by default)
+- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
 - **Include Below Item Level** — Include equipment below a set item level
 - **Include Unsuitable Equipment** — Include equipment with an armor or weapon type unsuitable for your class
-- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
-
-**Exclude** (prevents matched items from being considered junk)
-
-- **Exclude Equipment Sets** — Exclude equipment saved to an equipment set
+- **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
+- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
 
 ### Lists
 
-Inclusions and Exclusions lists are available at both the global and per-character level. Per-character lists take priority over global ones.
+Inclusions and Exclusions lists are available at both the global and per-profile level. Per-profile lists take priority over global ones.
 
-| List                 | Behaviour                                                                         |
-| -------------------- | --------------------------------------------------------------------------------- |
-| Global Inclusions    | Always junk across all characters, unless overridden by a per-character exclusion |
-| Global Exclusions    | Never junk across all characters, unless overridden by a per-character inclusion  |
-| Character Inclusions | Always junk for this character only, regardless of any other setting              |
-| Character Exclusions | Never junk for this character only, regardless of any other setting               |
+- **`Inclusions (Global)`** — Always considered junk across all characters, unless overridden by a per-profile exclusion or `Exclude Above Item Level`
+- **`Exclusions (Global)`** — Never considered junk across all characters, unless overridden by a per-profile inclusion
+- **`Inclusions (Profile)`** — Always considered junk for the active profile only, regardless of any other setting except `Exclude Above Item Level`
+- **`Exclusions (Profile)`** — Never considered junk for the active profile only, regardless of any other setting
 
-Items can be added to lists by dragging them directly into the list frame or the Junk Frame. The Transport Frame can be used to import or export item IDs as plain text, making it easy to share or back up lists.
+Items can be added to lists by dropping them directly into the list frame or the Junk Items frame.
 
-![Junk Frame](/.images/JunkFrame.png?raw=true)
-![Transport Frame](/.images/TransportFrame.png?raw=true)
+### Import/Export
+
+Each list has its own Import/Export frame, opened from a button on the list frame itself. It shows the list's item IDs as plain text, ready to copy out. Paste in a new set of IDs and click `Import` to add them to the list, or click `Export` to refill the box with the list's current IDs.
+
+![Import/Export](/.github/images/TransportFrame.png?raw=true)
+
+### Junk Items
+
+The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
+
+- Left-click an item to sell it
+- Right-click an item to add it to an Exclusions list
+- Drop an item into the frame to add it to an Inclusions list
+- `Start Selling` and `Destroy Next Item` act on every item currently listed
+
+![Junk Items](/.github/images/JunkFrame.png?raw=true)
+
+### Profiles
+
+Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
+
+Every character starts on the `Default` profile. Changing a profile option or adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
+
+Profiles can also be created, switched, renamed, and deleted directly from the Profiles Frame, opened via `/dejunk profiles` or the gear icon in the main window's footer. The footer also shows the name of the active profile. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
+
+![Profiles Frame](/.github/images/ProfilesFrame.png?raw=true)
+
+### Lootable Items
+
+Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot` or its keybind. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session.
+
+![Lootable Items Frame](/.github/images/LootablesFrame.png?raw=true)
 
 ## Chat Commands
 
@@ -63,20 +84,14 @@ Items can be added to lists by dragging them directly into the list frame or the
 # Destroy next item.
 /dejunk destroy
 
-# Open lootable items.
-/dejunk loot
-
 # Toggle the junk frame.
 /dejunk junk
 
-# Open the key binding frame.
-/dejunk keybinds
+# Toggle the lootable items frame.
+/dejunk loot
 
-# Toggle the transport frame.
-/dejunk transport inclusions global
-/dejunk transport inclusions character
-/dejunk transport exclusions global
-/dejunk transport exclusions character
+# Toggle the profiles frame.
+/dejunk profiles
 
 # Display a list of commands.
 /dejunk help
@@ -110,3 +125,9 @@ local isJunk = DejunkApi:IsJunk(bagId, slotId)
 - [LibDataBroker-1.1](https://www.wowace.com/projects/libdatabroker-1-1)
 - [LibDBIcon-1.0](https://www.wowace.com/projects/libdbicon-1-0)
 - [LibStub](https://www.wowace.com/projects/libstub)
+- [Waffle](https://github.com/moody/Waffle)
+- [Wux](https://github.com/moody/Wux)
+
+## License
+
+[MIT](LICENSE)

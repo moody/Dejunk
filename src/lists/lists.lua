@@ -1,5 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -9,6 +9,7 @@ local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
+local Wux = Addon.Wux
 
 --- @class Lists
 local Lists = Addon:GetModule("Lists")
@@ -17,21 +18,20 @@ local Lists = Addon:GetModule("Lists")
 -- LuaCATS Annotations
 -- ============================================================================
 
---- @alias ListItemIds table<string, boolean>
---- @alias ListKey "GlobalInclusions" | "GlobalExclusions" | "PerCharInclusions" | "PerCharExclusions"
+--- @alias ListKey "GlobalInclusions" | "GlobalExclusions" | "ProfileInclusions" | "ProfileExclusions"
 
 --- @class ListData
 --- @field name string
 --- @field description string
---- @field protected load fun(): ListItemIds
---- @field protected save fun(): nil
---- @field protected getSibling fun(): List
---- @field protected getOpposite fun(): List
+--- @field load fun(): ItemIdMap
+--- @field save fun(itemIds: ItemIdMap)
+--- @field getSibling fun(): List
+--- @field getOpposite fun(): List
 
 --- @class List : ListData
---- @field private items ListItem[]
---- @field private itemIds ListItemIds
---- @field private searchItems ListItem[]
+--- @field items ListItem[]
+--- @field itemIds ItemIdMap
+--- @field searchItems ListItem[]
 
 -- ============================================================================
 -- Local Functions
@@ -65,6 +65,29 @@ local function getSortedIndex(items, item)
   return low
 end
 
+--- Clears `list`'s current items, then repopulates it from `list.load()`.
+--- @param list List
+local function reloadList(list)
+  ListItemParser:StopParsing(list)
+  for k in pairs(list.items) do list.items[k] = nil end
+  for k in pairs(list.itemIds) do list.itemIds[k] = nil end
+
+  for itemId in pairs(list.load()) do
+    list.itemIds[itemId] = true
+    ListItemParser:ParseExisting(list, itemId)
+  end
+end
+
+--- Returns `true` if this list is a profile list.
+--- @param list List
+--- @return boolean
+local function isProfileList(list)
+  return (
+    list == Lists.ProfileInclusions or
+    list == Lists.ProfileExclusions
+  )
+end
+
 -- ============================================================================
 -- Mixins
 -- ============================================================================
@@ -73,7 +96,7 @@ end
 local Mixins = {}
 
 --- Returns the list's sibling.
---- For example: if `GlobalInclusions`, returns `PerCharInclusions`.
+--- For example: if `GlobalInclusions`, returns `ProfileInclusions`.
 --- @return List sibling
 function Mixins:GetSibling()
   return self.getSibling()
@@ -97,6 +120,10 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:Add(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then
+    StateManager:CreateNewProfile()
+  end
+
   itemId = tostring(itemId)
 
   if self:Contains(itemId) then
@@ -105,16 +132,9 @@ function Mixins:Add(itemId, silent)
       if link then Addon:Print(L.ITEM_ALREADY_ON_LIST:format(link, self.name)) end
     end
   else
-    ListItemParser:Parse(self, itemId)
+    ListItemParser:Parse(self, itemId, silent)
     self.itemIds[itemId] = true
     self.save()
-
-    self.getOpposite():RemoveItemId(itemId, true)
-
-    if not silent then
-      local _, link = GetItemInfo(itemId)
-      if link then Addon:Print(L.ITEM_ADDED_TO_LIST:format(link, self.name)) end
-    end
   end
 end
 
@@ -122,6 +142,8 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:Remove(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   self:RemoveItemId(itemId, silent)
   local index = self:GetIndex(itemId)
   if index ~= -1 then table.remove(self.items, index) end
@@ -131,6 +153,8 @@ end
 --- @param itemId string|number
 --- @param silent? boolean
 function Mixins:RemoveItemId(itemId, silent)
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   itemId = tostring(itemId)
   ListItemParser:CancelParse(self, itemId)
 
@@ -171,6 +195,8 @@ end
 
 --- Removes all items from the list.
 function Mixins:RemoveAll()
+  if isProfileList(self) and StateManager:IsDefaultProfileActive() then return end
+
   ListItemParser:StopParsing(self)
   if #self.items > 0 or next(self.itemIds) then
     for k in pairs(self.items) do self.items[k] = nil end
@@ -211,12 +237,11 @@ function Mixins:GetSearchItems(searchText)
   return self.searchItems
 end
 
---- Returns the percentage of parsed items relative to total item IDs, or `100` if there are no item IDs.
+--- Returns the percentage of items resolved so far, or `100` if nothing is pending.
 --- @return integer percentage
 function Mixins:GetParsedItemPercentage()
-  local totalItemIds = 0
-  for _ in pairs(self.itemIds) do totalItemIds = totalItemIds + 1 end
-  return totalItemIds > 0 and math.floor((#self.items / totalItemIds) * 100) or 100
+  local total = #self.items + ListItemParser:GetPendingCount(self)
+  return total > 0 and math.floor((#self.items / total) * 100) or 100
 end
 
 -- ============================================================================
@@ -225,12 +250,13 @@ end
 
 -- Listen for `StoreCreated` to initialize lists with existing data.
 EventManager:Once(E.StoreCreated, function()
-  for list in Lists:Iterate() do
-    for itemId in pairs(list.load()) do
-      list.itemIds[itemId] = true
-      ListItemParser:ParseExisting(list, itemId)
-    end
-  end
+  for list in Lists:Iterate() do reloadList(list) end
+end)
+
+-- Listen for `ActiveProfileChanged` to reload the profile-scoped lists.
+EventManager:On(E.ActiveProfileChanged, function()
+  reloadList(Lists.ProfileInclusions)
+  reloadList(Lists.ProfileExclusions)
 end)
 
 -- Listen for `ListItemParsed` to add the item to the list and print a message.
@@ -244,6 +270,7 @@ EventManager:On(E.ListItemParsed, function(list, item, silent)
       table.insert(list.items, getSortedIndex(list.items, item), item)
     end
     list.itemIds[tostring(item.id)] = true
+    if not silent then Addon:Print(L.ITEM_ADDED_TO_LIST:format(item.link, list.name)) end
   else
     list:RemoveItemId(item.id, true)
     if not silent then Addon:Print(L.CANNOT_SELL_OR_DESTROY_ITEM:format(item.link)) end
@@ -280,49 +307,49 @@ do -- Create the lists.
     -- Debounce `save()` for performance reasons.
     local _save = list.save
     list.save = TickerManager:NewDebouncer(0.1, function()
-      _save(list.itemIds)
+      _save(Wux:ShallowCopy(list.itemIds))
     end)
 
     return list
   end
 
-  -- PerCharInclusions.
-  Lists.PerCharInclusions = createList({
-    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
-    description = L.INCLUSIONS_DESCRIPTION_PERCHAR,
-    load = function() return StateManager:GetPercharState().inclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharInclusions(itemIds)) end,
+  -- ProfileInclusions.
+  Lists.ProfileInclusions = createList({
+    name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.PROFILE)),
+    description = L.INCLUSIONS_DESCRIPTION_PROFILE:format(Colors.White(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)),
+    load = function() return StateManager:GetProfileState().settings.inclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Profile.setInclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalInclusions end,
-    getOpposite = function() return Lists.PerCharExclusions end
+    getOpposite = function() return Lists.ProfileExclusions end
   })
 
-  -- PerCharExclusions.
-  Lists.PerCharExclusions = createList({
-    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.CHARACTER)),
-    description = L.EXCLUSIONS_DESCRIPTION_PERCHAR,
-    load = function() return StateManager:GetPercharState().exclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetPercharExclusions(itemIds)) end,
+  -- ProfileExclusions.
+  Lists.ProfileExclusions = createList({
+    name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.PROFILE)),
+    description = L.EXCLUSIONS_DESCRIPTION_PROFILE,
+    load = function() return StateManager:GetProfileState().settings.exclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Profile.setExclusions(itemIds)) end,
     getSibling = function() return Lists.GlobalExclusions end,
-    getOpposite = function() return Lists.PerCharInclusions end
+    getOpposite = function() return Lists.ProfileInclusions end
   })
 
   -- GlobalInclusions.
   Lists.GlobalInclusions = createList({
     name = Colors.Red("%s (%s)"):format(L.INCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
-    description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharExclusions.name),
+    description = L.INCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.ProfileExclusions.name, Colors.White(L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT)),
     load = function() return StateManager:GetGlobalState().inclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalInclusions(itemIds)) end,
-    getSibling = function() return Lists.PerCharInclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Global.setInclusions(itemIds)) end,
+    getSibling = function() return Lists.ProfileInclusions end,
     getOpposite = function() return Lists.GlobalExclusions end
   })
 
   -- GlobalExclusions.
   Lists.GlobalExclusions = createList({
     name = Colors.Green("%s (%s)"):format(L.EXCLUSIONS_TEXT, Colors.White(L.GLOBAL)),
-    description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.PerCharInclusions.name),
+    description = L.EXCLUSIONS_DESCRIPTION_GLOBAL:format(Lists.ProfileInclusions.name),
     load = function() return StateManager:GetGlobalState().exclusions end,
-    save = function(itemIds) StateManager:GetStore():Dispatch(Actions:SetGlobalExclusions(itemIds)) end,
-    getSibling = function() return Lists.PerCharExclusions end,
+    save = function(itemIds) StateManager:GetStore():Dispatch(ActionCreators.Global.setExclusions(itemIds)) end,
+    getSibling = function() return Lists.ProfileExclusions end,
     getOpposite = function() return Lists.GlobalInclusions end
   })
 end
@@ -330,9 +357,9 @@ end
 do -- Lists:Iterate()
   local lists = {
     [Lists.GlobalInclusions] = true,
-    [Lists.PerCharInclusions] = true,
+    [Lists.ProfileInclusions] = true,
     [Lists.GlobalExclusions] = true,
-    [Lists.PerCharExclusions] = true
+    [Lists.ProfileExclusions] = true
   }
 
   --- Provides an iterator for the lists. Usage:

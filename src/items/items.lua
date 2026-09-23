@@ -81,19 +81,23 @@ local function getItem(bag, slot)
   if item == nil then return nil end
 
   -- GetItemInfo.
-  local name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
+  local name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
   if name == nil then
-    name, _, _, itemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
+    name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
     if name == nil then return nil end
   end
 
   item.name = name
-  item.itemLevel = GetDetailedItemLevelInfo(item.link) or itemLevel
+  item.baseItemLevel = baseItemLevel
   item.invType = invType
   item.price = price
   item.classId = classId
   item.subclassId = subclassId
   item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
+
+  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(bag, slot, false)
+  local refundSeconds = purchaseInfo and purchaseInfo.refundSeconds
+  item.refundExpirationTime = refundSeconds and refundSeconds > 0 and (GetTime() + refundSeconds) or nil
 
   return item
 end
@@ -164,6 +168,22 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   EventManager:On(E.BagsUpdated, function(allItemsCached)
     if not allItemsCached then TickerManager:After(0.01, debounce) end
   end)
+
+  -- A refund window can expire with no bag event to catch it, so poll for
+  -- that and fire `BagsUpdated` when it happens.
+  TickerManager:NewTicker(1, function()
+    local now = GetTime()
+    local anyExpired = false
+
+    for _, item in pairs(bagItemCache) do
+      if item.refundExpirationTime and item.refundExpirationTime <= now then
+        item.refundExpirationTime = nil
+        anyExpired = true
+      end
+    end
+
+    if anyExpired then EventManager:Fire(E.BagsUpdated, true) end
+  end)
 end)
 
 -- ============================================================================
@@ -218,6 +238,17 @@ end
 --- @return boolean
 function Items:IsItemStillInBags(item)
   return item.id == C_Container.GetContainerItemID(item.bag, item.slot)
+end
+
+--- Returns the given `item`'s level using `C_Item.GetCurrentItemLevel`.
+--- Falls back to `GetDetailedItemLevelInfo`, then falls back to the base level.
+--- @param item BagItem
+--- @return number
+function Items:GetItemLevel(item)
+  self.location:SetBagAndSlot(item.bag, item.slot)
+  local success, itemLevel = pcall(C_Item.GetCurrentItemLevel, self.location)
+  if success and itemLevel then return itemLevel end
+  return GetDetailedItemLevelInfo(item.link) or item.baseItemLevel
 end
 
 --- Returns `true` if the given `item` is locked.
@@ -279,8 +310,7 @@ end
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemRefundable(item)
-  local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(item.bag, item.slot, false)
-  return purchaseInfo and purchaseInfo.refundSeconds > 0
+  return item.refundExpirationTime ~= nil and item.refundExpirationTime > GetTime()
 end
 
 -- Items:IsItemEquipment()

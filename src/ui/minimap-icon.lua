@@ -1,6 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
-local Actions = Addon:GetModule("Actions")
+local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
@@ -45,9 +45,8 @@ local function onUpdateTooltip(frame)
   end
 
   Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
-  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_JUNK_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_OPTIONS_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.SHIFT_KEY, L.LEFT_CLICK), L.START_SELLING))
+  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
   Tooltip:Show()
 end
@@ -64,11 +63,11 @@ EventManager:Once(E.StoreCreated, function()
 
     OnClick = function(_, button)
       if button == "LeftButton" then
-        if IsShiftKeyDown() then Commands.sell() else Commands.junk() end
+        Commands.options()
       end
 
       if button == "RightButton" then
-        if IsAltKeyDown() then Commands.destroy() else Commands.options() end
+        if IsAltKeyDown() then Commands.destroy() else Commands.junk() end
       end
     end,
 
@@ -90,7 +89,7 @@ EventManager:Once(E.StoreCreated, function()
   do
     local patchCache = {}
     local debounce = TickerManager:NewDebouncer(0.2, function()
-      StateManager:GetStore():Dispatch(Actions:PatchMinimapIcon(patchCache))
+      StateManager:GetStore():Dispatch(ActionCreators.Global.patchMinimapIcon(patchCache))
       for k in pairs(patchCache) do patchCache[k] = nil end
     end)
 
@@ -130,6 +129,6 @@ EventManager:Once(E.StoreCreated, function()
   --- Sets the visibility of the minimap icon.
   --- @param enabled boolean
   function MinimapIcon:SetEnabled(enabled)
-    StateManager:GetStore():Dispatch(Actions:PatchMinimapIcon({ hide = not enabled }))
+    StateManager:GetStore():Dispatch(ActionCreators.Global.patchMinimapIcon({ hide = not enabled }))
   end
 end)

@@ -2,33 +2,15 @@ name: Release
 
 on:
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install requests
-        run: pip install requests
-
-      - name: Validate Locales
-        run: python .scripts/validate_locales.py
-
-      # - name: Upload Locales
-      #   run: python .scripts/upload_locales.py
-      #   env:
-      #     CF_API_KEY: ${{ secrets.CF_API_KEY }}
-
+      - uses: actions/checkout@v7
       - name: Release
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@v2
         with:
           args: -p 413260 -w 25313 -a e56nlDG9
         env:

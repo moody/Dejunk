@@ -11,14 +11,20 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
+      - uses: actions/checkout@v7
+      - name: Install Lua 5.1
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lua5.1
+      - name: Validate Lua Syntax
+        run: python3 .github/scripts/validate_lua_syntax.py
+      - name: Validate Dejunk XML
+        if: ${{ !cancelled() }}
+        run: python3 .github/scripts/validate_dejunk_xml.py
       - name: Validate Locales
-        run: python .scripts/validate_locales.py
+        if: ${{ !cancelled() }}
+        run: python3 .github/scripts/validate_locales.py
+      - name: Run Tests
+        if: ${{ !cancelled() }}
+        run: python3 .github/scripts/run_tests.py
