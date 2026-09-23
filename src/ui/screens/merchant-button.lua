@@ -122,6 +122,7 @@ local labelComponent = rootComponent:AddChild({
 
   --- @param label FontString
   onMeasure = function(label)
+    label:SetTextToFit(label:GetText())
     return label:GetStringWidth(), label:GetStringHeight()
   end
 })
