@@ -24,6 +24,9 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 --- @class DeleteProfilePayload
 --- @field profileId string
 
+--- @class ResetProfilePayload
+--- @field profileId string
+
 -- ============================================================================
 -- ActionCreators - Global
 -- ============================================================================
@@ -152,6 +155,10 @@ ActionCreators.Profiles = {
   --- Action creator for `ActionTypes.Profiles.DELETE_PROFILE`.
   --- @type WuxActionCreator<DeleteProfilePayload>
   deleteProfile = Wux:CreateActionCreator(ActionTypes.Profiles.DELETE_PROFILE),
+
+  --- Action creator for `ActionTypes.Profiles.RESET_PROFILE`.
+  --- @type WuxActionCreator<ResetProfilePayload>
+  resetProfile = Wux:CreateActionCreator(ActionTypes.Profiles.RESET_PROFILE),
 }
 
 -- ============================================================================

@@ -43,6 +43,7 @@ ActionTypes.Profiles = {
   ASSIGN_PROFILE = "profiles/assign",
   RENAME_PROFILE = "profiles/rename",
   DELETE_PROFILE = "profiles/delete",
+  RESET_PROFILE = "profiles/reset",
 }
 
 -- ============================================================================

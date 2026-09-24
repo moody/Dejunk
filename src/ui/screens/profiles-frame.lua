@@ -164,6 +164,9 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           end
           if not isDefaultProfileSelected(button) then
             tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RENAME)
+          end
+          tooltip:AddDoubleLine(Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK), Colors.Yellow(L.RESET))
+          if not isDefaultProfileSelected(button) then
             tooltip:AddDoubleLine(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DELETE))
           end
         end
@@ -208,6 +211,19 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           alert = true,
           onAccept = function()
             StateManager:Dispatch(ActionCreators.Profiles.deleteProfile({
+              profileId = button.profile.id
+            }))
+          end
+        })
+      end)
+
+      -- Shift+Right-click: reset to default settings.
+      button:SetClickHandler("RightButton", "SHIFT", function()
+        Popup:Confirm({
+          text = L.RESET_PROFILE_POPUP_HELP:format(Colors.Yellow(button.profile.name)),
+          alert = true,
+          onAccept = function()
+            StateManager:Dispatch(ActionCreators.Profiles.resetProfile({
               profileId = button.profile.id
             }))
           end
