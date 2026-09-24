@@ -245,6 +245,64 @@ do
   assert(nextState.profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID)
 end
 
+-- Test: `RENAME_PROFILE`/`DELETE_PROFILE` targeting the default profile are no-ops.
+do
+  local state = reducer(nil, TEST_ACTION)
+
+  local afterRename = reducer(state, ActionCreators.Profiles.renameProfile({
+    profileId = DefaultStates.DEFAULT_PROFILE_ID,
+    profileName = "Renamed"
+  }))
+  assert(afterRename == state)
+
+  local afterDelete = reducer(state, ActionCreators.Profiles.deleteProfile({
+    profileId = DefaultStates.DEFAULT_PROFILE_ID
+  }))
+  assert(afterDelete == state)
+end
+
+-- Test: `RESET_PROFILE` on a profile id missing from `profileMap` is a
+-- no-op (in the real addon `StateReconciler` guarantees the default
+-- profile is always present; this only happens here because the bare
+-- reducer is tested without it).
+do
+  local state = reducer(nil, TEST_ACTION)
+
+  local nextState = reducer(state, ActionCreators.Profiles.resetProfile({
+    profileId = DefaultStates.DEFAULT_PROFILE_ID
+  }))
+
+  assert(nextState == state)
+end
+
+-- Test: `RESET_PROFILE` replaces a profile's settings with a deep copy of
+-- the defaults, keeping its own id and name.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+  state = reducer(state, ActionCreators.Profiles.assignProfile({ characterKey = CHARACTER_KEY, profileId = PROFILE_ID }))
+  state = reducer(state, ActionCreators.Profile.setAutoSell(true))
+  state = reducer(state, ActionCreators.Profile.setInclusions({ ["5001"] = true }))
+
+  local nextState = reducer(state, ActionCreators.Profiles.resetProfile({ profileId = PROFILE_ID }))
+
+  local profile = nextState.profiles.profileMap[PROFILE_ID]
+  assert(profile.id == PROFILE_ID)
+  assert(profile.name == PROFILE_NAME)
+  assert(Matchers:IsDeepEqual(profile.settings, DefaultStates.Profile.settings))
+end
+
+-- Test: `RESET_PROFILE` does not mutate the shared `DefaultStates` templates.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+
+  local nextState = reducer(state, ActionCreators.Profiles.resetProfile({ profileId = PROFILE_ID }))
+  nextState.profiles.profileMap[PROFILE_ID].settings.inclusions["9999"] = true
+
+  assert(DefaultStates.Profile.settings.inclusions["9999"] == nil)
+end
+
 -- ============================================================================
 -- Tests - RootReducer:Build() - profile
 -- ============================================================================
@@ -268,8 +326,10 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.setExclusions({ ["4001"] = true }), path = PROFILE_PATH .. ".settings.exclusions", expected = { ["4001"] = true } },
 }
 
--- Test: a profile action on the default profile is a no-op; the default
--- profile is never added to `profileMap`.
+-- Test: the default profile gets no special-casing in the reducer itself.
+-- `StateReconciler` is what guarantees it exists (see its own tests), so a
+-- profile action dispatched without going through that (as here) is a
+-- plain no-op, same as any other profile id missing from `profileMap`.
 do
   local state = reducer(nil, TEST_ACTION)
 

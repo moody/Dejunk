@@ -14,11 +14,42 @@ local Wux = Addon.Wux
 -- Tests - StateReconciler:Reconcile()
 -- ============================================================================
 
--- Test: an empty state is backfilled from `DefaultStates`.
+-- Test: an empty state is backfilled from `DefaultStates`, with the default
+-- profile created too.
 do
   local state = StateReconciler:Reconcile({})
   assert(Matchers:IsDeepEqual(state.global, DefaultStates.Global))
-  assert(Matchers:IsDeepEqual(state.profiles, DefaultStates.Profiles))
+  assert(state.profiles.activeProfileId == DefaultStates.Profiles.activeProfileId)
+  assert(Matchers:IsDeepEqual(state.profiles.characterMap, DefaultStates.Profiles.characterMap))
+  assert(Matchers:IsDeepEqual(state.profiles.profileMap, {
+    [DefaultStates.DEFAULT_PROFILE_ID] = DefaultStates.Profile,
+  }))
+end
+
+-- Test: the default profile is created if missing, without disturbing any
+-- other existing profile.
+do
+  local state = StateReconciler:Reconcile({
+    profiles = { profileMap = { p1 = { id = "p1", name = "P1" } } },
+  })
+  assert(Matchers:IsDeepEqual(state.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID], DefaultStates.Profile))
+  assert(state.profiles.profileMap.p1.name == "P1")
+end
+
+-- Test: an existing default profile's own settings are kept, not overwritten.
+do
+  local state = StateReconciler:Reconcile({
+    profiles = {
+      profileMap = {
+        [DefaultStates.DEFAULT_PROFILE_ID] = {
+          id = DefaultStates.DEFAULT_PROFILE_ID,
+          name = DefaultStates.Profile.name,
+          settings = { autoSell = true },
+        },
+      },
+    },
+  })
+  assert(state.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID].settings.autoSell == true)
 end
 
 -- Test: a value of the wrong type is replaced with its default.
@@ -40,11 +71,16 @@ do
   assert(Matchers:IsDeepEqual(settings.includeByQuality, DefaultStates.Profile.settings.includeByQuality))
 end
 
--- Test: a section that is not a table is replaced with a copy of its default.
+-- Test: a section that is not a table is replaced with a copy of its
+-- default, with the default profile created too.
 do
   local state = StateReconciler:Reconcile({ global = 5, profiles = "none" })
   assert(Matchers:IsDeepEqual(state.global, DefaultStates.Global))
-  assert(Matchers:IsDeepEqual(state.profiles, DefaultStates.Profiles))
+  assert(state.profiles.activeProfileId == DefaultStates.Profiles.activeProfileId)
+  assert(Matchers:IsDeepEqual(state.profiles.characterMap, DefaultStates.Profiles.characterMap))
+  assert(Matchers:IsDeepEqual(state.profiles.profileMap, {
+    [DefaultStates.DEFAULT_PROFILE_ID] = DefaultStates.Profile,
+  }))
 end
 
 -- Test: a value of the right type is kept at any depth, and everything else is backfilled.
@@ -102,6 +138,7 @@ do
     profiles = { profileMap = { bad = "none", good = { id = "good", name = "Good", settings = {} } } },
   })
   assert(Matchers:IsDeepEqual(state.profiles.profileMap, {
+    [DefaultStates.DEFAULT_PROFILE_ID] = DefaultStates.Profile,
     good = { id = "good", name = "Good", settings = DefaultStates.Profile.settings },
   }))
 end
