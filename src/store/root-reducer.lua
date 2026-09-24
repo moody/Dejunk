@@ -150,9 +150,10 @@ function RootReducer:Build()
         return state
       end
 
-      -- Rename profile action.
+      -- Rename profile action. The default profile cannot be renamed.
       if action.type == ActionTypes.Profiles.RENAME_PROFILE then
         --- @cast action WuxPayloadAction<RenameProfilePayload>
+        if action.payload.profileId == DefaultStates.DEFAULT_PROFILE_ID then return state end
         state = Wux:ShallowCopy(state)
         state.profileMap = Wux:ShallowCopy(state.profileMap)
         local profile = Wux:ShallowCopy(state.profileMap[action.payload.profileId])
@@ -161,9 +162,10 @@ function RootReducer:Build()
         return state
       end
 
-      -- Delete profile action.
+      -- Delete profile action. The default profile cannot be deleted.
       if action.type == ActionTypes.Profiles.DELETE_PROFILE then
         --- @cast action WuxPayloadAction<DeleteProfilePayload>
+        if action.payload.profileId == DefaultStates.DEFAULT_PROFILE_ID then return state end
         state = Wux:ShallowCopy(state)
         state.profileMap = Wux:ShallowCopy(state.profileMap)
         state.profileMap[action.payload.profileId] = nil
@@ -180,6 +182,22 @@ function RootReducer:Build()
         return state
       end
 
+      -- Reset profile action: replaces its settings with a deep copy of the
+      -- defaults, keeping its own id/name. A no-op if the profile isn't
+      -- persisted yet, since it's already at the defaults.
+      if action.type == ActionTypes.Profiles.RESET_PROFILE then
+        --- @cast action WuxPayloadAction<ResetProfilePayload>
+        local existing = state.profileMap[action.payload.profileId]
+        if existing == nil then return state end
+        state = Wux:ShallowCopy(state)
+        state.profileMap = Wux:ShallowCopy(state.profileMap)
+        local profile = Wux:DeepCopy(DefaultStates.Profile)
+        profile.id = existing.id
+        profile.name = existing.name
+        state.profileMap[action.payload.profileId] = profile
+        return state
+      end
+
       -- Assign profile action. Falls through, rather than returning.
       if action.type == ActionTypes.Profiles.ASSIGN_PROFILE then
         --- @cast action WuxPayloadAction<AssignProfilePayload>
@@ -189,18 +207,20 @@ function RootReducer:Build()
         state.characterMap[action.payload.characterKey] = action.payload.profileId
       end
 
-      -- Ensure the active profile is not the default.
-      if state.activeProfileId ~= DefaultStates.DEFAULT_PROFILE_ID then
-        -- Ensure the active profile exists.
-        local profileState = state.profileMap[state.activeProfileId]
-        if type(profileState) == "table" then
-          -- Run the profile reducer, and update the profile map if the profile changed.
-          local newProfileState = profileReducer(profileState, action)
-          if newProfileState ~= profileState then
-            state = Wux:ShallowCopy(state)
-            state.profileMap = Wux:ShallowCopy(state.profileMap)
-            state.profileMap[state.activeProfileId] = newProfileState
-          end
+      -- Run the profile reducer against the active profile, writing the
+      -- result back into `profileMap` only if something changed. The
+      -- default profile is created eagerly by `StateReconciler` before this
+      -- ever runs, so it needs no special-casing here; a missing active
+      -- profile id (e.g. a stale reference `state-manager.lua` hasn't
+      -- redirected yet) just stays a no-op instead of materializing a
+      -- phantom profile under it.
+      local profileState = state.profileMap[state.activeProfileId]
+      if type(profileState) == "table" then
+        local newProfileState = profileReducer(profileState, action)
+        if newProfileState ~= profileState then
+          state = Wux:ShallowCopy(state)
+          state.profileMap = Wux:ShallowCopy(state.profileMap)
+          state.profileMap[state.activeProfileId] = newProfileState
         end
       end
 

@@ -1,6 +1,6 @@
 ## Interface: 120100, 50504, 20506, 16001, 11509
 ## Title: Dejunk
-## Version: 3.0.0
+## Version: 3.1.0
 ## Author: https://github.com/moody
 ## IconTexture: Interface\AddOns\Dejunk\assets\dejunk-icon
 ## Notes: Configurable junk seller and destroyer.

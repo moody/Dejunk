@@ -5,7 +5,6 @@ local DefaultStates = Addon:GetModule("DefaultStates")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
-local LegacyMigration = Addon:GetModule("LegacyMigration")
 local Middlewares = Addon:GetModule("Middlewares")
 local Migrations = Addon:GetModule("Migrations")
 local RootReducer = Addon:GetModule("RootReducer")
@@ -16,10 +15,6 @@ local Wux = Addon.Wux
 local StateManager = Addon:GetModule("StateManager")
 
 local SAVED_VARIABLES_KEY = "__DEJUNK_ADDON_V3_SAVED_VARIABLES__"
-local LEGACY_SV_MAPPING = {
-  global = "__DEJUNK_ADDON_GLOBAL_SAVED_VARIABLES__",
-  perchar = "__DEJUNK_ADDON_PERCHAR_SAVED_VARIABLES__"
-}
 
 -- ============================================================================
 -- Store
@@ -31,18 +26,24 @@ local _Store
 -- Create store once the `Wow.PlayerLogin` event fires.
 EventManager:Once(E.Wow.PlayerLogin, function()
   --- @type DejunkRootState
-  local initialState = LegacyMigration:MigrateLegacyLists(
-    SAVED_VARIABLES_KEY,
-    LEGACY_SV_MAPPING,
-    Addon:GetCharacterKey(),
-    Addon:GetShortUID()
-  )
-
+  local initialState = Wux:ReadSavedVariables(SAVED_VARIABLES_KEY)
   initialState = Migrations:Migrate(initialState)
   initialState = StateReconciler:Reconcile(initialState)
 
-  -- Initialize the `activeProfileId` before creating the store.
-  initialState.profiles.activeProfileId = initialState.profiles.characterMap[Addon:GetCharacterKey()]
+  -- Initialize the `activeProfileId` before creating the store. If the
+  -- character's mapped profile no longer exists (e.g. a corrupted entry
+  -- `StateReconciler` had to drop from `profileMap`), fall back to the
+  -- default profile and fix the character's own mapping too, so this
+  -- doesn't recur next login.
+  local characterKey = Addon:GetCharacterKey()
+  local activeProfileId = initialState.profiles.characterMap[characterKey]
+  if activeProfileId ~= nil
+      and activeProfileId ~= DefaultStates.DEFAULT_PROFILE_ID
+      and initialState.profiles.profileMap[activeProfileId] == nil then
+    activeProfileId = DefaultStates.DEFAULT_PROFILE_ID
+    initialState.profiles.characterMap[characterKey] = DefaultStates.DEFAULT_PROFILE_ID
+  end
+  initialState.profiles.activeProfileId = activeProfileId
 
   _Store = Wux:CreateStore(RootReducer:Build(), initialState, Middlewares:Build())
 
@@ -111,16 +112,19 @@ do
     return a.name < b.name
   end
 
-  --- Returns every profile, including the synthetic default profile (which is
-  --- never actually stored in `profileMap`), sorted by name.
+  --- Returns every profile, sorted by name with the default profile always
+  --- first.
   --- @return ProfileState[]
   function StateManager:GetAllProfiles()
     for k in pairs(profiles) do profiles[k] = nil end
-    for _, profile in pairs(_Store:GetState().profiles.profileMap) do
-      profiles[#profiles + 1] = profile
+    local profileMap = _Store:GetState().profiles.profileMap
+    for id, profile in pairs(profileMap) do
+      if id ~= DefaultStates.DEFAULT_PROFILE_ID then
+        profiles[#profiles + 1] = profile
+      end
     end
     table.sort(profiles, sortProfiles)
-    table.insert(profiles, 1, DefaultStates.Profile)
+    table.insert(profiles, 1, profileMap[DefaultStates.DEFAULT_PROFILE_ID])
     return profiles
   end
 end
@@ -138,12 +142,6 @@ function StateManager:CreateNewProfile(profileName)
       ActionCreators.Profiles.assignProfile({ profileId = profileId, characterKey = characterKey })
     }
   })
-end
-
---- Returns `true` if the default profile is active.
---- @return boolean
-function StateManager:IsDefaultProfileActive()
-  return _Store:GetState().profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID
 end
 
 -- ============================================================================
