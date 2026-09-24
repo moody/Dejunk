@@ -6,6 +6,7 @@ local E = Addon:GetModule("Events") ---@class Events
 -- ============================================================================
 
 E.ActiveProfileChanged = "Dejunk_ActiveProfileChanged"
+E.ActiveProfileReset = "Dejunk_ActiveProfileReset"
 E.AttemptedToDestroyItem = "Dejunk_AttemptedToDestroyItem"
 E.AttemptedToSellItem = "Dejunk_AttemptedToSellItem"
 E.BagsUpdated = "Dejunk_BagsUpdated"

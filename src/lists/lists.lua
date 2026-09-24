@@ -233,11 +233,14 @@ EventManager:Once(E.StoreCreated, function()
   for list in Lists:Iterate() do reloadList(list) end
 end)
 
--- Listen for `ActiveProfileChanged` to reload the profile-scoped lists.
-EventManager:On(E.ActiveProfileChanged, function()
+-- Listen for `ActiveProfileChanged`/`ActiveProfileReset` to reload the
+-- profile-scoped lists.
+local function reloadProfileLists()
   reloadList(Lists.ProfileInclusions)
   reloadList(Lists.ProfileExclusions)
-end)
+end
+EventManager:On(E.ActiveProfileChanged, reloadProfileLists)
+EventManager:On(E.ActiveProfileReset, reloadProfileLists)
 
 -- Listen for `ListItemParsed` to add the item to the list and print a message.
 -- If the item cannot be sold or destroyed, then an error message is printed.
