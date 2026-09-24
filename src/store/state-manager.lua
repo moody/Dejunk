@@ -113,8 +113,7 @@ do
   end
 
   --- Returns every profile, sorted by name with the default profile always
-  --- first: the live one if it's been persisted yet, otherwise the shared
-  --- default template.
+  --- first.
   --- @return ProfileState[]
   function StateManager:GetAllProfiles()
     for k in pairs(profiles) do profiles[k] = nil end
@@ -125,7 +124,7 @@ do
       end
     end
     table.sort(profiles, sortProfiles)
-    table.insert(profiles, 1, profileMap[DefaultStates.DEFAULT_PROFILE_ID] or DefaultStates.Profile)
+    table.insert(profiles, 1, profileMap[DefaultStates.DEFAULT_PROFILE_ID])
     return profiles
   end
 end

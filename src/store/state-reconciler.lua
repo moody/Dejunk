@@ -30,14 +30,21 @@ end
 -- ============================================================================
 
 --- Returns `state` in the current shape, without mutating the input. Missing values are backfilled from
---- `DefaultStates`, values of the wrong type are replaced with copies of their defaults, and profiles that are not
---- tables are removed. Run after migrations, which move old data first.
+--- `DefaultStates`, values of the wrong type are replaced with copies of their defaults, profiles that are not
+--- tables are removed, and the default profile is created if it doesn't already exist. Run after migrations, which
+--- move old data first.
 --- @param state DejunkRootState
 --- @return DejunkRootState
 function StateReconciler:Reconcile(state)
   state = Wux:DeepCopy(state)
   state.global = reconcile(state.global, DefaultStates.Global)
   state.profiles = reconcile(state.profiles, DefaultStates.Profiles)
+
+  -- The default profile always exists, created eagerly here rather than
+  -- lazily on its first edit.
+  if type(state.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID]) ~= "table" then
+    state.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID] = Wux:DeepCopy(DefaultStates.Profile)
+  end
 
   for profileId, profile in pairs(state.profiles.profileMap) do
     if type(profile) == "table" then

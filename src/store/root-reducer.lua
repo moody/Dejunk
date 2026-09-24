@@ -209,16 +209,12 @@ function RootReducer:Build()
 
       -- Run the profile reducer against the active profile, writing the
       -- result back into `profileMap` only if something changed. The
-      -- default profile starts out unpersisted and falls back to the
-      -- shared template here; its first real edit is what creates its
-      -- `profileMap` entry. Any other missing active profile id stays a
-      -- no-op instead of materializing a phantom profile under a stale id
-      -- (`state-manager.lua` already redirects off a deleted profile at
-      -- login; this is the last-resort backstop).
+      -- default profile is created eagerly by `StateReconciler` before this
+      -- ever runs, so it needs no special-casing here; a missing active
+      -- profile id (e.g. a stale reference `state-manager.lua` hasn't
+      -- redirected yet) just stays a no-op instead of materializing a
+      -- phantom profile under it.
       local profileState = state.profileMap[state.activeProfileId]
-      if profileState == nil and state.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID then
-        profileState = DefaultStates.Profile
-      end
       if type(profileState) == "table" then
         local newProfileState = profileReducer(profileState, action)
         if newProfileState ~= profileState then
