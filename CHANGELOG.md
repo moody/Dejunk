@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- The merchant button's label could get stuck showing "..." instead of its real text.
+- The merchant button's label could get stuck showing "..." instead of its full text.
 
 ### Removed
 
