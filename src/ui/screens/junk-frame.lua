@@ -24,6 +24,8 @@ local Components = {}
 -- Local Functions
 -- ============================================================================
 
+local wasAutoShown = false
+
 local junkItems = {}
 
 local function hasSellableItems(items)
@@ -38,6 +40,13 @@ end
 -- Refresh components based on junk item data.
 local function refreshComponents()
   JunkFilter:GetJunkItems(junkItems)
+
+  -- Auto Junk Frame.
+  if wasAutoShown and StateManager:GetGlobalState().autoJunkFrame and #junkItems == 0 then
+    wasAutoShown = false
+    JunkFrame:Hide()
+    return
+  end
 
   Components.Root.TitleText:GetFrame():SetText(
     Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#junkItems)))
@@ -204,15 +213,29 @@ function JunkFrame:Toggle()
 end
 
 -- ============================================================================
+-- Ticker
+-- ============================================================================
+
+Addon:GetModule("TickerManager"):NewTicker(1 / 30, function()
+  if not (Addon:IsAtMerchant() and StateManager:GetGlobalState().autoJunkFrame) then
+    wasAutoShown = false
+    return
+  end
+
+  if not (wasAutoShown or Components.Root:IsVisible()) then
+    JunkFilter:GetJunkItems(junkItems)
+    if #junkItems > 0 then
+      wasAutoShown = true
+      JunkFrame:Show()
+    end
+  end
+end)
+
+-- ============================================================================
 -- Events
 -- ============================================================================
 
--- Auto Junk Frame.
-EventManager:Once(E.StoreCreated, function()
-  EventManager:On(E.Wow.MerchantShow, function()
-    if StateManager:GetGlobalState().autoJunkFrame then JunkFrame:Show() end
-  end)
-  EventManager:On(E.Wow.MerchantClosed, function()
-    if StateManager:GetGlobalState().autoJunkFrame then JunkFrame:Hide() end
-  end)
+EventManager:On(E.Wow.MerchantClosed, function()
+  wasAutoShown = false
+  if StateManager:GetGlobalState().autoJunkFrame then JunkFrame:Hide() end
 end)
