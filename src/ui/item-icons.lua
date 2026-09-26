@@ -40,12 +40,13 @@ local function getItemIcon()
     -- Background texture.
     itemIcon.background = itemIcon:CreateTexture("$parent_BackgroundTexture", "BACKGROUND")
     itemIcon.background:SetAllPoints()
-    itemIcon.background:SetColorTexture(0, 0, 0, 0.75)
+    itemIcon.background:SetColorTexture(0, 0, 0, 0.3)
 
     -- Overlay texture.
     itemIcon.overlay = itemIcon:CreateTexture("$parent_OverlayTexture", "OVERLAY")
-    itemIcon.overlay:SetAllPoints()
     itemIcon.overlay:SetTexture(Addon:GetAsset("dejunk-icon"))
+    itemIcon.overlay:SetPoint("TOPLEFT")
+    itemIcon.overlay:SetSize(24, 24)
   end
 
   itemIcons.active[itemIcon] = true
