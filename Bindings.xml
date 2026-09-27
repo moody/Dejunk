@@ -1,46 +1,46 @@
 <Bindings>
   <!-- General -->
-  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_TOGGLE_OPTIONS_FRAME" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_ToggleOptionsFrame()
   </Binding>
-  <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_TOGGLE_JUNK_FRAME" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_ToggleJunkFrame()
   </Binding>
-  <Binding name="DEJUNK_TOGGLE_LOOTABLE_FRAME" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_TOGGLE_LOOTABLE_FRAME" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_ToggleLootableFrame()
   </Binding>
-  <Binding name="DEJUNK_START_SELLING" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_START_SELLING" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_StartSelling()
   </Binding>
-  <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_DESTROY_NEXT_ITEM" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_DestroyNextItem()
   </Binding>
 
   <!-- Profile Lists -->
-  <Binding name="DEJUNK_ADD_PROFILE_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_ADD_PROFILE_INCLUSIONS" header="DEJUNK_HEADER_BLANK1" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PROFILE_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_REM_PROFILE_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromList("ProfileInclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_ADD_PROFILE_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("ProfileExclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_PROFILE_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_REM_PROFILE_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromList("ProfileExclusions")
   </Binding>
 
   <!-- Global Lists -->
-  <Binding name="DEJUNK_ADD_GLOBAL_INCLUSIONS" header="DEJUNK_HEADER_BLANK2" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_ADD_GLOBAL_INCLUSIONS" header="DEJUNK_HEADER_BLANK2" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("GlobalInclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_GLOBAL_INCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_REM_GLOBAL_INCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromList("GlobalInclusions")
   </Binding>
-  <Binding name="DEJUNK_ADD_GLOBAL_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_ADD_GLOBAL_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_AddToList("GlobalExclusions")
   </Binding>
-  <Binding name="DEJUNK_REM_GLOBAL_EXCLUSIONS" category="|cFF4FAFE3Dejunk|r">
+  <Binding name="DEJUNK_REM_GLOBAL_EXCLUSIONS" category="BINDING_CATEGORY_DEJUNK">
     DejunkBindings_RemoveFromList("GlobalExclusions")
   </Binding>
 </Bindings>
