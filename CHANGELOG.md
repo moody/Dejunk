@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added `Auto Lootables Frame`, a global option that shows the Lootable Items frame automatically when you have items to loot, and closes it once you don't.
+- Manually opening the Lootable Items frame with nothing to loot now prints a message instead of showing an empty frame.
+
 ### Changed
 
 - `Bag Item Icons` now overlays a small icon in the item's top-left corner instead of covering the whole slot, with a lighter background behind it.
