@@ -205,7 +205,12 @@ function LootableFrame:Toggle()
   if Components.Root:IsVisible() then
     self:Hide()
   else
-    self:Show()
+    updateLootableItems()
+    if #lootableItems == 0 then
+      Addon:Print(L.NO_LOOTABLE_ITEMS)
+    else
+      self:Show()
+    end
   end
 end
 
