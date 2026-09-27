@@ -36,6 +36,10 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setAutoJunkFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_JUNK_FRAME),
 
+  --- Action creator for `ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME`.
+  --- @type WuxActionCreator<boolean>
+  setAutoLootableFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME),
+
   --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
   --- @type WuxActionCreator<boolean>
   setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES),
