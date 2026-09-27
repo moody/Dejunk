@@ -70,9 +70,16 @@ local function openKeybindings()
   CloseMenus()
   CloseAllWindows()
 
-  -- Open the settings panel.
-  local keybindingsCategoryId = SettingsPanel.keybindingsCategory:GetID()
-  Settings.OpenToCategory(keybindingsCategoryId)
+  -- See: https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_SettingsDefinitions_Frame/PingSystem.lua#L76
+  local keybindsCategory = SettingsPanel:GetCategory(Settings.KEYBINDINGS_CATEGORY_ID)
+  local keybindsLayout = SettingsPanel:GetLayout(keybindsCategory)
+  for _, initializer in keybindsLayout:EnumerateInitializers() do
+    if initializer:GetName() == BINDING_CATEGORY_DEJUNK then
+      initializer.data.expanded = true
+      Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, BINDING_CATEGORY_DEJUNK)
+      return
+    end
+  end
 end
 
 -- ============================================================================

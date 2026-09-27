@@ -31,6 +31,7 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @class GlobalState
 DefaultStates.Global = {
   autoJunkFrame = false,
+  autoLootableFrame = false,
   chatMessages = true,
   itemIcons = false,
   itemTooltips = true,

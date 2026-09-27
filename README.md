@@ -54,6 +54,8 @@ The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click o
 - Drop an item into the frame to add it to an Inclusions list
 - `Start Selling` and `Destroy Next Item` act on every item currently listed
 
+The `Auto Junk Frame` option shows the frame automatically at a merchant when you have junk items, and closes it once you don't.
+
 ![Junk Items](/.github/images/JunkFrame.png?raw=true)
 
 ### Profiles
@@ -68,7 +70,7 @@ Profiles can also be created, switched, renamed, and deleted directly from the P
 
 ### Lootable Items
 
-Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot` or its keybind. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session.
+Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot` or its keybind. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootables Frame` option shows the frame automatically whenever you have lootable items, and closes it once you don't; opening it manually with nothing to loot prints a message instead.
 
 ![Lootable Items Frame](/.github/images/LootablesFrame.png?raw=true)
 

@@ -9,6 +9,7 @@ local ActionTypes = Addon:GetModule("ActionTypes")
 
 ActionTypes.Global = {
   SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
+  SET_AUTO_LOOTABLE_FRAME = "global/autoLootableFrame/set",
   SET_CHAT_MESSAGES = "global/chatMessages/set",
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",

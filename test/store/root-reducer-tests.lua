@@ -98,6 +98,7 @@ local POINT = { point = "point", relativePoint = "relativePoint", offsetX = 1, o
 --- Rows for the `global` action test, also read by the action type coverage test.
 local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoJunkFrame(true), path = "global.autoJunkFrame", expected = true },
+  { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
   { action = ActionCreators.Global.setChatMessages(false), path = "global.chatMessages", expected = false },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },

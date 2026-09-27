@@ -2,6 +2,8 @@ local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
@@ -24,13 +26,23 @@ local lootableItems = {}
 --- @type table<number, true>
 local ignoredItemIds = {}
 
--- Refresh components based on lootable item data.
-local function refreshComponents()
+--- Repopulates `lootableItems` with the current lootable, non-ignored items.
+local function updateLootableItems()
   Items:GetItems(lootableItems)
   for i = #lootableItems, 1, -1 do
     if not lootableItems[i].lootable or ignoredItemIds[lootableItems[i].id] then
       table.remove(lootableItems, i)
     end
+  end
+end
+
+-- Refresh components based on lootable item data.
+local function refreshComponents()
+  updateLootableItems()
+
+  if StateManager:GetGlobalState().autoLootableFrame and #lootableItems == 0 then
+    LootableFrame:Hide()
+    return
   end
 
   Components.Root.TitleText:GetFrame():SetText(
@@ -193,6 +205,27 @@ function LootableFrame:Toggle()
   if Components.Root:IsVisible() then
     self:Hide()
   else
-    self:Show()
+    updateLootableItems()
+    if #lootableItems == 0 then
+      Addon:Print(L.NO_LOOTABLE_ITEMS)
+    else
+      self:Show()
+    end
   end
 end
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+EventManager:On(E.BagsUpdated, function()
+  if not StateManager:GetGlobalState().autoLootableFrame then return end
+
+  updateLootableItems()
+
+  if #lootableItems == 0 then
+    LootableFrame:Hide()
+  elseif not Components.Root:IsVisible() then
+    LootableFrame:Show()
+  end
+end)

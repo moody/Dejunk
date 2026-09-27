@@ -1,19 +1,13 @@
 # Changelog
 
-## [3.1.0] - 2026-09-23
+## [3.2.0] - 2026-09-27
 
 ### Added
 
-- A way to reset any profile to its default settings: Shift+Right-click it in the Profiles Frame.
+- Added `Auto Lootables Frame`, a global option that shows the Lootable Items frame automatically when you have items to loot, and closes it once you don't.
+- Manually opening the Lootable Items frame with nothing to loot now prints a message instead of showing an empty frame.
 
 ### Changed
 
-- The `Default` profile now behaves like any other profile: it saves your changes directly instead of always creating a new one, and it's used automatically by any character with no profile assigned, or whose assigned profile was deleted. It still cannot be renamed or deleted.
-
-### Fixed
-
-- The merchant button's label could get stuck showing "..." instead of its full text.
-
-### Removed
-
-- The one-time migration that converted lists from Dejunk 2.x's old SavedVariables shape. Updating directly from a 2.x version no longer carries your lists over automatically.
+- `Bag Item Icons` now overlays a small icon in the item's top-left corner instead of covering the whole slot, with a lighter background behind it.
+- `Auto Junk Frame` now reacts to whether you actually have junk while at a merchant, instead of just opening when the merchant window opens and closing when it closes. It opens as soon as you have junk, even if that's not until partway through the visit (a list or setting change can turn bag items into junk, buying an item back can too), and closes itself once you no longer have any. Closing it yourself keeps it closed for the rest of that visit; leaving the merchant always closes it.

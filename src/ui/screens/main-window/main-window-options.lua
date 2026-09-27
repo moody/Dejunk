@@ -92,6 +92,14 @@ function MainWindowOptions:InitializeGlobalOptions(optionsFrame)
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
   }))
 
+  -- Auto lootable frame.
+  optionsFrame:AddChild(Widgets:OptionButton({
+    labelText = L.AUTO_LOOTABLE_FRAME_TEXT,
+    tooltipText = L.AUTO_LOOTABLE_FRAME_TOOLTIP,
+    get = function() return StateManager:GetGlobalState().autoLootableFrame end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
+  }))
+
   -- Chat messages.
   optionsFrame:AddChild(Widgets:OptionButton({
     labelText = L.CHAT_MESSAGES_TEXT,
