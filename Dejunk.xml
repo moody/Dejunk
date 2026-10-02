@@ -69,6 +69,7 @@
 
   <!-- UI Components -->
   <Script file="src\ui\components\scroll-panel.lua"/>
+  <Script file="src\ui\components\selectable-row.lua"/>
   <Script file="src\ui\components\titled-panel.lua"/>
   <Script file="src\ui\components\window-title-button.lua"/>
   <Script file="src\ui\components\window.lua"/>

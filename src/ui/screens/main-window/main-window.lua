@@ -24,6 +24,26 @@ local Components = {}
 -- Local Functions
 -- ============================================================================
 
+--- @type SelectableRowComponent?
+local selectedRow
+
+--- @type WaffleFlexComponent?
+local currentScreen
+
+--- Selects the given sidebar row and shows its screen, hiding the previous one.
+--- @param row SelectableRowComponent
+--- @param screen WaffleFlexComponent
+local function showScreen(row, screen)
+  if selectedRow then selectedRow:SetSelected(false) end
+  row:SetSelected(true)
+  selectedRow = row
+
+  if screen == currentScreen then return end
+  if currentScreen then currentScreen:SetVisibility("GONE") end
+  screen:SetVisibility("VISIBLE")
+  currentScreen = screen
+end
+
 --- @class ListSearchState
 local listSearchState = {
   isSearching = false,
@@ -35,6 +55,7 @@ local function getListSearchState()
 end
 
 local function startSearching()
+  showScreen(Components.ListsRow, Components.ListsScreen)
   listSearchState.isSearching = true
   listSearchState.searchText = ""
   Components.TitleBarNameText:SetVisibility("GONE")
@@ -232,17 +253,27 @@ Components.TitleBarButtonsRow:AttachComponent(Components.Root.CloseButton:Detach
 
 Components.MainScreenRow = Components.Root:AddRow({ padding = Widgets:Padding(), gap = Widgets:Padding(0.5) })
 
--- Left column.
-local mainScreenLeftColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5), width = "35%" })
+-- Sidebar.
+local sidebar = Components.MainScreenRow:AddColumn({
+  width = "25%",
+  padding = Widgets:Padding(0.5),
+  gap = Widgets:Padding(0.5),
+  frameFactory = function(parent)
+    return Widgets:Frame({ parent = parent })
+  end
+})
 
-mainScreenLeftColumn:AttachComponent(MainWindowOptions:CreateGlobalOptionsPanel())
-mainScreenLeftColumn:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel())
+-- Content area: shows the screen for the selected sidebar row.
+local contentArea = Components.MainScreenRow:AddColumn()
 
--- Right column.
-local mainScreenRightColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5) })
+-- ============================================================================
+-- Lists Screen Components
+-- ============================================================================
+
+Components.ListsScreen = contentArea:AddColumn({ gap = Widgets:Padding(0.5), visibility = "GONE" })
 
 -- Global lists row.
-mainScreenRightColumn:AddRow({
+Components.ListsScreen:AddRow({
   gap = Widgets:Padding(0.5),
   children = {
     {
@@ -271,7 +302,7 @@ mainScreenRightColumn:AddRow({
 })
 
 -- Profile lists row.
-mainScreenRightColumn:AddRow({
+Components.ListsScreen:AddRow({
   gap = Widgets:Padding(0.5),
   children = {
     {
@@ -298,6 +329,37 @@ mainScreenRightColumn:AddRow({
     }
   }
 })
+
+-- ============================================================================
+-- Options Screen Components
+-- ============================================================================
+
+Components.GlobalOptionsScreen = contentArea:AttachComponent(MainWindowOptions:CreateGlobalOptionsPanel())
+Components.GlobalOptionsScreen:SetVisibility("GONE")
+
+Components.ProfileOptionsScreen = contentArea:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel())
+Components.ProfileOptionsScreen:SetVisibility("GONE")
+
+-- ============================================================================
+-- Sidebar Components
+-- ============================================================================
+
+Components.ListsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
+  labelText = L.LISTS,
+  onClick = function(row) showScreen(row, Components.ListsScreen) end
+}))
+
+Components.GlobalOptionsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
+  labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.GLOBAL),
+  onClick = function(row) showScreen(row, Components.GlobalOptionsScreen) end
+}))
+
+Components.ProfileOptionsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
+  labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.PROFILE),
+  onClick = function(row) showScreen(row, Components.ProfileOptionsScreen) end
+}))
+
+showScreen(Components.ListsRow, Components.ListsScreen)
 
 -- ============================================================================
 -- Footer Components
