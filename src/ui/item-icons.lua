@@ -145,7 +145,7 @@ addPlugin({
     return _G.BagItemSearchBox and _G.BagItemSearchBox:GetText() or ""
   end,
   getBagSlotFrame = function(bag, slot)
-    if Addon.IS_RETAIL then
+    if ContainerFrameUtil_GetItemButtonAndContainer then
       return (ContainerFrameUtil_GetItemButtonAndContainer(bag, slot))
     end
 
