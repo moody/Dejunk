@@ -235,43 +235,8 @@ Components.MainScreenRow = Components.Root:AddRow({ padding = Widgets:Padding(),
 -- Left column.
 local mainScreenLeftColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5), width = "35%" })
 
--- Global options.
-mainScreenLeftColumn:AddChild({
-  frameFactory = function(parent)
-    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.GLOBAL)))
-    local optionsFrame = Widgets:OptionsFrame({
-      parent = parent,
-      name = "$parent_GlobalOptionsFrame",
-      titleText = titleText,
-      titleJustify = "LEFT",
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(titleText)
-        tooltip:AddLine(L.GLOBAL_OPTIONS_TOOLTIP)
-      end
-    })
-    MainWindowOptions:InitializeGlobalOptions(optionsFrame)
-    return optionsFrame
-  end
-})
-
--- Profile options.
-mainScreenLeftColumn:AddChild({
-  frameFactory = function(parent)
-    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.PROFILE)))
-    local optionsFrame = Widgets:OptionsFrame({
-      parent = parent,
-      name = "$parent_ProfileOptionsFrame",
-      titleText = titleText,
-      titleJustify = "LEFT",
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(titleText)
-        tooltip:AddLine(L.PROFILE_OPTIONS_TOOLTIP:format(Colors.White(StateManager:GetProfileState().name)))
-      end
-    })
-    MainWindowOptions:InitializeProfileOptions(optionsFrame)
-    return optionsFrame
-  end
-})
+mainScreenLeftColumn:AttachComponent(MainWindowOptions:CreateGlobalOptionsPanel())
+mainScreenLeftColumn:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel())
 
 -- Right column.
 local mainScreenRightColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5) })

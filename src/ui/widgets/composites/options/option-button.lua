@@ -69,6 +69,7 @@ function Widgets:OptionButton(options)
   local CHECK_BOX_SIZE = math.floor(frame.label:GetStringHeight())
   local ITEM_QUALITY_CHECK_BOX_SIZE = math.floor(CHECK_BOX_SIZE * 1.5)
   frame.checkBox:SetSize(CHECK_BOX_SIZE, CHECK_BOX_SIZE)
+  frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding(2))
 
   --- @param options OptionButtonItemQualityCheckBoxesOptions
   function frame:InitializeItemQualityCheckBoxes(options)
@@ -119,6 +120,8 @@ function Widgets:OptionButton(options)
         cb:SetPoint("LEFT", frame.itemQualityCheckBoxes[i - 1], "RIGHT", Widgets:Padding(), 0)
       end
     end
+
+    frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2))
   end
 
   frame:HookScript("OnEnter", function()
@@ -137,13 +140,6 @@ function Widgets:OptionButton(options)
 
   frame:SetScript("OnUpdate", function()
     frame:SetAlpha(options.get() and 1 or 0.5)
-
-    -- Set frame height.
-    if #frame.itemQualityCheckBoxes > 0 then
-      frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2))
-    else
-      frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding(2))
-    end
   end)
 
   do -- Hack to fix a bug where check boxes are sometimes invisible.
