@@ -10,10 +10,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class OptionRowOptions
---- @field get fun(): boolean
---- @field set fun(value: boolean)
---- @field onRightClick? fun()
---- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
+--- @field get fun(): boolean Returns whether the option is on.
+--- @field set fun(value: boolean) Called with the new value when the row is clicked.
+--- @field onRightClick? fun() Called when the row is right-clicked.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the row.
 
 -- =============================================================================
 -- ComponentFactory - OptionRow
@@ -31,7 +31,7 @@ function ComponentFactory:OptionRow(options)
     height = "AUTO",
     align = "START",
     gap = Widgets:Padding(),
-    padding = Widgets:Padding(0.5),
+    padding = Widgets:Padding(),
 
     --- @param parent Frame
     frameFactory = function(parent)
@@ -41,10 +41,10 @@ function ComponentFactory:OptionRow(options)
         enableClickHandling = true,
         onUpdateTooltip = options.onUpdateTooltip
       })
-      frame:SetBackdropColor(0, 0, 0, 0)
+      frame:SetBackdropColor(Colors.White:GetRGBA(0.03))
       frame:SetBackdropBorderColor(0, 0, 0, 0)
-      frame:HookScript("OnEnter", function(self) self:SetBackdropColor(Colors.White:GetRGBA(0.1)) end)
-      frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
+      frame:HookScript("OnEnter", function(self) self:SetBackdropColor(Colors.White:GetRGBA(0.06)) end)
+      frame:HookScript("OnLeave", function(self) self:SetBackdropColor(Colors.White:GetRGBA(0.03)) end)
       frame:SetClickHandler("LeftButton", "NONE", function() options.set(not options.get()) end)
       if options.onRightClick then frame:SetClickHandler("RightButton", "NONE", options.onRightClick) end
       return frame
@@ -52,8 +52,8 @@ function ComponentFactory:OptionRow(options)
   })
 
   root:AddChild({
-    width = 16,
-    height = 16,
+    width = 18,
+    height = 18,
 
     --- @param parent Frame
     frameFactory = function(parent)
