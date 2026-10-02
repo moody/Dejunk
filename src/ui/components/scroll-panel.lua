@@ -25,7 +25,6 @@ function ComponentFactory:ScrollPanel()
   scrollFrame:Hide()
 
   local slider = Widgets:Slider({ orientation = "VERTICAL" })
-  slider:SetAllPoints()
   slider:SetScript("OnValueChanged", function(_, value)
     local min, max = slider:GetMinMaxValues()
     scrollFrame:SetVerticalScroll(Clamp(math.floor(value + 0.5), min, max))
@@ -111,6 +110,17 @@ function ComponentFactory:ScrollPanel()
     width = 12,
     visibility = "GONE"
   })
+
+  -- The thumb is invisible on the first layout, so we
+  -- re-show the slider a frame later to fix it.
+  Components.SliderColumn:SetOnLayout(function()
+    Components.SliderColumn:SetOnLayout(nil)
+    TickerManager:After(0, function()
+      if not slider:IsShown() then return end
+      slider:Hide()
+      slider:Show()
+    end)
+  end)
 
   return Components.Root
 end
