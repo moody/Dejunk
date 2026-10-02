@@ -9,22 +9,24 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class TextComponentOptions
---- @field text string
+--- @field text string Text to show.
 --- @field fontObject? string Defaults to `GameFontNormal`.
 --- @field color? Color Defaults to `Colors.White`.
 --- @field justifyH? "LEFT" | "CENTER" | "RIGHT" Defaults to `LEFT`.
 --- @field justifyV? "TOP" | "MIDDLE" | "BOTTOM" Defaults to `MIDDLE`.
 --- @field wordWrap? boolean Defaults to `true`.
+--- @field width? integer | "AUTO" `"AUTO"` fits the text on one line. Defaults to the available width.
 
 -- =============================================================================
 -- ComponentFactory - Text
 -- =============================================================================
 
---- Creates text sized to the available width.
+--- Creates a block of text.
 --- @param options TextComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:Text(options)
   return Addon.Waffle:Flex({
+    width = options.width,
     height = "AUTO",
 
     --- @param parent Frame
@@ -39,8 +41,13 @@ function ComponentFactory:Text(options)
     end,
 
     --- @param fontString FontString
-    --- @param width number
+    --- @param width? number
     onMeasure = function(fontString, width)
+      if not width then
+        fontString:SetTextToFit(fontString:GetText())
+        return fontString:GetStringWidth(), fontString:GetStringHeight()
+      end
+
       fontString:SetSize(width, 0)
       return width, fontString:GetStringHeight()
     end
