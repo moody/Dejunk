@@ -10,8 +10,6 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class OptionRowOptions
---- @field labelText string
---- @field descriptionText string
 --- @field get fun(): boolean
 --- @field set fun(value: boolean)
 --- @field onRightClick? fun()
@@ -21,11 +19,13 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - OptionRow
 -- =============================================================================
 
---- Creates a full-width row with a checkbox, label, and description. Clicking
+--- Creates a full-width row with a checkbox beside its content. Clicking
 --- anywhere on the row toggles the option.
 --- @param options OptionRowOptions
---- @return WaffleFlexComponent root
+--- @return OptionRowComponent root
 function ComponentFactory:OptionRow(options)
+  --- @class OptionRowComponent : WaffleFlexComponent
+  --- @field Content WaffleFlexComponent Column beside the checkbox.
   local root = Addon.Waffle:Flex({
     direction = "ROW",
     height = "AUTO",
@@ -63,38 +63,7 @@ function ComponentFactory:OptionRow(options)
     end
   })
 
-  -- Label and description.
-  local text = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
-
-  --- Adds a wrapping text line.
-  --- @param fontObject string
-  --- @param color Color
-  --- @param value string
-  local function addTextLine(fontObject, color, value)
-    text:AddChild({
-      height = "AUTO",
-
-      --- @param parent Frame
-      frameFactory = function(parent)
-        local fontString = parent:CreateFontString(nil, "ARTWORK", fontObject)
-        fontString:SetJustifyH("LEFT")
-        fontString:SetWordWrap(true)
-        fontString:SetTextColor(color:GetRGB())
-        fontString:SetText(value)
-        return fontString
-      end,
-
-      --- @param fontString FontString
-      --- @param width number
-      onMeasure = function(fontString, width)
-        fontString:SetSize(width, 0)
-        return width, fontString:GetStringHeight()
-      end
-    })
-  end
-
-  addTextLine("GameFontNormal", Colors.White, options.labelText)
-  addTextLine("GameFontNormalSmall", Colors.Grey, options.descriptionText)
+  root.Content = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
 
   return root
 end

@@ -43,11 +43,30 @@ local function createOptionsPanel(options)
   return panel, scrollPanel.ScrollChild
 end
 
+--- @class MainWindowOptionOptions : OptionRowOptions
+--- @field labelText string
+--- @field descriptionText string
+
+--- Adds an option row with a label and description to `container`.
+--- @param container WaffleFlexComponent
+--- @param options MainWindowOptionOptions
+--- @return OptionRowComponent row
+local function addOption(container, options)
+  local row = container:AttachComponent(ComponentFactory:OptionRow(options))
+  row.Content:AttachComponent(ComponentFactory:Text({ text = options.labelText }))
+  row.Content:AttachComponent(ComponentFactory:Text({
+    text = options.descriptionText,
+    fontObject = "GameFontNormalSmall",
+    color = Colors.Grey
+  }))
+  return row
+end
+
 --- Adds an option row to `container`, built by `createFrame` once it is
 --- first laid out.
 --- @param container WaffleFlexComponent
 --- @param createFrame fun(parent: Frame): OptionButtonWidget
-local function addOption(container, createFrame)
+local function addOptionButton(container, createFrame)
   container:AddChild({
     height = "AUTO",
     frameFactory = createFrame,
@@ -78,23 +97,23 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Safe destroy.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.SAFE_DESTROY_TEXT,
     descriptionText = L.SAFE_DESTROY_TOOLTIP,
     get = function() return StateManager:GetGlobalState().safeDestroy end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeDestroy(value)) end
-  }))
+  })
 
   -- Safe sell.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.SAFE_SELL_TEXT,
     descriptionText = L.SAFE_SELL_TOOLTIP,
     get = function() return StateManager:GetGlobalState().safeSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
-  }))
+  })
 
   -- Merchant button.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.MERCHANT_BUTTON_TEXT,
     descriptionText = L.MERCHANT_BUTTON_TOOLTIP,
     get = function() return StateManager:GetGlobalState().merchantButton end,
@@ -106,55 +125,55 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
       tooltip:SetText(L.MERCHANT_BUTTON_TEXT)
       tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RESET_POSITION)
     end
-  }))
+  })
 
   -- Minimap icon.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.MINIMAP_ICON_TEXT,
     descriptionText = L.MINIMAP_ICON_TOOLTIP,
     get = function() return MinimapIcon:IsEnabled() end,
     set = function(value) MinimapIcon:SetEnabled(value) end
-  }))
+  })
 
   -- Auto junk frame.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     descriptionText = L.AUTO_JUNK_FRAME_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoJunkFrame end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
-  }))
+  })
 
   -- Auto lootable frame.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.AUTO_LOOTABLE_FRAME_TEXT,
     descriptionText = L.AUTO_LOOTABLE_FRAME_TOOLTIP,
     get = function() return StateManager:GetGlobalState().autoLootableFrame end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
-  }))
+  })
 
   -- Chat messages.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.CHAT_MESSAGES_TEXT,
     descriptionText = L.CHAT_MESSAGES_TOOLTIP,
     get = function() return StateManager:GetGlobalState().chatMessages end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
-  }))
+  })
 
   -- Bag item tooltips.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
     descriptionText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
     get = function() return StateManager:GetGlobalState().itemTooltips end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
-  }))
+  })
 
   -- Bag item icons.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.BAG_ITEM_ICONS_TEXT,
     descriptionText = L.BAG_ITEM_ICONS_TOOLTIP,
     get = function() return StateManager:GetGlobalState().itemIcons end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
-  }))
+  })
 
   return panel
 end
@@ -177,23 +196,23 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   })
 
   -- Auto repair.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.AUTO_REPAIR_TEXT,
     descriptionText = L.AUTO_REPAIR_TOOLTIP,
     get = function() return StateManager:GetProfileState().settings.autoRepair end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoRepair(value)) end
-  }))
+  })
 
   -- Auto sell.
-  container:AttachComponent(ComponentFactory:OptionRow({
+  addOption(container, {
     labelText = L.AUTO_SELL_TEXT,
     descriptionText = L.AUTO_SELL_TOOLTIP,
     get = function() return StateManager:GetProfileState().settings.autoSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoSell(value)) end
-  }))
+  })
 
   -- Include by quality.
-  addOption(container, function(parent)
+  addOptionButton(container, function(parent)
     local frame = Widgets:OptionButton({
       parent = parent,
       labelText = L.INCLUDE_BY_QUALITY_TEXT,
@@ -218,7 +237,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
       return StateManager:GetProfileState().settings.excludeAboveItemLevel.value
     end
 
-    addOption(container, function(parent)
+    addOptionButton(container, function(parent)
       local frame = Widgets:OptionButton({
         parent = parent,
         labelText = L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT,
@@ -266,7 +285,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
       return StateManager:GetProfileState().settings.includeBelowItemLevel.value
     end
 
-    addOption(container, function(parent)
+    addOptionButton(container, function(parent)
       local frame = Widgets:OptionButton({
         parent = parent,
         labelText = L.INCLUDE_BELOW_ITEM_LEVEL_TEXT,
@@ -307,7 +326,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   end
 
   -- Include unsuitable equipment.
-  addOption(container, function(parent)
+  addOptionButton(container, function(parent)
     local frame = Widgets:OptionButton({
       parent = parent,
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
@@ -326,16 +345,16 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
   -- Exclude equipment sets.
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
-    container:AttachComponent(ComponentFactory:OptionRow({
+    addOption(container, {
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       descriptionText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
       get = function() return StateManager:GetProfileState().settings.excludeEquipmentSets end,
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.setExcludeEquipmentSets(value)) end
-    }))
+    })
   end
 
   -- Exclude unbound equipment.
-  addOption(container, function(parent)
+  addOptionButton(container, function(parent)
     local frame = Widgets:OptionButton({
       parent = parent,
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
@@ -354,7 +373,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
   -- Exclude warband equipment.
   if Addon.IS_RETAIL then
-    addOption(container, function(parent)
+    addOptionButton(container, function(parent)
       local frame = Widgets:OptionButton({
         parent = parent,
         labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
@@ -374,12 +393,12 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
   -- Include artifact relics.
   if Addon.IS_RETAIL then
-    container:AttachComponent(ComponentFactory:OptionRow({
+    addOption(container, {
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       descriptionText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
       get = function() return StateManager:GetProfileState().settings.includeArtifactRelics end,
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeArtifactRelics(value)) end
-    }))
+    })
   end
 
   return panel
