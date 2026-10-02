@@ -3,11 +3,20 @@ local Addon = select(2, ...) ---@type Addon
 --- @class TickerManager
 local TickerManager = Addon:GetModule("TickerManager")
 
+--- Tickers moved into `activeTickers` at the start of the next `OnUpdate`.
+--- @type table<Ticker, boolean>
+local queuedTickers = {}
+
 --- @type table<Ticker, boolean>
 local activeTickers = {}
 
 -- Frame for updating active tickers.
 CreateFrame("Frame"):SetScript("OnUpdate", function(_, elapsed)
+  for ticker in pairs(queuedTickers) do
+    queuedTickers[ticker] = nil
+    activeTickers[ticker] = true
+  end
+
   for ticker in pairs(activeTickers) do ticker:OnUpdate(elapsed) end
 end)
 
@@ -18,7 +27,7 @@ end)
 --- @class Ticker
 --- @field package callback function
 --- @field package frame Region
---- @field package isActive boolean
+--- @field package isCancelled boolean
 --- @field package maxTicks number
 --- @field package ticks number
 --- @field package timePerTick number
@@ -30,20 +39,21 @@ Ticker.__index = Ticker
 function Ticker:Restart()
   self.timer = 0
   self.ticks = 0
-  self.isActive = true
-  activeTickers[self] = true
+  self.isCancelled = false
+  queuedTickers[self] = true
 end
 
 --- Deactivates the ticker.
 function Ticker:Cancel()
-  self.isActive = false
+  self.isCancelled = true
+  queuedTickers[self] = nil
   activeTickers[self] = nil
 end
 
---- Returns `true` if the ticker is not active.
+--- Returns `true` if the ticker is cancelled.
 --- @return boolean
 function Ticker:IsCancelled()
-  return not self.isActive
+  return self.isCancelled
 end
 
 --- Binds the ticker to `frame`: it only advances while `frame` is visible.
@@ -58,22 +68,28 @@ end
 --- Updates the ticker's timer and executes its callback as necessary.
 --- @param elapsed number The time since the last update
 function Ticker:OnUpdate(elapsed)
-  if not self.isActive then return end
+  if self.isCancelled then return end
 
   if self.frame and not self.frame:IsVisible() then
     self.timer = self.timePerTick
     return
   end
 
+  -- Only reached when the last tick's callback errored before cancelling.
   if self.maxTicks > 0 and self.ticks >= self.maxTicks then
     return self:Cancel()
   end
 
   self.timer = self.timer + elapsed
   if self.timer >= self.timePerTick then
+    -- Counted before the callback, so a `Restart()` inside it is kept.
     self.timer = 0
-    self.callback()
     self.ticks = self.ticks + 1
+    self.callback()
+
+    if self.maxTicks > 0 and self.ticks >= self.maxTicks then
+      self:Cancel()
+    end
   end
 end
 
@@ -90,15 +106,14 @@ end
 function TickerManager:NewTicker(seconds, callback, iterations)
   local ticker = setmetatable({
     callback = callback,
+    isCancelled = false,
     maxTicks = iterations or 0,
     ticks = 0,
     timePerTick = seconds,
     timer = 0
   }, Ticker)
 
-  -- Set active.
-  ticker.isActive = true
-  activeTickers[ticker] = true
+  queuedTickers[ticker] = true
 
   return ticker
 end
