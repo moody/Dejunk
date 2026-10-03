@@ -109,7 +109,15 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     descriptionText = L.BAG_ITEM_ICONS_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().itemIcons end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
-  })
+  }):AddSettingsBox():AddChoiceLine(
+    L.SIZE,
+    {
+      { value = "SMALL", text = L.SMALL },
+      { value = "LARGE", text = L.LARGE }
+    },
+    function() return StateManager:GetGlobalState().itemIconStyle end,
+    function(value) StateManager:Dispatch(ActionCreators.Global.setItemIconStyle(value)) end
+  )
 
   return panel
 end
