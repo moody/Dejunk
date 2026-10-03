@@ -9,7 +9,8 @@
 
 ### Changed
 
-- The main window now has a sidebar for switching between your lists, `Options (Global)`, and `Options (Profile)`. Each options page gets the whole window instead of sharing it with your lists, and starting a search takes you back to your lists.
+- The main window now has a sidebar for switching between your lists, `Options (Global)`, and `Options (Profile)`. Each options page gets the whole window instead of sharing it with your lists.
+- The lists search box now sits at the top of the lists, always visible, instead of opening in the title bar.
 - Each option shows a short description under its name, and clicking anywhere on an option turns it on or off.
 - Options with extra settings, such as an item level or item qualities, show them right under the option, faded while the option is off.
 - Item quality checkboxes are labeled with each quality's name.
