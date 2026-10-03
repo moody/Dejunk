@@ -16,6 +16,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field justifyV? "TOP" | "MIDDLE" | "BOTTOM" Defaults to `MIDDLE`.
 --- @field wordWrap? boolean Defaults to `true`.
 --- @field width? integer | "AUTO" `"AUTO"` fits the text on one line. Defaults to the available width.
+--- @field minHeight? integer Height the text is placed in, by `justifyV`, when it is shorter.
 
 -- =============================================================================
 -- ComponentFactory - Text
@@ -45,11 +46,11 @@ function ComponentFactory:Text(options)
     onMeasure = function(fontString, width)
       if not width then
         fontString:SetTextToFit(fontString:GetText())
-        return fontString:GetStringWidth(), fontString:GetStringHeight()
+        return fontString:GetStringWidth(), math.max(fontString:GetStringHeight(), options.minHeight or 0)
       end
 
       fontString:SetSize(width, 0)
-      return width, fontString:GetStringHeight()
+      return width, math.max(fontString:GetStringHeight(), options.minHeight or 0)
     end
   })
 end
