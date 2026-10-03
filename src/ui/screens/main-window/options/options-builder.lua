@@ -53,9 +53,10 @@ end
 --- @param labelText string
 --- @param equipmentTypes EquipmentType[]
 --- @param field "armor" | "weapons"
+--- @param columns integer
 --- @param getState fun(): EquipmentTypeOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
-local function addEquipmentTypesLine(box, labelText, equipmentTypes, field, getState, mergeAction)
+local function addEquipmentTypesLine(box, labelText, equipmentTypes, field, columns, getState, mergeAction)
   local chips = {}
 
   for _, equipmentType in ipairs(equipmentTypes) do
@@ -67,7 +68,7 @@ local function addEquipmentTypesLine(box, labelText, equipmentTypes, field, getS
     }
   end
 
-  box:AddLine(labelText):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
+  box:AddLine(labelText):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips, columns = columns }))
 end
 
 --- Adds an armor types line to the box for a setting's `armor` field.
@@ -75,7 +76,7 @@ end
 --- @param getState fun(): EquipmentTypeOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addArmorLine(self, getState, mergeAction)
-  addEquipmentTypesLine(self, L.ARMOR, EquipmentTypes:GetArmorTypes(), "armor", getState, mergeAction)
+  addEquipmentTypesLine(self, L.ARMOR, EquipmentTypes:GetArmorTypes(), "armor", 5, getState, mergeAction)
 end
 
 --- Adds a weapon types line to the box for a setting's `weapons` field.
@@ -83,7 +84,7 @@ end
 --- @param getState fun(): EquipmentTypeOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addWeaponsLine(self, getState, mergeAction)
-  addEquipmentTypesLine(self, L.WEAPONS, EquipmentTypes:GetWeaponTypes(), "weapons", getState, mergeAction)
+  addEquipmentTypesLine(self, L.WEAPONS, EquipmentTypes:GetWeaponTypes(), "weapons", 3, getState, mergeAction)
 end
 
 --- Adds a divider and a settings box to the card, below its description. The

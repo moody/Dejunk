@@ -41,5 +41,5 @@ function ComponentFactory:QualityToggles(options)
     }
   end
 
-  return ComponentFactory:CheckChipGroup({ chips = chips, justify = "SPACE_BETWEEN" })
+  return ComponentFactory:CheckChipGroup({ chips = chips, spread = true })
 end

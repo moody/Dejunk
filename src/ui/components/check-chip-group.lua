@@ -11,21 +11,24 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 
 --- @class CheckChipGroupComponentOptions
 --- @field chips CheckChipComponentOptions[] One `CheckChip` each, in order.
---- @field justify? WaffleFlexJustify Spreads each line's chips. Defaults to `START`.
+--- @field columns? integer Lays the chips out in this many equal-width columns. Cannot be used with `spread`.
+--- @field spread? boolean Keeps the chips on one line, spread across it. Cannot be used with `columns`.
 
 -- =============================================================================
 -- ComponentFactory - CheckChipGroup
 -- =============================================================================
 
---- Creates a dark strip of `CheckChip`s that wraps onto more lines as needed.
+--- Creates a dark strip of `CheckChip`s, sized to their labels and wrapping onto
+--- more lines as needed.
 --- @param options CheckChipGroupComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:CheckChipGroup(options)
   local root = Addon.Waffle:Flex({
     height = "AUTO",
-    wrap = true,
-    justify = options.justify or "START",
-    gap = Widgets:Padding(0.5),
+    wrap = not options.spread,
+    justify = options.spread and "SPACE_BETWEEN" or "START",
+    -- Columns already fill the line, so a gap would wrap the last one.
+    gap = options.columns and 0 or Widgets:Padding(0.5),
 
     frameFactory = function(parent)
       local frame = Widgets:Frame({ parent = parent })
@@ -35,8 +38,11 @@ function ComponentFactory:CheckChipGroup(options)
     end
   })
 
-  for _, chip in ipairs(options.chips) do
-    root:AttachComponent(ComponentFactory:CheckChip(chip))
+  local columnWidth = options.columns and ("%s%%"):format(100 / options.columns)
+
+  for _, chipOptions in ipairs(options.chips) do
+    local chip = root:AttachComponent(ComponentFactory:CheckChip(chipOptions))
+    if columnWidth then chip:SetWidth(columnWidth) end
   end
 
   return root
