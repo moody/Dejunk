@@ -29,7 +29,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Safe destroy.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.SAFE_DESTROY_TEXT,
-    descriptionText = L.SAFE_DESTROY_TOOLTIP,
+    descriptionText = L.SAFE_DESTROY_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().safeDestroy end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeDestroy(value)) end
   })
@@ -37,7 +37,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Safe sell.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.SAFE_SELL_TEXT,
-    descriptionText = L.SAFE_SELL_TOOLTIP,
+    descriptionText = L.SAFE_SELL_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().safeSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
   })
@@ -45,7 +45,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Merchant button.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.MERCHANT_BUTTON_TEXT,
-    descriptionText = L.MERCHANT_BUTTON_TOOLTIP,
+    descriptionText = L.MERCHANT_BUTTON_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().merchantButton end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setMerchantButton(value)) end,
     onRightClick = function()
@@ -60,7 +60,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Minimap icon.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.MINIMAP_ICON_TEXT,
-    descriptionText = L.MINIMAP_ICON_TOOLTIP,
+    descriptionText = L.MINIMAP_ICON_DESCRIPTION,
     get = function() return MinimapIcon:IsEnabled() end,
     set = function(value) MinimapIcon:SetEnabled(value) end
   })
@@ -68,7 +68,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Auto junk frame.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.AUTO_JUNK_FRAME_TEXT,
-    descriptionText = L.AUTO_JUNK_FRAME_TOOLTIP,
+    descriptionText = L.AUTO_JUNK_FRAME_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().autoJunkFrame end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoJunkFrame(value)) end
   })
@@ -76,7 +76,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Auto lootable frame.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.AUTO_LOOTABLE_FRAME_TEXT,
-    descriptionText = L.AUTO_LOOTABLE_FRAME_TOOLTIP,
+    descriptionText = L.AUTO_LOOTABLE_FRAME_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().autoLootableFrame end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
   })
@@ -84,7 +84,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Chat messages.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.CHAT_MESSAGES_TEXT,
-    descriptionText = L.CHAT_MESSAGES_TOOLTIP,
+    descriptionText = L.CHAT_MESSAGES_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().chatMessages end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
   })
@@ -92,7 +92,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Bag item tooltips.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
-    descriptionText = L.BAG_ITEM_TOOLTIPS_TOOLTIP,
+    descriptionText = L.BAG_ITEM_TOOLTIPS_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().itemTooltips end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemTooltips(value)) end
   })
@@ -100,7 +100,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Bag item icons.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.BAG_ITEM_ICONS_TEXT,
-    descriptionText = L.BAG_ITEM_ICONS_TOOLTIP,
+    descriptionText = L.BAG_ITEM_ICONS_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().itemIcons end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setItemIcons(value)) end
   })

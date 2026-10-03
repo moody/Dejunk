@@ -28,7 +28,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   -- Auto repair.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.AUTO_REPAIR_TEXT,
-    descriptionText = L.AUTO_REPAIR_TOOLTIP,
+    descriptionText = L.AUTO_REPAIR_DESCRIPTION,
     get = function() return StateManager:GetProfileState().settings.autoRepair end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoRepair(value)) end
   })
@@ -36,7 +36,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   -- Auto sell.
   OptionsBuilder:AddOptionCard(container, {
     labelText = L.AUTO_SELL_TEXT,
-    descriptionText = L.AUTO_SELL_TOOLTIP,
+    descriptionText = L.AUTO_SELL_DESCRIPTION,
     get = function() return StateManager:GetProfileState().settings.autoSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Profile.setAutoSell(value)) end
   })
@@ -48,7 +48,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
     local box = OptionsBuilder:AddOptionCard(container, {
       labelText = L.INCLUDE_BY_QUALITY_TEXT,
-      descriptionText = L.INCLUDE_BY_QUALITY_TOOLTIP,
+      descriptionText = L.INCLUDE_BY_QUALITY_DESCRIPTION,
       warningText = L.OPTION_WARNING_BE_CAREFUL,
       get = function() return getState().enabled end,
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
@@ -98,7 +98,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
     local box = OptionsBuilder:AddOptionCard(container, {
       labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
-      descriptionText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TOOLTIP,
+      descriptionText = L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION,
       ignoresSpecialEquipment = true,
       get = function() return getState().enabled end,
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
@@ -111,7 +111,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
     OptionsBuilder:AddOptionCard(container, {
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
-      descriptionText = L.EXCLUDE_EQUIPMENT_SETS_TOOLTIP,
+      descriptionText = L.EXCLUDE_EQUIPMENT_SETS_DESCRIPTION,
       get = function() return StateManager:GetProfileState().settings.excludeEquipmentSets end,
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.setExcludeEquipmentSets(value)) end
     })
@@ -124,7 +124,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
     local box = OptionsBuilder:AddOptionCard(container, {
       labelText = L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT,
-      descriptionText = L.EXCLUDE_UNBOUND_EQUIPMENT_TOOLTIP,
+      descriptionText = L.EXCLUDE_UNBOUND_EQUIPMENT_DESCRIPTION,
       ignoresSpecialEquipment = true,
       get = function() return getState().enabled end,
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
@@ -140,7 +140,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
     local box = OptionsBuilder:AddOptionCard(container, {
       labelText = L.EXCLUDE_WARBAND_EQUIPMENT_TEXT,
-      descriptionText = L.EXCLUDE_WARBAND_EQUIPMENT_TOOLTIP,
+      descriptionText = L.EXCLUDE_WARBAND_EQUIPMENT_DESCRIPTION,
       ignoresSpecialEquipment = true,
       get = function() return getState().enabled end,
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
@@ -153,7 +153,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   if Addon.IS_RETAIL then
     OptionsBuilder:AddOptionCard(container, {
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
-      descriptionText = L.INCLUDE_ARTIFACT_RELICS_TOOLTIP,
+      descriptionText = L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION,
       get = function() return StateManager:GetProfileState().settings.includeArtifactRelics end,
       set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeArtifactRelics(value)) end
     })
