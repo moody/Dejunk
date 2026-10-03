@@ -7,9 +7,6 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
-local HEIGHT = 24
-local CHECK_BOX_SIZE = 12
-
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
@@ -29,37 +26,30 @@ local CHECK_BOX_SIZE = 12
 --- @param options CheckChipComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:CheckChip(options)
-  return Addon.Waffle:Flex({
+  local chip
+  local isHovered = false
+
+  --- Applies hover and checked colors to the chip and its label.
+  local function refresh()
+    local frame, label = chip:GetFrame(), chip.Label:GetFrame()
+    if frame then frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0)) end
+    if label then label:SetTextColor(((isHovered or options.get()) and Colors.White or Colors.Grey):GetRGB()) end
+  end
+
+  --- @class CheckChipComponent : WaffleFlexComponent
+  chip = Addon.Waffle:Flex({
     width = "AUTO",
-    height = HEIGHT,
+    height = 24,
+    align = "CENTER",
+    paddingLeft = Widgets:Padding(),
+    paddingRight = Widgets:Padding(),
+    gap = Widgets:Padding(0.5),
 
     --- @param parent Frame
     frameFactory = function(parent)
       --- @class CheckChipWidget : FrameWidget, Button
       local frame = Widgets:Frame({ parent = parent, frameType = "Button" })
       frame:SetBackdropBorderColor(0, 0, 0, 0)
-      local isHovered = false
-
-      local checkBox = Widgets:CheckBox({
-        parent = frame,
-        points = { { "LEFT", Widgets:Padding(0.75), 0 } },
-        width = CHECK_BOX_SIZE,
-        height = CHECK_BOX_SIZE,
-        color = options.color,
-        get = options.get,
-        set = options.set
-      })
-      checkBox:EnableMouse(false)
-
-      frame.label = frame:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-      frame.label:SetPoint("LEFT", checkBox, "RIGHT", Widgets:Padding(0.5), 0)
-      frame.label:SetText(options.text)
-
-      local function refresh()
-        frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0))
-        local isLit = isHovered or options.get()
-        frame.label:SetTextColor((isLit and Colors.White or Colors.Grey):GetRGB())
-      end
 
       frame:SetScript("OnClick", function() options.set(not options.get()) end)
       frame:SetScript("OnEnter", function()
@@ -71,16 +61,37 @@ function ComponentFactory:CheckChip(options)
         refresh()
       end)
 
-      refresh()
       EventManager:On(E.StateUpdated, refresh)
 
       return frame
-    end,
-
-    --- @param frame CheckChipWidget
-    onMeasure = function(frame)
-      local padding = Widgets:Padding(0.75)
-      return padding + CHECK_BOX_SIZE + Widgets:Padding(0.5) + frame.label:GetStringWidth() + padding, HEIGHT
     end
   })
+
+  -- Checkbox.
+  chip:AddChild({
+    width = 12,
+    height = 12,
+    shrink = 0,
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local checkBox = Widgets:CheckBox({
+        parent = parent,
+        color = options.color,
+        get = options.get,
+        set = options.set
+      })
+      checkBox:EnableMouse(false)
+      return checkBox
+    end
+  })
+
+  chip.Label = chip:AttachComponent(ComponentFactory:Text({
+    width = "AUTO",
+    text = options.text,
+    fontObject = "GameFontNormalSmall"
+  }))
+  chip.Label:WhenFrameReady(refresh)
+
+  return chip
 end
