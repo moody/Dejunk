@@ -101,6 +101,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
   { action = ActionCreators.Global.setChatMessages(false), path = "global.chatMessages", expected = false },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
+  { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },
   { action = ActionCreators.Global.setMerchantButton(false), path = "global.merchantButton", expected = false },
   { action = ActionCreators.Global.setSafeDestroy(false), path = "global.safeDestroy", expected = false },

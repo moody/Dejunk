@@ -43,6 +43,9 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field armor table<integer, boolean> Selected armor subclasses.
 --- @field weapons table<integer, boolean> Selected weapon subclasses.
 
+--- Small icons sit in a slot's corner; large icons fill it over a darker background.
+--- @alias ItemIconStyle "SMALL" | "LARGE"
+
 -- ============================================================================
 -- DefaultStates - Global
 -- ============================================================================
@@ -54,6 +57,8 @@ DefaultStates.Global = {
   autoLootableFrame = false,
   chatMessages = true,
   itemIcons = false,
+  --- @type ItemIconStyle
+  itemIconStyle = "SMALL",
   itemTooltips = true,
   merchantButton = true,
   minimapIcon = { hide = false },

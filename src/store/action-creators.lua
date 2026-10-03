@@ -48,6 +48,10 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setItemIcons = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_ICONS),
 
+  --- Action creator for `ActionTypes.Global.SET_ITEM_ICON_STYLE`.
+  --- @type WuxActionCreator<ItemIconStyle>
+  setItemIconStyle = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_ICON_STYLE),
+
   --- Action creator for `ActionTypes.Global.SET_ITEM_TOOLTIPS`.
   --- @type WuxActionCreator<boolean>
   setItemTooltips = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_TOOLTIPS),

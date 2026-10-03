@@ -80,6 +80,7 @@ function RootReducer:Build()
       autoLootableFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME, DefaultStates.Global.autoLootableFrame),
       chatMessages = Wux:CreatePayloadReducer(ActionTypes.Global.SET_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
       itemIcons = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICONS, DefaultStates.Global.itemIcons),
+      itemIconStyle = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICON_STYLE, DefaultStates.Global.itemIconStyle),
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
       merchantButton = Wux:CreatePayloadReducer(ActionTypes.Global.SET_MERCHANT_BUTTON, DefaultStates.Global.merchantButton),
       minimapIcon = Wux:CreatePatchReducer(ActionTypes.Global.PATCH_MINIMAP_ICON, DefaultStates.Global.minimapIcon),
