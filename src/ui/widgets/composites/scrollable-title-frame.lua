@@ -25,8 +25,14 @@ function Widgets:ScrollableTitleFrame(options)
   --- @class ScrollableTitleFrameWidget : TitleFrameWidget
   local frame = self:TitleFrame(options)
 
-  -- Scroll frame.
-  frame.scrollFrame = CreateFrame("ScrollFrame", "$parent_ScrollFrame", frame)
+  --- Scroll frame.
+  --- @type FrameWidget | ScrollFrame
+  frame.scrollFrame = self:Frame({
+    name = "$parent_ScrollFrame",
+    frameType = "ScrollFrame",
+    parent = frame,
+    backdrop = false
+  })
   frame.scrollFrame:SetPoint("TOPLEFT", frame.titleButton, "BOTTOMLEFT", SPACING, -SPACING)
 
   -- Slider.

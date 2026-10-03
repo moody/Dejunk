@@ -49,8 +49,15 @@ function Widgets:TextFrame(options)
     end
   end)
 
-  -- Edit box.
-  frame.editBox = CreateFrame("EditBox", "$parent_EditBox", frame.scrollFrame)
+  --- Edit box.
+  --- @type FrameWidget | EditBox
+  frame.editBox = Widgets:Frame({
+    name = "$parent_EditBox",
+    frameType = "EditBox",
+    parent = frame.scrollFrame,
+    backdrop = false,
+    clipChildren = false
+  })
   frame.editBox:SetFontObject("GameFontNormal")
   frame.editBox:SetTextColor(1, 1, 1)
   frame.editBox:SetAutoFocus(false)

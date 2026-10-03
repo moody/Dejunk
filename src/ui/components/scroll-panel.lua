@@ -19,8 +19,8 @@ function ComponentFactory:ScrollPanel()
   -- Frames
   ------------------------------------------------------------
 
-  local scrollFrame = CreateFrame("ScrollFrame")
-  local scrollChild = CreateFrame("Frame", nil, scrollFrame)
+  local scrollFrame = Widgets:Frame({ frameType = "ScrollFrame", backdrop = false })
+  local scrollChild = Widgets:Frame({ parent = scrollFrame, backdrop = false, clipChildren = false })
   scrollFrame:SetScrollChild(scrollChild)
   scrollFrame:Hide()
 
@@ -44,7 +44,7 @@ function ComponentFactory:ScrollPanel()
 
   --- Creates a plain frame for children with no frameFactory of their own.
   local function defaultFrameFactory(parent)
-    return CreateFrame("Frame", nil, parent)
+    return Widgets:Frame({ parent = parent, backdrop = false, clipChildren = false })
   end
 
   ------------------------------------------------------------

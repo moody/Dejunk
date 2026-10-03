@@ -29,7 +29,7 @@ function ComponentFactory:TitledPanel(options)
     direction = "COLUMN",
 
     defaultFrameFactory = function(parent)
-      return CreateFrame("Frame", nil, parent)
+      return Widgets:Frame({ parent = parent, backdrop = false, clipChildren = false })
     end,
 
     frameFactory = function(parent)

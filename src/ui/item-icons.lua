@@ -5,6 +5,7 @@ local EventManager = Addon:GetModule("EventManager")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
+local Widgets = Addon:GetModule("Widgets")
 
 --- @class ItemIcons
 --- @field total integer
@@ -38,8 +39,11 @@ local function getItemIcon(style)
   else
     itemIcons.total = itemIcons.total + 1
 
-    --- @class ItemIcon : Frame
-    itemIcon = CreateFrame("Frame", ADDON_NAME .. "_ItemIcon" .. itemIcons.total)
+    --- @class ItemIcon : FrameWidget
+    itemIcon = Widgets:Frame({
+      name = ADDON_NAME .. "_ItemIcon" .. itemIcons.total,
+      backdrop = false
+    })
 
     -- Background texture.
     itemIcon.background = itemIcon:CreateTexture("$parent_BackgroundTexture", "BACKGROUND")

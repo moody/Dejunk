@@ -165,8 +165,12 @@ Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ visibility = "G
 Components.TitleBarSearchRow:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
-    --- @class MainWindowSearchBoxWidget : EditBox
-    local searchBox = CreateFrame("EditBox", "$parent_SearchBox", parent)
+    --- @class MainWindowSearchBoxWidget : FrameWidget, EditBox
+    local searchBox = Widgets:Frame({
+      name = "$parent_SearchBox",
+      frameType = "EditBox",
+      parent = parent
+    })
     searchBox:SetFontObject("GameFontNormalLarge")
     searchBox:SetTextColor(1, 1, 1)
     searchBox:SetAutoFocus(false)
@@ -175,8 +179,6 @@ Components.TitleBarSearchRow:AddChild({
     searchBox:Hide()
 
     -- Search box backdrop.
-    Mixin(searchBox, BackdropTemplateMixin)
-    searchBox:SetBackdrop(Widgets.BORDER_BACKDROP)
     searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
     searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
 

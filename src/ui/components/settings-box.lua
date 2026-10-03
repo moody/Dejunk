@@ -33,7 +33,7 @@ function ComponentFactory:SettingsBox(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      local frame = CreateFrame("Frame", nil, parent)
+      local frame = Widgets:Frame({ parent = parent, backdrop = false })
 
       if options and options.isEnabled then
         local function refresh() frame:SetAlpha(options.isEnabled() and 1 or 0.5) end
