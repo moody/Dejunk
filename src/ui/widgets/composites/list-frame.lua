@@ -13,7 +13,7 @@ local Widgets = Addon:GetModule("Widgets")
 
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
 --- @field list List
---- @field getListSearchState fun(): ListSearchState
+--- @field getSearchText fun(): string Returns the text the list is filtered by. Shows every item when empty.
 --- @field getItems nil
 --- @field addItem nil
 --- @field removeAllItems nil
@@ -74,9 +74,9 @@ function Widgets:ListFrame(options)
   end
 
   function options.getItems()
-    local searchState = options.getListSearchState()
-    if searchState.isSearching and searchState.searchText ~= "" then
-      return options.list:GetSearchItems(searchState.searchText)
+    local searchText = options.getSearchText()
+    if searchText ~= "" then
+      return options.list:GetSearchItems(searchText)
     end
 
     return options.list:GetItems()

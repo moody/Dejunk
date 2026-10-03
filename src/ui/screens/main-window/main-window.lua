@@ -33,19 +33,14 @@ local Controller = {
   --- @type WaffleFlexComponent?
   currentScreen = nil,
 
-  --- @class ListSearchState
-  listSearchState = {
-    isSearching = false,
-    searchText = ""
-  }
+  --- Text the lists are filtered by.
+  searchText = ""
 }
 
 --- Selects the given sidebar row and shows its screen, hiding the previous one.
---- Leaving the lists ends any search.
 --- @param row SelectableRowComponent
 --- @param screen WaffleFlexComponent
 function Controller:ShowScreen(row, screen)
-  if screen ~= Components.ListsScreen then self:StopSearching() end
   if self.selectedRow then self.selectedRow:SetSelected(false) end
   row:SetSelected(true)
   self.selectedRow = row
@@ -54,43 +49,6 @@ function Controller:ShowScreen(row, screen)
   if self.currentScreen then self.currentScreen:SetVisibility("GONE") end
   screen:SetVisibility("VISIBLE")
   self.currentScreen = screen
-end
-
-function Controller:GetListSearchState()
-  return self.listSearchState
-end
-
-function Controller:StartSearching()
-  self:ShowScreen(Components.ListsRow, Components.ListsScreen)
-  self.listSearchState.isSearching = true
-  self.listSearchState.searchText = ""
-  Components.TitleBarNameText:SetVisibility("GONE")
-  Components.TitleBarVersionText:SetVisibility("GONE")
-  Components.TitleBarSearchRow:SetVisibility("VISIBLE")
-  Components.TitleBarButtonsRow:SetWidth("AUTO")
-  if Components.TitleBarSearchButton:GetFrame() then
-    Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("ban-icon"))
-  end
-end
-
-function Controller:StopSearching()
-  self.listSearchState.isSearching = false
-  self.listSearchState.searchText = ""
-  Components.TitleBarNameText:SetVisibility("VISIBLE")
-  Components.TitleBarVersionText:SetVisibility("VISIBLE")
-  Components.TitleBarSearchRow:SetVisibility("GONE")
-  Components.TitleBarButtonsRow:SetWidth(nil)
-  if Components.TitleBarSearchButton:GetFrame() then
-    Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("search-icon"))
-  end
-end
-
-function Controller:ToggleSearching()
-  if not self.listSearchState.isSearching then
-    self:StartSearching()
-  else
-    self:StopSearching()
-  end
 end
 
 function Controller:OpenKeybindings()
@@ -124,9 +82,12 @@ Components.Root = ComponentFactory:Window({
   refresh = function() Components.Root:Layout() end
 })
 
--- Stop searching whenever the window hides.
+-- Clear the search whenever the window hides.
 Components.Root:WhenFrameReady(function(frame)
-  frame:HookScript("OnHide", function() Controller:StopSearching() end)
+  frame:HookScript("OnHide", function()
+    local searchBox = Components.SearchBox:GetFrame()
+    if searchBox then searchBox:SetText("") end
+  end)
 end)
 
 -- Window()'s generic title text goes unused in favor of the title bar below.
@@ -137,10 +98,7 @@ Components.Root.TitleText = nil
 -- Title Bar Components
 -- ============================================================================
 
--- Padding moves to `TitleBarNameText` so `TitleBarSearchRow` sits flush left.
-Components.Root.TitleRow:SetPaddingLeft(nil)
-
-Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ paddingLeft = Widgets:Padding() })
+Components.TitleBarNameText = Components.Root.TitleRow:AddRow()
 Components.TitleBarNameText:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -161,82 +119,11 @@ Components.TitleBarVersionText:AddChild({
   end
 })
 
-Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ visibility = "GONE" })
-Components.TitleBarSearchRow:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    --- @class MainWindowSearchBoxWidget : FrameWidget, EditBox
-    local searchBox = Widgets:Frame({
-      name = "$parent_SearchBox",
-      frameType = "EditBox",
-      parent = parent
-    })
-    searchBox:SetFontObject("GameFontNormalLarge")
-    searchBox:SetTextColor(1, 1, 1)
-    searchBox:SetAutoFocus(false)
-    searchBox:SetMultiLine(false)
-    searchBox:SetCountInvisibleLetters(true)
-    searchBox:Hide()
-
-    -- Search box backdrop.
-    searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
-    searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-
-    -- Search box text inset.
-    local searchBoxTextInset = Widgets:Padding()
-    searchBox:SetTextInsets(searchBoxTextInset, searchBoxTextInset, 0, 0)
-
-    -- Search box placeholder text.
-    searchBox.placeholderText = searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
-      "GameFontNormalLarge")
-    searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
-    searchBox.placeholderText:SetPoint("LEFT", searchBoxTextInset, 0)
-    searchBox.placeholderText:SetPoint("RIGHT", -searchBoxTextInset, 0)
-    searchBox.placeholderText:SetJustifyH("LEFT")
-    searchBox.placeholderText:SetAlpha(0.5)
-
-    searchBox:SetScript("OnEscapePressed", function() Controller:StopSearching() end)
-    searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    searchBox:SetScript("OnTextChanged", function(self)
-      Controller.listSearchState.searchText = self:GetText()
-      if Controller.listSearchState.searchText == "" then
-        self.placeholderText:Show()
-      else
-        self.placeholderText:Hide()
-      end
-    end)
-    searchBox:SetScript("OnShow", function(self)
-      searchBox:SetText("")
-      searchBox:SetFocus()
-    end)
-    searchBox:SetScript("OnHide", function(self)
-      searchBox:SetText("")
-      searchBox:ClearFocus()
-    end)
-
-    return searchBox
-  end
-})
-
 -- ============================================================================
 -- Title Bar Button Components
 -- ============================================================================
 
 Components.TitleBarButtonsRow = Components.Root.TitleRow:AddRow({ justify = "END" })
-
--- Search button.
-Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AttachComponent(
-  ComponentFactory:WindowTitleButton({
-    name = "$parent_SearchButton",
-    texture = Addon:GetAsset("search-icon"),
-    textureSize = 16,
-    highlightColor = Colors.Pink,
-    onClick = function() Controller:ToggleSearching() end,
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(Controller.listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
-    end
-  })
-)
 
 -- Keybinds button.
 Components.TitleBarButtonsRow:AttachComponent(
@@ -280,6 +167,112 @@ local contentArea = Components.MainScreenRow:AddColumn()
 
 Components.ListsScreen = contentArea:AddColumn({ gap = Widgets:Padding(0.5), visibility = "GONE" })
 
+-- Search box.
+Components.SearchBox = Components.ListsScreen:AddChild({
+  height = "AUTO",
+
+  --- @param parent Frame
+  frameFactory = function(parent)
+    --- @class MainWindowSearchBoxWidget : FrameWidget, EditBox
+    local searchBox = Widgets:Frame({
+      name = "$parent_SearchBox",
+      frameType = "EditBox",
+      parent = parent
+    })
+    searchBox:SetBackdropColor(Colors.Black:GetRGBA(0.4))
+    searchBox:SetFontObject("GameFontNormal")
+    searchBox:SetTextColor(Colors.White:GetRGB())
+    searchBox:SetAutoFocus(false)
+    searchBox:SetMultiLine(false)
+    searchBox:SetCountInvisibleLetters(true)
+
+    -- Text inset, leaving room for the button.
+    local textInset = Widgets:Padding()
+    local buttonWidth = 46
+    searchBox:SetTextInsets(textInset, buttonWidth, 0, 0)
+
+    -- Placeholder text.
+    searchBox.placeholderText = searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK", "GameFontNormal")
+    searchBox.placeholderText:SetText(L.SEARCH_LISTS)
+    searchBox.placeholderText:SetTextColor(Colors.Grey:GetRGB())
+    searchBox.placeholderText:SetPoint("LEFT", textInset, 0)
+    searchBox.placeholderText:SetPoint("RIGHT", -buttonWidth, 0)
+    searchBox.placeholderText:SetJustifyH("LEFT")
+
+    -- Button: focuses the empty box, or clears it once there is text.
+    local button = Widgets:Frame({
+      parent = searchBox,
+      frameType = "Button",
+      width = buttonWidth,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(searchBox:GetText() == "" and L.SEARCH_LISTS or L.CLEAR_SEARCH)
+      end
+    })
+    button:SetPoint("TOPRIGHT")
+    button:SetPoint("BOTTOMRIGHT")
+    button:SetBackdropColor(0, 0, 0, 0)
+    button:SetBackdropBorderColor(0, 0, 0, 0)
+
+    button.texture = button:CreateTexture("$parent_Texture", "ARTWORK")
+    button.texture:SetTexture(Addon:GetAsset("search-icon"))
+    button.texture:SetSize(14, 14)
+    button.texture:SetPoint("CENTER")
+
+    --- Brightens the border while hovered or focused.
+    local function refreshBorder()
+      if searchBox:HasFocus() then
+        searchBox:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
+      else
+        searchBox:SetBackdropBorderColor(Colors.White:GetRGBA(searchBox:IsMouseOver() and 0.4 or 0.15))
+      end
+    end
+
+    --- Brightens the icon and fills the button while hovered.
+    local function refreshButton()
+      local isHovered = button:IsMouseOver()
+      button.texture:SetAlpha(isHovered and 1 or 0.6)
+      button:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0))
+    end
+
+    refreshBorder()
+    refreshButton()
+
+    button:HookScript("OnEnter", function() refreshButton() refreshBorder() end)
+    button:HookScript("OnLeave", function() refreshButton() refreshBorder() end)
+    button:SetScript("OnClick", function()
+      if searchBox:GetText() ~= "" then searchBox:SetText("") end
+      searchBox:SetFocus()
+    end)
+
+    searchBox:SetScript("OnEnter", refreshBorder)
+    searchBox:SetScript("OnLeave", refreshBorder)
+    searchBox:SetScript("OnEditFocusGained", refreshBorder)
+    searchBox:SetScript("OnEditFocusLost", refreshBorder)
+    searchBox:SetScript("OnEscapePressed", function(self)
+      self:SetText("")
+      self:ClearFocus()
+    end)
+    searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
+    searchBox:SetScript("OnTextChanged", function(self)
+      Controller.searchText = self:GetText()
+      self.placeholderText:SetShown(Controller.searchText == "")
+      button.texture:SetTexture(Addon:GetAsset(Controller.searchText == "" and "search-icon" or "ban-icon"))
+    end)
+
+    return searchBox
+  end,
+
+  --- @param searchBox MainWindowSearchBoxWidget
+  --- @param width number
+  onMeasure = function(searchBox, width)
+    local _, fontHeight = searchBox:GetFont()
+    return width, fontHeight + Widgets:Padding(2)
+  end
+})
+
+-- Divider below the search box.
+Components.ListsScreen:AttachComponent(ComponentFactory:Divider())
+
 -- Global lists row.
 Components.ListsScreen:AddRow({
   gap = Widgets:Padding(0.5),
@@ -291,7 +284,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_GlobalInclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.GlobalInclusions,
-          getListSearchState = function() return Controller:GetListSearchState() end
+          getSearchText = function() return Controller.searchText end
         })
       end
     },
@@ -302,7 +295,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_GlobalExclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.GlobalExclusions,
-          getListSearchState = function() return Controller:GetListSearchState() end
+          getSearchText = function() return Controller.searchText end
         })
       end
     }
@@ -320,7 +313,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_ProfileInclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.ProfileInclusions,
-          getListSearchState = function() return Controller:GetListSearchState() end
+          getSearchText = function() return Controller.searchText end
         })
       end
     },
@@ -331,7 +324,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_ProfileExclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.ProfileExclusions,
-          getListSearchState = function() return Controller:GetListSearchState() end
+          getSearchText = function() return Controller.searchText end
         })
       end
     }
