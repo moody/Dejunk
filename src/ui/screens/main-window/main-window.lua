@@ -84,10 +84,7 @@ Components.Root = ComponentFactory:Window({
 
 -- Clear the search whenever the window hides.
 Components.Root:WhenFrameReady(function(frame)
-  frame:HookScript("OnHide", function()
-    local searchBox = Components.SearchBox:GetFrame()
-    if searchBox then searchBox:SetText("") end
-  end)
+  frame:HookScript("OnHide", function() Components.SearchBox:SetText("") end)
 end)
 
 -- Window()'s generic title text goes unused in favor of the title bar below.
@@ -168,110 +165,40 @@ local contentArea = Components.MainScreenRow:AddColumn()
 Components.ListsScreen = contentArea:AddColumn({ gap = Widgets:Padding(0.5), visibility = "GONE" })
 
 -- Search box.
-Components.SearchBox = Components.ListsScreen:AddChild({
-  height = "AUTO",
-
-  --- @param parent Frame
-  frameFactory = function(parent)
-    --- @class MainWindowSearchBoxWidget : FrameWidget, EditBox
-    local searchBox = Widgets:Frame({
-      name = "$parent_SearchBox",
-      frameType = "EditBox",
-      parent = parent
-    })
-    searchBox:SetBackdropColor(Colors.Black:GetRGBA(0.4))
-    searchBox:SetFontObject("GameFontNormal")
-    searchBox:SetTextColor(Colors.White:GetRGB())
-    searchBox:SetAutoFocus(false)
-    searchBox:SetMultiLine(false)
-    searchBox:SetCountInvisibleLetters(true)
-
-    -- Text inset, leaving room for the button.
-    local textInset = Widgets:Padding()
-    local buttonWidth = 46
-    searchBox:SetTextInsets(textInset, buttonWidth, 0, 0)
-
-    -- Placeholder text.
-    searchBox.placeholderText = searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK", "GameFontNormal")
-    searchBox.placeholderText:SetText(L.SEARCH_LISTS)
-    searchBox.placeholderText:SetTextColor(Colors.Grey:GetRGB())
-    searchBox.placeholderText:SetPoint("LEFT", textInset, 0)
-    searchBox.placeholderText:SetPoint("RIGHT", -buttonWidth, 0)
-    searchBox.placeholderText:SetJustifyH("LEFT")
-
-    -- Button: focuses the empty box, or clears it once there is text.
-    local button = Widgets:Frame({
-      parent = searchBox,
-      frameType = "Button",
-      width = buttonWidth,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(searchBox:GetText() == "" and L.SEARCH_LISTS or L.CLEAR_SEARCH)
-      end
-    })
-    button:SetPoint("TOPRIGHT")
-    button:SetPoint("BOTTOMRIGHT")
-    button:SetBackdropColor(0, 0, 0, 0)
-    button:SetBackdropBorderColor(0, 0, 0, 0)
-
-    button.texture = button:CreateTexture("$parent_Texture", "ARTWORK")
-    button.texture:SetTexture(Addon:GetAsset("search-icon"))
-    button.texture:SetSize(14, 14)
-    button.texture:SetPoint("CENTER")
-
-    --- Brightens the border while hovered or focused.
-    local function refreshBorder()
-      if searchBox:HasFocus() then
-        searchBox:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
-      else
-        searchBox:SetBackdropBorderColor(Colors.White:GetRGBA(searchBox:IsMouseOver() and 0.4 or 0.15))
-      end
-    end
-
-    --- Brightens the icon and fills the button while hovered.
-    local function refreshButton()
-      local isHovered = button:IsMouseOver()
-      button.texture:SetAlpha(isHovered and 1 or 0.6)
-      button:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0))
-    end
-
-    refreshBorder()
-    refreshButton()
-
-    button:HookScript("OnEnter", function() refreshButton() refreshBorder() end)
-    button:HookScript("OnLeave", function() refreshButton() refreshBorder() end)
-    button:SetScript("OnClick", function()
-      if searchBox:GetText() ~= "" then searchBox:SetText("") end
-      searchBox:SetFocus()
-    end)
-
-    searchBox:SetScript("OnEnter", refreshBorder)
-    searchBox:SetScript("OnLeave", refreshBorder)
-    searchBox:SetScript("OnEditFocusGained", refreshBorder)
-    searchBox:SetScript("OnEditFocusLost", refreshBorder)
-    searchBox:SetScript("OnEscapePressed", function(self)
-      self:SetText("")
-      self:ClearFocus()
-    end)
-    searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    searchBox:SetScript("OnTextChanged", function(self)
-      Controller.searchText = self:GetText()
-      self.placeholderText:SetShown(Controller.searchText == "")
-      button.texture:SetTexture(Addon:GetAsset(Controller.searchText == "" and "search-icon" or "ban-icon"))
-    end)
-
-    return searchBox
-  end,
-
-  --- @param searchBox MainWindowSearchBoxWidget
-  --- @param width number
-  onMeasure = function(searchBox, width)
-    local _, fontHeight = searchBox:GetFont()
-    return width, fontHeight + Widgets:Padding(2)
+Components.SearchBox = Components.ListsScreen:AttachComponent(ComponentFactory:TextInput({
+  placeholderText = L.SEARCH_LISTS,
+  fontObject = "GameFontNormal",
+  onTextChanged = function(text)
+    Controller.searchText = text
+    Components.SearchButton:SetTexture(Addon:GetAsset(text == "" and "search-icon" or "ban-icon"))
   end
-})
+}))
+
+-- Escape clears the search.
+Components.SearchBox.Input:WhenFrameReady(function(editBox)
+  editBox:SetScript("OnEscapePressed", function(self)
+    self:SetText("")
+    self:ClearFocus()
+  end)
+end)
+
+-- Search button: clears the search and the focus. Does nothing while the box is empty.
+Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:WindowTitleButton({
+  texture = Addon:GetAsset("search-icon"),
+  highlightColor = Colors.Blue,
+  onClick = function()
+    if Components.SearchBox:GetText() == "" then return end
+    Components.SearchBox:SetText("")
+    Components.SearchBox.Input:GetFrame():ClearFocus()
+  end,
+  onUpdateTooltip = function(_, tooltip)
+    if Components.SearchBox:GetText() == "" then return end
+    tooltip:SetText(L.CLEAR_SEARCH)
+  end
+}))
 
 -- Divider below the search box.
-Components.ListsScreen:AttachComponent(ComponentFactory:Divider())
+Components.ListsScreen:AttachComponent(ComponentFactory:Divider()):SetMarginTop(Widgets:Padding(0.25))
 
 -- Global lists row.
 Components.ListsScreen:AddRow({
