@@ -1,7 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
-local Widgets = Addon:GetModule("Widgets")
 
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -26,31 +25,21 @@ local QUALITIES = {
 -- ComponentFactory - QualityToggles
 -- =============================================================================
 
---- Creates a dark strip with a `CheckChip` per item quality, colored to match.
+--- Creates a `CheckChipGroup` with a chip per item quality, colored to match.
 --- @param options QualityTogglesComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:QualityToggles(options)
-  local root = Addon.Waffle:Flex({
-    height = "AUTO",
-    justify = "SPACE_BETWEEN",
-    gap = Widgets:Padding(0.5),
-
-    frameFactory = function(parent)
-      local frame = Widgets:Frame({ parent = parent })
-      frame:SetBackdropColor(Colors.Black:GetRGBA(0.35))
-      frame:SetBackdropBorderColor(0, 0, 0, 0)
-      return frame
-    end
-  })
+  --- @type CheckChipComponentOptions[]
+  local chips = {}
 
   for _, quality in ipairs(QUALITIES) do
-    root:AttachComponent(ComponentFactory:CheckChip({
+    chips[#chips + 1] = {
       text = quality.text,
       color = quality.color,
       get = function() return options.get(quality.key) end,
       set = function(value) options.set(quality.key, value) end
-    }))
+    }
   end
 
-  return root
+  return ComponentFactory:CheckChipGroup({ chips = chips, justify = "SPACE_BETWEEN" })
 end

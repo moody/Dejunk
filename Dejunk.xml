@@ -69,6 +69,7 @@
   <Script file="src\ui\tooltip.lua"/>
 
   <!-- UI Components -->
+  <Script file="src\ui\components\check-chip-group.lua"/>
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
