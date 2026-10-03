@@ -24,9 +24,13 @@ local junkItems = {}
 -- Local Functions
 -- ============================================================================
 
+--- Small icons sit in a slot's corner; large icons fill it over a darker background.
+--- @alias ItemIconStyle "SMALL" | "LARGE"
+
 --- Retrieves an icon from the inactive pool or creates a new one.
+--- @param style ItemIconStyle
 --- @return ItemIcon
-local function getItemIcon()
+local function getItemIcon(style)
   local itemIcon = next(itemIcons.inactive)
 
   if itemIcon then
@@ -40,17 +44,23 @@ local function getItemIcon()
     -- Background texture.
     itemIcon.background = itemIcon:CreateTexture("$parent_BackgroundTexture", "BACKGROUND")
     itemIcon.background:SetAllPoints()
-    itemIcon.background:SetColorTexture(0, 0, 0, 0.3)
 
     -- Overlay texture.
     itemIcon.overlay = itemIcon:CreateTexture("$parent_OverlayTexture", "OVERLAY")
     itemIcon.overlay:SetTexture(Addon:GetAsset("dejunk-icon"))
+  end
+
+  local isLarge = style == "LARGE"
+  itemIcon.background:SetColorTexture(0, 0, 0, isLarge and 0.75 or 0.3)
+  itemIcon.overlay:ClearAllPoints()
+  if isLarge then
+    itemIcon.overlay:SetAllPoints()
+  else
     itemIcon.overlay:SetPoint("TOPLEFT")
     itemIcon.overlay:SetSize(24, 24)
   end
 
   itemIcons.active[itemIcon] = true
-
   return itemIcon
 end
 
@@ -67,7 +77,8 @@ end
 --- Refreshes bag item icons based on item junk status.
 local function refreshIcons()
   for icon in pairs(itemIcons.active) do releaseItemIcon(icon) end
-  if not StateManager:GetGlobalState().itemIcons then return end
+  local globalState = StateManager:GetGlobalState()
+  if not globalState.itemIcons then return end
 
   JunkFilter:GetJunkItems(junkItems)
 
@@ -79,7 +90,7 @@ local function refreshIcons()
         if searchText == "" then
           local frame = plugin.getBagSlotFrame(item.bag, item.slot)
           if frame then
-            local itemIcon = getItemIcon()
+            local itemIcon = getItemIcon(globalState.itemIconStyle)
             itemIcon:SetParent(frame)
             itemIcon:SetAllPoints()
             itemIcon:Show()
