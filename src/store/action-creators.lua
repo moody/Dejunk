@@ -186,6 +186,10 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL),
 
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeByEquipmentType = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE),
+
   --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS`.
   --- @type WuxActionCreator<boolean>
   setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS),

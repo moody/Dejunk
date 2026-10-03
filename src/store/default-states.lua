@@ -113,6 +113,13 @@ DefaultStates.Profile = {
       value = 0,
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
+    --- @type EquipmentTypeOptionState
+    excludeByEquipmentType = {
+      enabled = false,
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+      armor = {},
+      weapons = {}
+    },
     excludeEquipmentSets = true,
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
