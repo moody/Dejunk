@@ -10,16 +10,17 @@ local Widgets = Addon:GetModule("Widgets")
 -- =============================================================================
 
 --- @class FrameWidgetOptions
---- @field name? string
---- @field frameType? string
---- @field parent? table
---- @field points? table[]
---- @field width? integer
---- @field height? integer
+--- @field name? string Global frame name. Defaults to a unique name.
+--- @field frameType? string Defaults to `Frame`.
+--- @field parent? table Defaults to `UIParent`.
+--- @field points? table[] Points to anchor the frame at, as argument lists for `SetPoint()`.
+--- @field width? integer Defaults to `1`.
+--- @field height? integer Defaults to `1`.
 --- @field frameStrata? FrameStrata
 --- @field clipChildren? boolean Defaults to `true`.
---- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip)
---- @field enableClickHandling? boolean
+--- @field backdrop? boolean Defaults to `true`. Without one, the frame has no backdrop methods.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shows a tooltip while the frame is hovered.
+--- @field enableClickHandling? boolean Adds a `SetClickHandler()` method.
 --- @field enableDragging? boolean Lets the frame be dragged, and raises it above other frames when shown or clicked.
 
 -- =============================================================================
@@ -55,20 +56,16 @@ end
 -- Widgets - Frame
 -- =============================================================================
 
---- Creates a basic frame with a backdrop.
+--- Creates a frame with an optional backdrop.
 --- @param options FrameWidgetOptions
 --- @return FrameWidget frame
 function Widgets:Frame(options)
-  -- Defaults.
-  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Frame"))
-  options.frameType = Addon:IfNil(options.frameType, "Frame")
-  options.parent = Addon:IfNil(options.parent, UIParent)
-  options.width = Addon:IfNil(options.width, 1)
-  options.height = Addon:IfNil(options.height, 1)
-  options.clipChildren = Addon:IfNil(options.clipChildren, true)
-
   --- @class FrameWidget : Frame, BackdropTemplate
-  local frame = CreateFrame(options.frameType, options.name, options.parent)
+  local frame = CreateFrame(
+    options.frameType or "Frame",
+    options.name or Widgets:GetUniqueName("Frame"),
+    options.parent or UIParent
+  )
 
   -- Strata.
   if type(options.frameStrata) == "string" then
@@ -76,17 +73,19 @@ function Widgets:Frame(options)
   end
 
   -- Clip children.
-  frame:SetClipsChildren(options.clipChildren)
+  frame:SetClipsChildren(options.clipChildren ~= false)
 
   -- Backdrop.
-  Mixin(frame, BackdropTemplateMixin)
-  frame:SetBackdrop(self.BORDER_BACKDROP)
-  frame:SetBackdropColor(Colors.Backdrop:GetRGBA(0.95))
-  frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+  if options.backdrop ~= false then
+    Mixin(frame, BackdropTemplateMixin)
+    frame:SetBackdrop(self.BORDER_BACKDROP)
+    frame:SetBackdropColor(Colors.Backdrop:GetRGBA(0.95))
+    frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+  end
 
   -- Size.
-  frame:SetWidth(options.width)
-  frame:SetHeight(options.height)
+  frame:SetWidth(options.width or 1)
+  frame:SetHeight(options.height or 1)
 
   -- Points.
   if options.points then
