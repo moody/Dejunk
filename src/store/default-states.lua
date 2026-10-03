@@ -16,12 +16,27 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- Example: `{ ["itemId"] = true, ... }`
 --- @alias ItemIdMap table<string, boolean>
 
+--- @alias ItemQualityKey "poor" | "common" | "uncommon" | "rare" | "epic"
+
+--- Whether each item quality is selected.
 --- @class ItemQualitiesState
 --- @field poor boolean
 --- @field common boolean
 --- @field uncommon boolean
 --- @field rare boolean
 --- @field epic boolean
+
+--- Option that can be turned on or off.
+--- @class ToggleOptionState
+--- @field enabled boolean
+
+--- Option limited to the selected item qualities.
+--- @class QualitiesOptionState : ToggleOptionState
+--- @field qualities ItemQualitiesState
+
+--- Qualities option with an item level.
+--- @class ItemLevelOptionState : QualitiesOptionState
+--- @field value integer Item level threshold.
 
 -- ============================================================================
 -- DefaultStates - Global
@@ -87,38 +102,38 @@ DefaultStates.Profile = {
     autoRepair = false,
     autoSell = false,
 
+    --- @type ItemLevelOptionState
     excludeAboveItemLevel = {
       enabled = false,
       value = 0,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     excludeEquipmentSets = true,
+    --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
+    --- @type QualitiesOptionState
     excludeWarbandEquipment = {
       enabled = false,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
 
+    --- @type ItemLevelOptionState
     includeBelowItemLevel = {
       enabled = false,
       value = 0,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
+    --- @type QualitiesOptionState
     includeByQuality = {
       enabled = true,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
+    --- @type QualitiesOptionState
     includeUnsuitableEquipment = {
       enabled = false,
-      --- @type ItemQualitiesState
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     includeArtifactRelics = false,
