@@ -96,6 +96,7 @@
   <Script file="src\ui\components\selectable-row.lua"/>
   <Script file="src\ui\components\settings-box.lua"/>
   <Script file="src\ui\components\text.lua"/>
+  <Script file="src\ui\components\text-input.lua"/>
   <Script file="src\ui\components\titled-panel.lua"/>
   <Script file="src\ui\components\window-title-button.lua"/>
   <Script file="src\ui\components\window.lua"/>
