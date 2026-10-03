@@ -72,6 +72,7 @@ L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION = "Include le gemme delle reliquie degli a
 L.INCLUDE_ARTIFACT_RELICS_TEXT = "Includi reliquie artefatto"
 L.INCLUDE_BELOW_ITEM_LEVEL_DESCRIPTION = "Include l'equipaggiamento con un livello oggetto inferiore a un valore impostato."
 L.INCLUDE_BELOW_ITEM_LEVEL_TEXT = "Includi sotto il livello oggetto"
+L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT = "Includi per tipo di equipaggiamento"
 L.INCLUDE_BY_QUALITY_DESCRIPTION = "Includi oggetti in massa in base alla qualità."
 L.INCLUDE_BY_QUALITY_TEXT = "Includi per qualità"
 L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION = "Include l'equipaggiamento con un tipo di armatura o arma non adatto alla tua classe."

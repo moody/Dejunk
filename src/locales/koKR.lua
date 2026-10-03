@@ -72,6 +72,7 @@ L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION = "유물 성물 보석을 포함합니다
 L.INCLUDE_ARTIFACT_RELICS_TEXT = "유물 성물 포함"
 L.INCLUDE_BELOW_ITEM_LEVEL_DESCRIPTION = "설정된 값 이하의 아이템 레벨을 가진 장비를 포함합니다."
 L.INCLUDE_BELOW_ITEM_LEVEL_TEXT = "아이템 레벨 이하 포함"
+L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT = "장비 유형별 포함"
 L.INCLUDE_BY_QUALITY_DESCRIPTION = "품질에 따라 아이템을 대량으로 포함합니다."
 L.INCLUDE_BY_QUALITY_TEXT = "품질별 포함"
 L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION = "직업에 맞지 않는 방어구 또는 무기 유형의 장비를 포함합니다."

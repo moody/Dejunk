@@ -72,6 +72,7 @@ L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION = "Включает драгоценные
 L.INCLUDE_ARTIFACT_RELICS_TEXT = "Включить реликвии артефакта"
 L.INCLUDE_BELOW_ITEM_LEVEL_DESCRIPTION = "Включает снаряжение с уровнем предмета ниже заданного значения."
 L.INCLUDE_BELOW_ITEM_LEVEL_TEXT = "Включить ниже уровня предмета"
+L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT = "Включить по типу снаряжения"
 L.INCLUDE_BY_QUALITY_DESCRIPTION = "Массово включает предметы по качеству."
 L.INCLUDE_BY_QUALITY_TEXT = "Включить по качеству"
 L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION = "Включает снаряжение с типом брони или оружия, не подходящим для вашего класса."

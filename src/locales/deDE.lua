@@ -72,6 +72,7 @@ L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION = "Bezieht Artefakt-Relikt-Edelsteine ein.
 L.INCLUDE_ARTIFACT_RELICS_TEXT = "Artefakt-Relikte einbeziehen"
 L.INCLUDE_BELOW_ITEM_LEVEL_DESCRIPTION = "Bezieht Ausrüstung mit einer Gegenstandsstufe unter einem festgelegten Wert ein."
 L.INCLUDE_BELOW_ITEM_LEVEL_TEXT = "Unter Gegenstandsstufe einbeziehen"
+L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT = "Nach Ausrüstungstyp einbeziehen"
 L.INCLUDE_BY_QUALITY_DESCRIPTION = "Gegenstände nach Qualität in großem Umfang einbeziehen."
 L.INCLUDE_BY_QUALITY_TEXT = "Nach Qualität einbeziehen"
 L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION = "Bezieht Ausrüstung mit einem Rüstungs- oder Waffentyp ein, der für deine Klasse ungeeignet ist."
