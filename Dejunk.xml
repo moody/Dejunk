@@ -68,21 +68,6 @@
   <Script file="src\ui\popup.lua"/>
   <Script file="src\ui\tooltip.lua"/>
 
-  <!-- UI Components -->
-  <Script file="src\ui\components\check-chip-group.lua"/>
-  <Script file="src\ui\components\check-chip.lua"/>
-  <Script file="src\ui\components\divider.lua"/>
-  <Script file="src\ui\components\number-input.lua"/>
-  <Script file="src\ui\components\option-card.lua"/>
-  <Script file="src\ui\components\quality-toggles.lua"/>
-  <Script file="src\ui\components\scroll-panel.lua"/>
-  <Script file="src\ui\components\selectable-row.lua"/>
-  <Script file="src\ui\components\settings-box.lua"/>
-  <Script file="src\ui\components\text.lua"/>
-  <Script file="src\ui\components\titled-panel.lua"/>
-  <Script file="src\ui\components\window-title-button.lua"/>
-  <Script file="src\ui\components\window.lua"/>
-
   <!-- UI Widgets -->
   <Script file="src\ui\widgets\widgets.lua"/>
 
@@ -99,6 +84,21 @@
   <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\composites\text-frame.lua"/>
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
+
+  <!-- UI Components -->
+  <Script file="src\ui\components\check-chip-group.lua"/>
+  <Script file="src\ui\components\check-chip.lua"/>
+  <Script file="src\ui\components\divider.lua"/>
+  <Script file="src\ui\components\number-input.lua"/>
+  <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\quality-toggles.lua"/>
+  <Script file="src\ui\components\scroll-panel.lua"/>
+  <Script file="src\ui\components\selectable-row.lua"/>
+  <Script file="src\ui\components\settings-box.lua"/>
+  <Script file="src\ui\components\text.lua"/>
+  <Script file="src\ui\components\titled-panel.lua"/>
+  <Script file="src\ui\components\window-title-button.lua"/>
+  <Script file="src\ui\components\window.lua"/>
 
   <!-- UI Screens -->
   <Script file="src\ui\screens\junk-frame.lua"/>
