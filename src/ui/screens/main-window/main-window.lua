@@ -458,5 +458,17 @@ end
 -- so we force one here once the Wux store is ready.
 EventManager:Once(E.StoreCreated, function()
   MainWindow:Show()
+
+  local screens = {
+    { Components.GlobalOptionsRow, Components.GlobalOptionsScreen },
+    { Components.ProfileOptionsRow, Components.ProfileOptionsScreen },
+    { Components.ListsRow, Components.ListsScreen }
+  }
+
+  for _, screen in ipairs(screens) do
+    Controller:ShowScreen(screen[1], screen[2])
+    Components.Root:Layout()
+  end
+
   MainWindow:Hide()
 end)

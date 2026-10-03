@@ -101,6 +101,7 @@ function ComponentFactory:ScrollPanel()
     frame = scrollFrame,
     onLayout = function(_, width)
       Components.Root.ScrollChild:SetWidth(width)
+      Components.Root.ScrollChild:Layout()
       updateSlider()
     end
   })
