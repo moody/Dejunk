@@ -39,10 +39,12 @@ function ComponentFactory:CheckChip(options)
   --- @class CheckChipComponent : WaffleFlexComponent
   chip = Addon.Waffle:Flex({
     width = "AUTO",
-    height = 24,
+    height = "AUTO",
     align = "CENTER",
-    paddingLeft = Widgets:Padding(),
+    paddingTop = Widgets.CONTROL_PADDING,
     paddingRight = Widgets:Padding(),
+    paddingBottom = Widgets.CONTROL_PADDING,
+    paddingLeft = Widgets:Padding(),
     gap = Widgets:Padding(0.5),
 
     --- @param parent Frame
@@ -89,7 +91,7 @@ function ComponentFactory:CheckChip(options)
   chip.Label = chip:AttachComponent(ComponentFactory:Text({
     width = "AUTO",
     text = options.text,
-    fontObject = "GameFontNormalSmall"
+    fontObject = Widgets.CONTROL_FONT
   }))
   chip.Label:WhenFrameReady(refresh)
 

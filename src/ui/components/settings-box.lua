@@ -7,9 +7,6 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
--- Height of one row of controls, so each label centers on a line's first row.
-local CONTROL_HEIGHT = 24
-
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
@@ -53,14 +50,17 @@ function ComponentFactory:SettingsBox(options)
   --- @return WaffleFlexComponent line
   function root:AddLine(labelText)
     local line = self:AddRow({ height = "AUTO", align = "START", gap = Widgets:Padding() })
-    line:AttachComponent(ComponentFactory:Text({
+    local label = line:AttachComponent(ComponentFactory:Text({
       text = labelText,
-      fontObject = "GameFontNormalSmall",
+      fontObject = Widgets.CONTROL_FONT,
       color = Colors.Grey,
       wordWrap = false,
-      width = labelWidth,
-      minHeight = CONTROL_HEIGHT
+      width = labelWidth
     }))
+
+    -- Padded like the controls, so it lines up with their first row.
+    label:SetMarginTop(Widgets.CONTROL_PADDING)
+
     return line
   end
 

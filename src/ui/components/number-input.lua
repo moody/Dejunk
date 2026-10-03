@@ -8,8 +8,6 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
-local HEIGHT = 24
-
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
@@ -31,14 +29,15 @@ local HEIGHT = 24
 function ComponentFactory:NumberInput(options)
   return Addon.Waffle:Flex({
     width = options.width or 80,
-    height = HEIGHT,
+    height = "AUTO",
 
     --- @param parent Frame
     frameFactory = function(parent)
       --- @class NumberInputWidget : FrameWidget, EditBox
       local editBox = Widgets:Frame({ parent = parent, frameType = "EditBox" })
       editBox:SetBackdropColor(Colors.Black:GetRGBA(0.4))
-      editBox:SetFontObject("GameFontHighlight")
+      editBox:SetFontObject(Widgets.CONTROL_FONT)
+      editBox:SetTextColor(Colors.White:GetRGB())
       editBox:SetJustifyH("CENTER")
       editBox:SetTextInsets(Widgets:Padding(0.5), Widgets:Padding(0.5), 0, 0)
       editBox:SetAutoFocus(false)
@@ -101,6 +100,13 @@ function ComponentFactory:NumberInput(options)
       EventManager:On(E.StateUpdated, refreshText)
 
       return editBox
+    end,
+
+    --- @param editBox NumberInputWidget
+    --- @param width number
+    onMeasure = function(editBox, width)
+      local _, fontHeight = editBox:GetFont()
+      return width, fontHeight + Widgets.CONTROL_PADDING * 2
     end
   })
 end
