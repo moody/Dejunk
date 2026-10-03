@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local EquipmentTypes = Addon:GetModule("EquipmentTypes")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -234,6 +235,15 @@ function JunkFilter:IsJunkItem(item)
         if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
           local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
           return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
+        end
+      end
+    end
+    -- Include by equipment type.
+    if profileSettings.includeByEquipmentType.enabled then
+      local setting = profileSettings.includeByEquipmentType
+      if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
+        if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
+          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT)
         end
       end
     end
