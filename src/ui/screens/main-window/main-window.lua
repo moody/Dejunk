@@ -21,43 +21,49 @@ local NUM_LIST_FRAME_BUTTONS = 7
 local Components = {}
 
 -- ============================================================================
--- Local Functions
+-- Controller
 -- ============================================================================
 
---- @type SelectableRowComponent?
-local selectedRow
+local Controller = {
+  --- Sidebar row currently selected.
+  --- @type SelectableRowComponent?
+  selectedRow = nil,
 
---- @type WaffleFlexComponent?
-local currentScreen
+  --- Screen currently shown in the content area.
+  --- @type WaffleFlexComponent?
+  currentScreen = nil,
 
---- Selects the given sidebar row and shows its screen, hiding the previous one.
---- @param row SelectableRowComponent
---- @param screen WaffleFlexComponent
-local function showScreen(row, screen)
-  if selectedRow then selectedRow:SetSelected(false) end
-  row:SetSelected(true)
-  selectedRow = row
-
-  if screen == currentScreen then return end
-  if currentScreen then currentScreen:SetVisibility("GONE") end
-  screen:SetVisibility("VISIBLE")
-  currentScreen = screen
-end
-
---- @class ListSearchState
-local listSearchState = {
-  isSearching = false,
-  searchText = ""
+  --- @class ListSearchState
+  listSearchState = {
+    isSearching = false,
+    searchText = ""
+  }
 }
 
-local function getListSearchState()
-  return listSearchState
+--- Selects the given sidebar row and shows its screen, hiding the previous one.
+--- Leaving the lists ends any search.
+--- @param row SelectableRowComponent
+--- @param screen WaffleFlexComponent
+function Controller:ShowScreen(row, screen)
+  if screen ~= Components.ListsScreen then self:StopSearching() end
+  if self.selectedRow then self.selectedRow:SetSelected(false) end
+  row:SetSelected(true)
+  self.selectedRow = row
+
+  if screen == self.currentScreen then return end
+  if self.currentScreen then self.currentScreen:SetVisibility("GONE") end
+  screen:SetVisibility("VISIBLE")
+  self.currentScreen = screen
 end
 
-local function startSearching()
-  showScreen(Components.ListsRow, Components.ListsScreen)
-  listSearchState.isSearching = true
-  listSearchState.searchText = ""
+function Controller:GetListSearchState()
+  return self.listSearchState
+end
+
+function Controller:StartSearching()
+  self:ShowScreen(Components.ListsRow, Components.ListsScreen)
+  self.listSearchState.isSearching = true
+  self.listSearchState.searchText = ""
   Components.TitleBarNameText:SetVisibility("GONE")
   Components.TitleBarVersionText:SetVisibility("GONE")
   Components.TitleBarSearchRow:SetVisibility("VISIBLE")
@@ -67,9 +73,9 @@ local function startSearching()
   end
 end
 
-local function stopSearching()
-  listSearchState.isSearching = false
-  listSearchState.searchText = ""
+function Controller:StopSearching()
+  self.listSearchState.isSearching = false
+  self.listSearchState.searchText = ""
   Components.TitleBarNameText:SetVisibility("VISIBLE")
   Components.TitleBarVersionText:SetVisibility("VISIBLE")
   Components.TitleBarSearchRow:SetVisibility("GONE")
@@ -79,15 +85,15 @@ local function stopSearching()
   end
 end
 
-local function toggleSearching()
-  if not listSearchState.isSearching then
-    startSearching()
+function Controller:ToggleSearching()
+  if not self.listSearchState.isSearching then
+    self:StartSearching()
   else
-    stopSearching()
+    self:StopSearching()
   end
 end
 
-local function openKeybindings()
+function Controller:OpenKeybindings()
   CloseMenus()
   CloseAllWindows()
 
@@ -120,7 +126,7 @@ Components.Root = ComponentFactory:Window({
 
 -- Stop searching whenever the window hides.
 Components.Root:WhenFrameReady(function(frame)
-  frame:HookScript("OnHide", stopSearching)
+  frame:HookScript("OnHide", function() Controller:StopSearching() end)
 end)
 
 -- Window()'s generic title text goes unused in favor of the title bar below.
@@ -187,11 +193,11 @@ Components.TitleBarSearchRow:AddChild({
     searchBox.placeholderText:SetJustifyH("LEFT")
     searchBox.placeholderText:SetAlpha(0.5)
 
-    searchBox:SetScript("OnEscapePressed", stopSearching)
+    searchBox:SetScript("OnEscapePressed", function() Controller:StopSearching() end)
     searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
     searchBox:SetScript("OnTextChanged", function(self)
-      listSearchState.searchText = self:GetText()
-      if listSearchState.searchText == "" then
+      Controller.listSearchState.searchText = self:GetText()
+      if Controller.listSearchState.searchText == "" then
         self.placeholderText:Show()
       else
         self.placeholderText:Hide()
@@ -223,9 +229,9 @@ Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AttachComponent(
     texture = Addon:GetAsset("search-icon"),
     textureSize = 16,
     highlightColor = Colors.Pink,
-    onClick = toggleSearching,
+    onClick = function() Controller:ToggleSearching() end,
     onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
+      tooltip:SetText(Controller.listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
     end
   })
 )
@@ -237,7 +243,7 @@ Components.TitleBarButtonsRow:AttachComponent(
     texture = Addon:GetAsset("keyboard-icon"),
     textureSize = 18,
     highlightColor = Colors.Blue,
-    onClick = openKeybindings,
+    onClick = function() Controller:OpenKeybindings() end,
     onUpdateTooltip = function(_, tooltip)
       tooltip:SetText(L.KEYBINDS)
     end
@@ -283,7 +289,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_GlobalInclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.GlobalInclusions,
-          getListSearchState = getListSearchState
+          getListSearchState = function() return Controller:GetListSearchState() end
         })
       end
     },
@@ -294,7 +300,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_GlobalExclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.GlobalExclusions,
-          getListSearchState = getListSearchState
+          getListSearchState = function() return Controller:GetListSearchState() end
         })
       end
     }
@@ -312,7 +318,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_ProfileInclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.ProfileInclusions,
-          getListSearchState = getListSearchState
+          getListSearchState = function() return Controller:GetListSearchState() end
         })
       end
     },
@@ -323,7 +329,7 @@ Components.ListsScreen:AddRow({
           name = "$parent_ProfileExclusionsFrame",
           numButtons = NUM_LIST_FRAME_BUTTONS,
           list = Lists.ProfileExclusions,
-          getListSearchState = getListSearchState
+          getListSearchState = function() return Controller:GetListSearchState() end
         })
       end
     }
@@ -346,20 +352,20 @@ Components.ProfileOptionsScreen:SetVisibility("GONE")
 
 Components.ListsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
   labelText = L.LISTS,
-  onClick = function(row) showScreen(row, Components.ListsScreen) end
+  onClick = function(row) Controller:ShowScreen(row, Components.ListsScreen) end
 }))
 
 Components.GlobalOptionsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
   labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.GLOBAL),
-  onClick = function(row) showScreen(row, Components.GlobalOptionsScreen) end
+  onClick = function(row) Controller:ShowScreen(row, Components.GlobalOptionsScreen) end
 }))
 
 Components.ProfileOptionsRow = sidebar:AttachComponent(ComponentFactory:SelectableRow({
   labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.PROFILE),
-  onClick = function(row) showScreen(row, Components.ProfileOptionsScreen) end
+  onClick = function(row) Controller:ShowScreen(row, Components.ProfileOptionsScreen) end
 }))
 
-showScreen(Components.ListsRow, Components.ListsScreen)
+Controller:ShowScreen(Components.ListsRow, Components.ListsScreen)
 
 -- ============================================================================
 -- Footer Components
