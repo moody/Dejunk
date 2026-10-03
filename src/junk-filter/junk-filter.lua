@@ -222,7 +222,8 @@ function JunkFilter:IsJunkItem(item)
     local setting = profileSettings.excludeByEquipmentType
     if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
       if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
-        return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT)
+        local typeText = Colors.Grey("(%s)"):format(Colors.Yellow(Items:GetItemSubclassName(item)))
+        return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. typeText)
       end
     end
   end
@@ -253,7 +254,8 @@ function JunkFilter:IsJunkItem(item)
       local setting = profileSettings.includeByEquipmentType
       if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
         if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
-          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT)
+          local typeText = Colors.Grey("(%s)"):format(Colors.Yellow(Items:GetItemSubclassName(item)))
+          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. typeText)
         end
       end
     end

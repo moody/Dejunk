@@ -4,6 +4,7 @@ local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
 local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
+local GetItemSubClassInfo = C_Item.GetItemSubClassInfo or GetItemSubClassInfo
 local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
 local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
@@ -249,6 +250,13 @@ function Items:GetItemLevel(item)
   local success, itemLevel = pcall(C_Item.GetCurrentItemLevel, self.location)
   if success and itemLevel then return itemLevel end
   return GetDetailedItemLevelInfo(item.link) or item.baseItemLevel
+end
+
+--- Returns the localized name of the given `item`'s subclass.
+--- @param item BagItem
+--- @return string
+function Items:GetItemSubclassName(item)
+  return (GetItemSubClassInfo(item.classId, item.subclassId))
 end
 
 --- Returns `true` if the given `item` is locked.
