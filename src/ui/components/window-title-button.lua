@@ -9,9 +9,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class WindowTitleButtonOptions
---- @field name string
+--- @field name? string
 --- @field texture string
---- @field textureSize? number
+--- @field textureSize? number Defaults to `14`.
+--- @field width? number Defaults to `46`.
 --- @field highlightColor Color
 --- @field onClick fun()
 --- @field onUpdateTooltip? fun(self: WindowTitleButtonWidget, tooltip: Tooltip)
@@ -22,10 +23,11 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 
 --- Creates a fixed-width icon button meant for a window's title row.
 --- @param options WindowTitleButtonOptions
---- @return WaffleFlexComponent
+--- @return WindowTitleButtonComponent
 function ComponentFactory:WindowTitleButton(options)
-  return Addon.Waffle:Flex({
-    width = 46,
+  --- @class WindowTitleButtonComponent : WaffleFlexComponent
+  local root = Addon.Waffle:Flex({
+    width = options.width or 46,
     frameFactory = function(parent)
       --- @class WindowTitleButtonWidget : FrameWidget, Button
       --- @field texture Texture
@@ -38,9 +40,10 @@ function ComponentFactory:WindowTitleButton(options)
       frame:SetBackdropColor(0, 0, 0, 0)
       frame:SetBackdropBorderColor(0, 0, 0, 0)
 
+      local textureSize = options.textureSize or 14
       frame.texture = frame:CreateTexture("$parent_Texture", "ARTWORK")
       frame.texture:SetTexture(options.texture)
-      frame.texture:SetSize(options.textureSize, options.textureSize)
+      frame.texture:SetSize(textureSize, textureSize)
       frame.texture:SetPoint("CENTER")
 
       frame:HookScript("OnEnter", function(self) self:SetBackdropColor(options.highlightColor:GetRGBA(0.75)) end)
@@ -50,4 +53,14 @@ function ComponentFactory:WindowTitleButton(options)
       return frame
     end
   })
+
+  --- Sets the icon's texture.
+  --- @param texture string
+  function root:SetTexture(texture)
+    self:WhenFrameReady(function(frame)
+      frame.texture:SetTexture(texture)
+    end)
+  end
+
+  return root
 end
