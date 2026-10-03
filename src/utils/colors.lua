@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local GetItemQualityColor = C_Item.GetItemQualityColor or GetItemQualityColor
 
 --- @class Colors
 local Colors = Addon:GetModule("Colors")
@@ -11,6 +12,7 @@ local Colors = Addon:GetModule("Colors")
 --- @param hex string AARRGGBB
 --- @return Color
 local function createColor(hex)
+  --- @type colorRGBA
   local color = CreateColorFromHexString(hex)
 
   --- @class Color
@@ -61,11 +63,25 @@ Colors.Gold = createColor("FFFFD100")
 Colors.Green = createColor("FF4FE34F")
 Colors.Grey = createColor("FF9D9D9D")
 Colors.Pink = createColor("FFDD75DD")
-Colors.QualityCommon = createColor("FFFFFFFF")
-Colors.QualityEpic = createColor("FFA335EE")
-Colors.QualityPoor = createColor("FF9D9D9D")
-Colors.QualityRare = createColor("FF0070DD")
-Colors.QualityUncommon = createColor("FF1EFF00")
 Colors.Red = createColor("FFE34F4F")
 Colors.White = createColor("FFFFFFFF")
 Colors.Yellow = createColor("FFE3E34F")
+
+-- =============================================================================
+-- Colors - Item Quality
+-- =============================================================================
+
+--- Item quality colors, indexed by `Enum.ItemQuality`.
+--- @type table<integer, Color>
+Colors.ByQuality = {}
+
+for _, quality in pairs(Enum.ItemQuality) do
+  local _, _, _, hex = GetItemQualityColor(quality)
+  if hex then Colors.ByQuality[quality] = createColor(hex) end
+end
+
+Colors.QualityPoor = Colors.ByQuality[Enum.ItemQuality.Poor]
+Colors.QualityCommon = Colors.ByQuality[Enum.ItemQuality.Common or Enum.ItemQuality.Standard]
+Colors.QualityUncommon = Colors.ByQuality[Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good]
+Colors.QualityRare = Colors.ByQuality[Enum.ItemQuality.Rare]
+Colors.QualityEpic = Colors.ByQuality[Enum.ItemQuality.Epic]
