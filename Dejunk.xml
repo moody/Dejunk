@@ -71,7 +71,7 @@
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
-  <Script file="src\ui\components\option-row.lua"/>
+  <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
   <Script file="src\ui\components\selectable-row.lua"/>

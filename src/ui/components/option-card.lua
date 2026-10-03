@@ -9,22 +9,22 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @class OptionRowOptions
+--- @class OptionCardOptions
 --- @field get fun(): boolean Returns whether the option is on.
---- @field set fun(value: boolean) Called with the new value when the row is clicked.
---- @field onRightClick? fun() Called when the row is right-clicked.
---- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the row.
+--- @field set fun(value: boolean) Called with the new value when the card is clicked.
+--- @field onRightClick? fun() Called when the card is right-clicked.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the card.
 
 -- =============================================================================
--- ComponentFactory - OptionRow
+-- ComponentFactory - OptionCard
 -- =============================================================================
 
---- Creates a full-width row with a checkbox beside its content. Clicking
---- anywhere on the row toggles the option.
---- @param options OptionRowOptions
---- @return OptionRowComponent root
-function ComponentFactory:OptionRow(options)
-  --- @class OptionRowComponent : WaffleFlexComponent
+--- Creates a full-width card with a checkbox beside its content. Clicking
+--- anywhere on the card toggles the option.
+--- @param options OptionCardOptions
+--- @return OptionCardComponent root
+function ComponentFactory:OptionCard(options)
+  --- @class OptionCardComponent : WaffleFlexComponent
   --- @field Content WaffleFlexComponent Column beside the checkbox.
   local root = Addon.Waffle:Flex({
     direction = "ROW",
