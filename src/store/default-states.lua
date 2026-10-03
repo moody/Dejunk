@@ -38,6 +38,11 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @class ItemLevelOptionState : QualitiesOptionState
 --- @field value integer Item level threshold.
 
+--- Qualities option limited to the selected armor and weapon types.
+--- @class EquipmentTypeOptionState : QualitiesOptionState
+--- @field armor table<integer, boolean> Selected armor subclasses.
+--- @field weapons table<integer, boolean> Selected weapon subclasses.
+
 -- ============================================================================
 -- DefaultStates - Global
 -- ============================================================================
@@ -125,6 +130,13 @@ DefaultStates.Profile = {
       enabled = false,
       value = 0,
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
+    --- @type EquipmentTypeOptionState
+    includeByEquipmentType = {
+      enabled = false,
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+      armor = {},
+      weapons = {}
     },
     --- @type QualitiesOptionState
     includeByQuality = {

@@ -52,6 +52,7 @@ local profileReducer = Wux:CombineReducers({
 
     includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
     includeBelowItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
+    includeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.includeByEquipmentType),
     includeByQuality = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
     includeUnsuitableEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Profile.settings.includeUnsuitableEquipment),
 

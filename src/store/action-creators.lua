@@ -206,6 +206,10 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL),
 
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeByEquipmentType = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE),
+
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY`.
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY),
