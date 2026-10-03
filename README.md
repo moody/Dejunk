@@ -22,7 +22,8 @@ These options, found under `Options (Profile)`, determine what's considered junk
 - **Include By Quality** — Include items by quality tier (poor quality included by default)
 - **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
 - **Include Below Item Level** — Include equipment below a set item level
-- **Include Unsuitable Equipment** — Include equipment with an armor or weapon type unsuitable for your class
+- **Include By Equipment Type** — Include equipment of the selected armor and weapon types (cloaks never match)
+- **Exclude By Equipment Type** — Exclude equipment of the selected armor and weapon types (cloaks never match)
 - **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
