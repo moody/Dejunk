@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
+local EquipmentTypes = Addon:GetModule("EquipmentTypes")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -46,6 +47,45 @@ local function addQualitiesLine(self, getState, mergeAction)
   }))
 end
 
+--- Adds a line of a chip per equipment type to `box`, for a setting's selected
+--- subclasses in `field`.
+--- @param box OptionsBuilderSettingsBox
+--- @param labelText string
+--- @param equipmentTypes EquipmentType[]
+--- @param field "armor" | "weapons"
+--- @param getState fun(): EquipmentTypeOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addEquipmentTypesLine(box, labelText, equipmentTypes, field, getState, mergeAction)
+  local chips = {}
+
+  for _, equipmentType in ipairs(equipmentTypes) do
+    local subclassId = equipmentType.subclassId
+    chips[#chips + 1] = {
+      text = equipmentType.name,
+      get = function() return getState()[field][subclassId] == true end,
+      set = function(value) StateManager:Dispatch(mergeAction({ [field] = { [subclassId] = value } })) end
+    }
+  end
+
+  box:AddLine(labelText):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
+end
+
+--- Adds an armor types line to the box for a setting's `armor` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): EquipmentTypeOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addArmorLine(self, getState, mergeAction)
+  addEquipmentTypesLine(self, L.ARMOR, EquipmentTypes:GetArmorTypes(), "armor", getState, mergeAction)
+end
+
+--- Adds a weapon types line to the box for a setting's `weapons` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): EquipmentTypeOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addWeaponsLine(self, getState, mergeAction)
+  addEquipmentTypesLine(self, L.WEAPONS, EquipmentTypes:GetWeaponTypes(), "weapons", getState, mergeAction)
+end
+
 --- Adds a divider and a settings box to the card, below its description. The
 --- box dims while the card is unchecked.
 --- @param self OptionsBuilderCard
@@ -60,8 +100,10 @@ local function addSettingsBox(self)
   }))
   box:SetMarginTop(Widgets:Padding(0.25))
 
+  box.AddArmorLine = addArmorLine
   box.AddItemLevelLine = addItemLevelLine
   box.AddQualitiesLine = addQualitiesLine
+  box.AddWeaponsLine = addWeaponsLine
 
   return box
 end

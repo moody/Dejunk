@@ -107,6 +107,24 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     box:AddQualitiesLine(getState, mergeAction)
   end
 
+  -- Include by equipment type.
+  do
+    local function getState() return StateManager:GetProfileState().settings.includeByEquipmentType end
+    local mergeAction = ActionCreators.Profile.mergeIncludeByEquipmentType
+
+    local box = OptionsBuilder:AddOptionCard(container, {
+      labelText = L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT,
+      descriptionText = L.INCLUDE_BY_EQUIPMENT_TYPE_DESCRIPTION,
+      ignoresSpecialEquipment = true,
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    }):AddSettingsBox()
+
+    box:AddArmorLine(getState, mergeAction)
+    box:AddWeaponsLine(getState, mergeAction)
+    box:AddQualitiesLine(getState, mergeAction)
+  end
+
   -- Exclude equipment sets.
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
     OptionsBuilder:AddOptionCard(container, {
