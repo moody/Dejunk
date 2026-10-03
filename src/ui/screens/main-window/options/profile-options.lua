@@ -91,22 +91,6 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     box:AddQualitiesLine(getState, mergeAction)
   end
 
-  -- Include unsuitable equipment.
-  do
-    local function getState() return StateManager:GetProfileState().settings.includeUnsuitableEquipment end
-    local mergeAction = ActionCreators.Profile.mergeIncludeUnsuitableEquipment
-
-    local box = OptionsBuilder:AddOptionCard(container, {
-      labelText = L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT,
-      descriptionText = L.INCLUDE_UNSUITABLE_EQUIPMENT_DESCRIPTION,
-      ignoresSpecialEquipment = true,
-      get = function() return getState().enabled end,
-      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
-    }):AddSettingsBox()
-
-    box:AddQualitiesLine(getState, mergeAction)
-  end
-
   -- Include by equipment type.
   do
     local function getState() return StateManager:GetProfileState().settings.includeByEquipmentType end

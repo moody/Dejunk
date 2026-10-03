@@ -61,7 +61,6 @@ ActionTypes.Profile = {
   SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
   MERGE_INCLUDE_BY_EQUIPMENT_TYPE = "profile/includeByEquipmentType/merge",
   MERGE_INCLUDE_BY_QUALITY = "profile/includeByQuality/merge",
-  MERGE_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/merge",
 
   MERGE_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/merge",
   SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",

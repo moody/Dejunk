@@ -218,10 +218,6 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY),
 
-  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT`.
-  --- @type WuxActionCreator<table<string, any>>
-  mergeIncludeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT),
-
   --- Action creator for `ActionTypes.Profile.SET_INCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>
   setInclusions = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUSIONS),

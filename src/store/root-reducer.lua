@@ -55,7 +55,6 @@ local profileReducer = Wux:CombineReducers({
     includeBelowItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
     includeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.includeByEquipmentType),
     includeByQuality = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
-    includeUnsuitableEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Profile.settings.includeUnsuitableEquipment),
 
     inclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUSIONS, DefaultStates.Profile.settings.inclusions),
     exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions)
