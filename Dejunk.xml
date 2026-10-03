@@ -68,9 +68,14 @@
   <Script file="src\ui\tooltip.lua"/>
 
   <!-- UI Components -->
+  <Script file="src\ui\components\check-chip.lua"/>
+  <Script file="src\ui\components\divider.lua"/>
+  <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-row.lua"/>
+  <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
   <Script file="src\ui\components\selectable-row.lua"/>
+  <Script file="src\ui\components\settings-box.lua"/>
   <Script file="src\ui\components\text.lua"/>
   <Script file="src\ui\components\titled-panel.lua"/>
   <Script file="src\ui\components\window-title-button.lua"/>
