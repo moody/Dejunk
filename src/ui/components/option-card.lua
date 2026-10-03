@@ -65,5 +65,11 @@ function ComponentFactory:OptionCard(options)
 
   root.Content = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
 
+  --- Returns whether the option is on.
+  --- @return boolean
+  function root:IsChecked()
+    return options.get()
+  end
+
   return root
 end
