@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -22,7 +23,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - Text
 -- =============================================================================
 
---- Creates a block of text.
+--- Creates a block of text. Shows a tooltip on hover if truncated.
 --- @param options TextComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:Text(options)
@@ -38,6 +39,20 @@ function ComponentFactory:Text(options)
       fontString:SetWordWrap(Addon:IfNil(options.wordWrap, true))
       fontString:SetTextColor((options.color or Colors.White):GetRGB())
       fontString:SetText(options.text)
+
+      fontString:SetPropagateMouseClicks(true)
+      fontString:SetPropagateMouseMotion(true)
+      fontString:SetScript("OnEnter", function(self)
+        if self:IsTruncated() then
+          Tooltip:SetOwner(self, "ANCHOR_TOP")
+          Tooltip:SetText(self:GetText())
+          Tooltip:Show()
+        end
+      end)
+      fontString:SetScript("OnLeave", function(self)
+        if self:IsTruncated() then Tooltip:Hide() end
+      end)
+
       return fontString
     end,
 
