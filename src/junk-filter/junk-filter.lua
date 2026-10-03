@@ -217,6 +217,16 @@ function JunkFilter:IsJunkItem(item)
     end
   end
 
+  -- Exclude by equipment type.
+  if profileSettings.excludeByEquipmentType.enabled and Items:IsItemEquipment(item) then
+    local setting = profileSettings.excludeByEquipmentType
+    if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
+      if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
+        return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT)
+      end
+    end
+  end
+
   -- Include by quality.
   if profileSettings.includeByQuality.enabled then
     local checkBoxValues = profileSettings.includeByQuality.qualities
