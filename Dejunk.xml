@@ -49,6 +49,7 @@
 
   <!-- Items -->
   <Script file="src\items\equipment-sets-cache.lua"/>
+  <Script file="src\items\equipment-types.lua"/>
   <Script file="src\items\items.lua"/>
 
   <!-- Lists -->
