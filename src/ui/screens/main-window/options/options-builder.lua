@@ -21,9 +21,34 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 
 --- @class OptionsBuilderCardOptions : OptionCardOptions, OptionsBuilderTextOptions
 
+--- @class OptionsBuilderChoice
+--- @field value any Value selected by this choice's chip.
+--- @field text string Chip label.
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
+
+--- Adds a line of chips to the box where exactly one is checked: the one whose
+--- value `get()` returns. Clicking a chip selects its value.
+--- @param self OptionsBuilderSettingsBox
+--- @param labelText string
+--- @param choices OptionsBuilderChoice[]
+--- @param get fun(): any
+--- @param set fun(value: any)
+local function addChoiceLine(self, labelText, choices, get, set)
+  local chips = {}
+
+  for _, choice in ipairs(choices) do
+    chips[#chips + 1] = {
+      text = choice.text,
+      get = function() return get() == choice.value end,
+      set = function(checked) if checked then set(choice.value) end end
+    }
+  end
+
+  self:AddLine(labelText):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
+end
 
 --- Adds an editable item level line to the box for a setting's `value` field.
 --- @param self OptionsBuilderSettingsBox
@@ -102,6 +127,7 @@ local function addSettingsBox(self)
   box:SetMarginTop(Widgets:Padding(0.25))
 
   box.AddArmorLine = addArmorLine
+  box.AddChoiceLine = addChoiceLine
   box.AddItemLevelLine = addItemLevelLine
   box.AddQualitiesLine = addQualitiesLine
   box.AddWeaponsLine = addWeaponsLine
