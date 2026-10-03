@@ -26,8 +26,10 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     end
   })
 
+  local safety = OptionsBuilder:AddGroup(container, L.SAFETY)
+
   -- Safe destroy.
-  OptionsBuilder:AddOptionCard(container, {
+  safety:AddOptionCard({
     labelText = L.SAFE_DESTROY_TEXT,
     descriptionText = L.SAFE_DESTROY_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().safeDestroy end,
@@ -35,15 +37,17 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Safe sell.
-  OptionsBuilder:AddOptionCard(container, {
+  safety:AddOptionCard({
     labelText = L.SAFE_SELL_TEXT,
     descriptionText = L.SAFE_SELL_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().safeSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
   })
 
+  local interface = OptionsBuilder:AddGroup(container, L.INTERFACE)
+
   -- Merchant button.
-  OptionsBuilder:AddOptionCard(container, {
+  interface:AddOptionCard({
     labelText = L.MERCHANT_BUTTON_TEXT,
     descriptionText = L.MERCHANT_BUTTON_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().merchantButton end,
@@ -58,7 +62,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Minimap icon.
-  OptionsBuilder:AddOptionCard(container, {
+  interface:AddOptionCard({
     labelText = L.MINIMAP_ICON_TEXT,
     descriptionText = L.MINIMAP_ICON_DESCRIPTION,
     get = function() return MinimapIcon:IsEnabled() end,
@@ -66,7 +70,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Auto junk frame.
-  OptionsBuilder:AddOptionCard(container, {
+  interface:AddOptionCard({
     labelText = L.AUTO_JUNK_FRAME_TEXT,
     descriptionText = L.AUTO_JUNK_FRAME_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().autoJunkFrame end,
@@ -74,7 +78,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Auto lootable frame.
-  OptionsBuilder:AddOptionCard(container, {
+  interface:AddOptionCard({
     labelText = L.AUTO_LOOTABLE_FRAME_TEXT,
     descriptionText = L.AUTO_LOOTABLE_FRAME_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().autoLootableFrame end,
@@ -82,15 +86,17 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Chat messages.
-  OptionsBuilder:AddOptionCard(container, {
+  interface:AddOptionCard({
     labelText = L.CHAT_MESSAGES_TEXT,
     descriptionText = L.CHAT_MESSAGES_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().chatMessages end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
   })
 
+  local bags = OptionsBuilder:AddGroup(container, L.BAGS)
+
   -- Bag item tooltips.
-  OptionsBuilder:AddOptionCard(container, {
+  bags:AddOptionCard({
     labelText = L.BAG_ITEM_TOOLTIPS_TEXT,
     descriptionText = L.BAG_ITEM_TOOLTIPS_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().itemTooltips end,
@@ -98,7 +104,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   })
 
   -- Bag item icons.
-  OptionsBuilder:AddOptionCard(container, {
+  bags:AddOptionCard({
     labelText = L.BAG_ITEM_ICONS_TEXT,
     descriptionText = L.BAG_ITEM_ICONS_DESCRIPTION,
     get = function() return StateManager:GetGlobalState().itemIcons end,
