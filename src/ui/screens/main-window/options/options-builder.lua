@@ -154,6 +154,37 @@ function OptionsBuilder:AddOptionCard(container, options)
   return card
 end
 
+--- Adds a group of options to `container` under a heading, after a divider
+--- unless it is the first group.
+--- @param container WaffleFlexComponent
+--- @param headingText string
+--- @return OptionsBuilderGroup group
+function OptionsBuilder:AddGroup(container, headingText)
+  if #container:GetChildren() > 0 then
+    local divider = container:AttachComponent(ComponentFactory:Divider())
+    divider:SetMarginTop(Widgets:Padding())
+    divider:SetMarginBottom(Widgets:Padding())
+  end
+
+  --- @class OptionsBuilderGroup : WaffleFlexComponent
+  local group = container:AttachComponent(Addon.Waffle:Flex({
+    direction = "COLUMN",
+    height = "AUTO",
+    gap = Widgets:Padding()
+  }))
+
+  group:AttachComponent(ComponentFactory:Text({ text = headingText, fontObject = "GameFontNormalLarge" }))
+
+  --- Adds an option card to the group.
+  --- @param options OptionsBuilderCardOptions
+  --- @return OptionsBuilderCard card
+  function group:AddOptionCard(options)
+    return OptionsBuilder:AddOptionCard(self, options)
+  end
+
+  return group
+end
+
 --- Adds a centered footnote below `panel`'s scroll panel, under a divider,
 --- explaining that options marked with an asterisk ignore special equipment.
 --- @param panel TitledPanelComponent
