@@ -28,7 +28,6 @@ function ComponentFactory:TextInput(options)
   local _, fontHeight = _G[fontObject]:GetFont()
 
   --- @class TextInputComponent : WaffleFlexComponent
-  --- @field Input WaffleFlexComponent The edit box.
   local root = Addon.Waffle:Flex({
     direction = "ROW",
     height = fontHeight + Widgets:Padding(2),
@@ -42,6 +41,7 @@ function ComponentFactory:TextInput(options)
     end
   })
 
+  --- The edit box.
   root.Input = root:AddChild({
     --- @param parent FrameWidget
     frameFactory = function(parent)
