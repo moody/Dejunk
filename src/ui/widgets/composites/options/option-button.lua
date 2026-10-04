@@ -53,10 +53,8 @@ function Widgets:OptionButton(options)
     name = "$parent_CheckBox",
     points = { { "TOPRIGHT", -Widgets:Padding(), -Widgets:Padding() } },
     color = Colors.White,
-    get = options.get,
-    set = options.set
+    get = options.get
   })
-  frame.checkBox:EnableMouse(false)
 
   -- Label text.
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")

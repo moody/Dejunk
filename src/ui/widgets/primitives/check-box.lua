@@ -1,5 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -9,15 +11,15 @@ local Widgets = Addon:GetModule("Widgets")
 -- =============================================================================
 
 --- @class CheckBoxWidgetOptions : FrameWidgetOptions
---- @field color? Color
---- @field get fun(): boolean
---- @field set fun(value: boolean): nil
+--- @field color? Color Defaults to `Colors.Blue`.
+--- @field get fun(): boolean Returns whether the box is checked.
 
 -- =============================================================================
 -- Widgets - Check Box
 -- =============================================================================
 
---- Creates a check box.
+--- Creates a check box that only shows a value.
+--- Mouse input passes through to the frame behind it.
 --- @param options CheckBoxWidgetOptions
 --- @return CheckBoxWidget frame
 function Widgets:CheckBox(options)
@@ -26,50 +28,38 @@ function Widgets:CheckBox(options)
   options.width = Addon:IfNil(options.width, 20)
   options.height = Addon:IfNil(options.height, 20)
   options.color = Addon:IfNil(options.color, Colors.Blue)
-  options.enableClickHandling = true
 
   --- @class CheckBoxWidget : FrameWidget
   local frame = self:Frame(options)
+  frame:EnableMouse(true)
+  frame:SetPropagateMouseMotion(true)
+  frame:SetPropagateMouseClicks(true)
 
   -- Check texture.
   frame.checkTexture = frame:CreateTexture("$parent_CheckTexture", "ARTWORK")
   frame.checkTexture:SetPoint("TOPLEFT", 2, -2)
   frame.checkTexture:SetPoint("BOTTOMRIGHT", -2, 2)
 
-  local function setNormalColors(isEnabled)
-    local backdropColor = isEnabled and options.color or Colors.DarkGrey
-    frame:SetBackdropColor(backdropColor:GetRGBA(0.25))
-    frame:SetBackdropBorderColor(options.color:GetRGBA(0.75))
-    frame.checkTexture:SetColorTexture(options.color:GetRGBA(0.75))
-  end
-
-  local function setHighlightColors(isEnabled)
-    local backdropColor = isEnabled and options.color or Colors.DarkGrey
-    frame:SetBackdropColor(backdropColor:GetRGBA(0.5))
-    frame:SetBackdropBorderColor(options.color:GetRGBA(1))
-    frame.checkTexture:SetColorTexture(options.color:GetRGBA(1))
-  end
-
-  frame:SetClickHandler("LeftButton", "NONE", function()
-    options.set(not options.get())
-  end)
-
-  frame:HookScript("OnUpdate", function()
-    local isEnabled = options.get()
-
-    -- Update check texture.
-    if isEnabled then
-      frame.checkTexture:Show()
-    else
-      frame.checkTexture:Hide()
+  -- Set up refresh events.
+  EventManager:WaitForFirst(E.StoreCreated, function()
+    --- Updates the colors and check texture to match the value and hover state.
+    local function refresh()
+      local isChecked = options.get()
+      local isHovered = frame:GetEventValue("HOVERED")
+      local backdropColor = isChecked and options.color or Colors.DarkGrey
+      frame:SetBackdropColor(backdropColor:GetRGBA(isHovered and 0.5 or 0.25))
+      frame:SetBackdropBorderColor(options.color:GetRGBA(isHovered and 1 or 0.75))
+      frame.checkTexture:SetColorTexture(options.color:GetRGBA(isHovered and 1 or 0.75))
+      frame.checkTexture:SetShown(isChecked)
     end
 
-    -- Update colors.
-    if frame:IsMouseOver() then
-      setHighlightColors(isEnabled)
-    else
-      setNormalColors(isEnabled)
-    end
+    frame:OnEvent("HOVERED", refresh)
+    frame:HookScript("OnShow", refresh)
+    EventManager:On(E.StateUpdated, function()
+      if frame:IsVisible() then refresh() end
+    end)
+
+    refresh()
   end)
 
   return frame

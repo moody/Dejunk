@@ -77,14 +77,11 @@ function ComponentFactory:CheckChip(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      local checkBox = Widgets:CheckBox({
+      return Widgets:CheckBox({
         parent = parent,
         color = options.color,
-        get = options.get,
-        set = options.set
+        get = options.get
       })
-      checkBox:EnableMouse(false)
-      return checkBox
     end
   })
 

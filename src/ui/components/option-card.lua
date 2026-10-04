@@ -57,9 +57,7 @@ function ComponentFactory:OptionCard(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      local checkBox = Widgets:CheckBox({ parent = parent, get = options.get, set = options.set })
-      checkBox:EnableMouse(false)
-      return checkBox
+      return Widgets:CheckBox({ parent = parent, get = options.get })
     end
   })
 
