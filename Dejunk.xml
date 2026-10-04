@@ -74,7 +74,12 @@
   <!-- UI Widgets - Primitives -->
   <Script file="src\ui\widgets\primitives\button.lua"/>
   <Script file="src\ui\widgets\primitives\check-box.lua"/>
-  <Script file="src\ui\widgets\primitives\frame.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame-event-state.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame-events.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\enabled.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\focused.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\hovered.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame.lua"/>
   <Script file="src\ui\widgets\primitives\slider.lua"/>
 
   <!-- UI Widgets - Composites -->
