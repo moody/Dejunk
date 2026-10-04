@@ -7,14 +7,14 @@ local Matchers = require("test/matchers")
 -- Setup
 -- ============================================================================
 
-Harness:Load("src/ui/widgets/primitives/frame/frame-event-state.lua")
-Harness:Load("src/ui/widgets/primitives/frame/frame-events.lua")
-Harness:Load("src/ui/widgets/primitives/frame/events/enabled.lua")
-Harness:Load("src/ui/widgets/primitives/frame/events/focused.lua")
-Harness:Load("src/ui/widgets/primitives/frame/events/hovered.lua")
+local Context = Harness:NewContext()
+Context:Load("src/ui/widgets/primitives/frame/frame-event-state.lua")
+Context:Load("src/ui/widgets/primitives/frame/frame-events.lua")
+Context:Load("src/ui/widgets/primitives/frame/events/enabled.lua")
+Context:Load("src/ui/widgets/primitives/frame/events/focused.lua")
+Context:Load("src/ui/widgets/primitives/frame/events/hovered.lua")
 
-local Addon = Harness.Addon
-local FrameWidgetEvents = Addon:GetModule("FrameWidgetEvents")
+local FrameWidgetEvents = Context:GetModule("FrameWidgetEvents")
 
 --- Returns a fake frame set up as `Widgets:Frame` does. `native` adds `SetEnabled()`, and `editBox` adds the edit
 --- focus scripts.

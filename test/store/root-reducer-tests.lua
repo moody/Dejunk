@@ -3,17 +3,18 @@
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
 local TableUtils = require("test/table-utils")
-Harness:Load("src/store/action-types.lua")
-Harness:Load("src/store/action-creators.lua")
-Harness:Load("src/store/default-states.lua")
-Harness:Load("src/store/root-reducer.lua")
 
-local Addon = Harness.Addon
-local ActionCreators = Addon:GetModule("ActionCreators")
-local ActionTypes = Addon:GetModule("ActionTypes")
-local DefaultStates = Addon:GetModule("DefaultStates")
-local RootReducer = Addon:GetModule("RootReducer")
-local Wux = Addon.Wux
+local Context = Harness:NewContext()
+Context:Load("src/store/action-types.lua")
+Context:Load("src/store/action-creators.lua")
+Context:Load("src/store/default-states.lua")
+Context:Load("src/store/root-reducer.lua")
+
+local ActionCreators = Context:GetModule("ActionCreators")
+local ActionTypes = Context:GetModule("ActionTypes")
+local DefaultStates = Context:GetModule("DefaultStates")
+local RootReducer = Context:GetModule("RootReducer")
+local Wux = Context.Addon.Wux
 
 -- ============================================================================
 -- Setup

@@ -2,26 +2,24 @@
 
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
+local Mocks = require("test/mocks")
 
 -- ============================================================================
 -- Setup
 -- ============================================================================
 
 --- Event frame that `src/events/event-manager.lua` creates when it loads.
-local eventFrame = { registered = {}, scripts = {} }
+local eventFrame = Mocks:CreateFrame()
 
-function eventFrame:RegisterEvent(event) self.registered[event] = true end
+local Context = Harness:NewContext(function(globals)
+  globals.CreateFrame = function() return eventFrame end
+end)
 
-function eventFrame:SetScript(name, fn) self.scripts[name] = fn end
+Context:Load("src/events/events.lua")
+Context:Load("src/events/event-manager.lua")
 
-_G.CreateFrame = function() return eventFrame end
-
-Harness:Load("src/events/events.lua")
-Harness:Load("src/events/event-manager.lua")
-
-local Addon = Harness.Addon
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
+local E = Context:GetModule("Events")
+local EventManager = Context:GetModule("EventManager")
 
 local eventCount = 0
 
@@ -464,7 +462,7 @@ end
 -- Test: every WoW event is registered with the event frame.
 do
   for _, event in pairs(E.Wow) do
-    assert(eventFrame.registered[event], event)
+    assert(eventFrame._test.registered[event], event)
   end
 end
 
@@ -473,7 +471,7 @@ do
   local calls = {}
   EventManager:On(E.Wow.PlayerLogin, captureArgs(calls))
 
-  eventFrame.scripts.OnEvent(eventFrame, E.Wow.PlayerLogin, "a", "b")
+  eventFrame._test.scripts.OnEvent(eventFrame, E.Wow.PlayerLogin, "a", "b")
 
   assert(Matchers:IsDeepEqual(calls, { { n = 2, "a", "b" } }))
 end
