@@ -113,7 +113,7 @@ local function addWeaponsLine(self, getState, mergeAction)
 end
 
 --- Adds a divider and a settings box to the card, below its description. The
---- box dims while the card is unchecked.
+--- box is disabled and dimmed while the card is unchecked.
 --- @param self OptionsBuilderCard
 --- @return OptionsBuilderSettingsBox box
 local function addSettingsBox(self)

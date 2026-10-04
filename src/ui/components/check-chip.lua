@@ -26,18 +26,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @param options CheckChipComponentOptions
 --- @return WaffleFlexComponent root
 function ComponentFactory:CheckChip(options)
-  local chip
-  local isHovered = false
-
-  --- Applies hover and checked colors to the chip and its label.
-  local function refresh()
-    local frame, label = chip:GetFrame(), chip.Label:GetFrame()
-    if frame then frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0)) end
-    if label then label:SetTextColor(((isHovered or options.get()) and Colors.White or Colors.Grey):GetRGB()) end
-  end
-
   --- @class CheckChipComponent : WaffleFlexComponent
-  chip = Addon.Waffle:Flex({
+  local chip = Addon.Waffle:Flex({
     width = "AUTO",
     height = "AUTO",
     align = "CENTER",
@@ -52,19 +42,7 @@ function ComponentFactory:CheckChip(options)
       --- @class CheckChipWidget : FrameWidget, Button
       local frame = Widgets:Frame({ parent = parent, frameType = "Button" })
       frame:SetBackdropBorderColor(0, 0, 0, 0)
-
       frame:SetScript("OnClick", function() options.set(not options.get()) end)
-      frame:SetScript("OnEnter", function()
-        isHovered = true
-        refresh()
-      end)
-      frame:SetScript("OnLeave", function()
-        isHovered = false
-        refresh()
-      end)
-
-      EventManager:On(E.StateUpdated, refresh)
-
       return frame
     end
   })
@@ -90,7 +68,23 @@ function ComponentFactory:CheckChip(options)
     text = options.text,
     fontObject = Widgets.CONTROL_FONT
   }))
-  chip.Label:WhenFrameReady(refresh)
+
+  -- Refresh on hover, enabled, and state changes.
+  chip.Label:WhenFrameReady(function(label)
+    --- @type FrameWidget
+    local frame = chip:GetFrame()
+
+    --- Applies hover and checked colors to the chip and its label. Disabled chips are not highlighted.
+    local function refresh()
+      local isHovered = frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED")
+      frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.08 or 0))
+      label:SetTextColor(((isHovered or options.get()) and Colors.White or Colors.Grey):GetRGB())
+    end
+
+    frame:OnEvent("HOVERED", refresh)
+    frame:OnEvent("ENABLED", refresh)
+    EventManager:On(E.StateUpdated, refresh)
+  end)
 
   return chip
 end

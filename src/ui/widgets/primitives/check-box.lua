@@ -40,12 +40,12 @@ function Widgets:CheckBox(options)
   frame.checkTexture:SetPoint("TOPLEFT", 2, -2)
   frame.checkTexture:SetPoint("BOTTOMRIGHT", -2, 2)
 
-  -- Set up refresh events.
+  -- Refresh on hover, enabled, show, and state changes.
   EventManager:WaitForFirst(E.StoreCreated, function()
-    --- Updates the colors and check texture to match the value and hover state.
+    --- Updates the colors and check texture. Not highlighted while disabled.
     local function refresh()
       local isChecked = options.get()
-      local isHovered = frame:GetEventValue("HOVERED")
+      local isHovered = frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED")
       local backdropColor = isChecked and options.color or Colors.DarkGrey
       frame:SetBackdropColor(backdropColor:GetRGBA(isHovered and 0.5 or 0.25))
       frame:SetBackdropBorderColor(options.color:GetRGBA(isHovered and 1 or 0.75))
@@ -54,6 +54,7 @@ function Widgets:CheckBox(options)
     end
 
     frame:OnEvent("HOVERED", refresh)
+    frame:OnEvent("ENABLED", refresh)
     frame:HookScript("OnShow", refresh)
     EventManager:On(E.StateUpdated, function()
       if frame:IsVisible() then refresh() end

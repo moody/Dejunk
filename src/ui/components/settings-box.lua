@@ -13,7 +13,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 
 --- @class SettingsBoxComponentOptions
 --- @field labelWidth? integer Width of each line's label. Defaults to `80`.
---- @field isEnabled? fun(): boolean Dims the lines while it returns `false`.
+--- @field isEnabled? fun(): boolean Disables and dims the lines while it returns `false`.
 
 -- =============================================================================
 -- ComponentFactory - SettingsBox
@@ -34,9 +34,10 @@ function ComponentFactory:SettingsBox(options)
     --- @param parent Frame
     frameFactory = function(parent)
       local frame = Widgets:Frame({ parent = parent, backdrop = false })
+      frame:OnEvent("ENABLED", function(isEnabled) frame:SetAlpha(isEnabled and 1 or 0.5) end)
 
       if options and options.isEnabled then
-        local function refresh() frame:SetAlpha(options.isEnabled() and 1 or 0.5) end
+        local function refresh() frame:FireEvent("ENABLED", options.isEnabled()) end
         refresh()
         EventManager:On(E.StateUpdated, refresh)
       end
