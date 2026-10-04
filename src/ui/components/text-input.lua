@@ -18,8 +18,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - TextInput
 -- =============================================================================
 
---- Creates a single-line text box. Escape and Enter leave it. Attached
---- components appear after the text, inside the border.
+--- Creates a single-line text box. Clicking anywhere in it focuses the text, and Escape and Enter leave it.
+--- Attached components appear after the text, inside the border.
 --- @param options? TextInputComponentOptions
 --- @return TextInputComponent root
 function ComponentFactory:TextInput(options)
@@ -37,6 +37,7 @@ function ComponentFactory:TextInput(options)
       local frame = Widgets:Frame({ parent = parent })
       frame:SetBackdropColor(Colors.Black:GetRGBA(0.4))
       frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.15))
+      frame:EnableMouse(true)
       return frame
     end
   })
@@ -57,6 +58,7 @@ function ComponentFactory:TextInput(options)
       editBox:SetAutoFocus(false)
       editBox:SetMultiLine(false)
       editBox:SetCountInvisibleLetters(true)
+      editBox:SetPropagateMouseMotion(true)
 
       local leftInset, rightInset = Widgets:Padding(), Widgets:Padding(0.5)
       editBox:SetTextInsets(leftInset, rightInset, 0, 0)
@@ -81,7 +83,7 @@ function ComponentFactory:TextInput(options)
     end
   })
 
-  -- Refresh the border on focus, hover, and enabled changes.
+  -- Focus the text on click, and refresh the border on frame events.
   --- @param editBox TextInputWidget
   root.Input:WhenFrameReady(function(editBox)
     --- @type FrameWidget
@@ -92,14 +94,16 @@ function ComponentFactory:TextInput(options)
       if frame:GetEventValue("FOCUSED") then
         frame:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
       else
-        local isHovered = editBox:GetEventValue("HOVERED") and editBox:GetEventValue("ENABLED")
+        local isHovered = frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED")
         frame:SetBackdropBorderColor(Colors.White:GetRGBA(isHovered and 0.4 or 0.15))
       end
     end
 
+    frame:SetScript("OnMouseDown", function() editBox:SetFocus() end)
+
     frame:OnEvent("FOCUSED", refreshBorder)
-    editBox:OnEvent("HOVERED", refreshBorder)
-    editBox:OnEvent("ENABLED", refreshBorder)
+    frame:OnEvent("HOVERED", refreshBorder)
+    frame:OnEvent("ENABLED", refreshBorder)
   end)
 
   --- Returns the current text, or an empty string before the frame exists.

@@ -45,9 +45,18 @@ function ComponentFactory:IconButton(options)
       frame.icon:SetSize(iconSize, iconSize)
       frame.icon:SetPoint("CENTER")
 
-      frame:HookScript("OnEnter", function(self) self:SetBackdropColor(options.highlightColor:GetRGBA(0.75)) end)
-      frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
       frame:SetScript("OnClick", options.onClick)
+
+      --- Highlights the backdrop while hovered. A disabled button is not highlighted.
+      local function refresh()
+        if frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED") then
+          frame:SetBackdropColor(options.highlightColor:GetRGBA(0.75))
+        else
+          frame:SetBackdropColor(0, 0, 0, 0)
+        end
+      end
+      frame:OnEvent("HOVERED", refresh)
+      frame:OnEvent("ENABLED", refresh)
 
       return frame
     end

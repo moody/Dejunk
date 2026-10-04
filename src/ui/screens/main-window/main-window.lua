@@ -205,10 +205,7 @@ Controller:AddSidebarRow({
     Components.SearchBox = screen:AttachComponent(ComponentFactory:TextInput({
       placeholderText = L.SEARCH_LISTS,
       fontObject = "GameFontNormal",
-      onTextChanged = function(text)
-        Controller.searchText = text
-        Components.SearchButton:SetIcon(Addon:GetAsset(text == "" and "search-icon" or "ban-icon"))
-      end
+      onTextChanged = function(text) Controller.searchText = text end
     }))
 
     -- Escape clears the search.
@@ -219,20 +216,49 @@ Controller:AddSidebarRow({
       end)
     end)
 
-    -- Search button: clears the search and the focus. Does nothing while the box is empty.
+    -- Search button: clears the search and the focus.
     Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
       icon = Addon:GetAsset("search-icon"),
       highlightColor = Colors.Blue,
       onClick = function()
-        if Components.SearchBox:GetText() == "" then return end
         Components.SearchBox:SetText("")
         Components.SearchBox.Input:GetFrame():ClearFocus()
       end,
-      onUpdateTooltip = function(_, tooltip)
-        if Components.SearchBox:GetText() == "" then return end
+      onUpdateTooltip = function(self, tooltip)
+        if not self:GetEventValue("ENABLED") then return end
         tooltip:SetText(L.CLEAR_SEARCH)
       end
     }))
+
+    -- The button follows the box. While the box is empty, the button is disabled and dimmed unless the box has
+    -- focus, and the mouse passes through it to the box.
+    Components.SearchButton:WhenFrameReady(function(button)
+      --- @cast button IconButtonWidget
+      Components.SearchBox.Input:WhenFrameReady(function(editBox)
+        local box = Components.SearchBox:GetFrame() --- @type FrameWidget
+
+        --- Shows the clear icon and enables the button while the box has text.
+        local function refreshText()
+          local hasText = editBox:GetText() ~= ""
+          Components.SearchButton:SetIcon(Addon:GetAsset(hasText and "ban-icon" or "search-icon"))
+          button:FireEvent("ENABLED", hasText)
+        end
+
+        --- Dims the button and passes the mouse through while it is disabled.
+        local function refreshMouse()
+          local isEnabled = button:GetEventValue("ENABLED")
+          button:SetAlpha((isEnabled or box:GetEventValue("FOCUSED")) and 1 or 0.4)
+          button:SetPropagateMouseClicks(not isEnabled)
+          button:SetPropagateMouseMotion(not isEnabled)
+        end
+
+        editBox:HookScript("OnTextChanged", refreshText)
+        button:OnEvent("ENABLED", refreshMouse)
+        box:OnEvent("FOCUSED", refreshMouse)
+
+        refreshText()
+      end)
+    end)
 
     -- Divider below the search box.
     screen:AttachComponent(ComponentFactory:Divider()):SetMarginTop(Widgets:Padding(0.25))
