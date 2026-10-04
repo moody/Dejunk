@@ -59,11 +59,12 @@ local function refreshComponents()
   Components.ItemsFrame:GetFrame().title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
 
   if Addon:IsBusy() then
-    Components.StartSellingButton:GetFrame():SetEnabled(false)
-    Components.DestroyNextItemButton:GetFrame():SetEnabled(false)
+    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
+    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", false)
   else
-    Components.StartSellingButton:GetFrame():SetEnabled(Addon:IsAtMerchant() and hasSellableItems(junkItems))
-    Components.DestroyNextItemButton:GetFrame():SetEnabled(#junkItems > 0)
+    local canSell = Addon:IsAtMerchant() and hasSellableItems(junkItems)
+    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
+    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", #junkItems > 0)
   end
 end
 

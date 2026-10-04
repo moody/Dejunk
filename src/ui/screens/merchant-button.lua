@@ -76,10 +76,12 @@ local rootComponent = Addon.Waffle:Flex({
     end)
     frame:SetClickHandler("RightButton", "ALT", Commands.destroy)
 
+    -- Fire enabled event.
+    TickerManager:NewTicker(1 / 30, function()
+      frame:FireEvent("ENABLED", not Addon:IsBusy())
+    end):BindFrame(frame)
+
     -- Scripts.
-    frame:HookScript("OnUpdate", function()
-      frame:SetEnabled(not Addon:IsBusy())
-    end)
     frame:HookScript("OnDragStart", function()
       frame:GetScript("OnLeave")(frame)
     end)

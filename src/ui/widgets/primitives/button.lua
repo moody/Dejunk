@@ -44,43 +44,29 @@ function Widgets:Button(options)
   frame:SetFontString(frame.label)
   frame:SetHeight(frame.label:GetHeight() + Widgets:Padding(2))
 
-  local function setNormalColors()
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
-    frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-    frame.label:SetTextColor(options.labelColor:GetRGBA(1))
-  end
-
-  local function setHighlightColors()
-    frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
-    frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
-    frame.label:SetTextColor(Colors.White:GetRGBA(1))
-  end
-
-  local function setDisabledColors()
-    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-    frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
-  end
-
-  -- Initialize colors.
-  setNormalColors()
-
   -- Scripts.
   frame:SetScript("OnClick", function(self, button)
     if self.onClick then self.onClick(self, button) end
   end)
 
-  frame:HookScript("OnEnter", setHighlightColors)
-  frame:HookScript("OnLeave", setNormalColors)
-
-  frame:HookScript("OnDisable", setDisabledColors)
-  frame:HookScript("OnEnable", function()
-    if frame:IsMouseOver() then
-      setHighlightColors()
+  --- Colors the button as disabled, highlighted, or normal.
+  local function refresh()
+    if not frame:GetEventValue("ENABLED") then
+      frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
+      frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+      frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
+    elseif frame:GetEventValue("HOVERED") then
+      frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
+      frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
+      frame.label:SetTextColor(Colors.White:GetRGBA(1))
     else
-      setNormalColors()
+      frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
+      frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
+      frame.label:SetTextColor(options.labelColor:GetRGBA(1))
     end
-  end)
+  end
+  frame:OnEvent("HOVERED", refresh)
+  frame:OnEvent("ENABLED", refresh)
 
   return frame
 end
