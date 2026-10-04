@@ -159,10 +159,10 @@ Components.TitleBarButtonsRow = Components.Root.TitleRow:AddRow({ justify = "END
 
 -- Keybinds button.
 Components.TitleBarButtonsRow:AttachComponent(
-  ComponentFactory:WindowTitleButton({
+  ComponentFactory:IconButton({
     name = "$parent_KeybindsButton",
-    texture = Addon:GetAsset("keyboard-icon"),
-    textureSize = 18,
+    icon = Addon:GetAsset("keyboard-icon"),
+    iconSize = 18,
     highlightColor = Colors.Blue,
     onClick = function() Controller:OpenKeybindings() end,
     onUpdateTooltip = function(_, tooltip)
@@ -207,7 +207,7 @@ Controller:AddSidebarRow({
       fontObject = "GameFontNormal",
       onTextChanged = function(text)
         Controller.searchText = text
-        Components.SearchButton:SetTexture(Addon:GetAsset(text == "" and "search-icon" or "ban-icon"))
+        Components.SearchButton:SetIcon(Addon:GetAsset(text == "" and "search-icon" or "ban-icon"))
       end
     }))
 
@@ -220,8 +220,8 @@ Controller:AddSidebarRow({
     end)
 
     -- Search button: clears the search and the focus. Does nothing while the box is empty.
-    Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:WindowTitleButton({
-      texture = Addon:GetAsset("search-icon"),
+    Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
+      icon = Addon:GetAsset("search-icon"),
       highlightColor = Colors.Blue,
       onClick = function()
         if Components.SearchBox:GetText() == "" then return end

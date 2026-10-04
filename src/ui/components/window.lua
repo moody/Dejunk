@@ -104,10 +104,10 @@ function ComponentFactory:Window(options)
   })
 
   root.CloseButton = root.TitleRow:AttachComponent(
-    ComponentFactory:WindowTitleButton({
+    ComponentFactory:IconButton({
       name = "$parent_CloseButton",
-      texture = Addon:GetAsset("x-icon"),
-      textureSize = 14,
+      icon = Addon:GetAsset("x-icon"),
+      iconSize = 14,
       highlightColor = Colors.Red,
       onClick = function()
         root:SetVisibility("GONE")

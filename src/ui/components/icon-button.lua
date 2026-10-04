@@ -8,29 +8,28 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @class WindowTitleButtonOptions
---- @field name? string
---- @field texture string
---- @field textureSize? number Defaults to `14`.
+--- @class IconButtonComponentOptions
+--- @field name? string Global frame name. Defaults to a unique name.
+--- @field icon string Texture of the icon.
+--- @field iconSize? number Defaults to `14`.
 --- @field width? number Defaults to `46`.
---- @field highlightColor Color
---- @field onClick fun()
---- @field onUpdateTooltip? fun(self: WindowTitleButtonWidget, tooltip: Tooltip)
+--- @field highlightColor Color Fill color while hovered.
+--- @field onClick fun() Called when the button is clicked.
+--- @field onUpdateTooltip? fun(self: IconButtonWidget, tooltip: Tooltip) Shown while hovering the button.
 
 -- =============================================================================
--- ComponentFactory - WindowTitleButton
+-- ComponentFactory - IconButton
 -- =============================================================================
 
---- Creates a fixed-width icon button meant for a window's title row.
---- @param options WindowTitleButtonOptions
---- @return WindowTitleButtonComponent
-function ComponentFactory:WindowTitleButton(options)
-  --- @class WindowTitleButtonComponent : WaffleFlexComponent
+--- Creates a fixed-width button with an icon.
+--- @param options IconButtonComponentOptions
+--- @return IconButtonComponent
+function ComponentFactory:IconButton(options)
+  --- @class IconButtonComponent : WaffleFlexComponent
   local root = Addon.Waffle:Flex({
     width = options.width or 46,
     frameFactory = function(parent)
-      --- @class WindowTitleButtonWidget : FrameWidget, Button
-      --- @field texture Texture
+      --- @class IconButtonWidget : FrameWidget, Button
       local frame = Widgets:Frame({
         parent = parent,
         name = options.name,
@@ -40,11 +39,11 @@ function ComponentFactory:WindowTitleButton(options)
       frame:SetBackdropColor(0, 0, 0, 0)
       frame:SetBackdropBorderColor(0, 0, 0, 0)
 
-      local textureSize = options.textureSize or 14
-      frame.texture = frame:CreateTexture("$parent_Texture", "ARTWORK")
-      frame.texture:SetTexture(options.texture)
-      frame.texture:SetSize(textureSize, textureSize)
-      frame.texture:SetPoint("CENTER")
+      local iconSize = options.iconSize or 14
+      frame.icon = frame:CreateTexture("$parent_Icon", "ARTWORK")
+      frame.icon:SetTexture(options.icon)
+      frame.icon:SetSize(iconSize, iconSize)
+      frame.icon:SetPoint("CENTER")
 
       frame:HookScript("OnEnter", function(self) self:SetBackdropColor(options.highlightColor:GetRGBA(0.75)) end)
       frame:HookScript("OnLeave", function(self) self:SetBackdropColor(0, 0, 0, 0) end)
@@ -55,10 +54,10 @@ function ComponentFactory:WindowTitleButton(options)
   })
 
   --- Sets the icon's texture.
-  --- @param texture string
-  function root:SetTexture(texture)
+  --- @param icon string
+  function root:SetIcon(icon)
     self:WhenFrameReady(function(frame)
-      frame.texture:SetTexture(texture)
+      frame.icon:SetTexture(icon)
     end)
   end
 

@@ -89,6 +89,7 @@
   <Script file="src\ui\components\check-chip-group.lua"/>
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
+  <Script file="src\ui\components\icon-button.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
@@ -98,7 +99,6 @@
   <Script file="src\ui\components\text.lua"/>
   <Script file="src\ui\components\text-input.lua"/>
   <Script file="src\ui\components\titled-panel.lua"/>
-  <Script file="src\ui\components\window-title-button.lua"/>
   <Script file="src\ui\components\window.lua"/>
 
   <!-- UI Screens -->
