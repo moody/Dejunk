@@ -23,6 +23,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shows a tooltip while the frame is hovered.
 --- @field enableClickHandling? boolean Adds a `SetClickHandler()` method.
 --- @field enableDragging? boolean Lets the frame be dragged, and raises it above other frames when shown or clicked.
+--- @field propagateWhenDisabled? boolean Passes the mouse through while disabled. Defaults to `false`.
 
 -- =============================================================================
 -- Modifier (Click Handling)
@@ -54,6 +55,42 @@ local function getCurrentModifierValue()
 end
 
 -- =============================================================================
+-- Mouse Propagation
+-- =============================================================================
+
+--- Whether each frame passes the mouse through while disabled. Frames never set are absent.
+--- @type table<FrameWidget, boolean>
+local propagatesWhenDisabled = setmetatable({}, { __mode = "k" })
+
+--- Passes the frame's clicks and motion through while it is disabled and set to propagate.
+--- @param frame FrameWidget
+local function refreshPropagation(frame)
+  local propagate = propagatesWhenDisabled[frame] and not frame:GetEventValue("ENABLED")
+  frame:SetPropagateMouseClicks(propagate)
+  frame:SetPropagateMouseMotion(propagate)
+end
+
+--- Sets whether the frame passes its mouse to the frame beneath it while disabled. Takes over the frame's
+--- mouse propagation. Returns the frame.
+--- @param frame FrameWidget
+--- @param propagate boolean
+--- @return FrameWidget frame
+local function propagateWhenDisabled(frame, propagate)
+  assert(type(propagate) == "boolean")
+
+  local isFirstCall = propagatesWhenDisabled[frame] == nil
+  propagatesWhenDisabled[frame] = propagate
+
+  if isFirstCall then
+    frame:OnEvent("ENABLED", function() refreshPropagation(frame) end)
+  else
+    refreshPropagation(frame)
+  end
+
+  return frame
+end
+
+-- =============================================================================
 -- Widgets - Frame
 -- =============================================================================
 
@@ -73,6 +110,12 @@ function Widgets:Frame(options)
   frame.FireEvent = FrameWidgetEvents.fireEvent
   frame.GetEventValue = FrameWidgetEvents.getEventValue
   FrameWidgetEvents:Init(frame)
+
+  -- Propagation.
+  frame.PropagateWhenDisabled = propagateWhenDisabled
+  if options.propagateWhenDisabled then
+    frame:PropagateWhenDisabled(true)
+  end
 
   -- Strata.
   if type(options.frameStrata) == "string" then

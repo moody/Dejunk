@@ -26,7 +26,11 @@ function Mocks:CreateFrame(frameType, parent)
       --- @type table<string, function>
       scripts = {},
       --- Last value from `SetEnabled()`.
-      enabled = true
+      enabled = true,
+      --- Last value from `SetPropagateMouseClicks()`.
+      propagatesClicks = false,
+      --- Last value from `SetPropagateMouseMotion()`.
+      propagatesMotion = false
     }
   }
 
@@ -56,6 +60,14 @@ function Mocks:CreateFrame(frameType, parent)
   function MockFrame:SetWidth() end
 
   function MockFrame:SetHeight() end
+
+  function MockFrame:SetPropagateMouseClicks(propagate)
+    self._test.propagatesClicks = propagate
+  end
+
+  function MockFrame:SetPropagateMouseMotion(propagate)
+    self._test.propagatesMotion = propagate
+  end
 
   if frameType == "Button" or frameType == "EditBox" then
     function MockFrame:SetEnabled(enabled)
