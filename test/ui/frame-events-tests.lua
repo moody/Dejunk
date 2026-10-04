@@ -2,59 +2,39 @@
 
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
+local Mocks = require("test/mocks")
 
 -- ============================================================================
 -- Setup
 -- ============================================================================
 
-local Context = Harness:NewContext()
+local Context = Harness:NewContext(function(globals)
+  globals.CreateFrame = function(frameType, _, parent) return Mocks:CreateFrame(frameType, parent) end
+  globals.UIParent = Mocks:CreateFrame()
+end)
+
 Context:Load("src/ui/widgets/primitives/frame/frame-event-state.lua")
 Context:Load("src/ui/widgets/primitives/frame/frame-events.lua")
 Context:Load("src/ui/widgets/primitives/frame/events/enabled.lua")
 Context:Load("src/ui/widgets/primitives/frame/events/focused.lua")
 Context:Load("src/ui/widgets/primitives/frame/events/hovered.lua")
+Context:Load("src/ui/widgets/primitives/frame/frame.lua")
 
-local FrameWidgetEvents = Context:GetModule("FrameWidgetEvents")
+local Widgets = Context:GetModule("Widgets")
 
---- Returns a fake frame set up as `Widgets:Frame` does. `native` adds `SetEnabled()`, and `editBox` adds the edit
---- focus scripts.
+--- Returns a widget frame of the given type, without a backdrop.
 --- @param parent? table
---- @param options? { native?: boolean, editBox?: boolean }
---- @return table
-local function newFrame(parent, options)
-  options = options or {}
-  local frame = { parent = parent, hooks = {} }
-
-  function frame:GetParent() return self.parent end
-
-  function frame:GetName() return "TestFrame" end
-
-  function frame:HookScript(name, fn)
-    self.hooks[name] = self.hooks[name] or {}
-    table.insert(self.hooks[name], fn)
-  end
-
-  function frame:HasScript(name)
-    return options.editBox == true and name:find("EditFocus") ~= nil
-  end
-
-  if options.native then
-    function frame:SetEnabled(enabled) self.nativeEnabled = enabled end
-  end
-
-  frame.OnEvent = FrameWidgetEvents.onEvent
-  frame.FireEvent = FrameWidgetEvents.fireEvent
-  frame.GetEventValue = FrameWidgetEvents.getEventValue
-  FrameWidgetEvents:Init(frame)
-
-  return frame
+--- @param frameType? string Defaults to `Frame`.
+--- @return FrameWidget
+local function newFrame(parent, frameType)
+  return Widgets:Frame({ name = "TestFrame", parent = parent, frameType = frameType, backdrop = false })
 end
 
 --- Calls the hooks of the frame for the script.
 --- @param frame table
 --- @param name string
 local function runScript(frame, name)
-  for _, fn in ipairs(frame.hooks[name] or {}) do fn(frame) end
+  for _, fn in ipairs(frame._test.hooks[name] or {}) do fn(frame) end
 end
 
 --- Returns a handler that appends each `{ value, source }` it receives to `calls`.
@@ -296,13 +276,13 @@ end
 -- Test: the mouse scripts are hooked once, when the first handler is added.
 do
   local frame = newFrame()
-  assert(frame.hooks.OnEnter == nil)
+  assert(frame._test.hooks.OnEnter == nil)
 
   frame:OnEvent("HOVERED", function() end)
   frame:OnEvent("HOVERED", function() end)
 
-  assert(#frame.hooks.OnEnter == 1)
-  assert(#frame.hooks.OnLeave == 1)
+  assert(#frame._test.hooks.OnEnter == 1)
+  assert(#frame._test.hooks.OnLeave == 1)
 end
 
 -- ============================================================================
@@ -312,7 +292,7 @@ end
 -- Test: fires as an edit box gains and loses focus, and reaches its ancestors.
 do
   local container = newFrame()
-  local editBox = newFrame(container, { editBox = true })
+  local editBox = newFrame(container, "EditBox")
   local editBoxCalls, containerCalls = {}, {}
   editBox:OnEvent("FOCUSED", recordCalls(editBoxCalls))
   container:OnEvent("FOCUSED", recordCalls(containerCalls))
@@ -327,8 +307,8 @@ end
 -- Test: frames without the edit focus scripts do not hook them.
 do
   local frame = newFrame()
-  assert(frame.hooks.OnEditFocusGained == nil)
-  assert(frame.hooks.OnEditFocusLost == nil)
+  assert(frame._test.hooks.OnEditFocusGained == nil)
+  assert(frame._test.hooks.OnEditFocusLost == nil)
 end
 
 -- ============================================================================
@@ -340,20 +320,20 @@ do
   local root = newFrame()
   local box = newFrame(root)
   local group = newFrame(box)
-  local chip = newFrame(group, { native = true })
+  local chip = newFrame(group, "Button")
   local calls = {}
 
   chip:OnEvent("ENABLED", recordCalls(calls))
-  assert(chip.nativeEnabled == true)
+  assert(chip._test.enabled == true)
 
   box:FireEvent("ENABLED", false)
-  assert(chip.nativeEnabled == false)
+  assert(chip._test.enabled == false)
   assert(chip:GetEventValue("ENABLED") == false)
   assert(group:GetEventValue("ENABLED") == false)
   assert(root:GetEventValue("ENABLED") == true)
 
   box:FireEvent("ENABLED", true)
-  assert(chip.nativeEnabled == true)
+  assert(chip._test.enabled == true)
   assert(chip:GetEventValue("ENABLED") == true)
   assert(Matchers:IsDeepEqual(values(calls), { true, false, true }))
 end
@@ -363,8 +343,8 @@ do
   local box = newFrame()
   box:FireEvent("ENABLED", false)
 
-  local chip = newFrame(box, { native = true })
-  assert(chip.nativeEnabled == false)
+  local chip = newFrame(box, "Button")
+  assert(chip._test.enabled == false)
   assert(chip:GetEventValue("ENABLED") == false)
 
   local calls = {}
@@ -375,19 +355,19 @@ end
 -- Test: a frame that was disabled itself stays disabled when its ancestor is enabled again.
 do
   local box = newFrame()
-  local chip = newFrame(box, { native = true })
+  local chip = newFrame(box, "Button")
 
   chip:FireEvent("ENABLED", false)
   box:FireEvent("ENABLED", false)
   box:FireEvent("ENABLED", true)
 
   assert(chip:GetEventValue("ENABLED") == false)
-  assert(chip.nativeEnabled == false)
+  assert(chip._test.enabled == false)
 
   chip:FireEvent("ENABLED", true)
 
   assert(chip:GetEventValue("ENABLED") == true)
-  assert(chip.nativeEnabled == true)
+  assert(chip._test.enabled == true)
 end
 
 -- Test: handlers are called only when the effective value changes.
@@ -406,11 +386,11 @@ end
 -- Test: an ancestor that is not part of the event system does not break the chain.
 do
   local root = newFrame()
-  local outsider = { GetParent = function() return root end }
-  local child = newFrame(outsider, { native = true })
+  local outsider = Mocks:CreateFrame("Frame", root)
+  local child = newFrame(outsider, "Button")
 
   root:FireEvent("ENABLED", false)
 
-  assert(child.nativeEnabled == false)
+  assert(child._test.enabled == false)
   assert(child:GetEventValue("ENABLED") == false)
 end
