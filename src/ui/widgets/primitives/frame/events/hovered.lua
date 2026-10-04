@@ -1,0 +1,20 @@
+local Addon = select(2, ...) ---@type Addon
+local FrameWidgetEventState = Addon:GetModule("FrameWidgetEventState")
+local FrameWidgetEvents = Addon:GetModule("FrameWidgetEvents")
+
+-- =============================================================================
+-- HOVERED
+-- =============================================================================
+
+--- Fires as the mouse enters and leaves the frame.
+--- @class FrameWidgetHoveredEvent : FrameWidgetEvent
+local Hovered = FrameWidgetEvents:Register("HOVERED")
+
+--- Starts watching the mouse once the frame has a handler.
+--- @param frame FrameWidget
+function Hovered:Listen(frame)
+  FrameWidgetEventState:Get(frame).values.HOVERED = frame.IsMouseOver ~= nil and frame:IsMouseOver() or false
+
+  frame:HookScript("OnEnter", function() frame:FireEvent("HOVERED", true) end)
+  frame:HookScript("OnLeave", function() frame:FireEvent("HOVERED", false) end)
+end

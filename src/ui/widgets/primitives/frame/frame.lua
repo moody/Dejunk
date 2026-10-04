@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local FrameWidgetEvents = Addon:GetModule("FrameWidgetEvents")
 local Tooltip = Addon:GetModule("Tooltip")
 
 --- @class Widgets
@@ -66,6 +67,12 @@ function Widgets:Frame(options)
     options.name or Widgets:GetUniqueName("Frame"),
     options.parent or UIParent
   )
+
+  -- Events.
+  frame.OnEvent = FrameWidgetEvents.onEvent
+  frame.FireEvent = FrameWidgetEvents.fireEvent
+  frame.GetEventValue = FrameWidgetEvents.getEventValue
+  FrameWidgetEvents:Init(frame)
 
   -- Strata.
   if type(options.frameStrata) == "string" then
