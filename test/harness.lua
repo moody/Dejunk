@@ -47,7 +47,7 @@ function Harness:NewContext(setup)
 
   if setup then setup(globals, Context.Addon) end
 
-  --- Loads and executes a source file into the context. Returns the context.
+  --- Loads a source file into the context. Returns the context.
   --- @param path string
   --- @return DejunkTestContext Context
   function Context:Load(path)
