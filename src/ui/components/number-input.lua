@@ -44,20 +44,6 @@ function ComponentFactory:NumberInput(options)
       editBox:SetNumeric(true)
       editBox:SetMaxLetters(options.maxLetters or 5)
 
-      local isHovered = false
-
-      --- Brightens the border while hovered or focused.
-      local function refreshBorder()
-        local alpha = (editBox:HasFocus() and 0.5) or (isHovered and 0.4) or 0.15
-        editBox:SetBackdropBorderColor(Colors.White:GetRGBA(alpha))
-      end
-
-      --- Shows the current value, unless the box has focus.
-      local function refreshText()
-        if editBox:HasFocus() then return end
-        editBox:SetText(tostring(options.get()))
-      end
-
       --- Saves the entered value, ignoring an empty box.
       local function save()
         local value = tonumber(editBox:GetText())
@@ -76,27 +62,33 @@ function ComponentFactory:NumberInput(options)
         self:SetText(tostring(options.get()))
         self:ClearFocus()
       end)
-      editBox:SetScript("OnEditFocusGained", function(self)
-        self:HighlightText()
-        refreshBorder()
-      end)
-      editBox:SetScript("OnEditFocusLost", function(self)
-        self:HighlightText(0, 0)
-        save()
-        refreshText()
-        refreshBorder()
-      end)
-      editBox:SetScript("OnEnter", function()
-        isHovered = true
-        refreshBorder()
-      end)
-      editBox:SetScript("OnLeave", function()
-        isHovered = false
-        refreshBorder()
-      end)
 
-      refreshText()
-      refreshBorder()
+      --- Shows the current value, unless the box has focus.
+      local function refreshText()
+        if editBox:HasFocus() then return end
+        editBox:SetText(tostring(options.get()))
+      end
+
+      --- Brightens the border while hovered or focused. Hover is ignored while disabled.
+      local function refreshBorder()
+        local isHovered = editBox:GetEventValue("HOVERED") and editBox:GetEventValue("ENABLED")
+        local alpha = (editBox:GetEventValue("FOCUSED") and 0.5) or (isHovered and 0.4) or 0.15
+        editBox:SetBackdropBorderColor(Colors.White:GetRGBA(alpha))
+      end
+
+      -- Set up event handlers.
+      editBox:OnEvent("FOCUSED", function(isFocused)
+        if isFocused then
+          editBox:HighlightText()
+        else
+          editBox:HighlightText(0, 0)
+          save()
+          refreshText()
+        end
+        refreshBorder()
+      end)
+      editBox:OnEvent("HOVERED", refreshBorder)
+      editBox:OnEvent("ENABLED", refreshBorder)
       EventManager:On(E.StateUpdated, refreshText)
 
       return editBox

@@ -69,29 +69,8 @@ function ComponentFactory:TextInput(options)
       placeholder:SetPoint("RIGHT", -rightInset, 0)
       placeholder:SetJustifyH("LEFT")
 
-      local isHovered = false
-
-      --- Colors the border blue while focused, and brightens it while hovered.
-      local function refreshBorder()
-        if editBox:HasFocus() then
-          parent:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
-        else
-          parent:SetBackdropBorderColor(Colors.White:GetRGBA(isHovered and 0.4 or 0.15))
-        end
-      end
-
       editBox:SetScript("OnEscapePressed", editBox.ClearFocus)
       editBox:SetScript("OnEnterPressed", editBox.ClearFocus)
-      editBox:SetScript("OnEditFocusGained", refreshBorder)
-      editBox:SetScript("OnEditFocusLost", refreshBorder)
-      editBox:SetScript("OnEnter", function()
-        isHovered = true
-        refreshBorder()
-      end)
-      editBox:SetScript("OnLeave", function()
-        isHovered = false
-        refreshBorder()
-      end)
       editBox:SetScript("OnTextChanged", function(self)
         local text = self:GetText()
         placeholder:SetShown(text == "")
@@ -101,6 +80,27 @@ function ComponentFactory:TextInput(options)
       return editBox
     end
   })
+
+  -- Refresh the border on focus, hover, and enabled changes.
+  --- @param editBox TextInputWidget
+  root.Input:WhenFrameReady(function(editBox)
+    --- @type FrameWidget
+    local frame = root:GetFrame()
+
+    --- Colors the border blue while focused, and brightens it while hovered. Hover is ignored while disabled.
+    local function refreshBorder()
+      if frame:GetEventValue("FOCUSED") then
+        frame:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
+      else
+        local isHovered = editBox:GetEventValue("HOVERED") and editBox:GetEventValue("ENABLED")
+        frame:SetBackdropBorderColor(Colors.White:GetRGBA(isHovered and 0.4 or 0.15))
+      end
+    end
+
+    frame:OnEvent("FOCUSED", refreshBorder)
+    editBox:OnEvent("HOVERED", refreshBorder)
+    editBox:OnEvent("ENABLED", refreshBorder)
+  end)
 
   --- Returns the current text, or an empty string before the frame exists.
   --- @return string
