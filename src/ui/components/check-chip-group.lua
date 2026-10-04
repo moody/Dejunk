@@ -43,6 +43,12 @@ function ComponentFactory:CheckChipGroup(options)
   for _, chipOptions in ipairs(options.chips) do
     local chip = root:AttachComponent(ComponentFactory:CheckChip(chipOptions))
     if columnWidth then chip:SetWidth(columnWidth) end
+
+    -- Pass the mouse through while disabled.
+    chip:WhenFrameReady(function(frame)
+      --- @cast frame CheckChipWidget
+      frame:PropagateWhenDisabled(true)
+    end)
   end
 
   return root

@@ -234,6 +234,8 @@ Controller:AddSidebarRow({
     -- focus, and the mouse passes through it to the box.
     Components.SearchButton:WhenFrameReady(function(button)
       --- @cast button IconButtonWidget
+      button:PropagateWhenDisabled(true)
+
       Components.SearchBox.Input:WhenFrameReady(function(editBox)
         local box = Components.SearchBox:GetFrame() --- @type FrameWidget
 
@@ -244,17 +246,15 @@ Controller:AddSidebarRow({
           button:FireEvent("ENABLED", hasText)
         end
 
-        --- Dims the button and passes the mouse through while it is disabled.
-        local function refreshMouse()
+        --- Dims the button while it is disabled, unless the box has focus.
+        local function refreshAlpha()
           local isEnabled = button:GetEventValue("ENABLED")
           button:SetAlpha((isEnabled or box:GetEventValue("FOCUSED")) and 1 or 0.4)
-          button:SetPropagateMouseClicks(not isEnabled)
-          button:SetPropagateMouseMotion(not isEnabled)
         end
 
         editBox:HookScript("OnTextChanged", refreshText)
-        button:OnEvent("ENABLED", refreshMouse)
-        box:OnEvent("FOCUSED", refreshMouse)
+        button:OnEvent("ENABLED", refreshAlpha)
+        box:OnEvent("FOCUSED", refreshAlpha)
 
         refreshText()
       end)

@@ -71,7 +71,7 @@ local function refreshPropagation(frame)
 end
 
 --- Sets whether the frame passes its mouse to the frame beneath it while disabled. Takes over the frame's
---- mouse propagation. Returns the frame.
+--- mouse propagation, and has no effect on a frame that does not take the mouse. Returns the frame.
 --- @param frame FrameWidget
 --- @param propagate boolean
 --- @return FrameWidget frame

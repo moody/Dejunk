@@ -55,10 +55,16 @@ end
 --- @param getState fun(): ItemLevelOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addItemLevelLine(self, getState, mergeAction)
-  self:AddLine(L.ITEM_LEVEL):AttachComponent(ComponentFactory:NumberInput({
+  local input = self:AddLine(L.ITEM_LEVEL):AttachComponent(ComponentFactory:NumberInput({
     get = function() return getState().value end,
     set = function(value) StateManager:Dispatch(mergeAction({ value = value })) end
   }))
+
+  -- Pass the mouse through while disabled.
+  input:WhenFrameReady(function(frame)
+    --- @cast frame NumberInputWidget
+    frame:PropagateWhenDisabled(true)
+  end)
 end
 
 --- Adds a qualities line to the box for a setting's `qualities` field.

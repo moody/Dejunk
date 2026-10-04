@@ -19,7 +19,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - SettingsBox
 -- =============================================================================
 
---- Creates a column of labeled lines.
+--- Creates a column of labeled lines. It takes the mouse while enabled, and passes it to
+--- the frame behind while disabled.
 --- @param options? SettingsBoxComponentOptions
 --- @return SettingsBoxComponent root
 function ComponentFactory:SettingsBox(options)
@@ -33,7 +34,8 @@ function ComponentFactory:SettingsBox(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      local frame = Widgets:Frame({ parent = parent, backdrop = false })
+      local frame = Widgets:Frame({ parent = parent, backdrop = false, propagateWhenDisabled = true })
+      frame:EnableMouse(true)
       frame:OnEvent("ENABLED", function(isEnabled) frame:SetAlpha(isEnabled and 1 or 0.5) end)
 
       if options and options.isEnabled then
