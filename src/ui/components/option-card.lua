@@ -58,10 +58,10 @@ function ComponentFactory:OptionCard(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      return Widgets:CheckBox({ parent = parent })
+      return Widgets:Checkbox({ parent = parent })
     end
   }):WhenFrameReady(function(checkbox) -- Refresh on hover, show, and state changes.
-    --- @cast checkbox CheckBoxWidget
+    --- @cast checkbox CheckboxWidget
     --- @type FrameWidget
     local frame = root:GetFrame()
 

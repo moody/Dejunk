@@ -54,7 +54,7 @@ function ComponentFactory:CheckChip(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      return Widgets:CheckBox({ parent = parent, color = options.color })
+      return Widgets:Checkbox({ parent = parent, color = options.color })
     end
   })
 
@@ -67,7 +67,7 @@ function ComponentFactory:CheckChip(options)
   -- Refresh on hover, enabled, and state changes.
   chip.Label:WhenFrameReady(function(label)
     chip.Checkbox:WhenFrameReady(function(checkbox)
-      --- @cast checkbox CheckBoxWidget
+      --- @cast checkbox CheckboxWidget
       --- @type FrameWidget
       local frame = chip:GetFrame()
 

@@ -73,7 +73,7 @@
 
   <!-- UI Widgets - Primitives -->
   <Script file="src\ui\widgets\primitives\button.lua"/>
-  <Script file="src\ui\widgets\primitives\check-box.lua"/>
+  <Script file="src\ui\widgets\primitives\checkbox.lua"/>
   <Script file="src\ui\widgets\primitives\frame\frame-event-state.lua"/>
   <Script file="src\ui\widgets\primitives\frame\frame-events.lua"/>
   <Script file="src\ui\widgets\primitives\frame\events\enabled.lua"/>

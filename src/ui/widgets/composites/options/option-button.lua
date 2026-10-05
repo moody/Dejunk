@@ -16,12 +16,12 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field get fun(): boolean
 --- @field set fun(value: boolean)
 
---- @class OptionButtonItemQualityCheckBoxesOptions
---- @field poor CheckBoxWidgetOptions
---- @field common CheckBoxWidgetOptions
---- @field uncommon CheckBoxWidgetOptions
---- @field rare CheckBoxWidgetOptions
---- @field epic CheckBoxWidgetOptions
+--- @class OptionButtonItemQualityCheckboxesOptions
+--- @field poor CheckboxWidgetOptions
+--- @field common CheckboxWidgetOptions
+--- @field uncommon CheckboxWidgetOptions
+--- @field rare CheckboxWidgetOptions
+--- @field epic CheckboxWidgetOptions
 
 -- =============================================================================
 -- Widgets - Option Button
@@ -46,12 +46,12 @@ function Widgets:OptionButton(options)
   local frame = self:Frame(options)
   frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
   frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-  frame.itemQualityCheckBoxes = {}
+  frame.itemQualityCheckboxes = {}
 
-  -- Check box.
-  frame.checkBox = self:CheckBox({
+  -- Checkbox.
+  frame.checkbox = self:Checkbox({
     parent = frame,
-    name = "$parent_CheckBox",
+    name = "$parent_Checkbox",
     points = { { "TOPRIGHT", -Widgets:Padding(), -Widgets:Padding() } },
     color = Colors.White
   })
@@ -60,23 +60,23 @@ function Widgets:OptionButton(options)
   frame.label = frame:CreateFontString("$parent_Label", "ARTWORK", "GameFontNormal")
   frame.label:SetText(Colors.White(options.labelText))
   frame.label:SetPoint("TOPLEFT", frame, Widgets:Padding(), -Widgets:Padding())
-  frame.label:SetPoint("RIGHT", frame.checkBox, "LEFT", -Widgets:Padding(0.5), 0)
+  frame.label:SetPoint("RIGHT", frame.checkbox, "LEFT", -Widgets:Padding(0.5), 0)
   frame.label:SetWordWrap(false)
   frame.label:SetJustifyH("LEFT")
 
-  local CHECK_BOX_SIZE = math.floor(frame.label:GetStringHeight())
-  local ITEM_QUALITY_CHECK_BOX_SIZE = math.floor(CHECK_BOX_SIZE * 1.5)
-  frame.checkBox:SetSize(CHECK_BOX_SIZE, CHECK_BOX_SIZE)
-  frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding(2))
+  local CHECKBOX_SIZE = math.floor(frame.label:GetStringHeight())
+  local ITEM_QUALITY_CHECKBOX_SIZE = math.floor(CHECKBOX_SIZE * 1.5)
+  frame.checkbox:SetSize(CHECKBOX_SIZE, CHECKBOX_SIZE)
+  frame:SetHeight(CHECKBOX_SIZE + Widgets:Padding(2))
 
-  --- @param options OptionButtonItemQualityCheckBoxesOptions
-  function frame:InitializeItemQualityCheckBoxes(options)
+  --- @param options OptionButtonItemQualityCheckboxesOptions
+  function frame:InitializeItemQualityCheckboxes(options)
     -- Set additional options.
     for k, v in pairs(options) do
       v.parent = frame
       v.name = "$parent_ItemQualityButton_" .. k
-      v.width = ITEM_QUALITY_CHECK_BOX_SIZE
-      v.height = ITEM_QUALITY_CHECK_BOX_SIZE
+      v.width = ITEM_QUALITY_CHECKBOX_SIZE
+      v.height = ITEM_QUALITY_CHECKBOX_SIZE
 
       local text
 
@@ -99,39 +99,39 @@ function Widgets:OptionButton(options)
 
       v.onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(v.color(text))
-        tooltip:AddLine(L.ITEM_QUALITY_CHECK_BOX_TOOLTIP)
+        tooltip:AddLine(L.ITEM_QUALITY_CHECKBOX_TOOLTIP)
       end
     end
 
-    -- Add check boxes.
-    table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.poor))
-    table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.common))
-    table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.uncommon))
-    table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.rare))
-    table.insert(frame.itemQualityCheckBoxes, Widgets:CheckBox(options.epic))
+    -- Add checkboxes.
+    table.insert(frame.itemQualityCheckboxes, Widgets:Checkbox(options.poor))
+    table.insert(frame.itemQualityCheckboxes, Widgets:Checkbox(options.common))
+    table.insert(frame.itemQualityCheckboxes, Widgets:Checkbox(options.uncommon))
+    table.insert(frame.itemQualityCheckboxes, Widgets:Checkbox(options.rare))
+    table.insert(frame.itemQualityCheckboxes, Widgets:Checkbox(options.epic))
 
-    -- Position check boxes.
-    for i, cb in ipairs(frame.itemQualityCheckBoxes) do
+    -- Position checkboxes.
+    for i, cb in ipairs(frame.itemQualityCheckboxes) do
       if i == 1 then
         cb:SetPoint("TOPLEFT", frame.label, "BOTTOMLEFT", 0, -Widgets:Padding())
       else
-        cb:SetPoint("LEFT", frame.itemQualityCheckBoxes[i - 1], "RIGHT", Widgets:Padding(), 0)
+        cb:SetPoint("LEFT", frame.itemQualityCheckboxes[i - 1], "RIGHT", Widgets:Padding(), 0)
       end
     end
 
-    frame:SetHeight(CHECK_BOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECK_BOX_SIZE + Widgets:Padding(2))
+    frame:SetHeight(CHECKBOX_SIZE + Widgets:Padding() + ITEM_QUALITY_CHECKBOX_SIZE + Widgets:Padding(2))
   end
 
   frame:HookScript("OnEnter", function()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-    frame.checkBox:FireEvent("HOVERED", true)
+    frame.checkbox:FireEvent("HOVERED", true)
   end)
 
   frame:HookScript("OnLeave", function()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
     frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-    frame.checkBox:FireEvent("HOVERED", false)
+    frame.checkbox:FireEvent("HOVERED", false)
   end)
 
   frame:SetScript("OnClick", function()
@@ -144,24 +144,24 @@ function Widgets:OptionButton(options)
 
   -- Keep the checkbox in step with the option.
   TickerManager:NewTicker(1 / 30, function()
-    frame.checkBox:SetChecked(options.get())
+    frame.checkbox:SetChecked(options.get())
   end):BindFrame(frame)
 
-  do -- Hack to fix a bug where check boxes are sometimes invisible.
-    local function showCheckBoxes()
-      frame.checkBox:Show()
-      for _, cb in pairs(frame.itemQualityCheckBoxes) do
+  do -- Hack to fix a bug where checkboxes are sometimes invisible.
+    local function showCheckboxes()
+      frame.checkbox:Show()
+      for _, cb in pairs(frame.itemQualityCheckboxes) do
         cb:Show()
       end
     end
 
-    -- OnShow: hide all check boxes, then show them again after 0.01 seconds.
+    -- OnShow: hide all checkboxes, then show them again after 0.01 seconds.
     frame:SetScript("OnShow", function()
-      frame.checkBox:Hide()
-      for _, cb in pairs(frame.itemQualityCheckBoxes) do
+      frame.checkbox:Hide()
+      for _, cb in pairs(frame.itemQualityCheckboxes) do
         cb:Hide()
       end
-      C_Timer.After(0.01, showCheckBoxes)
+      C_Timer.After(0.01, showCheckboxes)
     end)
   end
 

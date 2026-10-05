@@ -70,16 +70,16 @@ local function getJunkItems(filterFunc, items)
   return items
 end
 
---- Returns `true` if the given `itemQuality` is enabled within the given `checkBoxValues`.
+--- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
 --- @param itemQuality integer
---- @param checkBoxValues ItemQualitiesState
-local function isItemQualityCheckBoxValueEnabled(itemQuality, checkBoxValues)
+--- @param checkboxValues ItemQualitiesState
+local function isItemQualityCheckboxValueEnabled(itemQuality, checkboxValues)
   return (
-    (checkBoxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
-    (checkBoxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
-    (checkBoxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
-    (checkBoxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
-    (checkBoxValues.epic and itemQuality == Enum.ItemQuality.Epic)
+    (checkboxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
+    (checkboxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
+    (checkboxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
+    (checkboxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
+    (checkboxValues.epic and itemQuality == Enum.ItemQuality.Epic)
   )
 end
 
@@ -180,8 +180,8 @@ function JunkFilter:IsJunkItem(item)
   if profileSettings.excludeAboveItemLevel.enabled and Items:IsItemEquipment(item) then
     local value = profileSettings.excludeAboveItemLevel.value
     if Items:GetItemLevel(item) > value then
-      local checkBoxValues = profileSettings.excludeAboveItemLevel.qualities
-      if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+      local checkboxValues = profileSettings.excludeAboveItemLevel.qualities
+      if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
         return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
@@ -211,16 +211,16 @@ function JunkFilter:IsJunkItem(item)
 
   -- Exclude unbound equipment.
   if profileSettings.excludeUnboundEquipment.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    local checkBoxValues = profileSettings.excludeUnboundEquipment.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+    local checkboxValues = profileSettings.excludeUnboundEquipment.qualities
+    if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
     end
   end
 
   -- Exclude warband equipment.
   if Addon.IS_RETAIL and profileSettings.excludeWarbandEquipment.enabled and Items:IsItemWarbandEquipment(item) then
-    local checkBoxValues = profileSettings.excludeWarbandEquipment.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+    local checkboxValues = profileSettings.excludeWarbandEquipment.qualities
+    if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
       return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
     end
   end
@@ -229,7 +229,7 @@ function JunkFilter:IsJunkItem(item)
   if profileSettings.excludeByEquipmentType.enabled and Items:IsItemEquipment(item) then
     local setting = profileSettings.excludeByEquipmentType
     if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
-      if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
+      if isItemQualityCheckboxValueEnabled(item.quality, setting.qualities) then
         return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item))
       end
     end
@@ -237,8 +237,8 @@ function JunkFilter:IsJunkItem(item)
 
   -- Include by quality.
   if profileSettings.includeByQuality.enabled then
-    local checkBoxValues = profileSettings.includeByQuality.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+    local checkboxValues = profileSettings.includeByQuality.qualities
+    if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
       return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
     end
   end
@@ -249,8 +249,8 @@ function JunkFilter:IsJunkItem(item)
     if profileSettings.includeBelowItemLevel.enabled then
       local value = profileSettings.includeBelowItemLevel.value
       if Items:GetItemLevel(item) < value then
-        local checkBoxValues = profileSettings.includeBelowItemLevel.qualities
-        if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
+        local checkboxValues = profileSettings.includeBelowItemLevel.qualities
+        if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
           local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
           return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
         end
@@ -260,7 +260,7 @@ function JunkFilter:IsJunkItem(item)
     if profileSettings.includeByEquipmentType.enabled then
       local setting = profileSettings.includeByEquipmentType
       if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
-        if isItemQualityCheckBoxValueEnabled(item.quality, setting.qualities) then
+        if isItemQualityCheckboxValueEnabled(item.quality, setting.qualities) then
           return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item))
         end
       end

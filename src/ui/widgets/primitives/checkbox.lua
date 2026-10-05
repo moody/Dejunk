@@ -8,25 +8,25 @@ local Widgets = Addon:GetModule("Widgets")
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @class CheckBoxWidgetOptions : FrameWidgetOptions
+--- @class CheckboxWidgetOptions : FrameWidgetOptions
 --- @field color? Color Defaults to `Colors.Blue`.
 
 -- =============================================================================
--- Widgets - Check Box
+-- Widgets - Checkbox
 -- =============================================================================
 
---- Creates a check box that only shows a state, and does not take the mouse.
+--- Creates a checkbox that only shows a state, and does not take the mouse.
 --- Its owner sets whether it is checked with `SetChecked()`, and fires `HOVERED` on it to highlight it.
---- @param options CheckBoxWidgetOptions
---- @return CheckBoxWidget frame
-function Widgets:CheckBox(options)
+--- @param options CheckboxWidgetOptions
+--- @return CheckboxWidget frame
+function Widgets:Checkbox(options)
   -- Defaults.
-  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("CheckBox"))
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Checkbox"))
   options.width = Addon:IfNil(options.width, 20)
   options.height = Addon:IfNil(options.height, 20)
   options.color = Addon:IfNil(options.color, Colors.Blue)
 
-  --- @class CheckBoxWidget : FrameWidget
+  --- @class CheckboxWidget : FrameWidget
   local frame = self:Frame(options)
   frame.isChecked = false
 
