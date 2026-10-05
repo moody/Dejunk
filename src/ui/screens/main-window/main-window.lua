@@ -56,7 +56,7 @@ function Controller:AddSidebarRow(options)
     row = Components.Sidebar:AttachComponent(ComponentFactory:SelectableRow({
       labelText = options.labelText,
       onClick = function() self:SelectSidebarRow(options.key) end
-    }))
+    })) --[[@as SelectableRowComponent]]
   }
 end
 
