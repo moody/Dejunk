@@ -1,5 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class ComponentFactory
@@ -43,23 +45,43 @@ function ComponentFactory:OptionCard(options)
       })
       frame:SetBackdropColor(Colors.White:GetRGBA(0.03))
       frame:SetBackdropBorderColor(0, 0, 0, 0)
-      frame:HookScript("OnEnter", function(self) self:SetBackdropColor(Colors.White:GetRGBA(0.06)) end)
-      frame:HookScript("OnLeave", function(self) self:SetBackdropColor(Colors.White:GetRGBA(0.03)) end)
       frame:SetClickHandler("LeftButton", "NONE", function() options.set(not options.get()) end)
       if options.onRightClick then frame:SetClickHandler("RightButton", "NONE", options.onRightClick) end
       return frame
     end
   })
 
+  -- Checkbox.
   root:AddChild({
     width = 18,
     height = 18,
 
     --- @param parent Frame
     frameFactory = function(parent)
-      return Widgets:CheckBox({ parent = parent, get = options.get })
+      return Widgets:CheckBox({ parent = parent })
     end
-  })
+  }):WhenFrameReady(function(checkbox) -- Refresh on hover, show, and state changes.
+    --- @cast checkbox CheckBoxWidget
+    --- @type FrameWidget
+    local frame = root:GetFrame()
+
+    --- Applies the hover fill to the card, and updates the checkbox.
+    local function refresh()
+      local isHovered = frame:GetEventValue("HOVERED")
+      frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.06 or 0.03))
+      checkbox:SetChecked(options.get())
+      checkbox:FireEvent("HOVERED", isHovered)
+    end
+
+    -- The checked state reads the store.
+    EventManager:WaitForFirst(E.StoreCreated, function()
+      frame:OnEvent("HOVERED", refresh)
+      frame:HookScript("OnShow", refresh)
+      EventManager:On(E.StateUpdated, function()
+        if frame:IsVisible() then refresh() end
+      end)
+    end)
+  end)
 
   root.Content = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
 

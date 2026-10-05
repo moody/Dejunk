@@ -24,12 +24,15 @@ function ComponentFactory:SelectableRow(options)
   local root
   local isSelected = false
 
-  --- Applies selected or normal colors.
+  --- Applies selected, hovered, or normal colors.
   --- @param frame SelectableRowWidget
-  local function updateSelectionColors(frame)
+  local function refreshColors(frame)
     if isSelected then
       frame:SetBackdropColor(Colors.Blue:GetRGBA(0.1))
       frame.label:SetTextColor(Colors.Blue:GetRGBA())
+    elseif frame:GetEventValue("HOVERED") then
+      frame:SetBackdropColor(Colors.White:GetRGBA(0.1))
+      frame.label:SetTextColor(Colors.White:GetRGBA())
     else
       frame:SetBackdropColor(0, 0, 0, 0)
       frame.label:SetTextColor(Colors.Grey:GetRGBA())
@@ -53,16 +56,8 @@ function ComponentFactory:SelectableRow(options)
       frame.label:SetText(options.labelText)
 
       frame:SetScript("OnClick", function() options.onClick(root) end)
-      frame:HookScript("OnEnter", function()
-        if isSelected then return end
-        frame:SetBackdropColor(Colors.White:GetRGBA(0.1))
-        frame.label:SetTextColor(Colors.White:GetRGBA())
-      end)
-      frame:HookScript("OnLeave", function()
-        if not isSelected then updateSelectionColors(frame) end
-      end)
 
-      updateSelectionColors(frame)
+      frame:OnEvent("HOVERED", function() refreshColors(frame) end)
 
       return frame
     end,
@@ -79,8 +74,7 @@ function ComponentFactory:SelectableRow(options)
   --- @param selected boolean
   function root:SetSelected(selected)
     isSelected = selected
-    local frame = self:GetFrame()
-    if frame then updateSelectionColors(frame) end
+    self:WhenFrameReady(refreshColors)
   end
 
   return root

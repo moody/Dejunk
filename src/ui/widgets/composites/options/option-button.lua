@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Widgets
 local Widgets = Addon:GetModule("Widgets")
@@ -52,8 +53,7 @@ function Widgets:OptionButton(options)
     parent = frame,
     name = "$parent_CheckBox",
     points = { { "TOPRIGHT", -Widgets:Padding(), -Widgets:Padding() } },
-    color = Colors.White,
-    get = options.get
+    color = Colors.White
   })
 
   -- Label text.
@@ -125,11 +125,13 @@ function Widgets:OptionButton(options)
   frame:HookScript("OnEnter", function()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
     frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
+    frame.checkBox:FireEvent("HOVERED", true)
   end)
 
   frame:HookScript("OnLeave", function()
     frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
     frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
+    frame.checkBox:FireEvent("HOVERED", false)
   end)
 
   frame:SetScript("OnClick", function()
@@ -139,6 +141,11 @@ function Widgets:OptionButton(options)
   frame:SetScript("OnUpdate", function()
     frame:SetAlpha(options.get() and 1 or 0.5)
   end)
+
+  -- Keep the checkbox in step with the option.
+  TickerManager:NewTicker(1 / 30, function()
+    frame.checkBox:SetChecked(options.get())
+  end):BindFrame(frame)
 
   do -- Hack to fix a bug where check boxes are sometimes invisible.
     local function showCheckBoxes()
