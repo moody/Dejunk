@@ -161,8 +161,6 @@ function Widgets:ItemButton(options)
   --- @class ItemButtonWidget : FrameWidget, Button
   local frame = self:Frame(options)
   frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-  frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-  frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
 
   -- Item icon.
   frame.icon = frame:CreateTexture("$parent_Icon", "ARTWORK")
@@ -206,15 +204,13 @@ function Widgets:ItemButton(options)
     end
   end
 
-  frame:HookScript("OnEnter", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.5))
-  end)
-
-  frame:HookScript("OnLeave", function(self)
-    self:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.25))
-    self:SetBackdropBorderColor(Colors.White:GetRGBA(0.25))
-  end)
+  --- Brightens the backdrop and border while hovered.
+  local function refresh()
+    local alpha = frame:GetEventValue("HOVERED") and 0.5 or 0.25
+    frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(alpha))
+    frame:SetBackdropBorderColor(Colors.White:GetRGBA(alpha))
+  end
+  frame:OnEvent("HOVERED", refresh)
 
   frame:SetScript("OnClick", function(self, button)
     if CursorHasItem() then
