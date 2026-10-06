@@ -91,6 +91,9 @@ function Mocks:CreateSpy(mock)
     calls = {}
   }
 
+  --- @type table<string, MockSpyStub>
+  local stubs = {}
+
   --- Replaces `mock[key]` with a function that records its calls and returns nothing.
   --- @param key string
   --- @return MockSpyStub
@@ -142,7 +145,15 @@ function Mocks:CreateSpy(mock)
       return self
     end
 
+    stubs[key] = Stub
     return Stub
+  end
+
+  --- Returns the stub created for `key`. Throws an error if there is none.
+  --- @param key string
+  --- @return MockSpyStub
+  function Spy:GetStub(key)
+    return assert(stubs[key], "no stub for " .. key)
   end
 
   return Spy
