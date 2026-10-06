@@ -19,8 +19,8 @@ local PASS = "PASS"
 --- @field addon? table Fields set on the addon, such as `IS_RETAIL`. The game version flags are `false` otherwise.
 
 --- Returns `JunkFilter` from a new context where its collaborators are mocks, and the spies of the `ItemFilters` and
---- `Items` mocks. The `ItemFilters` mock has no methods until a test stubs them. The item is in the bags and can be
---- sold and destroyed; a test stubs an `Items` method again to change that.
+--- `Items` mocks. Every `ItemFilters` method is stubbed to return `PASS`, and the item is in the bags and can be sold
+--- and destroyed. A test stubs a method again to change what it returns.
 --- @param options? TestJunkFilterOptions
 --- @return JunkFilter JunkFilter
 --- @return MockSpy ItemFiltersSpy
@@ -40,6 +40,20 @@ local function setupContext(options)
 
   local ItemFilters = { JUNK = JUNK, NOT_JUNK = NOT_JUNK, PASS = PASS }
   local ItemFiltersSpy = Mocks:CreateSpy(ItemFilters)
+  ItemFiltersSpy:Stub("Refundable"):Returns(PASS)
+  ItemFiltersSpy:Stub("Locked"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeAboveItemLevel"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeAbovePrice"):Returns(PASS)
+  ItemFiltersSpy:Stub("ByLists"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeEquipmentSets"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeUnboundEquipment"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeWarbandEquipment"):Returns(PASS)
+  ItemFiltersSpy:Stub("ExcludeByEquipmentType"):Returns(PASS)
+  ItemFiltersSpy:Stub("IncludeByQuality"):Returns(PASS)
+  ItemFiltersSpy:Stub("IncludeBelowItemLevel"):Returns(PASS)
+  ItemFiltersSpy:Stub("IncludeBelowPrice"):Returns(PASS)
+  ItemFiltersSpy:Stub("IncludeByEquipmentType"):Returns(PASS)
+  ItemFiltersSpy:Stub("IncludeArtifactRelics"):Returns(PASS)
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
@@ -81,20 +95,6 @@ end
 -- Test: calls the filters in order with the item and the state of each option.
 do
   local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemFiltersSpy:Stub("Refundable"):Returns(PASS)
-  ItemFiltersSpy:Stub("Locked"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeAboveItemLevel"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeAbovePrice"):Returns(PASS)
-  ItemFiltersSpy:Stub("ByLists"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeEquipmentSets"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeUnboundEquipment"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeWarbandEquipment"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeByEquipmentType"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeByQuality"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeBelowItemLevel"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeBelowPrice"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeByEquipmentType"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeArtifactRelics"):Returns(PASS)
 
   local item = { id = 1 }
   JunkFilter:IsJunkItem(item, "SELL")
@@ -115,4 +115,49 @@ do
     { "IncludeByEquipmentType", item, "includeByEquipmentType" },
     { "IncludeArtifactRelics", item, "includeArtifactRelics" }
   }))
+end
+
+-- Test: passes the destroy filter type to the price filters.
+do
+  local JunkFilter, ItemFiltersSpy = setupContext()
+  local ExcludeAbovePrice = ItemFiltersSpy:Stub("ExcludeAbovePrice"):Returns(PASS)
+  local IncludeBelowPrice = ItemFiltersSpy:Stub("IncludeBelowPrice"):Returns(PASS)
+  local item = { id = 1 }
+
+  JunkFilter:IsJunkItem(item, "DESTROY")
+
+  assert(Matchers:IsDeepEqual(ExcludeAbovePrice.calls, { { item, "excludeAbovePrice", "DESTROY" } }))
+  assert(Matchers:IsDeepEqual(IncludeBelowPrice.calls, { { item, "includeBelowPrice", "DESTROY" } }))
+end
+
+-- Test: skips the equipment sets filter on Classic Era.
+do
+  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_VANILLA = true } })
+  local ExcludeEquipmentSets = ItemFiltersSpy:Stub("ExcludeEquipmentSets"):Returns(PASS)
+
+  JunkFilter:IsJunkItem({})
+
+  assert(#ExcludeEquipmentSets.calls == 0)
+end
+
+-- Test: skips the equipment sets filter on TBC Classic.
+do
+  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_TBC = true } })
+  local ExcludeEquipmentSets = ItemFiltersSpy:Stub("ExcludeEquipmentSets"):Returns(PASS)
+
+  JunkFilter:IsJunkItem({})
+
+  assert(#ExcludeEquipmentSets.calls == 0)
+end
+
+-- Test: skips the warband equipment and artifact relics filters when the client is not Retail.
+do
+  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = false } })
+  local ExcludeWarbandEquipment = ItemFiltersSpy:Stub("ExcludeWarbandEquipment"):Returns(PASS)
+  local IncludeArtifactRelics = ItemFiltersSpy:Stub("IncludeArtifactRelics"):Returns(PASS)
+
+  JunkFilter:IsJunkItem({})
+
+  assert(#ExcludeWarbandEquipment.calls == 0)
+  assert(#IncludeArtifactRelics.calls == 0)
 end
