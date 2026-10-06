@@ -78,4 +78,54 @@ function Mocks:CreateFrame(frameType, parent)
   return MockFrame
 end
 
+--- Returns a spy for the given `mock` table. Stubs replace its keys and are never restored, so spy only on a table
+--- made for the test.
+--- @param mock table
+--- @return MockSpy
+function Mocks:CreateSpy(mock)
+  --- @class MockSpy
+  local Spy = {
+    --- Every call to a stubbed key, in order, as `{ key, ...arguments }`. The mock is left out when a method is
+    --- called with `:`.
+    --- @type table[]
+    calls = {}
+  }
+
+  --- Replaces `mock[key]` with a function that records its calls and returns nothing.
+  --- @param key string
+  --- @return MockSpyStub
+  function Spy:Stub(key)
+    local results = { n = 0 }
+
+    mock[key] = function(...)
+      -- Skip self when the mock is the first argument.
+      local first = (...) == mock and 2 or 1
+      local call = { key }
+      -- Copy by position so nils stay in place.
+      for i = first, select("#", ...) do
+        call[i - first + 2] = (select(i, ...))
+      end
+      self.calls[#self.calls + 1] = call
+      -- Return exactly the stored values, including nils.
+      return unpack(results, 1, results.n)
+    end
+
+    --- @class MockSpyStub
+    local Stub = {}
+
+    --- Sets what the stubbed function returns. Returns the stub.
+    --- @param ... any
+    --- @return MockSpyStub
+    function Stub:Returns(...)
+      -- Store the count, since # is unreliable with nils.
+      results = { n = select("#", ...), ... }
+      return self
+    end
+
+    return Stub
+  end
+
+  return Spy
+end
+
 return Mocks
