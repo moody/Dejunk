@@ -96,6 +96,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     local box = include:AddOptionCard({
       labelText = L.INCLUDE_BELOW_PRICE_TEXT,
       descriptionText = L.INCLUDE_BELOW_PRICE_DESCRIPTION,
+      warningText = L.OPTION_WARNING_BE_CAREFUL,
       get = function() return getState().enabled end,
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
     }):AddSettingsBox()
