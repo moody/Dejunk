@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
+local EquipmentTypes = Addon:GetModule("EquipmentTypes")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -30,6 +31,14 @@ ItemFilters.PASS = "PASS"
 --- @return string
 local function concat(...)
   return Addon:Concat(" > ", ...)
+end
+
+--- Returns the given `item`'s subclass name in its quality color, in grey brackets.
+--- @param item BagItem
+--- @return string
+local function getSubclassText(item)
+  local qualityColor = Colors.ByQuality[item.quality] or Colors.White
+  return Colors.Grey("(%s)"):format(qualityColor(Items:GetItemSubclassName(item)))
 end
 
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
@@ -145,6 +154,23 @@ function ItemFilters:ExcludeWarbandEquipment(item, state)
   if state.enabled and Items:IsItemWarbandEquipment(item) then
     if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
       return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
+    end
+  end
+
+  return self.PASS
+end
+
+--- Equipment of a selected type is not junk, for the selected qualities.
+--- @param item BagItem
+--- @param state EquipmentTypeOptionState
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ExcludeByEquipmentType(item, state)
+  if state.enabled and Items:IsItemEquipment(item) then
+    if EquipmentTypes:IsItemTypeSelected(item, state.armor, state.weapons) then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local typeText = L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item)
+        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, typeText)
+      end
     end
   end
 
