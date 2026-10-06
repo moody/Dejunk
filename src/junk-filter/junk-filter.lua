@@ -183,15 +183,9 @@ function JunkFilter:IsJunkItem(item)
 
   -- Exclude equipment above item level. Runs before the lists so it can
   -- override an Inclusions match.
-  if profileSettings.excludeAboveItemLevel.enabled and Items:IsItemEquipment(item) then
-    local value = profileSettings.excludeAboveItemLevel.value
-    if Items:GetItemLevel(item) > value then
-      local checkboxValues = profileSettings.excludeAboveItemLevel.qualities
-      if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
-        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
-        return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
-      end
-    end
+  result, reason = ItemFilters:ExcludeAboveItemLevel(item, profileSettings.excludeAboveItemLevel)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Profile lists.

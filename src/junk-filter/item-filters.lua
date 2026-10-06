@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 
@@ -18,6 +19,30 @@ ItemFilters.NOT_JUNK = "NOT_JUNK"
 --- The filter did not apply.
 --- @type ItemFilterResult
 ItemFilters.PASS = "PASS"
+
+-- ============================================================================
+-- Local Functions
+-- ============================================================================
+
+--- Concatenates reason string arguments.
+--- @param ... string|number
+--- @return string
+local function concat(...)
+  return Addon:Concat(" > ", ...)
+end
+
+--- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
+--- @param itemQuality integer
+--- @param checkboxValues ItemQualitiesState
+local function isItemQualityCheckboxValueEnabled(itemQuality, checkboxValues)
+  return (
+    (checkboxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
+    (checkboxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
+    (checkboxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
+    (checkboxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
+    (checkboxValues.epic and itemQuality == Enum.ItemQuality.Epic)
+  )
+end
 
 -- ============================================================================
 -- ItemFilters
@@ -40,6 +65,23 @@ end
 function ItemFilters:Locked(item)
   if Items:IsItemLocked(item) then
     return self.NOT_JUNK, L.ITEM_IS_LOCKED
+  end
+
+  return self.PASS
+end
+
+--- Equipment with an item level above the value is not junk, for the selected qualities.
+--- @param item BagItem
+--- @param state ItemLevelOptionState
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ExcludeAboveItemLevel(item, state)
+  if state.enabled and Items:IsItemEquipment(item) then
+    if Items:GetItemLevel(item) > state.value then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(state.value))
+        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
+      end
+    end
   end
 
   return self.PASS
