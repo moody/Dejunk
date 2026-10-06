@@ -65,6 +65,18 @@ local function scopeIncludes(scope, filterType)
   return scope == "BOTH" or scope == filterType
 end
 
+--- Returns the reason for a price option, naming its value and the filter type it is limited to, if any.
+--- @param labelText string
+--- @param state PriceOptionState
+--- @return string
+local function getPriceReason(labelText, state)
+  local valueText = Colors.Grey("(%s)"):format(Colors.White(GetCoinTextureString(state.value)))
+  local optionText = labelText .. " " .. valueText
+  if state.scope == "SELL" then return concat(L.OPTIONS_TEXT, optionText, L.SELLING) end
+  if state.scope == "DESTROY" then return concat(L.OPTIONS_TEXT, optionText, L.DESTROYING) end
+  return concat(L.OPTIONS_TEXT, optionText)
+end
+
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
 --- @param itemQuality integer
 --- @param checkboxValues ItemQualitiesState
@@ -269,8 +281,7 @@ function ItemFilters:ExcludeAbovePrice(item, state, filterType)
     local price = getStackPrice(item)
     if price and price > state.value then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(GetCoinTextureString(state.value)))
-        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_PRICE_TEXT .. " " .. valueText)
+        return self.NOT_JUNK, getPriceReason(L.EXCLUDE_ABOVE_PRICE_TEXT, state)
       end
     end
   end
@@ -288,8 +299,7 @@ function ItemFilters:IncludeBelowPrice(item, state, filterType)
     local price = getStackPrice(item)
     if price and price < state.value then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(GetCoinTextureString(state.value)))
-        return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_PRICE_TEXT .. " " .. valueText)
+        return self.JUNK, getPriceReason(L.INCLUDE_BELOW_PRICE_TEXT, state)
       end
     end
   end
