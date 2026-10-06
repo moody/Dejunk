@@ -59,3 +59,31 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:Locked()
+-- ============================================================================
+
+-- Test: a locked item is not junk, with the locked reason.
+do
+  local ItemFilters, L = setupContext({
+    Items = { IsItemLocked = function() return true end }
+  })
+
+  local result, reason = ItemFilters:Locked({})
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == L.ITEM_IS_LOCKED)
+end
+
+-- Test: an item that is not locked passes, with no reason.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemLocked = function() return false end }
+  })
+
+  local result, reason = ItemFilters:Locked({})
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end

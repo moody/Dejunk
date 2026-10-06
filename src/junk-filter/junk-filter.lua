@@ -176,8 +176,9 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Locked.
-  if Items:IsItemLocked(item) then
-    return false, L.ITEM_IS_LOCKED
+  result, reason = ItemFilters:Locked(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Exclude equipment above item level. Runs before the lists so it can
