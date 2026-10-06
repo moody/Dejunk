@@ -620,6 +620,29 @@ do
   assert(reason == "Options > Include By Quality")
 end
 
+-- Test: each selected quality includes only items of that quality.
+do
+  local ItemFilters = setupContext()
+  local itemQualities = {
+    poor = Enum.ItemQuality.Poor,
+    common = Enum.ItemQuality.Common,
+    uncommon = Enum.ItemQuality.Uncommon,
+    rare = Enum.ItemQuality.Rare,
+    epic = Enum.ItemQuality.Epic
+  }
+
+  for selectedKey in pairs(itemQualities) do
+    local qualities = {}
+    for key in pairs(itemQualities) do qualities[key] = key == selectedKey end
+    local state = { enabled = true, qualities = qualities }
+    for itemKey, itemQuality in pairs(itemQualities) do
+      local result = ItemFilters:IncludeByQuality({ quality = itemQuality }, state)
+      local expected = itemKey == selectedKey and ItemFilters.JUNK or ItemFilters.PASS
+      assert(result == expected, selectedKey .. " selected, " .. itemKey .. " item")
+    end
+  end
+end
+
 -- Test: passes when the option is disabled.
 do
   local ItemFilters = setupContext()
