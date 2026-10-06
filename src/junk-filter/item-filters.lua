@@ -188,3 +188,20 @@ function ItemFilters:IncludeByQuality(item, state)
 
   return self.PASS
 end
+
+--- Equipment with an item level below the value is junk, for the selected qualities.
+--- @param item BagItem
+--- @param state ItemLevelOptionState
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:IncludeBelowItemLevel(item, state)
+  if state.enabled and Items:IsItemEquipment(item) then
+    if Items:GetItemLevel(item) < state.value then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(state.value))
+        return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
+      end
+    end
+  end
+
+  return self.PASS
+end

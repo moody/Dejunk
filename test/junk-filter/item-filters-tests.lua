@@ -643,3 +643,89 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:IncludeBelowItemLevel()
+-- ============================================================================
+
+-- Test: equipment below the item level is junk, with a reason naming the option and the value.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemLevel = function() return 40 end
+    }
+  })
+  local state = { enabled = true, value = 50, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Options > Include Below Item Level (50)")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemLevel = function() return 40 end
+    }
+  })
+  local state = { enabled = false, value = 50, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not equipment.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return false end,
+      GetItemLevel = function() return 40 end
+    }
+  })
+  local state = { enabled = true, value = 50, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item level is not below the value.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemLevel = function() return 50 end
+    }
+  })
+  local state = { enabled = true, value = 50, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemLevel = function() return 40 end
+    }
+  })
+  local qualities = getQualities()
+  qualities.poor = false
+  local state = { enabled = true, value = 50, qualities = qualities }
+
+  local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end

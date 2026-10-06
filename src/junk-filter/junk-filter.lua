@@ -230,15 +230,9 @@ function JunkFilter:IsJunkItem(item)
   -- Equipment-based include filters.
   if Items:IsItemEquipment(item) then
     -- Include below item level.
-    if profileSettings.includeBelowItemLevel.enabled then
-      local value = profileSettings.includeBelowItemLevel.value
-      if Items:GetItemLevel(item) < value then
-        local checkboxValues = profileSettings.includeBelowItemLevel.qualities
-        if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
-          local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
-          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
-        end
-      end
+    result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel)
+    if result ~= ItemFilters.PASS then
+      return result == ItemFilters.JUNK, reason
     end
     -- Include by equipment type.
     if profileSettings.includeByEquipmentType.enabled then
