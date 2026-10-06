@@ -8,9 +8,9 @@ local Mocks = {}
 --- `SetEnabled()`, and only an `EditBox` has the edit focus scripts.
 --- @param frameType? string Defaults to `Frame`.
 --- @param parent? table
---- @return DejunkMockFrame
+--- @return MockFrame
 function Mocks:CreateFrame(frameType, parent)
-  --- @class DejunkMockFrame
+  --- @class MockFrame
   local MockFrame = {
     --- What was done to the frame, apart from the fields that the code under test sets.
     _test = {

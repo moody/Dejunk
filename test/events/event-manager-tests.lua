@@ -11,7 +11,7 @@ local Mocks = require("test/mocks")
 --- Returns `EventManager`, `Events`, and the event frame it creates, from a new context.
 --- @return EventManager EventManager
 --- @return table E
---- @return DejunkMockFrame eventFrame
+--- @return MockFrame eventFrame
 local function loadEventManager()
   local eventFrame = Mocks:CreateFrame()
 
