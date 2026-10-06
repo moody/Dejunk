@@ -1,7 +1,7 @@
 --- @diagnostic disable: undefined-global, missing-fields
 
 --- Methods that create mocks for the tests.
---- @class DejunkMocks
+--- @class Mocks
 local Mocks = {}
 
 --- Returns a mock frame, recording what is done to it under `._test`. Only a `Button` or `EditBox` has

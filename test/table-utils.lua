@@ -1,5 +1,5 @@
 --- Helpers for nested tables addressed by dot-separated paths. Keys must be strings without dots.
---- @class DejunkTestTableUtils
+--- @class TestTableUtils
 local TableUtils = {}
 
 -- ============================================================================

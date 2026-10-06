@@ -4,7 +4,7 @@
 -- Harness
 -- ============================================================================
 
---- @class DejunkTestHarness
+--- @class TestHarness
 local Harness = {
   --- Addon name passed to each loaded file.
   ADDON_NAME = "Dejunk"
@@ -12,7 +12,7 @@ local Harness = {
 
 --- Returns a test context with its own addon table. Set mocks before loading the files that use them, and use a
 --- new context for each scenario.
---- @return DejunkTestContext Context
+--- @return TestContext Context
 function Harness:NewContext()
   --- The globals that loaded files see. Anything not set here is read from the real `_G`.
   --- @type table<string, any>
@@ -27,7 +27,7 @@ function Harness:NewContext()
   --- @type table<string, table>
   local mockedModules = {}
 
-  --- @class DejunkTestContext
+  --- @class TestContext
   local Context = {
     --- @type Addon
     Addon = {}
@@ -36,7 +36,7 @@ function Harness:NewContext()
   --- Sets a WoW global. Returns the context.
   --- @param name string
   --- @param value any
-  --- @return DejunkTestContext Context
+  --- @return TestContext Context
   function Context:SetGlobal(name, value)
     globals[name] = value
     return self
@@ -45,7 +45,7 @@ function Harness:NewContext()
   --- Sets the table that `Addon:GetModule(name)` returns. Returns the context.
   --- @param name string
   --- @param module table
-  --- @return DejunkTestContext Context
+  --- @return TestContext Context
   function Context:SetModule(name, module)
     mockedModules[name:upper()] = module
     return self
@@ -53,7 +53,7 @@ function Harness:NewContext()
 
   --- Loads a source file into the context. Returns the context.
   --- @param path string
-  --- @return DejunkTestContext Context
+  --- @return TestContext Context
   function Context:Load(path)
     local chunk = assert(loadfile(path))
     setfenv(chunk, globals)
