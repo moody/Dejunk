@@ -1,6 +1,7 @@
 --- @diagnostic disable: undefined-global, missing-fields
 
 local Harness = require("test/harness")
+local Mocks = require("test/mocks")
 
 -- ============================================================================
 -- Setup
@@ -38,7 +39,9 @@ end
 --- @param containsItems boolean
 --- @return table
 local function mockList(name, containsItems)
-  return { name = name, Contains = function() return containsItems end }
+  local list = { name = name }
+  Mocks:CreateSpy(list):Stub("Contains"):Returns(containsItems)
+  return list
 end
 
 --- Returns a state with every quality selected.
@@ -65,9 +68,11 @@ end
 
 -- Test: a refundable item is not junk, with the refundable reason.
 do
-  local ItemFilters, L = setupContext({
-    Items = { IsItemRefundable = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemRefundable"):Returns(true)
+
+  local ItemFilters, L = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:Refundable({})
 
@@ -77,9 +82,11 @@ end
 
 -- Test: an item that is not refundable passes, with no reason.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemRefundable = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemRefundable"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:Refundable({})
 
@@ -93,9 +100,11 @@ end
 
 -- Test: a locked item is not junk, with the locked reason.
 do
-  local ItemFilters, L = setupContext({
-    Items = { IsItemLocked = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemLocked"):Returns(true)
+
+  local ItemFilters, L = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:Locked({})
 
@@ -105,9 +114,11 @@ end
 
 -- Test: an item that is not locked passes, with no reason.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemLocked = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemLocked"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:Locked({})
 
@@ -121,12 +132,12 @@ end
 
 -- Test: equipment above the item level is not junk, with a reason naming the option.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 60 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
@@ -137,12 +148,12 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 60 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = false, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
@@ -153,12 +164,12 @@ end
 
 -- Test: passes when the item is not equipment.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return false end,
-      GetItemLevel = function() return 60 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(false)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
@@ -169,12 +180,12 @@ end
 
 -- Test: passes when the item level is not above the value.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 50 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(50)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
@@ -185,12 +196,12 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 60 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
   local qualities = { poor = true, common = true, uncommon = true, rare = true, epic = false }
   local state = { enabled = true, value = 50, qualities = qualities }
 
@@ -377,12 +388,12 @@ end
 
 -- Test: unbound equipment of a selected quality is not junk, with a reason naming the option.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      IsItemBound = function() return false end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -393,12 +404,12 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      IsItemBound = function() return false end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = false, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -409,12 +420,12 @@ end
 
 -- Test: passes when the item is not equipment.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return false end,
-      IsItemBound = function() return false end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(false)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -425,12 +436,12 @@ end
 
 -- Test: passes when the item is bound.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      IsItemBound = function() return true end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -441,12 +452,12 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      IsItemBound = function() return false end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
   local qualities = getQualities()
   qualities.epic = false
   local state = { enabled = true, qualities = qualities }
@@ -463,9 +474,11 @@ end
 
 -- Test: warband equipment of a selected quality is not junk, with a reason naming the option.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemWarbandEquipment = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemWarbandEquipment"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -476,9 +489,11 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemWarbandEquipment = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemWarbandEquipment"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = false, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -489,9 +504,11 @@ end
 
 -- Test: passes when the item is not warband equipment.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemWarbandEquipment = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemWarbandEquipment"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, qualities = getQualities() }
 
   local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
@@ -502,9 +519,11 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemWarbandEquipment = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemWarbandEquipment"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
   local qualities = getQualities()
   qualities.epic = false
   local state = { enabled = true, qualities = qualities }
@@ -521,13 +540,15 @@ end
 
 -- Test: equipment of a selected type and quality is not junk, with a reason naming the option and the type.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -538,13 +559,15 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = false, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -555,13 +578,15 @@ end
 
 -- Test: passes when the item is not equipment.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return false end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(false)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -572,13 +597,15 @@ end
 
 -- Test: passes when the item's type is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -589,13 +616,15 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local qualities = getQualities()
   qualities.epic = false
   local state = { enabled = true, qualities = qualities, armor = {}, weapons = {} }
@@ -674,12 +703,12 @@ end
 
 -- Test: equipment below the item level is junk, with a reason naming the option and the value.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 40 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(40)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
@@ -690,12 +719,12 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 40 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(40)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = false, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
@@ -706,12 +735,12 @@ end
 
 -- Test: passes when the item is not equipment.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return false end,
-      GetItemLevel = function() return 40 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(false)
+  ItemsSpy:Stub("GetItemLevel"):Returns(40)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
@@ -722,12 +751,12 @@ end
 
 -- Test: passes when the item level is not below the value.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 50 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(50)
+
+  local ItemFilters = setupContext({ Items = Items })
   local state = { enabled = true, value = 50, qualities = getQualities() }
 
   local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
@@ -738,12 +767,12 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemLevel = function() return 40 end
-    }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(40)
+
+  local ItemFilters = setupContext({ Items = Items })
   local qualities = getQualities()
   qualities.poor = false
   local state = { enabled = true, value = 50, qualities = qualities }
@@ -760,13 +789,15 @@ end
 
 -- Test: equipment of a selected type and quality is junk, with a reason naming the option and the type.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -777,13 +808,15 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = false, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -794,13 +827,15 @@ end
 
 -- Test: passes when the item is not equipment.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return false end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(false)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -811,13 +846,15 @@ end
 
 -- Test: passes when the item's type is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
 
   local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
@@ -828,13 +865,15 @@ end
 
 -- Test: passes when the item's quality is not selected.
 do
-  local ItemFilters = setupContext({
-    Items = {
-      IsItemEquipment = function() return true end,
-      GetItemSubclassName = function() return "Plate" end
-    },
-    EquipmentTypes = { IsItemTypeSelected = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local qualities = getQualities()
   qualities.epic = false
   local state = { enabled = true, qualities = qualities, armor = {}, weapons = {} }
@@ -851,9 +890,11 @@ end
 
 -- Test: an artifact relic is junk, with a reason naming the option.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemArtifactRelic = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
 
@@ -863,9 +904,11 @@ end
 
 -- Test: passes when the option is disabled.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemArtifactRelic = function() return true end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:IncludeArtifactRelics({}, false)
 
@@ -875,9 +918,11 @@ end
 
 -- Test: passes when the item is not an artifact relic.
 do
-  local ItemFilters = setupContext({
-    Items = { IsItemArtifactRelic = function() return false end }
-  })
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
 
   local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
 
