@@ -85,8 +85,8 @@ end
 function Mocks:CreateSpy(mock)
   --- @class MockSpy
   local Spy = {
-    --- Every call to a stubbed key, in order, as `{ key, ...arguments }`. The mock is left out when a method is
-    --- called with `:`.
+    --- Every call to a stubbed key, in order, as `{ key, ...args }`.
+    --- The mock is left out when a method is called with `:`.
     --- @type table[]
     calls = {}
   }
@@ -95,30 +95,50 @@ function Mocks:CreateSpy(mock)
   --- @param key string
   --- @return MockSpyStub
   function Spy:Stub(key)
-    local results = { n = 0 }
+    --- @class MockSpyStub
+    local Stub = {
+      --- Every call to this key, in order, as `{ ...args }`.
+      --- The mock is left out when a method is called with `:`.
+      --- @type table[]
+      calls = {}
+    }
+
+    local implementation = function() end
 
     mock[key] = function(...)
       -- Skip self when the mock is the first argument.
-      local first = (...) == mock and 2 or 1
-      local call = { key }
-      -- Copy by position so nils stay in place.
-      for i = first, select("#", ...) do
-        call[i - first + 2] = (select(i, ...))
-      end
-      self.calls[#self.calls + 1] = call
-      -- Return exactly the stored values, including nils.
-      return unpack(results, 1, results.n)
-    end
+      local skipped = (...) == mock and 1 or 0
+      local argCount = select("#", ...) - skipped
 
-    --- @class MockSpyStub
-    local Stub = {}
+      -- Copy by position so nils stay in place.
+      local args = {}
+      for i = 1, argCount do
+        args[i] = (select(skipped + i, ...))
+      end
+
+      -- The stub logs the arguments, and the spy logs them after the key.
+      Stub.calls[#Stub.calls + 1] = args
+      Spy.calls[#Spy.calls + 1] = { key, unpack(args, 1, argCount) }
+
+      return implementation(...)
+    end
 
     --- Sets what the stubbed function returns. Returns the stub.
     --- @param ... any
     --- @return MockSpyStub
     function Stub:Returns(...)
-      -- Store the count, since # is unreliable with nils.
-      results = { n = select("#", ...), ... }
+      -- Store the number of values, since # is unreliable with nils.
+      local results = { n = select("#", ...), ... }
+      implementation = function() return unpack(results, 1, results.n) end
+      return self
+    end
+
+    --- Sets a function to run on each call instead, with the arguments as passed, including the mock for a method.
+    --- Returns the stub.
+    --- @param fn function
+    --- @return MockSpyStub
+    function Stub:Invokes(fn)
+      implementation = fn
       return self
     end
 
