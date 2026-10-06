@@ -29,6 +29,7 @@
 
   <!-- Utils -->
   <Script file="src\utils\colors.lua"/>
+  <Script file="src\utils\coins.lua"/>
   <Script file="src\utils\ticker-manager.lua"/>
 
   <!-- Store -->
