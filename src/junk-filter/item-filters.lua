@@ -222,3 +222,15 @@ function ItemFilters:IncludeByEquipmentType(item, state)
 
   return self.PASS
 end
+
+--- Artifact relics are junk.
+--- @param item BagItem
+--- @param state boolean
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:IncludeArtifactRelics(item, state)
+  if state and Items:IsItemArtifactRelic(item) then
+    return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  end
+
+  return self.PASS
+end

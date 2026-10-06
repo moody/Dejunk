@@ -820,3 +820,43 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:IncludeArtifactRelics()
+-- ============================================================================
+
+-- Test: an artifact relic is junk, with a reason naming the option.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemArtifactRelic = function() return true end }
+  })
+
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Options > Include Artifact Relics")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemArtifactRelic = function() return true end }
+  })
+
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, false)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not an artifact relic.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemArtifactRelic = function() return false end }
+  })
+
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end

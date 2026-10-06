@@ -11,13 +11,6 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 -- Local Functions
 -- ============================================================================
 
---- Concatenates reason string arguments.
---- @param ... string|number
---- @return string
-local function concat(...)
-  return Addon:Concat(" > ", ...)
-end
-
 --- Comparison function for sorting items by price, quality, and name.
 --- @param a BagItem
 --- @param b BagItem
@@ -217,8 +210,11 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Include artifact relics.
-  if Addon.IS_RETAIL and profileSettings.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
-    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  if Addon.IS_RETAIL then
+    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics)
+    if result ~= ItemFilters.PASS then
+      return result == ItemFilters.JUNK, reason
+    end
   end
 
   -- No filters matched.
