@@ -4,7 +4,6 @@ local EquipmentTypes = Addon:GetModule("EquipmentTypes")
 local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
-local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 
 --- @class JunkFilter
@@ -188,20 +187,10 @@ function JunkFilter:IsJunkItem(item)
     return result == ItemFilters.JUNK, reason
   end
 
-  -- Profile lists.
-  if Lists.ProfileExclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.ProfileExclusions.name)
-  end
-  if Lists.ProfileInclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.ProfileInclusions.name)
-  end
-
-  -- Global lists.
-  if Lists.GlobalExclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.GlobalExclusions.name)
-  end
-  if Lists.GlobalInclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.GlobalInclusions.name)
+  -- Lists.
+  result, reason = ItemFilters:ByLists(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Exclude equipment sets.

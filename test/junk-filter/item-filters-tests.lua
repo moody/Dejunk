@@ -30,6 +30,14 @@ local function setupContext(modules)
   return Context:GetModule("ItemFilters"), Context:GetModule("Locale")
 end
 
+--- Returns a mock list with the given name that contains every item, or none.
+--- @param name string
+--- @param containsItems boolean
+--- @return table
+local function mockList(name, containsItems)
+  return { name = name, Contains = function() return containsItems end }
+end
+
 --- Returns a state with every quality selected.
 --- @return ItemQualitiesState qualities
 local function getQualities()
@@ -187,4 +195,141 @@ do
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- ============================================================================
+-- Tests - ItemFilters:ByLists()
+-- ============================================================================
+
+-- Test: an item on the profile exclusions list is not junk, with the list as the reason.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", true),
+      ProfileInclusions = mockList("Profile Inclusions", false),
+      GlobalExclusions = mockList("Global Exclusions", false),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result, reason = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Lists > Profile Exclusions")
+end
+
+-- Test: an item on the profile inclusions list is junk, with the list as the reason.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", true),
+      GlobalExclusions = mockList("Global Exclusions", false),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result, reason = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Lists > Profile Inclusions")
+end
+
+-- Test: an item on the global exclusions list is not junk, with the list as the reason.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", false),
+      GlobalExclusions = mockList("Global Exclusions", true),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result, reason = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Lists > Global Exclusions")
+end
+
+-- Test: an item on the global inclusions list is junk, with the list as the reason.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", false),
+      GlobalExclusions = mockList("Global Exclusions", false),
+      GlobalInclusions = mockList("Global Inclusions", true)
+    }
+  })
+
+  local result, reason = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Lists > Global Inclusions")
+end
+
+-- Test: an item that is on no list passes, with no reason.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", false),
+      GlobalExclusions = mockList("Global Exclusions", false),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result, reason = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a profile exclusion wins over a profile inclusion.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", true),
+      ProfileInclusions = mockList("Profile Inclusions", true),
+      GlobalExclusions = mockList("Global Exclusions", false),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: a profile inclusion wins over a global exclusion.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", true),
+      GlobalExclusions = mockList("Global Exclusions", true),
+      GlobalInclusions = mockList("Global Inclusions", false)
+    }
+  })
+
+  local result = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.JUNK)
+end
+
+-- Test: a global exclusion wins over a global inclusion.
+do
+  local ItemFilters = setupContext({
+    Lists = {
+      ProfileExclusions = mockList("Profile Exclusions", false),
+      ProfileInclusions = mockList("Profile Inclusions", false),
+      GlobalExclusions = mockList("Global Exclusions", true),
+      GlobalInclusions = mockList("Global Inclusions", true)
+    }
+  })
+
+  local result = ItemFilters:ByLists({})
+
+  assert(result == ItemFilters.NOT_JUNK)
 end

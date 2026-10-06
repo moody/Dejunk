@@ -2,6 +2,7 @@ local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 
 --- @class ItemFilters
 local ItemFilters = Addon:GetModule("ItemFilters")
@@ -82,6 +83,29 @@ function ItemFilters:ExcludeAboveItemLevel(item, state)
         return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
     end
+  end
+
+  return self.PASS
+end
+
+--- Filters by lists: profile lists before global lists, and exclusions before inclusions.
+--- @param item BagItem
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ByLists(item)
+  if Lists.ProfileExclusions:Contains(item.id) then
+    return self.NOT_JUNK, concat(L.LISTS, Lists.ProfileExclusions.name)
+  end
+
+  if Lists.ProfileInclusions:Contains(item.id) then
+    return self.JUNK, concat(L.LISTS, Lists.ProfileInclusions.name)
+  end
+
+  if Lists.GlobalExclusions:Contains(item.id) then
+    return self.NOT_JUNK, concat(L.LISTS, Lists.GlobalExclusions.name)
+  end
+
+  if Lists.GlobalInclusions:Contains(item.id) then
+    return self.JUNK, concat(L.LISTS, Lists.GlobalInclusions.name)
   end
 
   return self.PASS
