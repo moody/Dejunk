@@ -10,56 +10,77 @@ local Harness = {
   ADDON_NAME = "Dejunk"
 }
 
---- Returns a test context with its own addon table and globals. `setup` runs once, before any file is loaded, to
---- set the WoW globals the files need and to seed modules.
---- @param setup? fun(globals: table<string, any>, addon: Addon)
+--- Returns a test context with its own addon table. Set mocks before loading the files that use them, and use a
+--- new context for each scenario.
 --- @return DejunkTestContext Context
-function Harness:NewContext(setup)
-  --- The globals the files see. Writes stay here, and reads fall through to the real `_G`. Tests never modify
-  --- `_G`: they set the WoW globals they need in `setup`.
+function Harness:NewContext()
+  --- The globals that loaded files see. Anything not set here is read from the real `_G`.
   --- @type table<string, any>
-  local globals = setmetatable({
-    -- WoW globals read while `src/addon.lua` loads.
-    C_AddOns = { GetAddOnMetadata = function(str) return str end },
-    LibStub = function() return {} end
-  }, { __index = _G })
+  local globals = setmetatable({}, {
+    __index = function(self, k)
+      -- Loaded files that use `_G` get these globals, so they cannot write to the real ones.
+      if k == "_G" then return self end
+      return _G[k]
+    end
+  })
 
-  globals._G = globals
+  --- @type table<string, table>
+  local mockedModules = {}
 
   --- @class DejunkTestContext
   local Context = {
-    --- The addon table that the loaded files share.
     --- @type Addon
     Addon = {}
   }
 
-  --- Executes a source file with the context's globals, passing `ADDON_NAME` and `Addon`.
-  --- @param path string
-  local function run(path)
-    local chunk = assert(loadfile(path))
-    setfenv(chunk, globals)
-    chunk(Harness.ADDON_NAME, Context.Addon)
+  --- Sets a WoW global. Returns the context.
+  --- @param name string
+  --- @param value any
+  --- @return DejunkTestContext Context
+  function Context:SetGlobal(name, value)
+    globals[name] = value
+    return self
   end
 
-  run("src/addon.lua")
-  run("libs/Wux.lua")
-  assert(Context.Addon.Wux, "Wux failed to load")
-
-  if setup then setup(globals, Context.Addon) end
+  --- Sets the table that `Addon:GetModule(name)` returns. Returns the context.
+  --- @param name string
+  --- @param module table
+  --- @return DejunkTestContext Context
+  function Context:SetModule(name, module)
+    mockedModules[name:upper()] = module
+    return self
+  end
 
   --- Loads a source file into the context. Returns the context.
   --- @param path string
   --- @return DejunkTestContext Context
   function Context:Load(path)
-    run(path)
+    local chunk = assert(loadfile(path))
+    setfenv(chunk, globals)
+    chunk(Harness.ADDON_NAME, self.Addon)
     return self
   end
 
-  --- Returns the context's module with the given name.
+  --- Returns the module with the given name, or its mock if one was set.
   --- @param name string
   --- @return table
   function Context:GetModule(name)
     return self.Addon:GetModule(name)
+  end
+
+  -- WoW globals read while `src/addon.lua` loads.
+  Context:SetGlobal("C_AddOns", { GetAddOnMetadata = function(str) return str end })
+  Context:SetGlobal("LibStub", function() return {} end)
+
+  Context:Load("src/addon.lua")
+  Context:Load("libs/Wux.lua")
+  assert(Context.Addon.Wux, "Wux failed to load")
+
+  local getModule = Context.Addon.GetModule
+
+  --- Returns the mock if one was set.
+  function Context.Addon:GetModule(key)
+    return mockedModules[key:upper()] or getModule(self, key)
   end
 
   return Context
