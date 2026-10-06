@@ -210,3 +210,63 @@ for index, name in ipairs(ORDERED_FILTER_NAMES) do
     assert(#ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
   end
 end
+
+-- ============================================================================
+-- Tests - JunkFilter:IsJunkItem() item checks
+-- ============================================================================
+
+-- Test: returns false without calling any filter when the item is no longer in the bags.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemStillInBags"):Returns(false)
+
+  local isJunk, reason = JunkFilter:IsJunkItem({}, "SELL")
+
+  assert(isJunk == false)
+  assert(reason == nil)
+  assert(#ItemFiltersSpy.calls == 0)
+end
+
+-- Test: for selling, returns false without calling any filter when the item cannot be sold.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+
+  local isJunk, reason = JunkFilter:IsJunkItem({}, "SELL")
+
+  assert(isJunk == false)
+  assert(reason == nil)
+  assert(#ItemFiltersSpy.calls == 0)
+end
+
+-- Test: for selling, calls the filters when the item can be sold but not destroyed.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+
+  JunkFilter:IsJunkItem({}, "SELL")
+
+  assert(#ItemFiltersSpy.calls > 0)
+end
+
+-- Test: for destroying, returns false without calling any filter when the item cannot be destroyed.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+
+  local isJunk, reason = JunkFilter:IsJunkItem({}, "DESTROY")
+
+  assert(isJunk == false)
+  assert(reason == nil)
+  assert(#ItemFiltersSpy.calls == 0)
+end
+
+-- Test: for destroying, calls the filters when the item can be destroyed but not sold.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+
+  JunkFilter:IsJunkItem({}, "DESTROY")
+
+  assert(#ItemFiltersSpy.calls > 0)
+end
