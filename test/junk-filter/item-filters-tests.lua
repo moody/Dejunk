@@ -604,3 +604,42 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:IncludeByQuality()
+-- ============================================================================
+
+-- Test: an item of a selected quality is junk, with a reason naming the option.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Options > Include By Quality")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = false, qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext()
+  local qualities = getQualities()
+  qualities.poor = false
+  local state = { enabled = true, qualities = qualities }
+
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
