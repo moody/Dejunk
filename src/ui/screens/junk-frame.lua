@@ -7,7 +7,6 @@ local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
-local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -27,15 +26,6 @@ local Components = {}
 local wasAutoShown = false
 
 local junkItems = {}
-
-local function hasSellableItems(items)
-  for _, item in ipairs(items) do
-    if Items:IsItemSellable(item) then
-      return true
-    end
-  end
-  return false
-end
 
 -- Refresh components based on junk item data.
 local function refreshComponents()
@@ -62,9 +52,9 @@ local function refreshComponents()
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", false)
   else
-    local canSell = Addon:IsAtMerchant() and hasSellableItems(junkItems)
-    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
-    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", #junkItems > 0)
+    local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
+    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", Addon:IsAtMerchant() and numSellable > 0)
+    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", numDestroyable > 0)
   end
 end
 
