@@ -108,30 +108,42 @@ end
 --- @param item BagItem
 --- @return boolean isSellableJunk, string? reason
 function JunkFilter:IsSellableJunkItem(item)
-  if not Items:IsItemSellable(item) then return false end
-  return self:IsJunkItem(item)
+  return self:IsJunkItem(item, "SELL")
 end
 
 --- Returns `true` and a reason string if the given `item` is junk and can be destroyed.
 --- @param item BagItem
 --- @return boolean isDestroyableJunk, string? reason
 function JunkFilter:IsDestroyableJunkItem(item)
-  if not Items:IsItemDestroyable(item) then return false end
-  return self:IsJunkItem(item)
+  return self:IsJunkItem(item, "DESTROY")
 end
 
---- Returns `true` and a reason string if the given `item` is junk.
+--- Returns `true` and a reason string if the given `item` is junk for the given `filterType`, or for
+--- either type if none is given.
 --- @param item BagItem
+--- @param filterType? ItemFilterType
 --- @return boolean isJunk, string? reason
-function JunkFilter:IsJunkItem(item)
+function JunkFilter:IsJunkItem(item, filterType)
+  if not filterType then
+    local isSellableJunk, sellReason = self:IsJunkItem(item, "SELL")
+    if isSellableJunk then return true, sellReason end
+
+    local isDestroyableJunk, destroyReason = self:IsJunkItem(item, "DESTROY")
+    if isDestroyableJunk then return true, destroyReason end
+
+    return false, sellReason or destroyReason
+  end
+
   if not Items:IsItemStillInBags(item) then
     return false
   end
 
-  local profileSettings = StateManager:GetProfileState().settings
+  -- Check if item can be sold or destroyed, depending on the filter type.
+  if filterType == "SELL" and not Items:IsItemSellable(item) then
+    return false
+  end
 
-  -- Check if item can be sold or destroyed.
-  if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
+  if filterType == "DESTROY" and not Items:IsItemDestroyable(item) then
     return false
   end
 
@@ -150,9 +162,17 @@ function JunkFilter:IsJunkItem(item)
     return result == ItemFilters.JUNK, reason
   end
 
+  local profileSettings = StateManager:GetProfileState().settings
+
   -- Exclude equipment above item level. Runs before the lists so it can
   -- override an Inclusions match.
   result, reason = ItemFilters:ExcludeAboveItemLevel(item, profileSettings.excludeAboveItemLevel)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Exclude above price.
+  result, reason = ItemFilters:ExcludeAbovePrice(item, profileSettings.excludeAbovePrice, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end
@@ -199,6 +219,12 @@ function JunkFilter:IsJunkItem(item)
 
   -- Include below item level.
   result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Include below price.
+  result, reason = ItemFilters:IncludeBelowPrice(item, profileSettings.includeBelowPrice, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end
