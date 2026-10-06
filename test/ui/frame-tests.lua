@@ -8,10 +8,9 @@ local Mocks = require("test/mocks")
 -- Setup
 -- ============================================================================
 
-local Context = Harness:NewContext(function(globals)
-  globals.CreateFrame = function(frameType, _, parent) return Mocks:CreateFrame(frameType, parent) end
-  globals.UIParent = Mocks:CreateFrame()
-end)
+local Context = Harness:NewContext()
+Context:SetGlobal("CreateFrame", function(frameType, _, parent) return Mocks:CreateFrame(frameType, parent) end)
+Context:SetGlobal("UIParent", Mocks:CreateFrame())
 
 Context:Load("src/ui/widgets/primitives/frame/frame-event-state.lua")
 Context:Load("src/ui/widgets/primitives/frame/frame-events.lua")
