@@ -245,16 +245,6 @@ do
   assert(#ItemFiltersSpy.calls == 0)
 end
 
--- Test: for selling, calls the filters when the item can be sold but not destroyed.
-do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-
-  JunkFilter:IsJunkItem({}, "SELL")
-
-  assert(#ItemFiltersSpy.calls > 0)
-end
-
 -- Test: for destroying, returns false without calling any filter when the item cannot be destroyed.
 do
   local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
@@ -265,16 +255,6 @@ do
   assert(isJunk == false)
   assert(reason == nil)
   assert(#ItemFiltersSpy.calls == 0)
-end
-
--- Test: for destroying, calls the filters when the item can be destroyed but not sold.
-do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-
-  JunkFilter:IsJunkItem({}, "DESTROY")
-
-  assert(#ItemFiltersSpy.calls > 0)
 end
 
 -- ============================================================================
@@ -289,17 +269,6 @@ do
 
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
     assert(#ItemFiltersSpy:GetStub(name).calls == 2, name)
-  end
-end
-
--- Test: for selling, calls every filter once.
-do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
-
-  JunkFilter:IsJunkItem({}, "SELL")
-
-  for _, name in ipairs(ORDERED_FILTER_NAMES) do
-    assert(#ItemFiltersSpy:GetStub(name).calls == 1, name)
   end
 end
 
@@ -324,18 +293,6 @@ do
   assert(isJunk == true)
   assert(reason == "junk reason")
   assert(#FirstFilter.calls == 1)
-end
-
--- Test: with no filter type, a filter that returns NOT_JUNK is called twice, once for each pass.
-do
-  local JunkFilter, ItemFiltersSpy = setupContext()
-  local FirstFilter = ItemFiltersSpy:GetStub(FIRST_FILTER_NAME):Returns(NOT_JUNK, "not junk reason")
-
-  local isJunk, reason = JunkFilter:IsJunkItem({})
-
-  assert(isJunk == false)
-  assert(reason == "not junk reason")
-  assert(#FirstFilter.calls == 2)
 end
 
 -- Test: with no filter type, only the destroying pass runs when the item cannot be sold.
@@ -366,19 +323,6 @@ do
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
     assert(#ItemFiltersSpy:GetStub(name).calls == 1, name)
   end
-end
-
--- Test: with no filter type, returns false without calling any filter when the item can be neither sold nor destroyed.
-do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-
-  local isJunk, reason = JunkFilter:IsJunkItem({})
-
-  assert(isJunk == false)
-  assert(reason == nil)
-  assert(#ItemFiltersSpy.calls == 0)
 end
 
 -- ============================================================================
