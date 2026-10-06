@@ -17,19 +17,26 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 
 ### Options
 
-These options, found under `Options (Profile)`, determine what's considered junk. Several support per-quality checkboxes, letting them apply only to specific quality tiers. The price options compare the price of the whole stack and never affect items with no vendor price. Each can apply to selling, destroying, or both.
+`Options (Profile)` has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what's considered junk, and several of their options support per-quality checkboxes, letting them apply only to specific quality tiers.
 
+#### Include
+
+- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
 - **Include By Quality** — Include items by quality tier (poor quality included by default)
-- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
 - **Include Below Item Level** — Include equipment below a set item level
-- **Exclude Above Price** — Exclude items with a stack price above a set value, even if it's on an Inclusions list
 - **Include Below Price** — Include items with a stack price below a set value
 - **Include By Equipment Type** — Include equipment of the selected armor and weapon types (cloaks never match)
+
+#### Exclude
+
+- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
+- **Exclude Above Price** — Exclude items with a stack price above a set value, even if it's on an Inclusions list
 - **Exclude By Equipment Type** — Exclude equipment of the selected armor and weapon types (cloaks never match)
 - **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
-- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
+
+The price options compare the price of the whole stack, never affect items with no vendor price, and can each apply to selling, destroying, or both.
 
 ### Lists
 
