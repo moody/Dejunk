@@ -65,7 +65,7 @@ function ComponentFactory:NumberInput(options)
 
       --- Shows the current value, unless the box has focus.
       local function refreshText()
-        if editBox:HasFocus() then return end
+        if editBox:GetEventValue("FOCUSED") then return end
         editBox:SetText(tostring(options.get()))
       end
 

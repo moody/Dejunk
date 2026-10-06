@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Coins = Addon:GetModule("Coins")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local EquipmentTypes = Addon:GetModule("EquipmentTypes")
@@ -50,20 +51,86 @@ local function addChoiceLine(self, labelText, choices, get, set)
   self:AddLine(labelText):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
 end
 
+--- Attaches a number input to the line, passing the mouse through while disabled.
+--- @param line WaffleFlexComponent
+--- @param options NumberInputComponentOptions
+--- @return WaffleFlexComponent input
+local function attachNumberInput(line, options)
+  local input = line:AttachComponent(ComponentFactory:NumberInput(options))
+
+  input:WhenFrameReady(function(frame)
+    --- @cast frame NumberInputWidget
+    frame:PropagateWhenDisabled(true)
+  end)
+
+  return input
+end
+
 --- Adds an editable item level line to the box for a setting's `value` field.
 --- @param self OptionsBuilderSettingsBox
 --- @param getState fun(): ItemLevelOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addItemLevelLine(self, getState, mergeAction)
-  local input = self:AddLine(L.ITEM_LEVEL):AttachComponent(ComponentFactory:NumberInput({
+  attachNumberInput(self:AddLine(L.ITEM_LEVEL), {
     get = function() return getState().value end,
     set = function(value) StateManager:Dispatch(mergeAction({ value = value })) end
-  }))
+  })
+end
 
-  -- Pass the mouse through while disabled.
-  input:WhenFrameReady(function(frame)
-    --- @cast frame NumberInputWidget
-    frame:PropagateWhenDisabled(true)
+--- The inputs of a price line, each with its coin icon. Each index matches the value at that position in
+--- the return values of `Coins:Split()`: gold, silver, copper.
+local PRICE_COINS = {
+  { icon = "|TInterface\\MoneyFrame\\UI-GoldIcon:0:0:0:0|t", width = 70, maxLetters = 6 },
+  { icon = "|TInterface\\MoneyFrame\\UI-SilverIcon:0:0:0:0|t", width = 40, maxLetters = 2 },
+  { icon = "|TInterface\\MoneyFrame\\UI-CopperIcon:0:0:0:0|t", width = 40, maxLetters = 2 }
+}
+
+--- Adds gold, silver, and copper inputs to the box for a setting's `value` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): PriceOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addPriceLine(self, getState, mergeAction)
+  local line = self:AddLine(L.PRICE)
+  local editBoxes = {} --- @type NumberInputWidget[]
+
+  for index, coin in ipairs(PRICE_COINS) do
+    local input = attachNumberInput(line, {
+      width = coin.width,
+      maxLetters = coin.maxLetters,
+      get = function() return select(index, Coins:Split(getState().value)) end,
+      set = function(value)
+        local parts = { Coins:Split(getState().value) }
+        parts[index] = value
+        StateManager:Dispatch(mergeAction({ value = Coins:Combine(unpack(parts)) }))
+      end
+    })
+
+    -- Tab and Shift+Tab move between the inputs.
+    input:WhenFrameReady(function(frame)
+      --- @cast frame NumberInputWidget
+      editBoxes[index] = frame
+      frame:SetScript("OnTabPressed", function()
+        local step = IsShiftKeyDown() and -1 or 1
+        editBoxes[(index - 1 + step) % #PRICE_COINS + 1]:SetFocus()
+      end)
+    end)
+
+    local icon = line:AttachComponent(ComponentFactory:Text({ text = coin.icon, width = "AUTO" }))
+    icon:SetMarginTop(Widgets.CONTROL_PADDING)
+  end
+end
+
+--- Adds a line of chips to the box for a setting's `scope` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): PriceOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addPriceScopeLine(self, getState, mergeAction)
+  self:AddChoiceLine(L.APPLIES_TO, {
+    { value = "SELL", text = L.SELLING },
+    { value = "DESTROY", text = L.DESTROYING },
+    { value = "BOTH", text = L.BOTH }
+  }, function() return getState().scope end, function(scope)
+    StateManager:Dispatch(mergeAction({ scope = scope }))
   end)
 end
 
@@ -135,6 +202,8 @@ local function addSettingsBox(self)
   box.AddArmorLine = addArmorLine
   box.AddChoiceLine = addChoiceLine
   box.AddItemLevelLine = addItemLevelLine
+  box.AddPriceLine = addPriceLine
+  box.AddPriceScopeLine = addPriceScopeLine
   box.AddQualitiesLine = addQualitiesLine
   box.AddWeaponsLine = addWeaponsLine
 

@@ -88,6 +88,23 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     box:AddQualitiesLine(getState, mergeAction)
   end
 
+  -- Include below price.
+  do
+    local function getState() return StateManager:GetProfileState().settings.includeBelowPrice end
+    local mergeAction = ActionCreators.Profile.mergeIncludeBelowPrice
+
+    local box = include:AddOptionCard({
+      labelText = L.INCLUDE_BELOW_PRICE_TEXT,
+      descriptionText = L.INCLUDE_BELOW_PRICE_DESCRIPTION,
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    }):AddSettingsBox()
+
+    box:AddPriceLine(getState, mergeAction)
+    box:AddPriceScopeLine(getState, mergeAction)
+    box:AddQualitiesLine(getState, mergeAction)
+  end
+
   -- Include by equipment type.
   do
     local function getState() return StateManager:GetProfileState().settings.includeByEquipmentType end
@@ -122,6 +139,23 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddItemLevelLine(getState, mergeAction)
+    box:AddQualitiesLine(getState, mergeAction)
+  end
+
+  -- Exclude above price.
+  do
+    local function getState() return StateManager:GetProfileState().settings.excludeAbovePrice end
+    local mergeAction = ActionCreators.Profile.mergeExcludeAbovePrice
+
+    local box = exclude:AddOptionCard({
+      labelText = L.EXCLUDE_ABOVE_PRICE_TEXT,
+      descriptionText = L.EXCLUDE_ABOVE_PRICE_DESCRIPTION,
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    }):AddSettingsBox()
+
+    box:AddPriceLine(getState, mergeAction)
+    box:AddPriceScopeLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 
