@@ -380,3 +380,59 @@ do
   assert(reason == nil)
   assert(#ItemFiltersSpy.calls == 0)
 end
+
+-- ============================================================================
+-- Tests - JunkFilter:IsSellableJunkItem()
+-- ============================================================================
+
+-- Test: IsSellableJunkItem returns junk for an item that can be sold.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsSellableJunkItem({})
+
+  assert(isJunk == true)
+  assert(reason == "junk reason")
+end
+
+-- Test: IsSellableJunkItem returns false for an item that cannot be sold, even if it can be destroyed.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsSellableJunkItem({})
+
+  assert(isJunk == false)
+  assert(reason == nil)
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:IsDestroyableJunkItem()
+-- ============================================================================
+
+-- Test: IsDestroyableJunkItem returns junk for an item that can be destroyed.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
+
+  assert(isJunk == true)
+  assert(reason == "junk reason")
+end
+
+-- Test: IsDestroyableJunkItem returns false for an item that cannot be destroyed, even if it can be sold.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
+
+  assert(isJunk == false)
+  assert(reason == nil)
+end
