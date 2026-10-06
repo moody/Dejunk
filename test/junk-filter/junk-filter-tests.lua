@@ -15,6 +15,24 @@ local NOT_JUNK = "NOT_JUNK"
 --- @type ItemFilterResult
 local PASS = "PASS"
 
+--- The `ItemFilters` methods that `JunkFilter:IsJunkItem()` calls, in the order it calls them.
+local ORDERED_FILTER_NAMES = {
+  "Refundable",
+  "Locked",
+  "ExcludeAboveItemLevel",
+  "ExcludeAbovePrice",
+  "ByLists",
+  "ExcludeEquipmentSets",
+  "ExcludeUnboundEquipment",
+  "ExcludeWarbandEquipment",
+  "ExcludeByEquipmentType",
+  "IncludeByQuality",
+  "IncludeBelowItemLevel",
+  "IncludeBelowPrice",
+  "IncludeByEquipmentType",
+  "IncludeArtifactRelics"
+}
+
 --- @class TestJunkFilterOptions
 --- @field addon? table Fields set on the addon, such as `IS_RETAIL`. The game version flags are `false` otherwise.
 
@@ -40,20 +58,7 @@ local function setupContext(options)
 
   local ItemFilters = { JUNK = JUNK, NOT_JUNK = NOT_JUNK, PASS = PASS }
   local ItemFiltersSpy = Mocks:CreateSpy(ItemFilters)
-  ItemFiltersSpy:Stub("Refundable"):Returns(PASS)
-  ItemFiltersSpy:Stub("Locked"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeAboveItemLevel"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeAbovePrice"):Returns(PASS)
-  ItemFiltersSpy:Stub("ByLists"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeEquipmentSets"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeUnboundEquipment"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeWarbandEquipment"):Returns(PASS)
-  ItemFiltersSpy:Stub("ExcludeByEquipmentType"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeByQuality"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeBelowItemLevel"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeBelowPrice"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeByEquipmentType"):Returns(PASS)
-  ItemFiltersSpy:Stub("IncludeArtifactRelics"):Returns(PASS)
+  for _, name in ipairs(ORDERED_FILTER_NAMES) do ItemFiltersSpy:Stub(name):Returns(PASS) end
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
@@ -81,7 +86,7 @@ local function setupContext(options)
 
   Context:SetModule("ItemFilters", ItemFilters)
   Context:SetModule("Items", Items)
-  Context:SetModule("Locale", { NO_FILTERS_MATCHED = "no filters matched" })
+  Context:SetModule("Locale", { NO_FILTERS_MATCHED = "NO_FILTERS_MATCHED" })
   Context:SetModule("StateManager", StateManager)
   Context:Load("src/junk-filter/junk-filter.lua")
 
@@ -160,4 +165,48 @@ do
 
   assert(#ExcludeWarbandEquipment.calls == 0)
   assert(#IncludeArtifactRelics.calls == 0)
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:IsJunkItem() results
+-- ============================================================================
+
+-- Test: returns false and the no filters matched reason when every filter passes.
+do
+  local JunkFilter = setupContext()
+
+  local isJunk, reason = JunkFilter:IsJunkItem({})
+
+  assert(isJunk == false)
+  assert(reason == "NO_FILTERS_MATCHED")
+end
+
+-- Test: each filter's JUNK result is returned as junk with its reason, without calling the filters after it.
+for index, name in ipairs(ORDERED_FILTER_NAMES) do
+  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemFiltersSpy:GetStub(name):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsJunkItem({})
+
+  assert(isJunk == true, name)
+  assert(reason == "junk reason", name)
+  for laterIndex = index + 1, #ORDERED_FILTER_NAMES do
+    local laterName = ORDERED_FILTER_NAMES[laterIndex]
+    assert(#ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
+  end
+end
+
+-- Test: each filter's NOT_JUNK result is returned as not junk with its reason, without calling the filters after it.
+for index, name in ipairs(ORDERED_FILTER_NAMES) do
+  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemFiltersSpy:GetStub(name):Returns(NOT_JUNK, "not junk reason")
+
+  local isJunk, reason = JunkFilter:IsJunkItem({})
+
+  assert(isJunk == false, name)
+  assert(reason == "not junk reason", name)
+  for laterIndex = index + 1, #ORDERED_FILTER_NAMES do
+    local laterName = ORDERED_FILTER_NAMES[laterIndex]
+    assert(#ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
+  end
 end
