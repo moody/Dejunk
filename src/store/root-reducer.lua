@@ -46,6 +46,7 @@ local profileReducer = Wux:CombineReducers({
     autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
 
     excludeAboveItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL, DefaultStates.Profile.settings.excludeAboveItemLevel),
+    excludeAbovePrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE, DefaultStates.Profile.settings.excludeAbovePrice),
     excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
     excludeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.excludeByEquipmentType),
     excludeUnboundEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
@@ -53,6 +54,7 @@ local profileReducer = Wux:CombineReducers({
 
     includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
     includeBelowItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
+    includeBelowPrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE, DefaultStates.Profile.settings.includeBelowPrice),
     includeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.includeByEquipmentType),
     includeByQuality = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
 

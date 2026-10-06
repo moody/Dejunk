@@ -190,6 +190,10 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL),
 
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeAbovePrice = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE),
+
   --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE`.
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeByEquipmentType = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE),
@@ -213,6 +217,10 @@ ActionCreators.Profile = {
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL),
+
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeBelowPrice = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE),
 
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE`.
   --- @type WuxActionCreator<table<string, any>>
