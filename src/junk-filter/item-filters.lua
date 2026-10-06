@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local EquipmentTypes = Addon:GetModule("EquipmentTypes")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -8,6 +9,13 @@ local Lists = Addon:GetModule("Lists")
 --- @class ItemFilters
 local ItemFilters = Addon:GetModule("ItemFilters")
 
+--- The kind of filter being run: for selling, or for destroying.
+--- @alias ItemFilterType "SELL" | "DESTROY"
+
+--- The filter types that an option applies to: one of them, or both.
+--- @alias ItemFilterScope ItemFilterType | "BOTH"
+
+--- What a filter decided about an item.
 --- @alias ItemFilterResult "JUNK" | "NOT_JUNK" | "PASS"
 
 --- The filter decided that the item is junk.
@@ -39,6 +47,22 @@ end
 local function getSubclassText(item)
   local qualityColor = Colors.ByQuality[item.quality] or Colors.White
   return Colors.Grey("(%s)"):format(qualityColor(Items:GetItemSubclassName(item)))
+end
+
+--- Returns the price of the item's whole stack, or `nil` if the item has no value.
+--- @param item BagItem
+--- @return integer?
+local function getStackPrice(item)
+  if item.noValue or item.price == 0 then return nil end
+  return item.price * item.quantity
+end
+
+--- Returns `true` if the given `scope` includes the given `filterType`.
+--- @param scope ItemFilterScope
+--- @param filterType ItemFilterType
+--- @return boolean
+local function scopeIncludes(scope, filterType)
+  return scope == "BOTH" or scope == filterType
 end
 
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
@@ -230,6 +254,44 @@ end
 function ItemFilters:IncludeArtifactRelics(item, state)
   if state and Items:IsItemArtifactRelic(item) then
     return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  end
+
+  return self.PASS
+end
+
+--- Items whose stack price is above the value are not junk, for the selected qualities and the option's scope.
+--- @param item BagItem
+--- @param state PriceOptionState
+--- @param filterType ItemFilterType
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ExcludeAbovePrice(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) then
+    local price = getStackPrice(item)
+    if price and price > state.value then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(GetCoinTextureString(state.value)))
+        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_PRICE_TEXT .. " " .. valueText)
+      end
+    end
+  end
+
+  return self.PASS
+end
+
+--- Items whose stack price is below the value are junk, for the selected qualities and the option's scope.
+--- @param item BagItem
+--- @param state PriceOptionState
+--- @param filterType ItemFilterType
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:IncludeBelowPrice(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) then
+    local price = getStackPrice(item)
+    if price and price < state.value then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(GetCoinTextureString(state.value)))
+        return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_PRICE_TEXT .. " " .. valueText)
+      end
+    end
   end
 
   return self.PASS

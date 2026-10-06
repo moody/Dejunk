@@ -10,13 +10,14 @@ local Harness = require("test/harness")
 local Enum = { ItemQuality = { Poor = 0, Common = 1, Uncommon = 2, Rare = 3, Epic = 4 } }
 
 --- Returns `ItemFilters` and `Locale` from a new context, with the mock modules set. The colors return their
---- text unchanged.
+--- text unchanged, and coin text is the copper amount followed by `c`.
 --- @param modules? table<string, table> Mock modules by name.
 --- @return ItemFilters ItemFilters
 --- @return Locale L
 local function setupContext(modules)
   local Context = Harness:NewContext()
   Context:SetGlobal("Enum", Enum)
+  Context:SetGlobal("GetCoinTextureString", function(copper) return copper .. "c" end)
 
   for name, module in pairs(modules or {}) do Context:SetModule(name, module) end
 
@@ -879,6 +880,210 @@ do
   })
 
   local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- ============================================================================
+-- Tests - ItemFilters:ExcludeAbovePrice()
+-- ============================================================================
+
+-- Test: an item priced above the value is not junk, with a reason naming the option and the value.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Options > Exclude Above Price (500c)")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = false, value = 500, scope = "DESTROY", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type, and excludes.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 500, scope = "BOTH", qualities = getQualities() }
+
+  local sell = ItemFilters:ExcludeAbovePrice(item, state, "SELL")
+  local destroy = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the price is not above the value.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 500, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: compares the price of the whole stack.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 100, quantity = 10, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Options > Exclude Above Price (500c)")
+end
+
+-- Test: passes for an item with no value.
+do
+  local ItemFilters = setupContext()
+  local flagged = { noValue = true, price = 100, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local priceless = { noValue = false, price = 0, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local state = { enabled = true, value = 0, scope = "DESTROY", qualities = getQualities() }
+
+  assert(ItemFilters:ExcludeAbovePrice(flagged, state, "DESTROY") == ItemFilters.PASS)
+  assert(ItemFilters:ExcludeAbovePrice(priceless, state, "DESTROY") == ItemFilters.PASS)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
+  local qualities = getQualities()
+  qualities.epic = false
+  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = qualities }
+
+  local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- ============================================================================
+-- Tests - ItemFilters:IncludeBelowPrice()
+-- ============================================================================
+
+-- Test: an item priced below the value is junk, with a reason naming the option and the value.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Options > Include Below Price (500c)")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = false, value = 500, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type, and includes.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "BOTH", qualities = getQualities() }
+
+  local sell = ItemFilters:IncludeBelowPrice(item, state, "SELL")
+  local destroy = ItemFilters:IncludeBelowPrice(item, state, "DESTROY")
+
+  assert(sell == ItemFilters.JUNK)
+  assert(destroy == ItemFilters.JUNK)
+end
+
+-- Test: passes when the price is not below the value.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 500, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: compares the price of the whole stack.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 100, quantity = 10, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes for an item with no value.
+do
+  local ItemFilters = setupContext()
+  local flagged = { noValue = true, price = 100, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local priceless = { noValue = false, price = 0, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
+
+  assert(ItemFilters:IncludeBelowPrice(flagged, state, "SELL") == ItemFilters.PASS)
+  assert(ItemFilters:IncludeBelowPrice(priceless, state, "SELL") == ItemFilters.PASS)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext()
+  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
+  local qualities = getQualities()
+  qualities.poor = false
+  local state = { enabled = true, value = 500, scope = "SELL", qualities = qualities }
+
+  local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
