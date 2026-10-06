@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local EquipmentTypes = Addon:GetModule("EquipmentTypes")
+local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -165,9 +166,13 @@ function JunkFilter:IsJunkItem(item)
     return false
   end
 
+  --- @type ItemFilterResult, string?
+  local result, reason
+
   -- Refundable.
-  if Items:IsItemRefundable(item) then
-    return false, L.ITEM_IS_REFUNDABLE
+  result, reason = ItemFilters:Refundable(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Locked.

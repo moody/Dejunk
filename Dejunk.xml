@@ -45,6 +45,7 @@
   <Script file="src\commands\commands.lua"/>
 
   <!-- Junk Filter -->
+  <Script file="src\junk-filter\item-filters.lua"/>
   <Script file="src\junk-filter\junk-filter.lua"/>
 
   <!-- Items -->
