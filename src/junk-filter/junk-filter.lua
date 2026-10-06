@@ -202,11 +202,9 @@ function JunkFilter:IsJunkItem(item)
   end
 
   -- Exclude unbound equipment.
-  if profileSettings.excludeUnboundEquipment.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    local checkboxValues = profileSettings.excludeUnboundEquipment.qualities
-    if isItemQualityCheckboxValueEnabled(item.quality, checkboxValues) then
-      return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
-    end
+  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Exclude warband equipment.

@@ -367,3 +367,89 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:ExcludeUnboundEquipment()
+-- ============================================================================
+
+-- Test: unbound equipment of a selected quality is not junk, with a reason naming the option.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      IsItemBound = function() return false end
+    }
+  })
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Options > Exclude Unbound Equipment")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      IsItemBound = function() return false end
+    }
+  })
+  local state = { enabled = false, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not equipment.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return false end,
+      IsItemBound = function() return false end
+    }
+  })
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is bound.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      IsItemBound = function() return true end
+    }
+  })
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      IsItemBound = function() return false end
+    }
+  })
+  local qualities = getQualities()
+  qualities.epic = false
+  local state = { enabled = true, qualities = qualities }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
