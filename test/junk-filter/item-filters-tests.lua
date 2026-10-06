@@ -453,3 +453,61 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:ExcludeWarbandEquipment()
+-- ============================================================================
+
+-- Test: warband equipment of a selected quality is not junk, with a reason naming the option.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemWarbandEquipment = function() return true end }
+  })
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Options > Exclude Warband Equipment")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemWarbandEquipment = function() return true end }
+  })
+  local state = { enabled = false, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not warband equipment.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemWarbandEquipment = function() return false end }
+  })
+  local state = { enabled = true, qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext({
+    Items = { IsItemWarbandEquipment = function() return true end }
+  })
+  local qualities = getQualities()
+  qualities.epic = false
+  local state = { enabled = true, qualities = qualities }
+
+  local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
