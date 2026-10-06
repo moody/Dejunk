@@ -333,3 +333,37 @@ do
 
   assert(result == ItemFilters.NOT_JUNK)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:ExcludeEquipmentSets()
+-- ============================================================================
+
+-- Test: an item in an equipment set is not junk, with a reason naming the option.
+do
+  local ItemFilters = setupContext()
+
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, true)
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Options > Exclude Equipment Sets")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext()
+
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, false)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not in an equipment set.
+do
+  local ItemFilters = setupContext()
+
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = false }, true)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end

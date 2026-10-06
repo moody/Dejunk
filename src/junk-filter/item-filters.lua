@@ -110,3 +110,15 @@ function ItemFilters:ByLists(item)
 
   return self.PASS
 end
+
+--- Items that are saved to an equipment set are not junk.
+--- @param item BagItem
+--- @param state boolean
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ExcludeEquipmentSets(item, state)
+  if state and item.isEquipmentSet then
+    return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
+  end
+
+  return self.PASS
+end
