@@ -1,6 +1,4 @@
 local Addon = select(2, ...) ---@type Addon
-local Colors = Addon:GetModule("Colors")
-local EquipmentTypes = Addon:GetModule("EquipmentTypes")
 local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
@@ -18,14 +16,6 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 --- @return string
 local function concat(...)
   return Addon:Concat(" > ", ...)
-end
-
---- Returns the given `item`'s subclass name in its quality color, in grey brackets.
---- @param item BagItem
---- @return string
-local function getSubclassText(item)
-  local qualityColor = Colors.ByQuality[item.quality] or Colors.White
-  return Colors.Grey("(%s)"):format(qualityColor(Items:GetItemSubclassName(item)))
 end
 
 --- Comparison function for sorting items by price, quality, and name.
@@ -68,19 +58,6 @@ local function getJunkItems(filterFunc, items)
   table.sort(items, itemSortFunc)
 
   return items
-end
-
---- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
---- @param itemQuality integer
---- @param checkboxValues ItemQualitiesState
-local function isItemQualityCheckboxValueEnabled(itemQuality, checkboxValues)
-  return (
-    (checkboxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
-    (checkboxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
-    (checkboxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
-    (checkboxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
-    (checkboxValues.epic and itemQuality == Enum.ItemQuality.Epic)
-  )
 end
 
 -- ============================================================================
@@ -227,22 +204,16 @@ function JunkFilter:IsJunkItem(item)
     return result == ItemFilters.JUNK, reason
   end
 
-  -- Equipment-based include filters.
-  if Items:IsItemEquipment(item) then
-    -- Include below item level.
-    result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel)
-    if result ~= ItemFilters.PASS then
-      return result == ItemFilters.JUNK, reason
-    end
-    -- Include by equipment type.
-    if profileSettings.includeByEquipmentType.enabled then
-      local setting = profileSettings.includeByEquipmentType
-      if EquipmentTypes:IsItemTypeSelected(item, setting.armor, setting.weapons) then
-        if isItemQualityCheckboxValueEnabled(item.quality, setting.qualities) then
-          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item))
-        end
-      end
-    end
+  -- Include below item level.
+  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Include by equipment type.
+  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Include artifact relics.

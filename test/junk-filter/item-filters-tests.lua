@@ -729,3 +729,94 @@ do
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
 end
+
+-- ============================================================================
+-- Tests - ItemFilters:IncludeByEquipmentType()
+-- ============================================================================
+
+-- Test: equipment of a selected type and quality is junk, with a reason naming the option and the type.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemSubclassName = function() return "Plate" end
+    },
+    EquipmentTypes = { IsItemTypeSelected = function() return true end }
+  })
+  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.JUNK)
+  assert(reason == "Options > Include By Equipment Type (Plate)")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemSubclassName = function() return "Plate" end
+    },
+    EquipmentTypes = { IsItemTypeSelected = function() return true end }
+  })
+  local state = { enabled = false, qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not equipment.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return false end,
+      GetItemSubclassName = function() return "Plate" end
+    },
+    EquipmentTypes = { IsItemTypeSelected = function() return true end }
+  })
+  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's type is not selected.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemSubclassName = function() return "Plate" end
+    },
+    EquipmentTypes = { IsItemTypeSelected = function() return false end }
+  })
+  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item's quality is not selected.
+do
+  local ItemFilters = setupContext({
+    Items = {
+      IsItemEquipment = function() return true end,
+      GetItemSubclassName = function() return "Plate" end
+    },
+    EquipmentTypes = { IsItemTypeSelected = function() return true end }
+  })
+  local qualities = getQualities()
+  qualities.epic = false
+  local state = { enabled = true, qualities = qualities, armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end

@@ -205,3 +205,20 @@ function ItemFilters:IncludeBelowItemLevel(item, state)
 
   return self.PASS
 end
+
+--- Equipment of a selected type is junk, for the selected qualities.
+--- @param item BagItem
+--- @param state EquipmentTypeOptionState
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:IncludeByEquipmentType(item, state)
+  if state.enabled and Items:IsItemEquipment(item) then
+    if EquipmentTypes:IsItemTypeSelected(item, state.armor, state.weapons) then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        local typeText = L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item)
+        return self.JUNK, concat(L.OPTIONS_TEXT, typeText)
+      end
+    end
+  end
+
+  return self.PASS
+end
