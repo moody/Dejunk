@@ -65,16 +65,13 @@ local function scopeIncludes(scope, filterType)
   return scope == "BOTH" or scope == filterType
 end
 
---- Returns the reason for a price option, naming its value and the filter type it is limited to, if any.
+--- Returns the reason for a price option, naming its value.
 --- @param labelText string
 --- @param state PriceOptionState
 --- @return string
 local function getPriceReason(labelText, state)
   local valueText = Colors.Grey("(%s)"):format(Colors.White(GetCoinTextureString(state.value)))
-  local optionText = labelText .. " " .. valueText
-  if state.scope == "SELL" then return concat(L.OPTIONS_TEXT, optionText, L.SELLING) end
-  if state.scope == "DESTROY" then return concat(L.OPTIONS_TEXT, optionText, L.DESTROYING) end
-  return concat(L.OPTIONS_TEXT, optionText)
+  return concat(L.OPTIONS_TEXT, labelText .. " " .. valueText)
 end
 
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.

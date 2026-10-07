@@ -934,7 +934,7 @@ end
 -- Tests - ItemFilters:ExcludeAbovePrice()
 -- ============================================================================
 
--- Test: an item priced above the value is not junk, with a reason naming the option, the value, and destroying.
+-- Test: an item priced above the value is not junk, with a reason naming the option and the value.
 do
   local ItemFilters = setupContext()
   local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
@@ -943,7 +943,7 @@ do
   local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Above Price (500c) > Destroying")
+  assert(reason == "Options > Exclude Above Price (500c)")
 end
 
 -- Test: passes when the option is disabled.
@@ -1031,33 +1031,11 @@ do
   assert(reason == nil)
 end
 
--- Test: the reason names selling when the option is limited to selling.
-do
-  local ItemFilters = setupContext()
-  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
-  local state = { enabled = true, value = 500, scope = "SELL", qualities = getQualities() }
-
-  local _, reason = ItemFilters:ExcludeAbovePrice(item, state, "SELL")
-
-  assert(reason == "Options > Exclude Above Price (500c) > Selling")
-end
-
--- Test: the reason names no filter type when the option applies to both.
-do
-  local ItemFilters = setupContext()
-  local item = { price = 600, quantity = 1, quality = Enum.ItemQuality.Epic }
-  local state = { enabled = true, value = 500, scope = "BOTH", qualities = getQualities() }
-
-  local _, reason = ItemFilters:ExcludeAbovePrice(item, state, "SELL")
-
-  assert(reason == "Options > Exclude Above Price (500c)")
-end
-
 -- ============================================================================
 -- Tests - ItemFilters:IncludeBelowPrice()
 -- ============================================================================
 
--- Test: an item priced below the value is junk, with a reason naming the option, the value, and selling.
+-- Test: an item priced below the value is junk, with a reason naming the option and the value.
 do
   local ItemFilters = setupContext()
   local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
@@ -1066,7 +1044,7 @@ do
   local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include Below Price (500c) > Selling")
+  assert(reason == "Options > Include Below Price (500c)")
 end
 
 -- Test: passes when the option is disabled.
@@ -1153,26 +1131,4 @@ do
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
-end
-
--- Test: the reason names destroying when the option is limited to destroying.
-do
-  local ItemFilters = setupContext()
-  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
-  local state = { enabled = true, value = 500, scope = "DESTROY", qualities = getQualities() }
-
-  local _, reason = ItemFilters:IncludeBelowPrice(item, state, "DESTROY")
-
-  assert(reason == "Options > Include Below Price (500c) > Destroying")
-end
-
--- Test: the reason names no filter type when the option applies to both.
-do
-  local ItemFilters = setupContext()
-  local item = { price = 400, quantity = 1, quality = Enum.ItemQuality.Poor }
-  local state = { enabled = true, value = 500, scope = "BOTH", qualities = getQualities() }
-
-  local _, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
-
-  assert(reason == "Options > Include Below Price (500c)")
 end
