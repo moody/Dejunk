@@ -331,6 +331,7 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.mergeIncludeBelowItemLevel({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeBelowItemLevel.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeIncludeBelowPrice({ value = 100 }), path = PROFILE_PATH .. ".settings.includeBelowPrice.value", expected = 100 },
   { action = ActionCreators.Profile.mergeIncludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.includeByEquipmentType.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeIncludeByEquipmentType({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeByEquipmentType.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = true } }), path = PROFILE_PATH .. ".settings.includeByQuality.qualities.epic", expected = true },
   { action = ActionCreators.Profile.mergeIncludeByQuality({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeByQuality.scope", expected = "SELL" },
   { action = ActionCreators.Profile.setInclusions({ ["3001"] = true }), path = PROFILE_PATH .. ".settings.inclusions", expected = { ["3001"] = true } },

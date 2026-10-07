@@ -131,6 +131,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
     box:AddArmorLine(getState, mergeAction)
     box:AddWeaponsLine(getState, mergeAction)
+    box:AddAppliesToLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 

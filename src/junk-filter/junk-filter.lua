@@ -230,7 +230,7 @@ function JunkFilter:IsJunkItem(item, filterType)
   end
 
   -- Include by equipment type.
-  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType)
+  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end
