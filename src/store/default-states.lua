@@ -26,6 +26,10 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field rare boolean
 --- @field epic boolean
 
+--- Option that applies to selling, destroying, or both.
+--- @class ScopeOptionState
+--- @field scope ItemFilterScope
+
 --- Option that can be turned on or off.
 --- @class ToggleOptionState
 --- @field enabled boolean
@@ -39,9 +43,8 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field value integer Item level threshold.
 
 --- Qualities option that compares the price of an item's stack.
---- @class PriceOptionState : QualitiesOptionState
+--- @class PriceOptionState : ScopeOptionState, QualitiesOptionState
 --- @field value integer Price threshold in copper.
---- @field scope ItemFilterScope
 
 --- Qualities option limited to the selected armor and weapon types.
 --- @class EquipmentTypeOptionState : QualitiesOptionState

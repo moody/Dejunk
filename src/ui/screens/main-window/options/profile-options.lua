@@ -110,10 +110,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddAppliesToLine(
-      function() return getState().scope end,
-      function(scope) StateManager:Dispatch(mergeAction({ scope = scope })) end
-    )
+    box:AddAppliesToLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 
@@ -167,10 +164,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddAppliesToLine(
-      function() return getState().scope end,
-      function(scope) StateManager:Dispatch(mergeAction({ scope = scope })) end
-    )
+    box:AddAppliesToLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 

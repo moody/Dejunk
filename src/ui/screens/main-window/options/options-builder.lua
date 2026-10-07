@@ -127,18 +127,20 @@ local function addPriceLine(self, getState, mergeAction)
   end
 end
 
---- Adds a line of chips to the box for what a setting applies to: selling, destroying, or both.
+--- Adds a line of chips to the box for a setting's `scope` field: selling, destroying, or both.
 --- @param self OptionsBuilderSettingsBox
---- @param getState fun(): ItemFilterScope Returns the setting's current scope.
---- @param setState fun(scope: ItemFilterScope) Receives the scope the user picks.
-local function addAppliesToLine(self, getState, setState)
+--- @param getState fun(): ScopeOptionState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addAppliesToLine(self, getState, mergeAction)
   local choices = {
     { value = "SELL", text = L.SELLING },
     { value = "DESTROY", text = L.DESTROYING },
     { value = "BOTH", text = L.BOTH }
   }
 
-  self:AddChoiceLine(L.APPLIES_TO, choices, getState, setState)
+  self:AddChoiceLine(L.APPLIES_TO, choices, function() return getState().scope end, function(scope)
+    StateManager:Dispatch(mergeAction({ scope = scope }))
+  end)
 end
 
 --- Adds a qualities line to the box for a setting's `qualities` field.
