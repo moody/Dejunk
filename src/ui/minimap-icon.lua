@@ -46,7 +46,7 @@ local function onUpdateTooltip(frame)
   end
 
   Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
-  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME))
+  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_MAIN_WINDOW))
   Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
   Tooltip:Show()
