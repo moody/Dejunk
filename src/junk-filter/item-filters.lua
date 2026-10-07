@@ -71,7 +71,7 @@ end
 --- @return string
 local function getPriceReason(labelText, state)
   local valueText = Colors.Grey("(%s)"):format(Colors.White(GetCoinTextureString(state.value)))
-  return concat(L.OPTIONS_TEXT, labelText .. " " .. valueText)
+  return concat(L.PROFILE_OPTIONS_TEXT, labelText .. " " .. valueText)
 end
 
 --- Returns `true` if the given `itemQuality` is enabled within the given `checkboxValues`.
@@ -122,7 +122,7 @@ function ItemFilters:ExcludeAboveItemLevel(item, state)
     if Items:GetItemLevel(item) > state.value then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(state.value))
-        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
+        return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
     end
   end
@@ -159,7 +159,7 @@ end
 --- @return ItemFilterResult result, string? reason
 function ItemFilters:ExcludeEquipmentSets(item, state)
   if state and item.isEquipmentSet then
-    return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
+    return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 
   return self.PASS
@@ -172,7 +172,7 @@ end
 function ItemFilters:ExcludeUnboundEquipment(item, state)
   if state.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
     if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-      return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+      return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
     end
   end
 
@@ -186,7 +186,7 @@ end
 function ItemFilters:ExcludeWarbandEquipment(item, state)
   if state.enabled and Items:IsItemWarbandEquipment(item) then
     if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-      return self.NOT_JUNK, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
+      return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
     end
   end
 
@@ -202,7 +202,7 @@ function ItemFilters:ExcludeByEquipmentType(item, state)
     if EquipmentTypes:IsItemTypeSelected(item, state.armor, state.weapons) then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
         local typeText = L.EXCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item)
-        return self.NOT_JUNK, concat(L.OPTIONS_TEXT, typeText)
+        return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, typeText)
       end
     end
   end
@@ -216,7 +216,7 @@ end
 --- @return ItemFilterResult result, string? reason
 function ItemFilters:IncludeByQuality(item, state)
   if state.enabled and isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-    return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
+    return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
   end
 
   return self.PASS
@@ -231,7 +231,7 @@ function ItemFilters:IncludeBelowItemLevel(item, state)
     if Items:GetItemLevel(item) < state.value then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(state.value))
-        return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
+        return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
       end
     end
   end
@@ -248,7 +248,7 @@ function ItemFilters:IncludeByEquipmentType(item, state)
     if EquipmentTypes:IsItemTypeSelected(item, state.armor, state.weapons) then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
         local typeText = L.INCLUDE_BY_EQUIPMENT_TYPE_TEXT .. " " .. getSubclassText(item)
-        return self.JUNK, concat(L.OPTIONS_TEXT, typeText)
+        return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, typeText)
       end
     end
   end
@@ -262,7 +262,7 @@ end
 --- @return ItemFilterResult result, string? reason
 function ItemFilters:IncludeArtifactRelics(item, state)
   if state and Items:IsItemArtifactRelic(item) then
-    return self.JUNK, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+    return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 
   return self.PASS

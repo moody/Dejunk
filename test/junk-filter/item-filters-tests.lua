@@ -143,7 +143,7 @@ do
   local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Above Item Level (50)")
+  assert(reason == "Profile Options > Exclude Above Item Level (50)")
 end
 
 -- Test: passes when the option is disabled.
@@ -359,7 +359,7 @@ do
   local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, true)
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Equipment Sets")
+  assert(reason == "Profile Options > Exclude Equipment Sets")
 end
 
 -- Test: passes when the option is disabled.
@@ -399,7 +399,7 @@ do
   local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Unbound Equipment")
+  assert(reason == "Profile Options > Exclude Unbound Equipment")
 end
 
 -- Test: passes when the option is disabled.
@@ -484,7 +484,7 @@ do
   local result, reason = ItemFilters:ExcludeWarbandEquipment({ quality = Enum.ItemQuality.Epic }, state)
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Warband Equipment")
+  assert(reason == "Profile Options > Exclude Warband Equipment")
 end
 
 -- Test: passes when the option is disabled.
@@ -554,7 +554,7 @@ do
   local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude By Equipment Type (Plate)")
+  assert(reason == "Profile Options > Exclude By Equipment Type (Plate)")
 end
 
 -- Test: passes when the option is disabled.
@@ -647,7 +647,7 @@ do
   local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include By Quality")
+  assert(reason == "Profile Options > Include By Quality")
 end
 
 -- Test: each selected quality includes only items of that quality.
@@ -714,7 +714,7 @@ do
   local result, reason = ItemFilters:IncludeBelowItemLevel({ quality = Enum.ItemQuality.Poor }, state)
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include Below Item Level (50)")
+  assert(reason == "Profile Options > Include Below Item Level (50)")
 end
 
 -- Test: passes when the option is disabled.
@@ -803,7 +803,7 @@ do
   local result, reason = ItemFilters:IncludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include By Equipment Type (Plate)")
+  assert(reason == "Profile Options > Include By Equipment Type (Plate)")
 end
 
 -- Test: passes when the option is disabled.
@@ -899,7 +899,7 @@ do
   local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include Artifact Relics")
+  assert(reason == "Profile Options > Include Artifact Relics")
 end
 
 -- Test: passes when the option is disabled.
@@ -943,7 +943,7 @@ do
   local result, reason = ItemFilters:ExcludeAbovePrice(item, state, "DESTROY")
 
   assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == "Options > Exclude Above Price (500c)")
+  assert(reason == "Profile Options > Exclude Above Price (500c)")
 end
 
 -- Test: passes when the option is disabled.
@@ -1044,7 +1044,7 @@ do
   local result, reason = ItemFilters:IncludeBelowPrice(item, state, "SELL")
 
   assert(result == ItemFilters.JUNK)
-  assert(reason == "Options > Include Below Price (500c)")
+  assert(reason == "Profile Options > Include Below Price (500c)")
 end
 
 -- Test: passes when the option is disabled.
