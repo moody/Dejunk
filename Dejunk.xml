@@ -10,6 +10,9 @@
   <!-- Src -->
   <Script file="src\addon.lua"/>
 
+  <!-- Blizzard -->
+  <Script file="src\blizzard\blizzard.lua"/>
+
   <!-- Locales -->
   <Script file="src\locales\_enUS.lua"/>
   <Script file="src\locales\deDE.lua"/>
