@@ -94,6 +94,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddItemLevelLine(getState, mergeAction)
+    box:AddAppliesToLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 

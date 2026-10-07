@@ -218,7 +218,7 @@ function JunkFilter:IsJunkItem(item, filterType)
   end
 
   -- Include below item level.
-  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel)
+  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end
