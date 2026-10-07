@@ -7,7 +7,7 @@ local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
 local GetItemSubClassInfo = C_Item.GetItemSubClassInfo or GetItemSubClassInfo
 local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
 local IsEquippableItem = C_Item.IsEquippableItem or IsEquippableItem
-local NUM_BAG_SLOTS = Addon.IS_RETAIL and NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
+local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class Items
