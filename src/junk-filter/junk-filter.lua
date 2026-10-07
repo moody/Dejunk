@@ -192,7 +192,7 @@ function JunkFilter:IsJunkItem(item, filterType)
   end
 
   -- Exclude unbound equipment.
-  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment)
+  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end

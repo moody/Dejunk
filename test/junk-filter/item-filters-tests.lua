@@ -394,9 +394,9 @@ do
   ItemsSpy:Stub("IsItemBound"):Returns(false)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, qualities = getQualities() }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.NOT_JUNK)
   assert(reason == "Profile Options > Exclude Unbound Equipment")
@@ -410,9 +410,9 @@ do
   ItemsSpy:Stub("IsItemBound"):Returns(false)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = false, qualities = getQualities() }
+  local state = { enabled = false, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -426,9 +426,9 @@ do
   ItemsSpy:Stub("IsItemBound"):Returns(false)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, qualities = getQualities() }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -442,9 +442,9 @@ do
   ItemsSpy:Stub("IsItemBound"):Returns(true)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, qualities = getQualities() }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -460,12 +460,60 @@ do
   local ItemFilters = setupContext({ Items = Items })
   local qualities = getQualities()
   qualities.epic = false
-  local state = { enabled = true, qualities = qualities }
+  local state = { enabled = true, scope = "BOTH", qualities = qualities }
 
-  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "SELL", qualities = getQualities() }
+
+  local result = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("IsItemBound"):Returns(false)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
+
+  local sell = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+  local destroy = ItemFilters:ExcludeUnboundEquipment({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
 end
 
 -- ============================================================================

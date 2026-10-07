@@ -165,14 +165,17 @@ function ItemFilters:ExcludeEquipmentSets(item, state)
   return self.PASS
 end
 
---- Equipment that is not bound is not junk, for the selected qualities.
+--- Equipment that is not bound is not junk, for the selected qualities and the option's scope.
 --- @param item BagItem
 --- @param state QualitiesOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:ExcludeUnboundEquipment(item, state)
-  if state.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-      return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+function ItemFilters:ExcludeUnboundEquipment(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) then
+    if Items:IsItemEquipment(item) and not Items:IsItemBound(item) then
+      if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+        return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
+      end
     end
   end
 

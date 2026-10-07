@@ -141,6 +141,7 @@ DefaultStates.Profile = {
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     --- @type QualitiesOptionState

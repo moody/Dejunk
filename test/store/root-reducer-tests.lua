@@ -322,6 +322,7 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.setExcludeEquipmentSets(false), path = PROFILE_PATH .. ".settings.excludeEquipmentSets", expected = false },
   { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.enabled", expected = true },
   { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeWarbandEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeWarbandEquipment.enabled", expected = true },
   { action = ActionCreators.Profile.setIncludeArtifactRelics(true), path = PROFILE_PATH .. ".settings.includeArtifactRelics", expected = true },
   { action = ActionCreators.Profile.mergeIncludeBelowItemLevel({ value = 200 }), path = PROFILE_PATH .. ".settings.includeBelowItemLevel.value", expected = 200 },
