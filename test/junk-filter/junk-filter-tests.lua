@@ -132,7 +132,7 @@ do
     { "ExcludeEquipmentSets", item, "excludeEquipmentSets" },
     { "ExcludeUnboundEquipment", item, "excludeUnboundEquipment", "SELL" },
     { "ExcludeWarbandEquipment", item, "excludeWarbandEquipment", "SELL" },
-    { "ExcludeByEquipmentType", item, "excludeByEquipmentType" },
+    { "ExcludeByEquipmentType", item, "excludeByEquipmentType", "SELL" },
     { "IncludeByQuality", item, "includeByQuality", "SELL" },
     { "IncludeBelowItemLevel", item, "includeBelowItemLevel", "SELL" },
     { "IncludeBelowPrice", item, "includeBelowPrice", "SELL" },
@@ -146,6 +146,7 @@ do
   local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
   local ExcludeAboveItemLevel = ItemFiltersSpy:GetStub("ExcludeAboveItemLevel")
   local ExcludeAbovePrice = ItemFiltersSpy:GetStub("ExcludeAbovePrice")
+  local ExcludeByEquipmentType = ItemFiltersSpy:GetStub("ExcludeByEquipmentType")
   local ExcludeUnboundEquipment = ItemFiltersSpy:GetStub("ExcludeUnboundEquipment")
   local ExcludeWarbandEquipment = ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
   local IncludeByEquipmentType = ItemFiltersSpy:GetStub("IncludeByEquipmentType")
@@ -158,6 +159,7 @@ do
 
   assert(Matchers:IsDeepEqual(ExcludeAboveItemLevel.calls, { { item, "excludeAboveItemLevel", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(ExcludeAbovePrice.calls, { { item, "excludeAbovePrice", "DESTROY" } }))
+  assert(Matchers:IsDeepEqual(ExcludeByEquipmentType.calls, { { item, "excludeByEquipmentType", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(ExcludeUnboundEquipment.calls, { { item, "excludeUnboundEquipment", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(ExcludeWarbandEquipment.calls, { { item, "excludeWarbandEquipment", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(IncludeByEquipmentType.calls, { { item, "includeByEquipmentType", "DESTROY" } }))

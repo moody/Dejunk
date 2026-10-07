@@ -134,6 +134,7 @@ DefaultStates.Profile = {
     --- @type EquipmentTypeOptionState
     excludeByEquipmentType = {
       enabled = false,
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
       armor = {},
       weapons = {}

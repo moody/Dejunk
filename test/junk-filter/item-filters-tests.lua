@@ -690,9 +690,9 @@ do
   EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
 
   local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
-  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities(), armor = {}, weapons = {} }
 
-  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.NOT_JUNK)
   assert(reason == "Profile Options > Exclude By Equipment Type (Plate)")
@@ -709,9 +709,9 @@ do
   EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
 
   local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
-  local state = { enabled = false, qualities = getQualities(), armor = {}, weapons = {} }
+  local state = { enabled = false, scope = "BOTH", qualities = getQualities(), armor = {}, weapons = {} }
 
-  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -728,9 +728,9 @@ do
   EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
 
   local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
-  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities(), armor = {}, weapons = {} }
 
-  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -747,9 +747,9 @@ do
   EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(false)
 
   local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
-  local state = { enabled = true, qualities = getQualities(), armor = {}, weapons = {} }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities(), armor = {}, weapons = {} }
 
-  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -768,12 +768,69 @@ do
   local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
   local qualities = getQualities()
   qualities.epic = false
-  local state = { enabled = true, qualities = qualities, armor = {}, weapons = {} }
+  local state = { enabled = true, scope = "BOTH", qualities = qualities, armor = {}, weapons = {} }
 
-  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
+  local state = { enabled = true, scope = "SELL", qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
+  local state = { enabled = true, scope = "SELL", qualities = getQualities(), armor = {}, weapons = {} }
+
+  local result, reason = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemSubclassName"):Returns("Plate")
+  local EquipmentTypes = {}
+  local EquipmentTypesSpy = Mocks:CreateSpy(EquipmentTypes)
+  EquipmentTypesSpy:Stub("IsItemTypeSelected"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items, EquipmentTypes = EquipmentTypes })
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities(), armor = {}, weapons = {} }
+
+  local sell = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+  local destroy = ItemFilters:ExcludeByEquipmentType({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
 end
 
 -- ============================================================================

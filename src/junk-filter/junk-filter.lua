@@ -206,7 +206,7 @@ function JunkFilter:IsJunkItem(item, filterType)
   end
 
   -- Exclude by equipment type.
-  result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType)
+  result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end
