@@ -138,9 +138,9 @@ do
   ItemsSpy:Stub("GetItemLevel"):Returns(60)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, value = 50, qualities = getQualities() }
+  local state = { enabled = true, value = 50, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.NOT_JUNK)
   assert(reason == "Profile Options > Exclude Above Item Level (50)")
@@ -154,9 +154,9 @@ do
   ItemsSpy:Stub("GetItemLevel"):Returns(60)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = false, value = 50, qualities = getQualities() }
+  local state = { enabled = false, value = 50, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -170,9 +170,9 @@ do
   ItemsSpy:Stub("GetItemLevel"):Returns(60)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, value = 50, qualities = getQualities() }
+  local state = { enabled = true, value = 50, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -186,9 +186,9 @@ do
   ItemsSpy:Stub("GetItemLevel"):Returns(50)
 
   local ItemFilters = setupContext({ Items = Items })
-  local state = { enabled = true, value = 50, qualities = getQualities() }
+  local state = { enabled = true, value = 50, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -203,12 +203,60 @@ do
 
   local ItemFilters = setupContext({ Items = Items })
   local qualities = { poor = true, common = true, uncommon = true, rare = true, epic = false }
-  local state = { enabled = true, value = 50, qualities = qualities }
+  local state = { enabled = true, value = 50, scope = "BOTH", qualities = qualities }
 
-  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state)
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, value = 50, scope = "SELL", qualities = getQualities() }
+
+  local result = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, value = 50, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemEquipment"):Returns(true)
+  ItemsSpy:Stub("GetItemLevel"):Returns(60)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, value = 50, scope = "BOTH", qualities = getQualities() }
+
+  local sell = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "SELL")
+  local destroy = ItemFilters:ExcludeAboveItemLevel({ quality = Enum.ItemQuality.Epic }, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
 end
 
 -- ============================================================================

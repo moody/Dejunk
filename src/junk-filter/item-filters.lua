@@ -113,12 +113,13 @@ function ItemFilters:Locked(item)
   return self.PASS
 end
 
---- Equipment with an item level above the value is not junk, for the selected qualities.
+--- Equipment with an item level above the value is not junk, for the selected qualities and the option's scope.
 --- @param item BagItem
 --- @param state ItemLevelOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:ExcludeAboveItemLevel(item, state)
-  if state.enabled and Items:IsItemEquipment(item) then
+function ItemFilters:ExcludeAboveItemLevel(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) and Items:IsItemEquipment(item) then
     if Items:GetItemLevel(item) > state.value then
       if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
         local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(state.value))

@@ -318,6 +318,7 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.setAutoRepair(true), path = PROFILE_PATH .. ".settings.autoRepair", expected = true },
   { action = ActionCreators.Profile.setAutoSell(true), path = PROFILE_PATH .. ".settings.autoSell", expected = true },
   { action = ActionCreators.Profile.mergeExcludeAboveItemLevel({ value = 350 }), path = PROFILE_PATH .. ".settings.excludeAboveItemLevel.value", expected = 350 },
+  { action = ActionCreators.Profile.mergeExcludeAboveItemLevel({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeAboveItemLevel.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeAbovePrice({ value = 5000 }), path = PROFILE_PATH .. ".settings.excludeAbovePrice.value", expected = 5000 },
   { action = ActionCreators.Profile.setExcludeEquipmentSets(false), path = PROFILE_PATH .. ".settings.excludeEquipmentSets", expected = false },
   { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.enabled", expected = true },

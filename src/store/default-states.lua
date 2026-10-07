@@ -121,6 +121,7 @@ DefaultStates.Profile = {
     excludeAboveItemLevel = {
       enabled = false,
       value = 0,
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
     --- @type PriceOptionState
