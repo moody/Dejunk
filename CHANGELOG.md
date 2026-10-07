@@ -25,7 +25,7 @@
 ### Fixed
 
 - `Bag Item Icons` did not appear in the default bags on WoW Forever.
-- Profile assignments on WoW Forever used only part of a character's name. Affected characters may need their profile selected again.
+- On WoW Forever, characters with the same first name and different last names shared a profile assignment, because only the first name was used. Affected characters may need their profile selected again.
 
 ### Removed
 
