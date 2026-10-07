@@ -25,6 +25,7 @@
 ### Fixed
 
 - `Bag Item Icons` did not appear in the default bags on WoW Forever.
+- Items in the reagent bag were not scanned on WoW Forever, so junk in a bag in the reagent slot was never found.
 - On WoW Forever, characters with the same first name and different last names shared a profile assignment, because only the first name was used. Affected characters may need their profile selected again.
 
 ### Removed
