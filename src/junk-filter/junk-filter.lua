@@ -212,7 +212,7 @@ function JunkFilter:IsJunkItem(item, filterType)
   end
 
   -- Include by quality.
-  result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality)
+  result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end

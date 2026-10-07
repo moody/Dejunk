@@ -642,9 +642,9 @@ end
 -- Test: an item of a selected quality is junk, with a reason naming the option.
 do
   local ItemFilters = setupContext()
-  local state = { enabled = true, qualities = getQualities() }
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "SELL")
 
   assert(result == ItemFilters.JUNK)
   assert(reason == "Profile Options > Include By Quality")
@@ -664,9 +664,9 @@ do
   for selectedKey in pairs(itemQualities) do
     local qualities = {}
     for key in pairs(itemQualities) do qualities[key] = key == selectedKey end
-    local state = { enabled = true, qualities = qualities }
+    local state = { enabled = true, scope = "BOTH", qualities = qualities }
     for itemKey, itemQuality in pairs(itemQualities) do
-      local result = ItemFilters:IncludeByQuality({ quality = itemQuality }, state)
+      local result = ItemFilters:IncludeByQuality({ quality = itemQuality }, state, "SELL")
       local expected = itemKey == selectedKey and ItemFilters.JUNK or ItemFilters.PASS
       assert(result == expected, selectedKey .. " selected, " .. itemKey .. " item")
     end
@@ -676,9 +676,9 @@ end
 -- Test: passes when the option is disabled.
 do
   local ItemFilters = setupContext()
-  local state = { enabled = false, qualities = getQualities() }
+  local state = { enabled = false, scope = "BOTH", qualities = getQualities() }
 
-  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -689,12 +689,45 @@ do
   local ItemFilters = setupContext()
   local qualities = getQualities()
   qualities.poor = false
-  local state = { enabled = true, qualities = qualities }
+  local state = { enabled = true, scope = "BOTH", qualities = qualities }
 
-  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state)
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "SELL", qualities = getQualities() }
+
+  local result = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "SELL")
+
+  assert(result == ItemFilters.JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "SELL", qualities = getQualities() }
+
+  local result, reason = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "BOTH", qualities = getQualities() }
+
+  local sell = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "SELL")
+  local destroy = ItemFilters:IncludeByQuality({ quality = Enum.ItemQuality.Poor }, state, "DESTROY")
+
+  assert(sell == ItemFilters.JUNK)
+  assert(destroy == ItemFilters.JUNK)
 end
 
 -- ============================================================================

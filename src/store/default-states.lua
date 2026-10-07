@@ -35,7 +35,7 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field enabled boolean
 
 --- Option limited to the selected item qualities.
---- @class QualitiesOptionState : ToggleOptionState
+--- @class QualitiesOptionState : ScopeOptionState, ToggleOptionState
 --- @field qualities ItemQualitiesState
 
 --- Qualities option with an item level.
@@ -43,7 +43,7 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field value integer Item level threshold.
 
 --- Qualities option that compares the price of an item's stack.
---- @class PriceOptionState : ScopeOptionState, QualitiesOptionState
+--- @class PriceOptionState : QualitiesOptionState
 --- @field value integer Price threshold in copper.
 
 --- Qualities option limited to the selected armor and weapon types.
@@ -172,6 +172,7 @@ DefaultStates.Profile = {
     --- @type QualitiesOptionState
     includeByQuality = {
       enabled = true,
+      scope = "BOTH",
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
     includeArtifactRelics = false,

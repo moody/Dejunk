@@ -76,6 +76,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
       set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
     }):AddSettingsBox()
 
+    box:AddAppliesToLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 

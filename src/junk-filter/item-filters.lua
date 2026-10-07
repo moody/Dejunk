@@ -210,13 +210,16 @@ function ItemFilters:ExcludeByEquipmentType(item, state)
   return self.PASS
 end
 
---- Items of a selected quality are junk.
+--- Items of a selected quality are junk, for the option's scope.
 --- @param item BagItem
 --- @param state QualitiesOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:IncludeByQuality(item, state)
-  if state.enabled and isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
-    return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
+function ItemFilters:IncludeByQuality(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) then
+    if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
+      return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
+    end
   end
 
   return self.PASS
