@@ -1,6 +1,8 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local Colors = Addon:GetModule("Colors")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 local StateManager = Addon:GetModule("StateManager")
@@ -15,12 +17,21 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Creates the panel of profile-scoped options.
 --- @return TitledPanelComponent panel
 function MainWindowOptions:CreateProfileOptionsPanel()
-  local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.PROFILE)))
   local panel, container = OptionsBuilder:CreatePanel({
-    titleText = titleText,
+    titleText = Colors.Blue(L.PROFILE_OPTIONS_TEXT),
     titleJustify = "LEFT",
     descriptionText = L.PROFILE_OPTIONS_DESCRIPTION
   })
+
+  --- Set up events for refreshing the title text.
+  EventManager:WaitForFirst(E.StoreCreated, function()
+    local function refreshTitle()
+      local profileName = StateManager:GetProfileState().name
+      panel:SetTitleText(Colors.Blue("%s (%s)"):format(L.PROFILE_OPTIONS_TEXT, Colors.White(profileName)))
+    end
+    EventManager:On(E.StateUpdated, refreshTitle)
+    refreshTitle()
+  end)
 
   local general = OptionsBuilder:AddGroup(container, L.GENERAL)
 

@@ -16,9 +16,8 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Creates the panel of global-scoped options.
 --- @return TitledPanelComponent panel
 function MainWindowOptions:CreateGlobalOptionsPanel()
-  local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.GLOBAL)))
   local panel, container = OptionsBuilder:CreatePanel({
-    titleText = titleText,
+    titleText = Colors.Blue(L.GLOBAL_OPTIONS_TEXT),
     titleJustify = "LEFT",
     descriptionText = L.GLOBAL_OPTIONS_DESCRIPTION
   })

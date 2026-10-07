@@ -325,13 +325,13 @@ Controller:AddSidebarRow({
 
 Controller:AddSidebarRow({
   key = "GLOBAL_OPTIONS",
-  labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.GLOBAL),
+  labelText = L.GLOBAL_OPTIONS_TEXT,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateGlobalOptionsPanel()) end
 })
 
 Controller:AddSidebarRow({
   key = "PROFILE_OPTIONS",
-  labelText = ("%s (%s)"):format(L.OPTIONS_TEXT, L.PROFILE),
+  labelText = L.PROFILE_OPTIONS_TEXT,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel()) end
 })
 

@@ -51,7 +51,7 @@ function ComponentFactory:TitledPanel(options)
     end
   })
 
-  root.TitleBar:AddChild({
+  local titleBarText = root.TitleBar:AddChild({
     height = "AUTO",
 
     --- @param parent Frame
@@ -71,6 +71,14 @@ function ComponentFactory:TitledPanel(options)
   })
 
   root.Content = root:AddColumn({ padding = Widgets:Padding() })
+
+  --- Sets the title text.
+  --- @param text string
+  function root:SetTitleText(text)
+    titleBarText:WhenFrameReady(function(fontString)
+      fontString:SetText(text)
+    end)
+  end
 
   return root
 end
