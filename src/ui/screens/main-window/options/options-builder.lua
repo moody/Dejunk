@@ -127,22 +127,18 @@ local function addPriceLine(self, getState, mergeAction)
   end
 end
 
---- Adds a line of chips to the box for a setting's `scope` field.
+--- Adds a line of chips to the box for what a setting applies to: selling, destroying, or both.
 --- @param self OptionsBuilderSettingsBox
---- @param getState fun(): PriceOptionState
---- @param mergeAction fun(t: table): WuxPayloadAction
---- @param scopes ItemFilterScope[] The scopes to offer, one chip each.
-local function addPriceScopeLine(self, getState, mergeAction, scopes)
-  local texts = { SELL = L.SELLING, DESTROY = L.DESTROYING, BOTH = L.BOTH }
+--- @param getState fun(): ItemFilterScope Returns the setting's current scope.
+--- @param setState fun(scope: ItemFilterScope) Receives the scope the user picks.
+local function addAppliesToLine(self, getState, setState)
+  local choices = {
+    { value = "SELL", text = L.SELLING },
+    { value = "DESTROY", text = L.DESTROYING },
+    { value = "BOTH", text = L.BOTH }
+  }
 
-  local choices = {}
-  for _, scope in ipairs(scopes) do
-    choices[#choices + 1] = { value = scope, text = texts[scope] }
-  end
-
-  self:AddChoiceLine(L.APPLIES_TO, choices, function() return getState().scope end, function(scope)
-    StateManager:Dispatch(mergeAction({ scope = scope }))
-  end)
+  self:AddChoiceLine(L.APPLIES_TO, choices, getState, setState)
 end
 
 --- Adds a qualities line to the box for a setting's `qualities` field.
@@ -210,11 +206,11 @@ local function addSettingsBox(self)
   }))
   box:SetMarginTop(Widgets:Padding(0.25))
 
+  box.AddAppliesToLine = addAppliesToLine
   box.AddArmorLine = addArmorLine
   box.AddChoiceLine = addChoiceLine
   box.AddItemLevelLine = addItemLevelLine
   box.AddPriceLine = addPriceLine
-  box.AddPriceScopeLine = addPriceScopeLine
   box.AddQualitiesLine = addQualitiesLine
   box.AddWeaponsLine = addWeaponsLine
 

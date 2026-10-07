@@ -110,7 +110,10 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddPriceScopeLine(getState, mergeAction, { "SELL", "BOTH" })
+    box:AddAppliesToLine(
+      function() return getState().scope end,
+      function(scope) StateManager:Dispatch(mergeAction({ scope = scope })) end
+    )
     box:AddQualitiesLine(getState, mergeAction)
   end
 
@@ -164,7 +167,10 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddPriceScopeLine(getState, mergeAction, { "DESTROY", "BOTH" })
+    box:AddAppliesToLine(
+      function() return getState().scope end,
+      function(scope) StateManager:Dispatch(mergeAction({ scope = scope })) end
+    )
     box:AddQualitiesLine(getState, mergeAction)
   end
 
