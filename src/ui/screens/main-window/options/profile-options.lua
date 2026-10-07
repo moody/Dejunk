@@ -19,10 +19,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   local panel, container = OptionsBuilder:CreatePanel({
     titleText = titleText,
     titleJustify = "LEFT",
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(titleText)
-      tooltip:AddLine(L.PROFILE_OPTIONS_TOOLTIP:format(Colors.White(StateManager:GetProfileState().name)))
-    end
+    descriptionText = L.PROFILE_OPTIONS_DESCRIPTION
   })
 
   local general = OptionsBuilder:AddGroup(container, L.GENERAL)

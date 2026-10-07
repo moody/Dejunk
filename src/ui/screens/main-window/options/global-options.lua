@@ -20,10 +20,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   local panel, container = OptionsBuilder:CreatePanel({
     titleText = titleText,
     titleJustify = "LEFT",
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(titleText)
-      tooltip:AddLine(L.GLOBAL_OPTIONS_TOOLTIP)
-    end
+    descriptionText = L.GLOBAL_OPTIONS_DESCRIPTION
   })
 
   local safety = OptionsBuilder:AddGroup(container, L.SAFETY)

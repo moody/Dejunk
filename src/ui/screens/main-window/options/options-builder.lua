@@ -14,6 +14,9 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 -- LuaCATS Annotations
 -- ============================================================================
 
+--- @class OptionsBuilderPanelOptions : TitledPanelComponentOptions
+--- @field descriptionText? string Small grey text above the first group, followed by a divider.
+
 --- @class OptionsBuilderTextOptions
 --- @field labelText string Option name.
 --- @field descriptionText string Shown in grey below the label.
@@ -29,6 +32,10 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
+
+--- The containers that have a group, so a later group gets a divider above it.
+--- @type table<WaffleFlexComponent, boolean?>
+local groupedContainers = setmetatable({}, { __mode = "k" })
 
 --- Adds a line of chips to the box where exactly one is checked: the one whose
 --- value `get()` returns. Clicking a chip selects its value.
@@ -219,14 +226,26 @@ end
 -- ============================================================================
 
 --- Creates a titled, scrollable options panel.
---- @param options TitledPanelComponentOptions
+--- @param options OptionsBuilderPanelOptions
 --- @return TitledPanelComponent panel
 --- @return WaffleFlexComponent content Component the panel's rows are added to.
 function OptionsBuilder:CreatePanel(options)
   local panel = ComponentFactory:TitledPanel(options)
   local scrollPanel = panel.Content:AttachComponent(ComponentFactory:ScrollPanel())
-  scrollPanel.ScrollChild:SetGap(Widgets:Padding())
-  return panel, scrollPanel.ScrollChild
+  local content = scrollPanel.ScrollChild
+  content:SetGap(Widgets:Padding())
+
+  if options.descriptionText then
+    content:AttachComponent(ComponentFactory:Text({
+      text = options.descriptionText,
+      fontObject = "GameFontNormalSmall",
+      color = Colors.Grey,
+      justifyH = "CENTER"
+    }))
+    content:AttachComponent(ComponentFactory:Divider())
+  end
+
+  return panel, content
 end
 
 --- Adds an option card with a label and description to `container`.
@@ -266,11 +285,12 @@ end
 --- @param headingText string
 --- @return OptionsBuilderGroup group
 function OptionsBuilder:AddGroup(container, headingText)
-  if #container:GetChildren() > 0 then
+  if groupedContainers[container] then
     local divider = container:AttachComponent(ComponentFactory:Divider())
     divider:SetMarginTop(Widgets:Padding())
     divider:SetMarginBottom(Widgets:Padding())
   end
+  groupedContainers[container] = true
 
   --- @class OptionsBuilderGroup : WaffleFlexComponent
   local group = container:AttachComponent(Addon.Waffle:Flex({
