@@ -36,7 +36,7 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
 
-The price options compare the price of the whole stack, never affect items with no vendor price, and can each apply to selling, destroying, or both.
+The price options compare the price of the whole stack and never affect items with no vendor price. `Include Below Price` applies to selling, or to both selling and destroying. `Exclude Above Price` applies to destroying, or to both.
 
 ### Lists
 
