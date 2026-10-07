@@ -102,7 +102,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddPriceScopeLine(getState, mergeAction)
+    box:AddPriceScopeLine(getState, mergeAction, { "SELL", "BOTH" })
     box:AddQualitiesLine(getState, mergeAction)
   end
 
@@ -156,7 +156,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     }):AddSettingsBox()
 
     box:AddPriceLine(getState, mergeAction)
-    box:AddPriceScopeLine(getState, mergeAction)
+    box:AddPriceScopeLine(getState, mergeAction, { "DESTROY", "BOTH" })
     box:AddQualitiesLine(getState, mergeAction)
   end
 

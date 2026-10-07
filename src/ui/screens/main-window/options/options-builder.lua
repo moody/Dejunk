@@ -124,12 +124,16 @@ end
 --- @param self OptionsBuilderSettingsBox
 --- @param getState fun(): PriceOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
-local function addPriceScopeLine(self, getState, mergeAction)
-  self:AddChoiceLine(L.APPLIES_TO, {
-    { value = "SELL", text = L.SELLING },
-    { value = "DESTROY", text = L.DESTROYING },
-    { value = "BOTH", text = L.BOTH }
-  }, function() return getState().scope end, function(scope)
+--- @param scopes ItemFilterScope[] The scopes to offer, one chip each.
+local function addPriceScopeLine(self, getState, mergeAction, scopes)
+  local texts = { SELL = L.SELLING, DESTROY = L.DESTROYING, BOTH = L.BOTH }
+
+  local choices = {}
+  for _, scope in ipairs(scopes) do
+    choices[#choices + 1] = { value = scope, text = texts[scope] }
+  end
+
+  self:AddChoiceLine(L.APPLIES_TO, choices, function() return getState().scope end, function(scope)
     StateManager:Dispatch(mergeAction({ scope = scope }))
   end)
 end
