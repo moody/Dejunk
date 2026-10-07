@@ -199,7 +199,7 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   -- Exclude warband equipment.
   if Addon.IS_RETAIL then
-    result, reason = ItemFilters:ExcludeWarbandEquipment(item, profileSettings.excludeWarbandEquipment)
+    result, reason = ItemFilters:ExcludeWarbandEquipment(item, profileSettings.excludeWarbandEquipment, filterType)
     if result ~= ItemFilters.PASS then
       return result == ItemFilters.JUNK, reason
     end

@@ -182,12 +182,13 @@ function ItemFilters:ExcludeUnboundEquipment(item, state, filterType)
   return self.PASS
 end
 
---- Warband equipment is not junk, for the selected qualities.
+--- Warband equipment is not junk, for the selected qualities and the option's scope.
 --- @param item BagItem
 --- @param state QualitiesOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:ExcludeWarbandEquipment(item, state)
-  if state.enabled and Items:IsItemWarbandEquipment(item) then
+function ItemFilters:ExcludeWarbandEquipment(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) and Items:IsItemWarbandEquipment(item) then
     if isItemQualityCheckboxValueEnabled(item.quality, state.qualities) then
       return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
     end

@@ -147,6 +147,7 @@ DefaultStates.Profile = {
     --- @type QualitiesOptionState
     excludeWarbandEquipment = {
       enabled = false,
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
 
