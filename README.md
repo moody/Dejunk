@@ -17,7 +17,7 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 
 ### Options
 
-`Options (Profile)` has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what's considered junk, and several of their options support per-quality checkboxes, letting them apply only to specific quality tiers.
+`Profile Options` has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what's considered junk, and several of their options support per-quality checkboxes, letting them apply only to specific quality tiers.
 
 #### Include
 
