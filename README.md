@@ -87,7 +87,7 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 ## Chat Commands
 
 ```bash
-# Toggle the options frame.
+# Toggle the main window.
 /dejunk
 
 # Start selling items.
