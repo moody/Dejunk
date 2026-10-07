@@ -1,6 +1,7 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local Blizzard = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
@@ -47,7 +48,7 @@ local function onUpdateTooltip(frame)
   Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
   Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_OPTIONS_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
+  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
   Tooltip:Show()
 end
 
