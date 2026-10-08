@@ -16,6 +16,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field color? Color Checkbox color. Defaults to `Colors.Blue`.
 --- @field get fun(): boolean Returns whether the chip is checked.
 --- @field set fun(value: boolean) Called with the new value when clicked.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the chip.
 
 -- =============================================================================
 -- ComponentFactory - CheckChip
@@ -40,7 +41,11 @@ function ComponentFactory:CheckChip(options)
     --- @param parent Frame
     frameFactory = function(parent)
       --- @class CheckChipWidget : FrameWidget, Button
-      local frame = Widgets:Frame({ parent = parent, frameType = "Button" })
+      local frame = Widgets:Frame({
+        parent = parent,
+        frameType = "Button",
+        onUpdateTooltip = options.onUpdateTooltip
+      })
       frame:SetBackdropBorderColor(0, 0, 0, 0)
       frame:SetScript("OnClick", function() options.set(not options.get()) end)
       return frame

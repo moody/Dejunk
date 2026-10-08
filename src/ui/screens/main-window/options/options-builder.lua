@@ -28,6 +28,7 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @class OptionsBuilderChoice
 --- @field value any Value selected by this choice's chip.
 --- @field text string Chip label.
+--- @field tooltipText? string Shown below the label in a tooltip while hovering the chip.
 
 -- ============================================================================
 -- Local Functions
@@ -51,7 +52,12 @@ local function addChoiceLine(self, labelText, choices, get, set)
     chips[#chips + 1] = {
       text = choice.text,
       get = function() return get() == choice.value end,
-      set = function(checked) if checked then set(choice.value) end end
+      set = function(checked) if checked then set(choice.value) end end,
+      onUpdateTooltip = choice.tooltipText and function(chip, tooltip)
+        tooltip:SetOwner(chip, "ANCHOR_RIGHT")
+        tooltip:SetText(choice.text)
+        tooltip:AddLine(choice.tooltipText)
+      end
     }
   end
 
@@ -133,9 +139,9 @@ end
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addAppliesToLine(self, getState, mergeAction)
   local choices = {
-    { value = "SELL", text = L.SELLING },
-    { value = "DESTROY", text = L.DESTROYING },
-    { value = "BOTH", text = L.BOTH }
+    { value = "SELL", text = L.SELLING, tooltipText = L.APPLIES_TO_SELLING_TOOLTIP },
+    { value = "DESTROY", text = L.DESTROYING, tooltipText = L.APPLIES_TO_DESTROYING_TOOLTIP },
+    { value = "BOTH", text = L.BOTH, tooltipText = L.APPLIES_TO_BOTH_TOOLTIP }
   }
 
   self:AddChoiceLine(L.APPLIES_TO, choices, function() return getState().scope end, function(scope)
