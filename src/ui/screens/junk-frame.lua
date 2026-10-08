@@ -8,6 +8,7 @@ local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
+local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
@@ -117,7 +118,9 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:SetOwner(self, "ANCHOR_RIGHT")
         tooltip:SetBagItem(self.item.bag, self.item.slot)
         tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+        if Items:IsItemSellable(self.item) then
+          tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+        end
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
         tooltip:AddDoubleLine(
           Addon:Concat("+", Blizzard.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
@@ -126,7 +129,7 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:AddDoubleLine(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
       end,
       itemButtonOnClick = function(self, button)
-        if button == "LeftButton" then
+        if button == "LeftButton" and Items:IsItemSellable(self.item) then
           Seller:HandleItem(self.item)
         end
 
