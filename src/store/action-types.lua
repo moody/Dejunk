@@ -58,9 +58,9 @@ ActionTypes.Profile = {
   SET_AUTO_REPAIR = "profile/autoRepair/set",
   SET_AUTO_SELL = "profile/autoSell/set",
 
+  MERGE_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/merge",
   MERGE_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/merge",
   MERGE_INCLUDE_BELOW_PRICE = "profile/includeBelowPrice/merge",
-  SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
   MERGE_INCLUDE_BY_EQUIPMENT_TYPE = "profile/includeByEquipmentType/merge",
   MERGE_INCLUDE_BY_QUALITY = "profile/includeByQuality/merge",
 

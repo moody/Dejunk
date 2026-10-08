@@ -55,12 +55,17 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
   -- Include artifact relics.
   if Addon.IS_RETAIL then
-    include:AddOptionCard({
+    local function getState() return StateManager:GetProfileState().settings.includeArtifactRelics end
+    local mergeAction = ActionCreators.Profile.mergeIncludeArtifactRelics
+
+    local box = include:AddOptionCard({
       labelText = L.INCLUDE_ARTIFACT_RELICS_TEXT,
       descriptionText = L.INCLUDE_ARTIFACT_RELICS_DESCRIPTION,
-      get = function() return StateManager:GetProfileState().settings.includeArtifactRelics end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setIncludeArtifactRelics(value)) end
-    })
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    }):AddSettingsBox()
+
+    box:AddAppliesToLine(getState, mergeAction)
   end
 
   -- Include by quality.

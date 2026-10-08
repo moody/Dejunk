@@ -1232,7 +1232,7 @@ do
 
   local ItemFilters = setupContext({ Items = Items })
 
-  local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, { enabled = true, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.JUNK)
   assert(reason == "Profile Options > Include Artifact Relics")
@@ -1246,7 +1246,7 @@ do
 
   local ItemFilters = setupContext({ Items = Items })
 
-  local result, reason = ItemFilters:IncludeArtifactRelics({}, false)
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, { enabled = false, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -1260,10 +1260,55 @@ do
 
   local ItemFilters = setupContext({ Items = Items })
 
-  local result, reason = ItemFilters:IncludeArtifactRelics({}, true)
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, { enabled = true, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "SELL" }
+
+  local result = ItemFilters:IncludeArtifactRelics({}, state, "SELL")
+
+  assert(result == ItemFilters.JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "SELL" }
+
+  local result, reason = ItemFilters:IncludeArtifactRelics({}, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local Items = {}
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemArtifactRelic"):Returns(true)
+
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "BOTH" }
+
+  local sell = ItemFilters:IncludeArtifactRelics({}, state, "SELL")
+  local destroy = ItemFilters:IncludeArtifactRelics({}, state, "DESTROY")
+
+  assert(sell == ItemFilters.JUNK)
+  assert(destroy == ItemFilters.JUNK)
 end
 
 -- ============================================================================

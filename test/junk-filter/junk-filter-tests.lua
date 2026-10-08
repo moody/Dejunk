@@ -137,7 +137,7 @@ do
     { "IncludeBelowItemLevel", item, "includeBelowItemLevel", "SELL" },
     { "IncludeBelowPrice", item, "includeBelowPrice", "SELL" },
     { "IncludeByEquipmentType", item, "includeByEquipmentType", "SELL" },
-    { "IncludeArtifactRelics", item, "includeArtifactRelics" }
+    { "IncludeArtifactRelics", item, "includeArtifactRelics", "SELL" }
   }))
 end
 
@@ -149,6 +149,7 @@ do
   local ExcludeByEquipmentType = ItemFiltersSpy:GetStub("ExcludeByEquipmentType")
   local ExcludeUnboundEquipment = ItemFiltersSpy:GetStub("ExcludeUnboundEquipment")
   local ExcludeWarbandEquipment = ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
+  local IncludeArtifactRelics = ItemFiltersSpy:GetStub("IncludeArtifactRelics")
   local IncludeByEquipmentType = ItemFiltersSpy:GetStub("IncludeByEquipmentType")
   local IncludeByQuality = ItemFiltersSpy:GetStub("IncludeByQuality")
   local IncludeBelowItemLevel = ItemFiltersSpy:GetStub("IncludeBelowItemLevel")
@@ -162,6 +163,7 @@ do
   assert(Matchers:IsDeepEqual(ExcludeByEquipmentType.calls, { { item, "excludeByEquipmentType", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(ExcludeUnboundEquipment.calls, { { item, "excludeUnboundEquipment", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(ExcludeWarbandEquipment.calls, { { item, "excludeWarbandEquipment", "DESTROY" } }))
+  assert(Matchers:IsDeepEqual(IncludeArtifactRelics.calls, { { item, "includeArtifactRelics", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(IncludeByEquipmentType.calls, { { item, "includeByEquipmentType", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(IncludeByQuality.calls, { { item, "includeByQuality", "DESTROY" } }))
   assert(Matchers:IsDeepEqual(IncludeBelowItemLevel.calls, { { item, "includeBelowItemLevel", "DESTROY" } }))

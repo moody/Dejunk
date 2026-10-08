@@ -237,7 +237,7 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   -- Include artifact relics.
   if Addon.IS_RETAIL then
-    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics)
+    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics, filterType)
     if result ~= ItemFilters.PASS then
       return result == ItemFilters.JUNK, reason
     end

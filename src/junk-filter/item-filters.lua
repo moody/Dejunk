@@ -267,12 +267,13 @@ function ItemFilters:IncludeByEquipmentType(item, state, filterType)
   return self.PASS
 end
 
---- Artifact relics are junk.
+--- Artifact relics are junk, for the option's scope.
 --- @param item BagItem
---- @param state boolean
+--- @param state ScopeOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:IncludeArtifactRelics(item, state)
-  if state and Items:IsItemArtifactRelic(item) then
+function ItemFilters:IncludeArtifactRelics(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) and Items:IsItemArtifactRelic(item) then
     return self.JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
   end
 

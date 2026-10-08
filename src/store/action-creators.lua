@@ -210,9 +210,9 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_WARBAND_EQUIPMENT),
 
-  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS`.
-  --- @type WuxActionCreator<boolean>
-  setIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS),
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_ARTIFACT_RELICS`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_ARTIFACT_RELICS),
 
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
