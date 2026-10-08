@@ -36,21 +36,35 @@ end
 -- Tests - Migrations: Step 2
 -- ============================================================================
 
--- Test: a boolean `includeArtifactRelics` becomes a table that keeps the saved value, with a scope of both.
+--- The settings that step 2 converts from booleans to tables.
+local STEP_2_OPTION_KEYS = { "includeArtifactRelics", "excludeEquipmentSets" }
+
+-- Test: a boolean option becomes a table that keeps the saved value, with a scope of both.
 do
-  for _, enabled in ipairs({ true, false }) do
-    local state = {
-      version = 1,
-      profiles = { profileMap = { p1 = { settings = { includeArtifactRelics = enabled } } } }
-    }
+  for _, key in ipairs(STEP_2_OPTION_KEYS) do
+    for _, enabled in ipairs({ true, false }) do
+      local state = { version = 1, profiles = { profileMap = { p1 = { settings = { [key] = enabled } } } } }
 
-    local migrated = runStep(state, 2)
+      local migrated = runStep(state, 2)
 
-    assert(Matchers:IsDeepEqual(migrated.profiles.profileMap.p1.settings.includeArtifactRelics, {
-      enabled = enabled,
-      scope = "BOTH"
-    }), tostring(enabled))
+      assert(Matchers:IsDeepEqual(migrated.profiles.profileMap.p1.settings[key], {
+        enabled = enabled,
+        scope = "BOTH"
+      }), key .. " " .. tostring(enabled))
+    end
   end
+end
+
+-- Test: each option keeps its own saved value.
+do
+  local settings = { includeArtifactRelics = true, excludeEquipmentSets = false }
+  local state = { version = 1, profiles = { profileMap = { p1 = { settings = settings } } } }
+
+  local migrated = runStep(state, 2)
+
+  local migratedSettings = migrated.profiles.profileMap.p1.settings
+  assert(Matchers:IsDeepEqual(migratedSettings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
+  assert(Matchers:IsDeepEqual(migratedSettings.excludeEquipmentSets, { enabled = false, scope = "BOTH" }))
 end
 
 -- Test: every profile is migrated, not only the active one.
@@ -60,8 +74,8 @@ do
     profiles = {
       activeProfileId = "p1",
       profileMap = {
-        p1 = { settings = { includeArtifactRelics = true } },
-        p2 = { settings = { includeArtifactRelics = false } }
+        p1 = { settings = { includeArtifactRelics = true, excludeEquipmentSets = true } },
+        p2 = { settings = { includeArtifactRelics = false, excludeEquipmentSets = false } }
       }
     }
   }
@@ -69,23 +83,39 @@ do
   local migrated = runStep(state, 2)
 
   local profileMap = migrated.profiles.profileMap
-  assert(Matchers:IsDeepEqual(profileMap.p1.settings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
-  assert(Matchers:IsDeepEqual(profileMap.p2.settings.includeArtifactRelics, { enabled = false, scope = "BOTH" }))
+  for _, key in ipairs(STEP_2_OPTION_KEYS) do
+    assert(profileMap.p1.settings[key].enabled == true, "p1 " .. key)
+    assert(profileMap.p2.settings[key].enabled == false, "p2 " .. key)
+  end
 end
 
--- Test: an already migrated `includeArtifactRelics` is left unchanged.
+-- Test: an option that is already a table is left unchanged.
 do
-  local relics = { enabled = true, scope = "SELL" }
-  local state = { version = 1, profiles = { profileMap = { p1 = { settings = { includeArtifactRelics = relics } } } } }
+  for _, key in ipairs(STEP_2_OPTION_KEYS) do
+    local option = { enabled = true, scope = "SELL" }
+    local state = { version = 1, profiles = { profileMap = { p1 = { settings = { [key] = option } } } } }
+
+    local migrated = runStep(state, 2)
+
+    assert(Matchers:IsDeepEqual(migrated.profiles.profileMap.p1.settings[key], option), key)
+  end
+end
+
+-- Test: an option missing from a profile stays missing while the other is migrated.
+do
+  local state = { version = 1, profiles = { profileMap = { p1 = { settings = { includeArtifactRelics = true } } } } }
 
   local migrated = runStep(state, 2)
 
-  assert(Matchers:IsDeepEqual(migrated.profiles.profileMap.p1.settings.includeArtifactRelics, relics))
+  local settings = migrated.profiles.profileMap.p1.settings
+  assert(Matchers:IsDeepEqual(settings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
+  assert(settings.excludeEquipmentSets == nil)
 end
 
 -- Test: other settings are left unchanged.
 do
-  local settings = { autoSell = true, includeArtifactRelics = true, excludeEquipmentSets = false }
+  local excludeUnboundEquipment = { enabled = true, qualities = { poor = true } }
+  local settings = { autoSell = true, excludeUnboundEquipment = excludeUnboundEquipment, includeArtifactRelics = true }
   local state = { version = 1, profiles = { profileMap = { p1 = { id = "p1", name = "One", settings = settings } } } }
 
   local migrated = runStep(state, 2)
@@ -94,7 +124,7 @@ do
   assert(profile.id == "p1")
   assert(profile.name == "One")
   assert(profile.settings.autoSell == true)
-  assert(profile.settings.excludeEquipmentSets == false)
+  assert(Matchers:IsDeepEqual(profile.settings.excludeUnboundEquipment, excludeUnboundEquipment))
 end
 
 -- Test: missing data is tolerated and stays missing.
@@ -106,7 +136,7 @@ do
     profileNotATable = { version = 1, profiles = { profileMap = { p1 = "corrupt" } } },
     noSettings = { version = 1, profiles = { profileMap = { p1 = { id = "p1" } } } },
     settingsNotATable = { version = 1, profiles = { profileMap = { p1 = { settings = "corrupt" } } } },
-    noRelics = { version = 1, profiles = { profileMap = { p1 = { settings = { autoSell = true } } } } },
+    noOptions = { version = 1, profiles = { profileMap = { p1 = { settings = { autoSell = true } } } } },
   }
 
   for name, state in pairs(cases) do
@@ -119,16 +149,23 @@ do
   end
 end
 
--- Test: the version 1 fixture converts `includeArtifactRelics` in each profile and changes nothing else.
+-- Test: the version 1 fixture converts both options in each profile and changes nothing else.
 do
   local fixture = loadFixture(1)
+
+  -- The expected state is the fixture at version 2, with the options below changed to what the step should produce.
   local expected = Wux:DeepCopy(fixture)
   expected.version = 2
-  expected.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID].settings.includeArtifactRelics = {
-    enabled = false,
-    scope = "BOTH"
-  }
-  expected.profiles.profileMap.profile2.settings.includeArtifactRelics = { enabled = true, scope = "BOTH" }
+
+  -- The default profile saved `false` and `true`, which the step keeps as the `enabled` values.
+  local defaultSettings = expected.profiles.profileMap[DefaultStates.DEFAULT_PROFILE_ID].settings
+  defaultSettings.includeArtifactRelics = { enabled = false, scope = "BOTH" }
+  defaultSettings.excludeEquipmentSets = { enabled = true, scope = "BOTH" }
+
+  -- `profile2` saved `true` and `false`.
+  local profile2Settings = expected.profiles.profileMap.profile2.settings
+  profile2Settings.includeArtifactRelics = { enabled = true, scope = "BOTH" }
+  profile2Settings.excludeEquipmentSets = { enabled = false, scope = "BOTH" }
 
   local migrated = runStep(fixture, 2)
 
@@ -142,14 +179,17 @@ end
 -- Test: the version 1 fixture migrates to the current version with the real steps.
 do
   local migrated = Migrations:Migrate(loadFixture(1))
-
   assert(migrated.version == DefaultStates.CURRENT_VERSION)
+
   local profileMap = migrated.profiles.profileMap
-  assert(Matchers:IsDeepEqual(profileMap[DefaultStates.DEFAULT_PROFILE_ID].settings.includeArtifactRelics, {
-    enabled = false,
-    scope = "BOTH"
-  }))
-  assert(Matchers:IsDeepEqual(profileMap.profile2.settings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
+
+  local defaultSettings = profileMap[DefaultStates.DEFAULT_PROFILE_ID].settings
+  assert(Matchers:IsDeepEqual(defaultSettings.includeArtifactRelics, { enabled = false, scope = "BOTH" }))
+  assert(Matchers:IsDeepEqual(defaultSettings.excludeEquipmentSets, { enabled = true, scope = "BOTH" }))
+
+  local profile2Settings = profileMap.profile2.settings
+  assert(Matchers:IsDeepEqual(profile2Settings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
+  assert(Matchers:IsDeepEqual(profile2Settings.excludeEquipmentSets, { enabled = false, scope = "BOTH" }))
 end
 
 print("All assertions passed.")

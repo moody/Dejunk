@@ -139,7 +139,8 @@ DefaultStates.Profile = {
       armor = {},
       weapons = {}
     },
-    excludeEquipmentSets = true,
+    --- @type ScopeOptionState
+    excludeEquipmentSets = { enabled = true, scope = "BOTH" },
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,

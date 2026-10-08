@@ -14,14 +14,20 @@ local Migrations = Addon:GetModule("Migrations")
 --- @type table<integer, fun(state: table): table>
 Migrations.STEPS = {}
 
---- Version 2: `includeArtifactRelics` is `{ enabled, scope }` instead of a boolean, keeping the saved value.
+--- Version 2:
+--- - `includeArtifactRelics`: a boolean becomes `{ enabled = <old value>, scope = "BOTH" }`.
+--- - `excludeEquipmentSets`: a boolean becomes `{ enabled = <old value>, scope = "BOTH" }`.
+---
+--- A value that is not a boolean is left as it is.
 Migrations.STEPS[2] = function(state)
   if type(state.profiles) == "table" and type(state.profiles.profileMap) == "table" then
     for _, profile in pairs(state.profiles.profileMap) do
       if type(profile) == "table" and type(profile.settings) == "table" then
         local settings = profile.settings
-        if type(settings.includeArtifactRelics) == "boolean" then
-          settings.includeArtifactRelics = { enabled = settings.includeArtifactRelics, scope = "BOTH" }
+        for _, key in ipairs({ "includeArtifactRelics", "excludeEquipmentSets" }) do
+          if type(settings[key]) == "boolean" then
+            settings[key] = { enabled = settings[key], scope = "BOTH" }
+          end
         end
       end
     end
