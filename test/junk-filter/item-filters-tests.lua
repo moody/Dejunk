@@ -404,7 +404,7 @@ end
 do
   local ItemFilters = setupContext()
 
-  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, true)
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, { enabled = true, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.NOT_JUNK)
   assert(reason == "Profile Options > Exclude Equipment Sets")
@@ -414,7 +414,7 @@ end
 do
   local ItemFilters = setupContext()
 
-  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, false)
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, { enabled = false, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
@@ -424,10 +424,43 @@ end
 do
   local ItemFilters = setupContext()
 
-  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = false }, true)
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = false }, { enabled = true, scope = "BOTH" }, "SELL")
 
   assert(result == ItemFilters.PASS)
   assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "SELL" }
+
+  local result = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, state, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "SELL" }
+
+  local result, reason = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, state, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local ItemFilters = setupContext()
+  local state = { enabled = true, scope = "BOTH" }
+
+  local sell = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, state, "SELL")
+  local destroy = ItemFilters:ExcludeEquipmentSets({ isEquipmentSet = true }, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
 end
 
 -- ============================================================================

@@ -154,12 +154,13 @@ function ItemFilters:ByLists(item)
   return self.PASS
 end
 
---- Items that are saved to an equipment set are not junk.
+--- Items that are saved to an equipment set are not junk, for the option's scope.
 --- @param item BagItem
---- @param state boolean
+--- @param state ScopeOptionState
+--- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
-function ItemFilters:ExcludeEquipmentSets(item, state)
-  if state and item.isEquipmentSet then
+function ItemFilters:ExcludeEquipmentSets(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) and item.isEquipmentSet then
     return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
   end
 

@@ -198,12 +198,17 @@ function MainWindowOptions:CreateProfileOptionsPanel()
 
   -- Exclude equipment sets.
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
-    exclude:AddOptionCard({
+    local function getState() return StateManager:GetProfileState().settings.excludeEquipmentSets end
+    local mergeAction = ActionCreators.Profile.mergeExcludeEquipmentSets
+
+    local box = exclude:AddOptionCard({
       labelText = L.EXCLUDE_EQUIPMENT_SETS_TEXT,
       descriptionText = L.EXCLUDE_EQUIPMENT_SETS_DESCRIPTION,
-      get = function() return StateManager:GetProfileState().settings.excludeEquipmentSets end,
-      set = function(value) StateManager:Dispatch(ActionCreators.Profile.setExcludeEquipmentSets(value)) end
-    })
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    }):AddSettingsBox()
+
+    box:AddAppliesToLine(getState, mergeAction)
   end
 
   -- Exclude unbound equipment.

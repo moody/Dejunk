@@ -185,7 +185,7 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   -- Exclude equipment sets.
   if not (Addon.IS_VANILLA or Addon.IS_TBC) then
-    result, reason = ItemFilters:ExcludeEquipmentSets(item, profileSettings.excludeEquipmentSets)
+    result, reason = ItemFilters:ExcludeEquipmentSets(item, profileSettings.excludeEquipmentSets, filterType)
     if result ~= ItemFilters.PASS then
       return result == ItemFilters.JUNK, reason
     end

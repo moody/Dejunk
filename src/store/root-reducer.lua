@@ -47,7 +47,7 @@ local profileReducer = Wux:CombineReducers({
 
     excludeAboveItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL, DefaultStates.Profile.settings.excludeAboveItemLevel),
     excludeAbovePrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE, DefaultStates.Profile.settings.excludeAbovePrice),
-    excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
+    excludeEquipmentSets = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
     excludeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.excludeByEquipmentType),
     excludeUnboundEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
     excludeWarbandEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
