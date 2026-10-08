@@ -118,7 +118,7 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:SetOwner(self, "ANCHOR_RIGHT")
         tooltip:SetBagItem(self.item.bag, self.item.slot)
         tooltip:AddLine(" ")
-        if Items:IsItemSellable(self.item) then
+        if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
           tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
         end
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
@@ -129,8 +129,10 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
       end,
       itemButtonOnClick = function(self, button)
-        if button == "LeftButton" and Items:IsItemSellable(self.item) then
-          Seller:HandleItem(self.item)
+        if button == "LeftButton" then
+          if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
+            Seller:HandleItem(self.item)
+          end
         end
 
         if button == "RightButton" then
