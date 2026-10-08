@@ -6,7 +6,7 @@
 
 - Added `Exclude Above Price` and `Include Below Price`, which compare the price of an item's whole stack with a set value. Each applies to selling, destroying, or both: `Include Below Price` starts on selling and `Exclude Above Price` on destroying. Items with no vendor price are never affected. Like `Exclude Above Item Level`, `Exclude Above Price` takes priority over Inclusions lists.
 - Added `Include By Equipment Type` and `Exclude By Equipment Type`, which apply to equipment of the selected armor and weapon types and qualities, with the types shown as columns of checkboxes. Cloaks never match.
-- Added an `Applies To` setting to `Include By Quality`, `Include Below Item Level`, `Include By Equipment Type`, `Exclude Above Item Level`, `Exclude By Equipment Type`, `Exclude Unbound Equipment`, and `Exclude Warband Equipment`, so each can apply to selling, destroying, or both. They start on both, which is how they worked before.
+- Added an `Applies To` setting to all other `Include` and `Exclude` options, so each can apply to selling, destroying, or both. They start on both, which is how they worked before, and your saved settings are kept.
 - Added a `Size` setting to `Bag Item Icons`: `Small` (the default) or `Large`, which covers the whole slot as it did before 3.2.0.
 
 ### Changed
