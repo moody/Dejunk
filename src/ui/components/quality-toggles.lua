@@ -1,16 +1,16 @@
 local Addon = select(2, ...) ---@type Addon
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
 local QUALITIES = {
-  { key = "poor", text = Blizzard.Strings.POOR_TEXT, color = Colors.QualityPoor },
-  { key = "common", text = Blizzard.Strings.COMMON_TEXT, color = Colors.QualityCommon },
-  { key = "uncommon", text = Blizzard.Strings.UNCOMMON_TEXT, color = Colors.QualityUncommon },
-  { key = "rare", text = Blizzard.Strings.RARE_TEXT, color = Colors.QualityRare },
-  { key = "epic", text = Blizzard.Strings.EPIC_TEXT, color = Colors.QualityEpic }
+  { key = "poor", text = B.Strings.POOR_TEXT, color = Colors.QualityPoor },
+  { key = "common", text = B.Strings.COMMON_TEXT, color = Colors.QualityCommon },
+  { key = "uncommon", text = B.Strings.UNCOMMON_TEXT, color = Colors.QualityUncommon },
+  { key = "rare", text = B.Strings.RARE_TEXT, color = Colors.QualityRare },
+  { key = "epic", text = B.Strings.EPIC_TEXT, color = Colors.QualityEpic }
 }
 
 -- =============================================================================

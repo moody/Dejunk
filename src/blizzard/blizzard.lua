@@ -1,7 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 
 --- @class Blizzard
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 
 -- =============================================================================
 -- Local Functions
@@ -19,7 +19,7 @@ end
 -- =============================================================================
 
 --- The game's own localized strings.
-Blizzard.Strings = {
+B.Strings = {
   --- Name of the Alt key.
   ALT_KEY_TEXT = getGlobal("ALT_KEY_TEXT"),
 

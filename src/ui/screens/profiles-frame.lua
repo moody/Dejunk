@@ -1,6 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local DefaultStates = Addon:GetModule("DefaultStates")
@@ -166,9 +166,9 @@ for i = 1, NUM_PROFILE_PANEL_BUTTONS do
           if not isDefaultProfileSelected(button) then
             tooltip:AddDoubleLine(L.RIGHT_CLICK, L.RENAME)
           end
-          tooltip:AddDoubleLine(Addon:Concat("+", Blizzard.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK), Colors.Yellow(L.RESET))
+          tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK), Colors.Yellow(L.RESET))
           if not isDefaultProfileSelected(button) then
-            tooltip:AddDoubleLine(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DELETE))
+            tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DELETE))
           end
         end
       })

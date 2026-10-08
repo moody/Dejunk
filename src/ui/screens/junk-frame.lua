@@ -1,6 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -102,15 +102,15 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
           Lists.ProfileInclusions.name,
           Lists.GlobalInclusions.name,
-          Colors.White(Blizzard.Strings.SHIFT_KEY_TEXT)
+          Colors.White(B.Strings.SHIFT_KEY_TEXT)
         ))
         tooltip:AddLine(" ")
         tooltip:AddDoubleLine(
-          Addon:Concat("+", Blizzard.Strings.CTRL_KEY_TEXT, Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
         )
         tooltip:AddDoubleLine(
-          Addon:Concat("+", Blizzard.Strings.CTRL_KEY_TEXT, Blizzard.Strings.ALT_KEY_TEXT, Blizzard.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
         )
       end,
@@ -123,10 +123,10 @@ Components.ItemsFrame = Components.Content:AddChild({
         end
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
         tooltip:AddDoubleLine(
-          Addon:Concat("+", Blizzard.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
         )
-        tooltip:AddDoubleLine(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
+        tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
       end,
       itemButtonOnClick = function(self, button)
         if button == "LeftButton" and Items:IsItemSellable(self.item) then

@@ -1,5 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
@@ -38,7 +38,7 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(" ")
     tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine(Addon:Concat("+", Blizzard.Strings.CTRL_KEY_TEXT, Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
+    tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
   end
 
   function options.itemButtonOnUpdateTooltip(self, tooltip)
@@ -47,15 +47,15 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
     tooltip:AddDoubleLine(
-      Addon:Concat("+", Blizzard.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetOpposite().name)
     )
     tooltip:AddDoubleLine(
-      Addon:Concat("+", Blizzard.Strings.CTRL_KEY_TEXT, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetSibling():GetOpposite().name)
     )
     tooltip:AddDoubleLine(
-      Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetSibling().name)
     )
   end

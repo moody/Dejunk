@@ -1,5 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
@@ -42,7 +42,7 @@ EventManager:On(E.Wow.MerchantClosed, function()
 end)
 
 EventManager:On(E.Wow.UIErrorMessage, function(_, msg)
-  if msg == Blizzard.Strings.VENDOR_DOESNT_BUY_ERROR_TEXT then
+  if msg == B.Strings.VENDOR_DOESNT_BUY_ERROR_TEXT then
     Seller:Stop()
   end
 end)

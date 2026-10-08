@@ -1,7 +1,7 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
-local Blizzard = Addon:GetModule("Blizzard")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local DefaultStates = Addon:GetModule("DefaultStates")
@@ -53,7 +53,7 @@ local rootComponent = Addon.Waffle:Flex({
         tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
-        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", Blizzard.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
+        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
         tooltip:Show()
       end
     })
