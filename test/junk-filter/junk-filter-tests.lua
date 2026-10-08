@@ -92,7 +92,11 @@ local function setupContext(options)
 
   Context:SetModule("ItemFilters", ItemFilters)
   Context:SetModule("Items", Items)
-  Context:SetModule("Locale", { NO_FILTERS_MATCHED = "NO_FILTERS_MATCHED" })
+  Context:SetModule("Locale", {
+    ITEM_CANNOT_BE_DESTROYED = "ITEM_CANNOT_BE_DESTROYED",
+    ITEM_CANNOT_BE_SOLD = "ITEM_CANNOT_BE_SOLD",
+    NO_FILTERS_MATCHED = "NO_FILTERS_MATCHED"
+  })
   Context:SetModule("StateManager", StateManager)
   Context:Load("src/junk-filter/junk-filter.lua")
 
@@ -264,7 +268,8 @@ do
   assert(#ItemFiltersSpy.calls == 0)
 end
 
--- Test: for selling, returns false without calling any filter when the item cannot be sold.
+-- Test: for selling, returns false with the cannot be sold reason, without calling any filter, when the item cannot be
+-- sold.
 do
   local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
   ItemsSpy:GetStub("IsItemSellable"):Returns(false)
@@ -272,11 +277,12 @@ do
   local isJunk, reason = JunkFilter:IsJunkItem({}, "SELL")
 
   assert(isJunk == false)
-  assert(reason == nil)
+  assert(reason == "ITEM_CANNOT_BE_SOLD")
   assert(#ItemFiltersSpy.calls == 0)
 end
 
--- Test: for destroying, returns false without calling any filter when the item cannot be destroyed.
+-- Test: for destroying, returns false with the cannot be destroyed reason, without calling any filter, when the item
+-- cannot be destroyed.
 do
   local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
   ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
@@ -284,7 +290,7 @@ do
   local isJunk, reason = JunkFilter:IsJunkItem({}, "DESTROY")
 
   assert(isJunk == false)
-  assert(reason == nil)
+  assert(reason == "ITEM_CANNOT_BE_DESTROYED")
   assert(#ItemFiltersSpy.calls == 0)
 end
 
@@ -381,7 +387,7 @@ do
   local isJunk, reason = JunkFilter:IsSellableJunkItem({})
 
   assert(isJunk == false)
-  assert(reason == nil)
+  assert(reason == "ITEM_CANNOT_BE_SOLD")
 end
 
 -- ============================================================================
@@ -409,7 +415,7 @@ do
   local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
 
   assert(isJunk == false)
-  assert(reason == nil)
+  assert(reason == "ITEM_CANNOT_BE_DESTROYED")
 end
 
 -- ============================================================================
