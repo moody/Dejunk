@@ -12,10 +12,8 @@ hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
   local item = Items:GetItem(bag, slot)
   if not item then return end
 
-  -- A filter type that cannot apply to the item has no reason.
   local isSellJunk, sellReason = JunkFilter:IsJunkItem(item, "SELL")
   local isDestroyJunk, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
-  if not (sellReason or destroyReason) then return end
 
   -- Add lines.
   self:AddLine(" ")
