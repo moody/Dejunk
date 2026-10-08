@@ -57,7 +57,7 @@ local function refreshComponents()
     local isAtMerchant = Addon:IsAtMerchant()
     local canSell, canDestroy = false, false
     for _, item in ipairs(junkItems) do
-      if canSell and canDestroy then break end
+      if (not isAtMerchant or canSell) and canDestroy then break end
       canSell = canSell or (isAtMerchant and JunkFilter:IsSellableJunkItem(item))
       canDestroy = canDestroy or JunkFilter:IsDestroyableJunkItem(item)
     end
