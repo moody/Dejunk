@@ -26,16 +26,13 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field rare boolean
 --- @field epic boolean
 
---- Option that can be turned on or off.
---- @class ToggleOptionState
+--- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
+--- @class FilterOptionState
 --- @field enabled boolean
-
---- Option that applies to selling, destroying, or both.
---- @class ScopeOptionState : ToggleOptionState
 --- @field scope ItemFilterScope
 
 --- Option limited to the selected item qualities.
---- @class QualitiesOptionState : ScopeOptionState
+--- @class QualitiesOptionState : FilterOptionState
 --- @field qualities ItemQualitiesState
 
 --- Qualities option with an item level.
@@ -139,7 +136,7 @@ DefaultStates.Profile = {
       armor = {},
       weapons = {}
     },
-    --- @type ScopeOptionState
+    --- @type FilterOptionState
     excludeEquipmentSets = { enabled = true, scope = "BOTH" },
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
@@ -182,7 +179,7 @@ DefaultStates.Profile = {
       scope = "BOTH",
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
-    --- @type ScopeOptionState
+    --- @type FilterOptionState
     includeArtifactRelics = { enabled = false, scope = "BOTH" },
 
     --- @type ItemIdMap

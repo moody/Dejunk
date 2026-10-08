@@ -156,7 +156,7 @@ end
 
 --- Items that are saved to an equipment set are not junk, for the option's scope.
 --- @param item BagItem
---- @param state ScopeOptionState
+--- @param state FilterOptionState
 --- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
 function ItemFilters:ExcludeEquipmentSets(item, state, filterType)
@@ -270,7 +270,7 @@ end
 
 --- Artifact relics are junk, for the option's scope.
 --- @param item BagItem
---- @param state ScopeOptionState
+--- @param state FilterOptionState
 --- @param filterType ItemFilterType
 --- @return ItemFilterResult result, string? reason
 function ItemFilters:IncludeArtifactRelics(item, state, filterType)

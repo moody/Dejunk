@@ -129,7 +129,7 @@ end
 
 --- Adds a line of chips to the box for a setting's `scope` field: selling, destroying, or both.
 --- @param self OptionsBuilderSettingsBox
---- @param getState fun(): ScopeOptionState
+--- @param getState fun(): FilterOptionState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addAppliesToLine(self, getState, mergeAction)
   local choices = {
