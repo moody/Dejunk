@@ -24,7 +24,7 @@ local Components = {}
 -- Controller
 -- ============================================================================
 
---- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILE_OPTIONS"
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILE_OPTIONS" | "KEY_BINDINGS"
 
 --- @class SidebarRowOptions
 --- @field key SidebarRowKey
@@ -333,6 +333,12 @@ Controller:AddSidebarRow({
   key = "PROFILE_OPTIONS",
   labelText = L.PROFILE_OPTIONS_TEXT,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel()) end
+})
+
+Controller:AddSidebarRow({
+  key = "KEY_BINDINGS",
+  labelText = L.KEYBINDS,
+  createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateKeyBindingsPanel()) end
 })
 
 -- ============================================================================

@@ -117,6 +117,7 @@
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
   <Script file="src\ui\screens\main-window\options\global-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\key-bindings.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
   <Script file="src\ui\screens\profiles-frame.lua"/>
