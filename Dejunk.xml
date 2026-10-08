@@ -124,7 +124,6 @@
 
   <!-- UI Blizzard -->
   <Script file="src\ui\blizzard\addon-category.lua"/>
-  <Script file="src\ui\blizzard\addon-compartment.lua"/>
 
   <!-- Bindings -->
   <Script file="Bindings.lua"/>
