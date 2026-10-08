@@ -140,11 +140,11 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   -- Check if item can be sold or destroyed, depending on the filter type.
   if filterType == "SELL" and not Items:IsItemSellable(item) then
-    return false
+    return false, L.ITEM_CANNOT_BE_SOLD
   end
 
   if filterType == "DESTROY" and not Items:IsItemDestroyable(item) then
-    return false
+    return false, L.ITEM_CANNOT_BE_DESTROYED
   end
 
   --- @type ItemFilterResult, string?
