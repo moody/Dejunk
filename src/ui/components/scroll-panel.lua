@@ -9,7 +9,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- Local Functions
 -- =============================================================================
 
---- Pixels scrolled by one wheel notch, at most half the viewport.
+--- Most pixels scrolled by one wheel notch.
 local WHEEL_STEP = 48
 
 --- Returns where scrolling ends up after one wheel notch, from `0` to `max`.
@@ -83,7 +83,8 @@ function ComponentFactory:ScrollPanel()
       frame:EnableMouseWheel(true)
       frame:SetScript("OnMouseWheel", function(_, delta)
         local _, max = slider:GetMinMaxValues()
-        local step = math.min(WHEEL_STEP, scrollFrame:GetHeight() / 2)
+        -- An eighth of the range, from a third of WHEEL_STEP up to WHEEL_STEP.
+        local step = Clamp(max / 8, WHEEL_STEP / 3, WHEEL_STEP)
         slider:SetValue(getWheelTarget(slider:GetValue(), delta, step, max))
       end)
       return frame
