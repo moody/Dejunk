@@ -272,6 +272,20 @@ do
   assert(Matchers:IsDeepEqual(values(calls), { false, true, false }))
 end
 
+-- Regression test: a frame under the mouse is not hovered until the mouse enters it.
+-- `HOVERED` was once seeded from `IsMouseOver()`, which left a frame created under a
+-- stationary cursor highlighted after a reload.
+do
+  local frame = newFrame()
+  frame.IsMouseOver = function() return true end
+  local calls = {}
+
+  frame:OnEvent("HOVERED", recordCalls(calls))
+
+  assert(Matchers:IsDeepEqual(values(calls), { false }))
+  assert(frame:GetEventValue("HOVERED") == false)
+end
+
 -- Test: the mouse scripts are hooked once, when the first handler is added.
 do
   local frame = newFrame()
