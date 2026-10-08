@@ -12,7 +12,23 @@ local Migrations = Addon:GetModule("Migrations")
 --- Steps keyed by the version they migrate to, each returning the migrated state. A step must tolerate missing and
 --- already-migrated data, and migrate every profile in `profiles.profileMap`, not just the active one.
 --- @type table<integer, fun(state: table): table>
-local STEPS = {}
+Migrations.STEPS = {}
+
+--- Version 2: `includeArtifactRelics` is `{ enabled, scope }` instead of a boolean, keeping the saved value.
+Migrations.STEPS[2] = function(state)
+  if type(state.profiles) == "table" and type(state.profiles.profileMap) == "table" then
+    for _, profile in pairs(state.profiles.profileMap) do
+      if type(profile) == "table" and type(profile.settings) == "table" then
+        local settings = profile.settings
+        if type(settings.includeArtifactRelics) == "boolean" then
+          settings.includeArtifactRelics = { enabled = settings.includeArtifactRelics, scope = "BOTH" }
+        end
+      end
+    end
+  end
+
+  return state
+end
 
 -- ============================================================================
 -- Migrations
@@ -28,7 +44,7 @@ local STEPS = {}
 --- @param currentVersion? integer Defaults to `DefaultStates.CURRENT_VERSION`.
 --- @return table
 function Migrations:Migrate(state, steps, currentVersion)
-  steps = steps or STEPS
+  steps = steps or self.STEPS
   currentVersion = currentVersion or DefaultStates.CURRENT_VERSION
 
   if next(state) == nil then return { version = currentVersion } end

@@ -5,7 +5,7 @@ local L = Addon:GetModule("Locale")
 local DefaultStates = Addon:GetModule("DefaultStates")
 
 --- Bump whenever a state change requires a migration.
-DefaultStates.CURRENT_VERSION = 1
+DefaultStates.CURRENT_VERSION = 2
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
@@ -26,16 +26,16 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- @field rare boolean
 --- @field epic boolean
 
---- Option that applies to selling, destroying, or both.
---- @class ScopeOptionState
---- @field scope ItemFilterScope
-
 --- Option that can be turned on or off.
 --- @class ToggleOptionState
 --- @field enabled boolean
 
+--- Option that applies to selling, destroying, or both.
+--- @class ScopeOptionState : ToggleOptionState
+--- @field scope ItemFilterScope
+
 --- Option limited to the selected item qualities.
---- @class QualitiesOptionState : ScopeOptionState, ToggleOptionState
+--- @class QualitiesOptionState : ScopeOptionState
 --- @field qualities ItemQualitiesState
 
 --- Qualities option with an item level.
@@ -181,7 +181,8 @@ DefaultStates.Profile = {
       scope = "BOTH",
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
-    includeArtifactRelics = false,
+    --- @type ScopeOptionState
+    includeArtifactRelics = { enabled = false, scope = "BOTH" },
 
     --- @type ItemIdMap
     inclusions = {},
