@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.3.0] - Unreleased
+## [3.3.0] - 2026-10-08
 
 ### Added
 
@@ -29,6 +29,11 @@
 - Items in the reagent bag were not scanned on WoW Forever, so junk in a bag in the reagent slot was never found.
 - On WoW Forever, characters with the same first name and different last names shared a profile assignment, because only the first name was used. Affected characters may need their profile selected again.
 - Left-clicking an item in the junk frame tried to sell it even when it cannot be sold.
+- Opening Dejunk from the addon compartment menu caused a forbidden action error and could freeze the game on WoW Forever with gamepad support enabled.
+
+### Known Issues
+
+- On WoW Forever with gamepad support enabled, Dejunk's key bindings taint the game's Key Bindings screen, which can crash the game.
 
 ### Removed
 
