@@ -2,7 +2,9 @@ local Addon = select(2, ...) ---@type Addon
 local Coins = Addon:GetModule("Coins")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
+local E = Addon:GetModule("Events")
 local EquipmentTypes = Addon:GetModule("EquipmentTypes")
+local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -30,13 +32,15 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @field text string Chip label.
 --- @field tooltipText? string Shown below the label in a tooltip while hovering the chip.
 
+--- @class OptionsBuilderKeyBindingCardOptions
+--- @field labelText string Command name.
+--- @field descriptionText? string Shown in grey below the label.
+--- @field get fun(): string? Returns the bound key, or `nil` while there is none.
+--- @field set fun(key: string?) Called with the key the user chose, or `nil` to clear it.
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
-
---- The containers that have a group, so a later group gets a divider above it.
---- @type table<WaffleFlexComponent, boolean?>
-local groupedContainers = setmetatable({}, { __mode = "k" })
 
 --- Adds a line of chips to the box where exactly one is checked: the one whose
 --- value `get()` returns. Clicking a chip selects its value.
@@ -283,6 +287,70 @@ function OptionsBuilder:AddOptionCard(container, options)
   return card
 end
 
+--- Adds a key binding card to `container`, with a button that shows the key or that there is none.
+--- @param container WaffleFlexComponent
+--- @param options OptionsBuilderKeyBindingCardOptions
+--- @return WaffleFlexComponent card
+function OptionsBuilder:AddKeyBindingCard(container, options)
+  local card = container:AttachComponent(Addon.Waffle:Flex({
+    direction = "COLUMN",
+    height = "AUTO",
+    gap = Widgets:Padding(0.5),
+    padding = Widgets:Padding(),
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local frame = Widgets:Frame({ parent = parent })
+      frame:SetBackdropColor(Colors.White:GetRGBA(0.03))
+      frame:SetBackdropBorderColor(0, 0, 0, 0)
+      return frame
+    end
+  }))
+
+  local row = card:AddRow({ height = "AUTO", align = "CENTER", gap = Widgets:Padding() })
+
+  local text = row:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
+  text:AttachComponent(ComponentFactory:Text({ text = options.labelText }))
+
+  if options.descriptionText then
+    text:AttachComponent(ComponentFactory:Text({
+      text = options.descriptionText,
+      fontObject = "GameFontNormalSmall",
+      color = Colors.Grey
+    }))
+  end
+
+  row:AddChild({
+    width = 140,
+    height = 30,
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local button = Widgets:Button({
+        parent = parent,
+        labelText = L.NOT_BOUND,
+        labelColor = Colors.Grey
+      })
+
+      --- Shows the key, or that there is none.
+      local function refresh()
+        button.label:SetText(options.get() or L.NOT_BOUND)
+      end
+
+      EventManager:On(E.StateUpdated, refresh)
+      refresh()
+
+      return button
+    end
+  })
+
+  return card
+end
+
+--- The containers that have a group, so a later group gets a divider above it.
+--- @type table<WaffleFlexComponent, boolean?>
+local groupedContainers = setmetatable({}, { __mode = "k" })
+
 --- Adds a group of options to `container` under a heading, after a divider
 --- unless it is the first group.
 --- @param container WaffleFlexComponent
@@ -312,7 +380,51 @@ function OptionsBuilder:AddGroup(container, headingText)
     return OptionsBuilder:AddOptionCard(self, options)
   end
 
+  --- Adds a key binding card to the group.
+  --- @param options OptionsBuilderKeyBindingCardOptions
+  --- @return WaffleFlexComponent card
+  function group:AddKeyBindingCard(options)
+    return OptionsBuilder:AddKeyBindingCard(self, options)
+  end
+
   return group
+end
+
+--- Adds a footer below `panel`'s scroll panel, under a divider, that shows a centered message. It is hidden
+--- until a message is set.
+--- @param panel TitledPanelComponent
+--- @return OptionsBuilderMessageFooter footer
+function OptionsBuilder:AddMessageFooter(panel)
+  --- @class OptionsBuilderMessageFooter : WaffleFlexComponent
+  local footer = panel.Content:AttachComponent(Addon.Waffle:Flex({
+    direction = "COLUMN",
+    height = "AUTO",
+    gap = Widgets:Padding(),
+    visibility = "GONE",
+    marginTop = Widgets:Padding()
+  }))
+
+  footer:AttachComponent(ComponentFactory:Divider())
+
+  local text = footer:AttachComponent(ComponentFactory:Text({
+    text = "",
+    fontObject = "GameFontNormalSmall",
+    color = Colors.Grey,
+    justifyH = "CENTER"
+  }))
+
+  --- Shows the message, or hides the footer when it is `nil`.
+  --- @param message? string
+  function footer:SetMessage(message)
+    if message then
+      text:WhenFrameReady(function(fontString) fontString:SetText(message) end)
+      text:MarkDirty()
+    end
+
+    self:SetVisibility(message and "VISIBLE" or "GONE")
+  end
+
+  return footer
 end
 
 --- Adds a centered footnote below `panel`'s scroll panel, under a divider,
