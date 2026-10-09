@@ -156,20 +156,20 @@ DefaultStates.Profile = {
       enabled = false,
       value = 0,
       scope = "BOTH",
-      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+      qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
     --- @type PriceOptionState
     includeBelowPrice = {
       enabled = false,
       value = 0,
       scope = "SELL",
-      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+      qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
     --- @type EquipmentTypeOptionState
     includeByEquipmentType = {
       enabled = false,
       scope = "BOTH",
-      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+      qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false },
       armor = {},
       weapons = {}
     },
