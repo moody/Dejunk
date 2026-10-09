@@ -1,8 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
-local Colors = Addon:GetModule("Colors")
+local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
-local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 
 --- @class JunkFilter
@@ -11,13 +10,6 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
-
---- Concatenates reason string arguments.
---- @param ... string|number
---- @return string
-local function concat(...)
-  return Addon:Concat(" > ", ...)
-end
 
 --- Comparison function for sorting items by price, quality, and name.
 --- @param a BagItem
@@ -59,19 +51,6 @@ local function getJunkItems(filterFunc, items)
   table.sort(items, itemSortFunc)
 
   return items
-end
-
---- Returns `true` if the given `itemQuality` is enabled within the given `checkBoxValues`.
---- @param itemQuality integer
---- @param checkBoxValues ItemQualitiesState
-local function isItemQualityCheckBoxValueEnabled(itemQuality, checkBoxValues)
-  return (
-    (checkBoxValues.poor and itemQuality == Enum.ItemQuality.Poor) or
-    (checkBoxValues.common and itemQuality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
-    (checkBoxValues.uncommon and itemQuality == (Enum.ItemQuality.Uncommon or Enum.ItemQuality.Good)) or
-    (checkBoxValues.rare and itemQuality == Enum.ItemQuality.Rare) or
-    (checkBoxValues.epic and itemQuality == Enum.ItemQuality.Epic)
-  )
 end
 
 -- ============================================================================
@@ -129,126 +108,139 @@ end
 --- @param item BagItem
 --- @return boolean isSellableJunk, string? reason
 function JunkFilter:IsSellableJunkItem(item)
-  if not Items:IsItemSellable(item) then return false end
-  return self:IsJunkItem(item)
+  return self:IsJunkItem(item, "SELL")
 end
 
 --- Returns `true` and a reason string if the given `item` is junk and can be destroyed.
 --- @param item BagItem
 --- @return boolean isDestroyableJunk, string? reason
 function JunkFilter:IsDestroyableJunkItem(item)
-  if not Items:IsItemDestroyable(item) then return false end
-  return self:IsJunkItem(item)
+  return self:IsJunkItem(item, "DESTROY")
 end
 
---- Returns `true` and a reason string if the given `item` is junk.
+--- Returns `true` and a reason string if the given `item` is junk for the given `filterType`, or for
+--- either type if none is given.
 --- @param item BagItem
+--- @param filterType? ItemFilterType
 --- @return boolean isJunk, string? reason
-function JunkFilter:IsJunkItem(item)
+function JunkFilter:IsJunkItem(item, filterType)
+  if not filterType then
+    local isSellableJunk, sellReason = self:IsJunkItem(item, "SELL")
+    if isSellableJunk then return true, sellReason end
+
+    local isDestroyableJunk, destroyReason = self:IsJunkItem(item, "DESTROY")
+    if isDestroyableJunk then return true, destroyReason end
+
+    return false, sellReason or destroyReason
+  end
+
   if not Items:IsItemStillInBags(item) then
     return false
   end
 
-  local profileSettings = StateManager:GetProfileState().settings
-
-  -- Check if item can be sold or destroyed.
-  if not (Items:IsItemSellable(item) or Items:IsItemDestroyable(item)) then
-    return false
+  -- Check if item can be sold or destroyed, depending on the filter type.
+  if filterType == "SELL" and not Items:IsItemSellable(item) then
+    return false, L.ITEM_CANNOT_BE_SOLD
   end
 
+  if filterType == "DESTROY" and not Items:IsItemDestroyable(item) then
+    return false, L.ITEM_CANNOT_BE_DESTROYED
+  end
+
+  --- @type ItemFilterResult, string?
+  local result, reason
+
   -- Refundable.
-  if Items:IsItemRefundable(item) then
-    return false, L.ITEM_IS_REFUNDABLE
+  result, reason = ItemFilters:Refundable(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Locked.
-  if Items:IsItemLocked(item) then
-    return false, L.ITEM_IS_LOCKED
+  result, reason = ItemFilters:Locked(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
+
+  local profileSettings = StateManager:GetProfileState().settings
 
   -- Exclude equipment above item level. Runs before the lists so it can
   -- override an Inclusions match.
-  if profileSettings.excludeAboveItemLevel.enabled and Items:IsItemEquipment(item) then
-    local value = profileSettings.excludeAboveItemLevel.value
-    if Items:GetItemLevel(item) > value then
-      local checkBoxValues = profileSettings.excludeAboveItemLevel.qualities
-      if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-        local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
-        return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_ABOVE_ITEM_LEVEL_TEXT .. " " .. valueText)
-      end
-    end
+  result, reason = ItemFilters:ExcludeAboveItemLevel(item, profileSettings.excludeAboveItemLevel, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
-  -- Profile lists.
-  if Lists.ProfileExclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.ProfileExclusions.name)
-  end
-  if Lists.ProfileInclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.ProfileInclusions.name)
+  -- Exclude above price.
+  result, reason = ItemFilters:ExcludeAbovePrice(item, profileSettings.excludeAbovePrice, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
-  -- Global lists.
-  if Lists.GlobalExclusions:Contains(item.id) then
-    return false, concat(L.LISTS, Lists.GlobalExclusions.name)
-  end
-  if Lists.GlobalInclusions:Contains(item.id) then
-    return true, concat(L.LISTS, Lists.GlobalInclusions.name)
+  -- Lists.
+  result, reason = ItemFilters:ByLists(item)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Exclude equipment sets.
-  if not (Addon.IS_VANILLA or Addon.IS_TBC) and profileSettings.excludeEquipmentSets and item.isEquipmentSet then
-    return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_EQUIPMENT_SETS_TEXT)
+  if not (Addon.IS_VANILLA or Addon.IS_TBC) then
+    result, reason = ItemFilters:ExcludeEquipmentSets(item, profileSettings.excludeEquipmentSets, filterType)
+    if result ~= ItemFilters.PASS then
+      return result == ItemFilters.JUNK, reason
+    end
   end
 
   -- Exclude unbound equipment.
-  if profileSettings.excludeUnboundEquipment.enabled and (Items:IsItemEquipment(item) and not Items:IsItemBound(item)) then
-    local checkBoxValues = profileSettings.excludeUnboundEquipment.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-      return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_UNBOUND_EQUIPMENT_TEXT)
-    end
+  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Exclude warband equipment.
-  if Addon.IS_RETAIL and profileSettings.excludeWarbandEquipment.enabled and Items:IsItemWarbandEquipment(item) then
-    local checkBoxValues = profileSettings.excludeWarbandEquipment.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-      return false, concat(L.OPTIONS_TEXT, L.EXCLUDE_WARBAND_EQUIPMENT_TEXT)
+  if Addon.IS_RETAIL then
+    result, reason = ItemFilters:ExcludeWarbandEquipment(item, profileSettings.excludeWarbandEquipment, filterType)
+    if result ~= ItemFilters.PASS then
+      return result == ItemFilters.JUNK, reason
     end
+  end
+
+  -- Exclude by equipment type.
+  result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Include by quality.
-  if profileSettings.includeByQuality.enabled then
-    local checkBoxValues = profileSettings.includeByQuality.qualities
-    if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-      return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BY_QUALITY_TEXT)
-    end
+  result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
-  -- Equipment-based include filters.
-  if Items:IsItemEquipment(item) then
-    -- Include below item level.
-    if profileSettings.includeBelowItemLevel.enabled then
-      local value = profileSettings.includeBelowItemLevel.value
-      if Items:GetItemLevel(item) < value then
-        local checkBoxValues = profileSettings.includeBelowItemLevel.qualities
-        if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-          local valueText = Colors.Grey("(%s)"):format(Colors.Yellow(value))
-          return true, concat(L.OPTIONS_TEXT, L.INCLUDE_BELOW_ITEM_LEVEL_TEXT .. " " .. valueText)
-        end
-      end
-    end
-    -- Include unsuitable equipment.
-    if profileSettings.includeUnsuitableEquipment.enabled and not Items:IsItemSuitable(item) then
-      local checkBoxValues = profileSettings.includeUnsuitableEquipment.qualities
-      if isItemQualityCheckBoxValueEnabled(item.quality, checkBoxValues) then
-        return true, concat(L.OPTIONS_TEXT, L.INCLUDE_UNSUITABLE_EQUIPMENT_TEXT)
-      end
-    end
+  -- Include below item level.
+  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Include below price.
+  result, reason = ItemFilters:IncludeBelowPrice(item, profileSettings.includeBelowPrice, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Include by equipment type.
+  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
   end
 
   -- Include artifact relics.
-  if Addon.IS_RETAIL and profileSettings.includeArtifactRelics and Items:IsItemArtifactRelic(item) then
-    return true, concat(L.OPTIONS_TEXT, L.INCLUDE_ARTIFACT_RELICS_TEXT)
+  if Addon.IS_RETAIL then
+    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics, filterType)
+    if result ~= ItemFilters.PASS then
+      return result == ItemFilters.JUNK, reason
+    end
   end
 
   -- No filters matched.

@@ -46,14 +46,17 @@ local profileReducer = Wux:CombineReducers({
     autoSell = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_AUTO_SELL, DefaultStates.Profile.settings.autoSell),
 
     excludeAboveItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL, DefaultStates.Profile.settings.excludeAboveItemLevel),
-    excludeEquipmentSets = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
+    excludeAbovePrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE, DefaultStates.Profile.settings.excludeAbovePrice),
+    excludeEquipmentSets = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
+    excludeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.excludeByEquipmentType),
     excludeUnboundEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
     excludeWarbandEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
 
-    includeArtifactRelics = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
+    includeArtifactRelics = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_ARTIFACT_RELICS, DefaultStates.Profile.settings.includeArtifactRelics),
     includeBelowItemLevel = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL, DefaultStates.Profile.settings.includeBelowItemLevel),
+    includeBelowPrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE, DefaultStates.Profile.settings.includeBelowPrice),
+    includeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.includeByEquipmentType),
     includeByQuality = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY, DefaultStates.Profile.settings.includeByQuality),
-    includeUnsuitableEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT, DefaultStates.Profile.settings.includeUnsuitableEquipment),
 
     inclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_INCLUSIONS, DefaultStates.Profile.settings.inclusions),
     exclusions = Wux:CreatePayloadReducer(ActionTypes.Profile.SET_EXCLUSIONS, DefaultStates.Profile.settings.exclusions)
@@ -79,6 +82,7 @@ function RootReducer:Build()
       autoLootableFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME, DefaultStates.Global.autoLootableFrame),
       chatMessages = Wux:CreatePayloadReducer(ActionTypes.Global.SET_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
       itemIcons = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICONS, DefaultStates.Global.itemIcons),
+      itemIconStyle = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICON_STYLE, DefaultStates.Global.itemIconStyle),
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
       merchantButton = Wux:CreatePayloadReducer(ActionTypes.Global.SET_MERCHANT_BUTTON, DefaultStates.Global.merchantButton),
       minimapIcon = Wux:CreatePatchReducer(ActionTypes.Global.PATCH_MINIMAP_ICON, DefaultStates.Global.minimapIcon),

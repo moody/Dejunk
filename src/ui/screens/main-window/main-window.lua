@@ -21,52 +21,72 @@ local NUM_LIST_FRAME_BUTTONS = 7
 local Components = {}
 
 -- ============================================================================
--- Local Functions
+-- Controller
 -- ============================================================================
 
---- @class ListSearchState
-local listSearchState = {
-  isSearching = false,
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILE_OPTIONS"
+
+--- @class SidebarRowOptions
+--- @field key SidebarRowKey
+--- @field labelText string Text of the sidebar row.
+--- @field createScreen fun(screen: WaffleFlexComponent) Fills the screen the row shows.
+
+local Controller = {
+  --- Sidebar rows and the screens they show.
+  --- @type table<SidebarRowKey, { row: SelectableRowComponent, screen: WaffleFlexComponent }>
+  sidebarRows = {},
+
+  --- Key of the selected sidebar row.
+  --- @type SidebarRowKey?
+  selectedRowKey = nil,
+
+  --- Text the lists are filtered by.
   searchText = ""
 }
 
-local function getListSearchState()
-  return listSearchState
+--- Adds a sidebar row that shows a screen. The screen is created hidden and
+--- filled by `options.createScreen`.
+--- @param options SidebarRowOptions
+function Controller:AddSidebarRow(options)
+  local screen = Components.ContentArea:AddColumn({ gap = Widgets:Padding(0.5), visibility = "GONE" })
+  options.createScreen(screen)
+
+  self.sidebarRows[options.key] = {
+    screen = screen,
+    row = Components.Sidebar:AttachComponent(ComponentFactory:SelectableRow({
+      labelText = options.labelText,
+      onClick = function() self:SelectSidebarRow(options.key) end
+    })) --[[@as SelectableRowComponent]]
+  }
 end
 
-local function startSearching()
-  listSearchState.isSearching = true
-  listSearchState.searchText = ""
-  Components.TitleBarNameText:SetVisibility("GONE")
-  Components.TitleBarVersionText:SetVisibility("GONE")
-  Components.TitleBarSearchRow:SetVisibility("VISIBLE")
-  Components.TitleBarButtonsRow:SetWidth("AUTO")
-  if Components.TitleBarSearchButton:GetFrame() then
-    Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("ban-icon"))
+--- Selects the sidebar row and shows its screen, hiding the previous one.
+--- @param key SidebarRowKey
+function Controller:SelectSidebarRow(key)
+  if key == self.selectedRowKey then return end
+
+  local previous = self.sidebarRows[self.selectedRowKey]
+  if previous then
+    previous.row:SetSelected(false)
+    previous.screen:SetVisibility("GONE")
   end
+
+  self.sidebarRows[key].row:SetSelected(true)
+  self.sidebarRows[key].screen:SetVisibility("VISIBLE")
+  self.selectedRowKey = key
 end
 
-local function stopSearching()
-  listSearchState.isSearching = false
-  listSearchState.searchText = ""
-  Components.TitleBarNameText:SetVisibility("VISIBLE")
-  Components.TitleBarVersionText:SetVisibility("VISIBLE")
-  Components.TitleBarSearchRow:SetVisibility("GONE")
-  Components.TitleBarButtonsRow:SetWidth(nil)
-  if Components.TitleBarSearchButton:GetFrame() then
-    Components.TitleBarSearchButton:GetFrame().texture:SetTexture(Addon:GetAsset("search-icon"))
+--- Shows every screen once so its frames are built now, then returns to the lists.
+function Controller:PreloadScreens()
+  for key in pairs(self.sidebarRows) do
+    self:SelectSidebarRow(key)
+    Components.Root:Layout()
   end
+
+  self:SelectSidebarRow("LISTS")
 end
 
-local function toggleSearching()
-  if not listSearchState.isSearching then
-    startSearching()
-  else
-    stopSearching()
-  end
-end
-
-local function openKeybindings()
+function Controller:OpenKeybindings()
   CloseMenus()
   CloseAllWindows()
 
@@ -97,9 +117,9 @@ Components.Root = ComponentFactory:Window({
   refresh = function() Components.Root:Layout() end
 })
 
--- Stop searching whenever the window hides.
+-- Clear the search whenever the window hides.
 Components.Root:WhenFrameReady(function(frame)
-  frame:HookScript("OnHide", stopSearching)
+  frame:HookScript("OnHide", function() Components.SearchBox:SetText("") end)
 end)
 
 -- Window()'s generic title text goes unused in favor of the title bar below.
@@ -110,10 +130,7 @@ Components.Root.TitleText = nil
 -- Title Bar Components
 -- ============================================================================
 
--- Padding moves to `TitleBarNameText` so `TitleBarSearchRow` sits flush left.
-Components.Root.TitleRow:SetPaddingLeft(nil)
-
-Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ paddingLeft = Widgets:Padding() })
+Components.TitleBarNameText = Components.Root.TitleRow:AddRow()
 Components.TitleBarNameText:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -134,89 +151,20 @@ Components.TitleBarVersionText:AddChild({
   end
 })
 
-Components.TitleBarSearchRow = Components.Root.TitleRow:AddRow({ visibility = "GONE" })
-Components.TitleBarSearchRow:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    --- @class MainWindowSearchBoxWidget : EditBox
-    local searchBox = CreateFrame("EditBox", "$parent_SearchBox", parent)
-    searchBox:SetFontObject("GameFontNormalLarge")
-    searchBox:SetTextColor(1, 1, 1)
-    searchBox:SetAutoFocus(false)
-    searchBox:SetMultiLine(false)
-    searchBox:SetCountInvisibleLetters(true)
-    searchBox:Hide()
-
-    -- Search box backdrop.
-    Mixin(searchBox, BackdropTemplateMixin)
-    searchBox:SetBackdrop(Widgets.BORDER_BACKDROP)
-    searchBox:SetBackdropColor(Colors.Pink:GetRGBA(0.2))
-    searchBox:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-
-    -- Search box text inset.
-    local searchBoxTextInset = Widgets:Padding()
-    searchBox:SetTextInsets(searchBoxTextInset, searchBoxTextInset, 0, 0)
-
-    -- Search box placeholder text.
-    searchBox.placeholderText = searchBox:CreateFontString("$parent_PlaceholderText", "ARTWORK",
-      "GameFontNormalLarge")
-    searchBox.placeholderText:SetText(Colors.White(L.SEARCH_LISTS))
-    searchBox.placeholderText:SetPoint("LEFT", searchBoxTextInset, 0)
-    searchBox.placeholderText:SetPoint("RIGHT", -searchBoxTextInset, 0)
-    searchBox.placeholderText:SetJustifyH("LEFT")
-    searchBox.placeholderText:SetAlpha(0.5)
-
-    searchBox:SetScript("OnEscapePressed", stopSearching)
-    searchBox:SetScript("OnEnterPressed", function(self) self:ClearFocus() end)
-    searchBox:SetScript("OnTextChanged", function(self)
-      listSearchState.searchText = self:GetText()
-      if listSearchState.searchText == "" then
-        self.placeholderText:Show()
-      else
-        self.placeholderText:Hide()
-      end
-    end)
-    searchBox:SetScript("OnShow", function(self)
-      searchBox:SetText("")
-      searchBox:SetFocus()
-    end)
-    searchBox:SetScript("OnHide", function(self)
-      searchBox:SetText("")
-      searchBox:ClearFocus()
-    end)
-
-    return searchBox
-  end
-})
-
 -- ============================================================================
 -- Title Bar Button Components
 -- ============================================================================
 
 Components.TitleBarButtonsRow = Components.Root.TitleRow:AddRow({ justify = "END" })
 
--- Search button.
-Components.TitleBarSearchButton = Components.TitleBarButtonsRow:AttachComponent(
-  ComponentFactory:WindowTitleButton({
-    name = "$parent_SearchButton",
-    texture = Addon:GetAsset("search-icon"),
-    textureSize = 16,
-    highlightColor = Colors.Pink,
-    onClick = toggleSearching,
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(listSearchState.isSearching and L.CLEAR_SEARCH or L.SEARCH_LISTS)
-    end
-  })
-)
-
 -- Keybinds button.
 Components.TitleBarButtonsRow:AttachComponent(
-  ComponentFactory:WindowTitleButton({
+  ComponentFactory:IconButton({
     name = "$parent_KeybindsButton",
-    texture = Addon:GetAsset("keyboard-icon"),
-    textureSize = 18,
+    icon = Addon:GetAsset("keyboard-icon"),
+    iconSize = 18,
     highlightColor = Colors.Blue,
-    onClick = openKeybindings,
+    onClick = function() Controller:OpenKeybindings() end,
     onUpdateTooltip = function(_, tooltip)
       tooltip:SetText(L.KEYBINDS)
     end
@@ -232,106 +180,159 @@ Components.TitleBarButtonsRow:AttachComponent(Components.Root.CloseButton:Detach
 
 Components.MainScreenRow = Components.Root:AddRow({ padding = Widgets:Padding(), gap = Widgets:Padding(0.5) })
 
--- Left column.
-local mainScreenLeftColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5), width = "35%" })
-
--- Global options.
-mainScreenLeftColumn:AddChild({
+-- Sidebar.
+Components.Sidebar = Components.MainScreenRow:AddColumn({
+  width = "25%",
+  padding = Widgets:Padding(0.5),
+  gap = Widgets:Padding(0.5),
   frameFactory = function(parent)
-    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.GLOBAL)))
-    local optionsFrame = Widgets:OptionsFrame({
-      parent = parent,
-      name = "$parent_GlobalOptionsFrame",
-      titleText = titleText,
-      titleJustify = "LEFT",
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(titleText)
-        tooltip:AddLine(L.GLOBAL_OPTIONS_TOOLTIP)
-      end
-    })
-    MainWindowOptions:InitializeGlobalOptions(optionsFrame)
-    return optionsFrame
+    return Widgets:Frame({ parent = parent })
   end
 })
 
--- Profile options.
-mainScreenLeftColumn:AddChild({
-  frameFactory = function(parent)
-    local titleText = Colors.Blue(("%s (%s)"):format(L.OPTIONS_TEXT, Colors.White(L.PROFILE)))
-    local optionsFrame = Widgets:OptionsFrame({
-      parent = parent,
-      name = "$parent_ProfileOptionsFrame",
-      titleText = titleText,
-      titleJustify = "LEFT",
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(titleText)
-        tooltip:AddLine(L.PROFILE_OPTIONS_TOOLTIP:format(Colors.White(StateManager:GetProfileState().name)))
+-- Content area: shows the screen of the selected sidebar row.
+Components.ContentArea = Components.MainScreenRow:AddColumn()
+
+-- ============================================================================
+-- Sidebar Rows and Screens
+-- ============================================================================
+
+Controller:AddSidebarRow({
+  key = "LISTS",
+  labelText = L.LISTS,
+  createScreen = function(screen)
+    -- Search box.
+    Components.SearchBox = screen:AttachComponent(ComponentFactory:TextInput({
+      placeholderText = L.SEARCH_LISTS,
+      fontObject = "GameFontNormal",
+      onTextChanged = function(text) Controller.searchText = text end
+    }))
+
+    -- Escape clears the search.
+    Components.SearchBox.Input:WhenFrameReady(function(editBox)
+      editBox:SetScript("OnEscapePressed", function(self)
+        self:SetText("")
+        self:ClearFocus()
+      end)
+    end)
+
+    -- Search button: clears the search and the focus.
+    Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
+      icon = Addon:GetAsset("search-icon"),
+      highlightColor = Colors.Blue,
+      onClick = function()
+        Components.SearchBox:SetText("")
+        Components.SearchBox.Input:GetFrame():ClearFocus()
+      end,
+      onUpdateTooltip = function(self, tooltip)
+        if not self:GetEventValue("ENABLED") then return end
+        tooltip:SetText(L.CLEAR_SEARCH)
       end
+    }))
+
+    -- The button follows the box. While the box is empty, the button is disabled and dimmed unless the box has
+    -- focus, and the mouse passes through it to the box.
+    Components.SearchButton:WhenFrameReady(function(button)
+      --- @cast button IconButtonWidget
+      button:PropagateWhenDisabled(true)
+
+      Components.SearchBox.Input:WhenFrameReady(function(editBox)
+        local box = Components.SearchBox:GetFrame() --- @type FrameWidget
+
+        --- Shows the clear icon and enables the button while the box has text.
+        local function refreshText()
+          local hasText = editBox:GetText() ~= ""
+          Components.SearchButton:SetIcon(Addon:GetAsset(hasText and "ban-icon" or "search-icon"))
+          button:FireEvent("ENABLED", hasText)
+        end
+
+        --- Dims the button while it is disabled, unless the box has focus.
+        local function refreshAlpha()
+          local isEnabled = button:GetEventValue("ENABLED")
+          button:SetAlpha((isEnabled or box:GetEventValue("FOCUSED")) and 1 or 0.4)
+        end
+
+        editBox:HookScript("OnTextChanged", refreshText)
+        button:OnEvent("ENABLED", refreshAlpha)
+        box:OnEvent("FOCUSED", refreshAlpha)
+
+        refreshText()
+      end)
+    end)
+
+    -- Divider below the search box.
+    screen:AttachComponent(ComponentFactory:Divider()):SetMarginTop(Widgets:Padding(0.25))
+
+    -- Global lists row.
+    screen:AddRow({
+      gap = Widgets:Padding(0.5),
+      children = {
+        {
+          frameFactory = function(parent)
+            return Widgets:ListFrame({
+              parent = parent,
+              name = "$parent_GlobalInclusionsFrame",
+              numButtons = NUM_LIST_FRAME_BUTTONS,
+              list = Lists.GlobalInclusions,
+              getSearchText = function() return Controller.searchText end
+            })
+          end
+        },
+        {
+          frameFactory = function(parent)
+            return Widgets:ListFrame({
+              parent = parent,
+              name = "$parent_GlobalExclusionsFrame",
+              numButtons = NUM_LIST_FRAME_BUTTONS,
+              list = Lists.GlobalExclusions,
+              getSearchText = function() return Controller.searchText end
+            })
+          end
+        }
+      }
     })
-    MainWindowOptions:InitializeProfileOptions(optionsFrame)
-    return optionsFrame
+
+    -- Profile lists row.
+    screen:AddRow({
+      gap = Widgets:Padding(0.5),
+      children = {
+        {
+          frameFactory = function(parent)
+            return Widgets:ListFrame({
+              parent = parent,
+              name = "$parent_ProfileInclusionsFrame",
+              numButtons = NUM_LIST_FRAME_BUTTONS,
+              list = Lists.ProfileInclusions,
+              getSearchText = function() return Controller.searchText end
+            })
+          end
+        },
+        {
+          frameFactory = function(parent)
+            return Widgets:ListFrame({
+              parent = parent,
+              name = "$parent_ProfileExclusionsFrame",
+              numButtons = NUM_LIST_FRAME_BUTTONS,
+              list = Lists.ProfileExclusions,
+              getSearchText = function() return Controller.searchText end
+            })
+          end
+        }
+      }
+    })
   end
 })
 
--- Right column.
-local mainScreenRightColumn = Components.MainScreenRow:AddColumn({ gap = Widgets:Padding(0.5) })
-
--- Global lists row.
-mainScreenRightColumn:AddRow({
-  gap = Widgets:Padding(0.5),
-  children = {
-    {
-      frameFactory = function(parent)
-        return Widgets:ListFrame({
-          parent = parent,
-          name = "$parent_GlobalInclusionsFrame",
-          numButtons = NUM_LIST_FRAME_BUTTONS,
-          list = Lists.GlobalInclusions,
-          getListSearchState = getListSearchState
-        })
-      end
-    },
-    {
-      frameFactory = function(parent)
-        return Widgets:ListFrame({
-          parent = parent,
-          name = "$parent_GlobalExclusionsFrame",
-          numButtons = NUM_LIST_FRAME_BUTTONS,
-          list = Lists.GlobalExclusions,
-          getListSearchState = getListSearchState
-        })
-      end
-    }
-  }
+Controller:AddSidebarRow({
+  key = "GLOBAL_OPTIONS",
+  labelText = L.GLOBAL_OPTIONS_TEXT,
+  createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateGlobalOptionsPanel()) end
 })
 
--- Profile lists row.
-mainScreenRightColumn:AddRow({
-  gap = Widgets:Padding(0.5),
-  children = {
-    {
-      frameFactory = function(parent)
-        return Widgets:ListFrame({
-          parent = parent,
-          name = "$parent_ProfileInclusionsFrame",
-          numButtons = NUM_LIST_FRAME_BUTTONS,
-          list = Lists.ProfileInclusions,
-          getListSearchState = getListSearchState
-        })
-      end
-    },
-    {
-      frameFactory = function(parent)
-        return Widgets:ListFrame({
-          parent = parent,
-          name = "$parent_ProfileExclusionsFrame",
-          numButtons = NUM_LIST_FRAME_BUTTONS,
-          list = Lists.ProfileExclusions,
-          getListSearchState = getListSearchState
-        })
-      end
-    }
-  }
+Controller:AddSidebarRow({
+  key = "PROFILE_OPTIONS",
+  labelText = L.PROFILE_OPTIONS_TEXT,
+  createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel()) end
 })
 
 -- ============================================================================
@@ -423,5 +424,6 @@ end
 -- so we force one here once the Wux store is ready.
 EventManager:Once(E.StoreCreated, function()
   MainWindow:Show()
+  Controller:PreloadScreens()
   MainWindow:Hide()
 end)

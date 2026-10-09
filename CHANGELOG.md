@@ -1,13 +1,40 @@
 # Changelog
 
-## [3.2.0] - 2026-09-27
+## [3.3.0] - 2026-10-08
 
 ### Added
 
-- Added `Auto Lootables Frame`, a global option that shows the Lootable Items frame automatically when you have items to loot, and closes it once you don't.
-- Manually opening the Lootable Items frame with nothing to loot now prints a message instead of showing an empty frame.
+- Added `Exclude Above Price` and `Include Below Price`, which compare the price of an item's whole stack with a set value. Each applies to selling, destroying, or both: `Include Below Price` starts on selling and `Exclude Above Price` on destroying. Items with no vendor price are never affected. Like `Exclude Above Item Level`, `Exclude Above Price` takes priority over Inclusions lists.
+- Added `Include By Equipment Type` and `Exclude By Equipment Type`, which apply to equipment of the selected armor and weapon types and qualities, with the types shown as columns of checkboxes. Cloaks never match.
+- Added an `Applies To` setting to all other `Include` and `Exclude` options, so each can apply to selling, destroying, or both. They start on both, which is how they worked before, and your saved settings are kept.
+- Added a `Size` setting to `Bag Item Icons`: `Small` (the default) or `Large`, which covers the whole slot as it did before 3.2.0.
 
 ### Changed
 
-- `Bag Item Icons` now overlays a small icon in the item's top-left corner instead of covering the whole slot, with a lighter background behind it.
-- `Auto Junk Frame` now reacts to whether you actually have junk while at a merchant, instead of just opening when the merchant window opens and closing when it closes. It opens as soon as you have junk, even if that's not until partway through the visit (a list or setting change can turn bag items into junk, buying an item back can too), and closes itself once you no longer have any. Closing it yourself keeps it closed for the rest of that visit; leaving the merchant always closes it.
+- The main window now has a sidebar for switching between your lists, `Global Options`, and `Profile Options`. Each options page gets the whole window instead of sharing it with your lists.
+- The options pages are split into groups: `General`, `Include`, and `Exclude` on `Profile Options`, and `Safety`, `Interface`, and `Bags` on `Global Options`.
+- The lists search box now sits at the top of the lists, always visible, instead of opening in the title bar.
+- Each option shows a short description under its name, and clicking anywhere on an option turns it on or off.
+- Options with extra settings, such as an item level or item qualities, show them right under the option, faded while the option is off.
+- Item quality checkboxes are labeled with each quality's name.
+- Item tooltips show separate `Selling` or `Not Selling` and `Destroying` or `Not Destroying` verdicts, each with its reason, instead of one verdict. An item that cannot be sold or destroyed says so.
+- Item levels are typed straight into the option and saved as you type, instead of right-clicking the option to open a popup.
+- Options that don't apply to generic, cosmetic, or fishing pole items are marked with an asterisk, explained by a note at the bottom of the page.
+- `Toggle Options Frame` is now `Toggle Main Window` in the key bindings, the minimap icon tooltip, the AddOns settings page, and `/dejunk help`. Existing key bindings are kept.
+- Item quality names and the `Alt`, `Ctrl`, and `Shift` key names now come from the game, so they match its language.
+
+### Fixed
+
+- `Bag Item Icons` did not appear in the default bags on WoW Forever.
+- Items in the reagent bag were not scanned on WoW Forever, so junk in a bag in the reagent slot was never found.
+- On WoW Forever, characters with the same first name and different last names shared a profile assignment, because only the first name was used. Affected characters may need their profile selected again.
+- Left-clicking an item in the junk frame tried to sell it even when it cannot be sold.
+- Opening Dejunk from the addon compartment menu caused a forbidden action error and could freeze the game on WoW Forever with gamepad support enabled.
+
+### Known Issues
+
+- On WoW Forever with gamepad support enabled, Dejunk's key bindings taint the game's Key Bindings screen, which can crash the game.
+
+### Removed
+
+- Removed `Include Unsuitable Equipment` in favor of `Include By Equipment Type`.

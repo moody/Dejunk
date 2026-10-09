@@ -10,6 +10,9 @@
   <!-- Src -->
   <Script file="src\addon.lua"/>
 
+  <!-- Blizzard -->
+  <Script file="src\blizzard\blizzard.lua"/>
+
   <!-- Locales -->
   <Script file="src\locales\_enUS.lua"/>
   <Script file="src\locales\deDE.lua"/>
@@ -29,6 +32,7 @@
 
   <!-- Utils -->
   <Script file="src\utils\colors.lua"/>
+  <Script file="src\utils\coins.lua"/>
   <Script file="src\utils\ticker-manager.lua"/>
 
   <!-- Store -->
@@ -45,10 +49,12 @@
   <Script file="src\commands\commands.lua"/>
 
   <!-- Junk Filter -->
+  <Script file="src\junk-filter\item-filters.lua"/>
   <Script file="src\junk-filter\junk-filter.lua"/>
 
   <!-- Items -->
   <Script file="src\items\equipment-sets-cache.lua"/>
+  <Script file="src\items\equipment-types.lua"/>
   <Script file="src\items\items.lua"/>
 
   <!-- Lists -->
@@ -67,32 +73,50 @@
   <Script file="src\ui\popup.lua"/>
   <Script file="src\ui\tooltip.lua"/>
 
-  <!-- UI Components -->
-  <Script file="src\ui\components\window-title-button.lua"/>
-  <Script file="src\ui\components\window.lua"/>
-
   <!-- UI Widgets -->
   <Script file="src\ui\widgets\widgets.lua"/>
 
   <!-- UI Widgets - Primitives -->
   <Script file="src\ui\widgets\primitives\button.lua"/>
-  <Script file="src\ui\widgets\primitives\check-box.lua"/>
-  <Script file="src\ui\widgets\primitives\frame.lua"/>
+  <Script file="src\ui\widgets\primitives\checkbox.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame-event-state.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame-events.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\enabled.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\focused.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\events\hovered.lua"/>
+  <Script file="src\ui\widgets\primitives\frame\frame.lua"/>
   <Script file="src\ui\widgets\primitives\slider.lua"/>
 
   <!-- UI Widgets - Composites -->
   <Script file="src\ui\widgets\composites\items-frame.lua"/>
   <Script file="src\ui\widgets\composites\list-frame.lua"/>
   <Script file="src\ui\widgets\composites\options\option-button.lua"/>
-  <Script file="src\ui\widgets\composites\options\options-frame.lua"/>
   <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\composites\text-frame.lua"/>
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
 
+  <!-- UI Components -->
+  <Script file="src\ui\components\check-chip-group.lua"/>
+  <Script file="src\ui\components\check-chip.lua"/>
+  <Script file="src\ui\components\divider.lua"/>
+  <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\number-input.lua"/>
+  <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\quality-toggles.lua"/>
+  <Script file="src\ui\components\scroll-panel.lua"/>
+  <Script file="src\ui\components\selectable-row.lua"/>
+  <Script file="src\ui\components\settings-box.lua"/>
+  <Script file="src\ui\components\text.lua"/>
+  <Script file="src\ui\components\text-input.lua"/>
+  <Script file="src\ui\components\titled-panel.lua"/>
+  <Script file="src\ui\components\window.lua"/>
+
   <!-- UI Screens -->
   <Script file="src\ui\screens\junk-frame.lua"/>
   <Script file="src\ui\screens\lootable-frame.lua"/>
-  <Script file="src\ui\screens\main-window\main-window-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
+  <Script file="src\ui\screens\main-window\options\global-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
   <Script file="src\ui\screens\profiles-frame.lua"/>
@@ -100,7 +124,6 @@
 
   <!-- UI Blizzard -->
   <Script file="src\ui\blizzard\addon-category.lua"/>
-  <Script file="src\ui\blizzard\addon-compartment.lua"/>
 
   <!-- Bindings -->
   <Script file="Bindings.lua"/>

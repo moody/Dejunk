@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 
@@ -77,8 +78,8 @@ end
 --- @return fun(options: table)
 local function newTextInputPopup(popupKey, parse)
   local popupKey, popup = registerPopup(popupKey, {
-    button1 = ACCEPT,
-    button2 = CANCEL,
+    button1 = B.Strings.ACCEPT_TEXT,
+    button2 = B.Strings.CANCEL_TEXT,
     timeout = 0,
     exclusive = 1,
     whileDead = 1,
@@ -129,8 +130,8 @@ end
 -- Popup:Confirm()
 do
   local popupKey, popup = registerPopup("DEJUNK_CONFIRM_POPUP", {
-    button1 = YES,
-    button2 = NO,
+    button1 = B.Strings.YES_TEXT,
+    button2 = B.Strings.NO_TEXT,
     timeout = 0,
     exclusive = 1,
     whileDead = 1,

@@ -32,6 +32,13 @@ do -- Widget:Padding()
   end
 end
 
+--- Font object for controls, such as a `CheckChip` or `NumberInput`, and the
+--- labels beside them.
+Widgets.CONTROL_FONT = "GameFontNormalSmall"
+
+--- Space above and below a control's content. Controls are sized to their content.
+Widgets.CONTROL_PADDING = Widgets:Padding(0.75)
+
 do -- Widget:GetUniqueName()
   local ids = {}
 

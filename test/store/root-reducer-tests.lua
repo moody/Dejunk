@@ -3,17 +3,18 @@
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
 local TableUtils = require("test/table-utils")
-Harness:Load("src/store/action-types.lua")
-Harness:Load("src/store/action-creators.lua")
-Harness:Load("src/store/default-states.lua")
-Harness:Load("src/store/root-reducer.lua")
 
-local Addon = Harness.Addon
-local ActionCreators = Addon:GetModule("ActionCreators")
-local ActionTypes = Addon:GetModule("ActionTypes")
-local DefaultStates = Addon:GetModule("DefaultStates")
-local RootReducer = Addon:GetModule("RootReducer")
-local Wux = Addon.Wux
+local Context = Harness:NewContext()
+Context:Load("src/store/action-types.lua")
+Context:Load("src/store/action-creators.lua")
+Context:Load("src/store/default-states.lua")
+Context:Load("src/store/root-reducer.lua")
+
+local ActionCreators = Context:GetModule("ActionCreators")
+local ActionTypes = Context:GetModule("ActionTypes")
+local DefaultStates = Context:GetModule("DefaultStates")
+local RootReducer = Context:GetModule("RootReducer")
+local Wux = Context.Addon.Wux
 
 -- ============================================================================
 -- Setup
@@ -101,6 +102,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
   { action = ActionCreators.Global.setChatMessages(false), path = "global.chatMessages", expected = false },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
+  { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },
   { action = ActionCreators.Global.setMerchantButton(false), path = "global.merchantButton", expected = false },
   { action = ActionCreators.Global.setSafeDestroy(false), path = "global.safeDestroy", expected = false },
@@ -316,13 +318,25 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.setAutoRepair(true), path = PROFILE_PATH .. ".settings.autoRepair", expected = true },
   { action = ActionCreators.Profile.setAutoSell(true), path = PROFILE_PATH .. ".settings.autoSell", expected = true },
   { action = ActionCreators.Profile.mergeExcludeAboveItemLevel({ value = 350 }), path = PROFILE_PATH .. ".settings.excludeAboveItemLevel.value", expected = 350 },
-  { action = ActionCreators.Profile.setExcludeEquipmentSets(false), path = PROFILE_PATH .. ".settings.excludeEquipmentSets", expected = false },
+  { action = ActionCreators.Profile.mergeExcludeAboveItemLevel({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeAboveItemLevel.scope", expected = "SELL" },
+  { action = ActionCreators.Profile.mergeExcludeAbovePrice({ value = 5000 }), path = PROFILE_PATH .. ".settings.excludeAbovePrice.value", expected = 5000 },
+  { action = ActionCreators.Profile.mergeExcludeEquipmentSets({ enabled = false }), path = PROFILE_PATH .. ".settings.excludeEquipmentSets.enabled", expected = false },
+  { action = ActionCreators.Profile.mergeExcludeEquipmentSets({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeEquipmentSets.scope", expected = "SELL" },
+  { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeWarbandEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeWarbandEquipment.enabled", expected = true },
-  { action = ActionCreators.Profile.setIncludeArtifactRelics(true), path = PROFILE_PATH .. ".settings.includeArtifactRelics", expected = true },
+  { action = ActionCreators.Profile.mergeExcludeWarbandEquipment({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeWarbandEquipment.scope", expected = "SELL" },
+  { action = ActionCreators.Profile.mergeIncludeArtifactRelics({ enabled = true }), path = PROFILE_PATH .. ".settings.includeArtifactRelics.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeIncludeArtifactRelics({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeArtifactRelics.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeIncludeBelowItemLevel({ value = 200 }), path = PROFILE_PATH .. ".settings.includeBelowItemLevel.value", expected = 200 },
+  { action = ActionCreators.Profile.mergeIncludeBelowItemLevel({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeBelowItemLevel.scope", expected = "SELL" },
+  { action = ActionCreators.Profile.mergeIncludeBelowPrice({ value = 100 }), path = PROFILE_PATH .. ".settings.includeBelowPrice.value", expected = 100 },
+  { action = ActionCreators.Profile.mergeIncludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.includeByEquipmentType.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeIncludeByEquipmentType({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeByEquipmentType.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeIncludeByQuality({ qualities = { epic = true } }), path = PROFILE_PATH .. ".settings.includeByQuality.qualities.epic", expected = true },
-  { action = ActionCreators.Profile.mergeIncludeUnsuitableEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.includeUnsuitableEquipment.enabled", expected = true },
+  { action = ActionCreators.Profile.mergeIncludeByQuality({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.includeByQuality.scope", expected = "SELL" },
   { action = ActionCreators.Profile.setInclusions({ ["3001"] = true }), path = PROFILE_PATH .. ".settings.inclusions", expected = { ["3001"] = true } },
   { action = ActionCreators.Profile.setExclusions({ ["4001"] = true }), path = PROFILE_PATH .. ".settings.exclusions", expected = { ["4001"] = true } },
 }

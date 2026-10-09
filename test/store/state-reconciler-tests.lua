@@ -2,13 +2,14 @@
 
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
-Harness:Load("src/store/default-states.lua")
-Harness:Load("src/store/state-reconciler.lua")
 
-local Addon = Harness.Addon
-local DefaultStates = Addon:GetModule("DefaultStates")
-local StateReconciler = Addon:GetModule("StateReconciler")
-local Wux = Addon.Wux
+local Context = Harness:NewContext()
+Context:Load("src/store/default-states.lua")
+Context:Load("src/store/state-reconciler.lua")
+
+local DefaultStates = Context:GetModule("DefaultStates")
+local StateReconciler = Context:GetModule("StateReconciler")
+local Wux = Context.Addon.Wux
 
 -- ============================================================================
 -- Tests - StateReconciler:Reconcile()

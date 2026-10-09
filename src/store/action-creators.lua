@@ -48,6 +48,10 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setItemIcons = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_ICONS),
 
+  --- Action creator for `ActionTypes.Global.SET_ITEM_ICON_STYLE`.
+  --- @type WuxActionCreator<ItemIconStyle>
+  setItemIconStyle = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_ICON_STYLE),
+
   --- Action creator for `ActionTypes.Global.SET_ITEM_TOOLTIPS`.
   --- @type WuxActionCreator<boolean>
   setItemTooltips = Wux:CreateActionCreator(ActionTypes.Global.SET_ITEM_TOOLTIPS),
@@ -186,9 +190,17 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeAboveItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_ITEM_LEVEL),
 
-  --- Action creator for `ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS`.
-  --- @type WuxActionCreator<boolean>
-  setExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.SET_EXCLUDE_EQUIPMENT_SETS),
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeAbovePrice = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE),
+
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeByEquipmentType = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE),
+
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS),
 
   --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT`.
   --- @type WuxActionCreator<table<string, any>>
@@ -198,21 +210,25 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeWarbandEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_WARBAND_EQUIPMENT),
 
-  --- Action creator for `ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS`.
-  --- @type WuxActionCreator<boolean>
-  setIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.SET_INCLUDE_ARTIFACT_RELICS),
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_ARTIFACT_RELICS`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeArtifactRelics = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_ARTIFACT_RELICS),
 
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL`.
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeBelowItemLevel = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_ITEM_LEVEL),
 
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeBelowPrice = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BELOW_PRICE),
+
+  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeIncludeByEquipmentType = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_EQUIPMENT_TYPE),
+
   --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY`.
   --- @type WuxActionCreator<table<string, any>>
   mergeIncludeByQuality = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_BY_QUALITY),
-
-  --- Action creator for `ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT`.
-  --- @type WuxActionCreator<table<string, any>>
-  mergeIncludeUnsuitableEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_INCLUDE_UNSUITABLE_EQUIPMENT),
 
   --- Action creator for `ActionTypes.Profile.SET_INCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>

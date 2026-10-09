@@ -1,6 +1,7 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local DefaultStates = Addon:GetModule("DefaultStates")
@@ -52,7 +53,7 @@ local rootComponent = Addon.Waffle:Flex({
         tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
-        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
+        tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
         tooltip:Show()
       end
     })
@@ -76,10 +77,12 @@ local rootComponent = Addon.Waffle:Flex({
     end)
     frame:SetClickHandler("RightButton", "ALT", Commands.destroy)
 
+    -- Fire enabled event.
+    TickerManager:NewTicker(1 / 30, function()
+      frame:FireEvent("ENABLED", not Addon:IsBusy())
+    end):BindFrame(frame)
+
     -- Scripts.
-    frame:HookScript("OnUpdate", function()
-      frame:SetEnabled(not Addon:IsBusy())
-    end)
     frame:HookScript("OnDragStart", function()
       frame:GetScript("OnLeave")(frame)
     end)

@@ -17,24 +17,36 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 
 ### Options
 
-These options, found under `Options (Profile)`, determine what's considered junk. Several support per-quality checkboxes, letting them apply only to specific quality tiers.
+`Profile Options` has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what's considered junk, and several of their options support per-quality checkboxes, letting them apply only to specific quality tiers.
 
+#### Include
+
+- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
 - **Include By Quality** — Include items by quality tier (poor quality included by default)
-- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
 - **Include Below Item Level** — Include equipment below a set item level
-- **Include Unsuitable Equipment** — Include equipment with an armor or weapon type unsuitable for your class
+- **Include Below Price** — Include items with a stack price below a set value
+- **Include By Equipment Type** — Include equipment of the selected armor and weapon types (cloaks never match)
+
+#### Exclude
+
+- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it's on an Inclusions list
+- **Exclude Above Price** — Exclude items with a stack price above a set value, even if it's on an Inclusions list
+- **Exclude By Equipment Type** — Exclude equipment of the selected armor and weapon types (cloaks never match)
 - **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
-- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
+
+Each `Include` and `Exclude` option applies to selling, destroying, or both. They start on both, except `Include Below Price` on selling and `Exclude Above Price` on destroying.
+
+The price options compare the price of the whole stack and never affect items with no vendor price.
 
 ### Lists
 
 Inclusions and Exclusions lists are available at both the global and per-profile level. Per-profile lists take priority over global ones.
 
-- **`Inclusions (Global)`** — Always considered junk across all characters, unless overridden by a per-profile exclusion or `Exclude Above Item Level`
+- **`Inclusions (Global)`** — Always considered junk across all characters, unless overridden by a per-profile exclusion, `Exclude Above Item Level`, or `Exclude Above Price`
 - **`Exclusions (Global)`** — Never considered junk across all characters, unless overridden by a per-profile inclusion
-- **`Inclusions (Profile)`** — Always considered junk for the active profile only, regardless of any other setting except `Exclude Above Item Level`
+- **`Inclusions (Profile)`** — Always considered junk for the active profile only, regardless of any other setting except `Exclude Above Item Level` and `Exclude Above Price`
 - **`Exclusions (Profile)`** — Never considered junk for the active profile only, regardless of any other setting
 
 Items can be added to lists by dropping them directly into the list frame or the Junk Items frame.
@@ -52,7 +64,7 @@ The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click o
 - Left-click an item to sell it
 - Right-click an item to add it to an Exclusions list
 - Drop an item into the frame to add it to an Inclusions list
-- `Start Selling` and `Destroy Next Item` act on every item currently listed
+- `Start Selling` and `Destroy Next Item` act on the listed items that are junk for selling and destroying, respectively
 
 The `Auto Junk Frame` option shows the frame automatically at a merchant when you have junk items, and closes it once you don't.
 
@@ -77,7 +89,7 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 ## Chat Commands
 
 ```bash
-# Toggle the options frame.
+# Toggle the main window.
 /dejunk
 
 # Start selling items.

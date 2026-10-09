@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local ListItemParser = Addon:GetModule("ListItemParser")
@@ -13,7 +14,7 @@ local Widgets = Addon:GetModule("Widgets")
 
 --- @class ListFrameWidgetOptions : ItemsFrameWidgetOptions
 --- @field list List
---- @field getListSearchState fun(): ListSearchState
+--- @field getSearchText fun(): string Returns the text the list is filtered by. Shows every item when empty.
 --- @field getItems nil
 --- @field addItem nil
 --- @field removeAllItems nil
@@ -37,7 +38,7 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(" ")
     tooltip:AddLine(L.LIST_FRAME_TOOLTIP)
     tooltip:AddLine(" ")
-    tooltip:AddDoubleLine(Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
+    tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), L.REMOVE_ALL_ITEMS)
   end
 
   function options.itemButtonOnUpdateTooltip(self, tooltip)
@@ -46,15 +47,15 @@ function Widgets:ListFrame(options)
     tooltip:AddLine(" ")
     tooltip:AddDoubleLine(L.RIGHT_CLICK, L.REMOVE)
     tooltip:AddDoubleLine(
-      Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetOpposite().name)
     )
     tooltip:AddDoubleLine(
-      Addon:Concat("+", L.CONTROL_KEY, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetSibling():GetOpposite().name)
     )
     tooltip:AddDoubleLine(
-      Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK),
+      Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_TO_LIST:format(options.list:GetSibling().name)
     )
   end
@@ -74,9 +75,9 @@ function Widgets:ListFrame(options)
   end
 
   function options.getItems()
-    local searchState = options.getListSearchState()
-    if searchState.isSearching and searchState.searchText ~= "" then
-      return options.list:GetSearchItems(searchState.searchText)
+    local searchText = options.getSearchText()
+    if searchText ~= "" then
+      return options.list:GetSearchItems(searchText)
     end
 
     return options.list:GetItems()

@@ -1,5 +1,5 @@
 --- Predicates for use as `assert(Matchers:Method(...))`. Each returns `true`, or `false` and a message.
---- @class DejunkTestMatchers
+--- @class TestMatchers
 local Matchers = {}
 
 -- ============================================================================

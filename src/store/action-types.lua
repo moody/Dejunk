@@ -12,6 +12,7 @@ ActionTypes.Global = {
   SET_AUTO_LOOTABLE_FRAME = "global/autoLootableFrame/set",
   SET_CHAT_MESSAGES = "global/chatMessages/set",
   SET_ITEM_ICONS = "global/itemIcons/set",
+  SET_ITEM_ICON_STYLE = "global/itemIconStyle/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
   SET_MERCHANT_BUTTON = "global/merchantButton/set",
   SET_SAFE_DESTROY = "global/safeDestroy/set",
@@ -57,13 +58,16 @@ ActionTypes.Profile = {
   SET_AUTO_REPAIR = "profile/autoRepair/set",
   SET_AUTO_SELL = "profile/autoSell/set",
 
+  MERGE_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/merge",
   MERGE_INCLUDE_BELOW_ITEM_LEVEL = "profile/includeBelowItemLevel/merge",
-  SET_INCLUDE_ARTIFACT_RELICS = "profile/includeArtifactRelics/set",
+  MERGE_INCLUDE_BELOW_PRICE = "profile/includeBelowPrice/merge",
+  MERGE_INCLUDE_BY_EQUIPMENT_TYPE = "profile/includeByEquipmentType/merge",
   MERGE_INCLUDE_BY_QUALITY = "profile/includeByQuality/merge",
-  MERGE_INCLUDE_UNSUITABLE_EQUIPMENT = "profile/includeUnsuitableEquipment/merge",
 
   MERGE_EXCLUDE_ABOVE_ITEM_LEVEL = "profile/excludeAboveItemLevel/merge",
-  SET_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/set",
+  MERGE_EXCLUDE_ABOVE_PRICE = "profile/excludeAbovePrice/merge",
+  MERGE_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/merge",
+  MERGE_EXCLUDE_BY_EQUIPMENT_TYPE = "profile/excludeByEquipmentType/merge",
   MERGE_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/merge",
   MERGE_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/merge",
 

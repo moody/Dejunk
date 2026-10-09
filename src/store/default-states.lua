@@ -5,7 +5,7 @@ local L = Addon:GetModule("Locale")
 local DefaultStates = Addon:GetModule("DefaultStates")
 
 --- Bump whenever a state change requires a migration.
-DefaultStates.CURRENT_VERSION = 1
+DefaultStates.CURRENT_VERSION = 2
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
@@ -16,12 +16,37 @@ DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 --- Example: `{ ["itemId"] = true, ... }`
 --- @alias ItemIdMap table<string, boolean>
 
+--- @alias ItemQualityKey "poor" | "common" | "uncommon" | "rare" | "epic"
+
+--- Whether each item quality is selected.
 --- @class ItemQualitiesState
 --- @field poor boolean
 --- @field common boolean
 --- @field uncommon boolean
 --- @field rare boolean
 --- @field epic boolean
+
+--- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
+--- @class FilterOptionState
+--- @field enabled boolean
+--- @field scope ItemFilterScope
+
+--- Option limited to the selected item qualities.
+--- @class QualitiesOptionState : FilterOptionState
+--- @field qualities ItemQualitiesState
+
+--- Qualities option with an item level.
+--- @class ItemLevelOptionState : QualitiesOptionState
+--- @field value integer Item level threshold.
+
+--- Qualities option that compares the price of an item's stack.
+--- @class PriceOptionState : QualitiesOptionState
+--- @field value integer Price threshold in copper.
+
+--- Qualities option limited to the selected armor and weapon types.
+--- @class EquipmentTypeOptionState : QualitiesOptionState
+--- @field armor table<integer, boolean> Selected armor subclasses.
+--- @field weapons table<integer, boolean> Selected weapon subclasses.
 
 -- ============================================================================
 -- DefaultStates - Global
@@ -34,6 +59,8 @@ DefaultStates.Global = {
   autoLootableFrame = false,
   chatMessages = true,
   itemIcons = false,
+  --- @type ItemIconStyle
+  itemIconStyle = "SMALL",
   itemTooltips = true,
   merchantButton = true,
   minimapIcon = { hide = false },
@@ -87,41 +114,73 @@ DefaultStates.Profile = {
     autoRepair = false,
     autoSell = false,
 
+    --- @type ItemLevelOptionState
     excludeAboveItemLevel = {
       enabled = false,
       value = 0,
-      --- @type ItemQualitiesState
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
-    excludeEquipmentSets = true,
+    --- @type PriceOptionState
+    excludeAbovePrice = {
+      enabled = false,
+      value = 0,
+      scope = "DESTROY",
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
+    --- @type EquipmentTypeOptionState
+    excludeByEquipmentType = {
+      enabled = false,
+      scope = "BOTH",
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+      armor = {},
+      weapons = {}
+    },
+    --- @type FilterOptionState
+    excludeEquipmentSets = { enabled = true, scope = "BOTH" },
+    --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,
-      --- @type ItemQualitiesState
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
+    --- @type QualitiesOptionState
     excludeWarbandEquipment = {
       enabled = false,
-      --- @type ItemQualitiesState
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
 
+    --- @type ItemLevelOptionState
     includeBelowItemLevel = {
       enabled = false,
       value = 0,
-      --- @type ItemQualitiesState
+      scope = "BOTH",
       qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
     },
+    --- @type PriceOptionState
+    includeBelowPrice = {
+      enabled = false,
+      value = 0,
+      scope = "SELL",
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
+    },
+    --- @type EquipmentTypeOptionState
+    includeByEquipmentType = {
+      enabled = false,
+      scope = "BOTH",
+      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true },
+      armor = {},
+      weapons = {}
+    },
+    --- @type QualitiesOptionState
     includeByQuality = {
       enabled = true,
-      --- @type ItemQualitiesState
+      scope = "BOTH",
       qualities = { poor = true, common = false, uncommon = false, rare = false, epic = false }
     },
-    includeUnsuitableEquipment = {
-      enabled = false,
-      --- @type ItemQualitiesState
-      qualities = { poor = true, common = true, uncommon = true, rare = true, epic = true }
-    },
-    includeArtifactRelics = false,
+    --- @type FilterOptionState
+    includeArtifactRelics = { enabled = false, scope = "BOTH" },
 
     --- @type ItemIdMap
     inclusions = {},

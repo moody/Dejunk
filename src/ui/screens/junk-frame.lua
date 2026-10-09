@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -28,15 +29,6 @@ local wasAutoShown = false
 
 local junkItems = {}
 
-local function hasSellableItems(items)
-  for _, item in ipairs(items) do
-    if Items:IsItemSellable(item) then
-      return true
-    end
-  end
-  return false
-end
-
 -- Refresh components based on junk item data.
 local function refreshComponents()
   JunkFilter:GetJunkItems(junkItems)
@@ -59,11 +51,18 @@ local function refreshComponents()
   Components.ItemsFrame:GetFrame().title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
 
   if Addon:IsBusy() then
-    Components.StartSellingButton:GetFrame():SetEnabled(false)
-    Components.DestroyNextItemButton:GetFrame():SetEnabled(false)
+    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
+    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", false)
   else
-    Components.StartSellingButton:GetFrame():SetEnabled(Addon:IsAtMerchant() and hasSellableItems(junkItems))
-    Components.DestroyNextItemButton:GetFrame():SetEnabled(#junkItems > 0)
+    local isAtMerchant = Addon:IsAtMerchant()
+    local canSell, canDestroy = false, false
+    for _, item in ipairs(junkItems) do
+      if (not isAtMerchant or canSell) and canDestroy then break end
+      canSell = canSell or (isAtMerchant and JunkFilter:IsSellableJunkItem(item))
+      canDestroy = canDestroy or JunkFilter:IsDestroyableJunkItem(item)
+    end
+    Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
+    Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", canDestroy)
   end
 end
 
@@ -103,15 +102,15 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
           Lists.ProfileInclusions.name,
           Lists.GlobalInclusions.name,
-          Colors.White(L.SHIFT_KEY)
+          Colors.White(B.Strings.SHIFT_KEY_TEXT)
         ))
         tooltip:AddLine(" ")
         tooltip:AddDoubleLine(
-          Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
         )
         tooltip:AddDoubleLine(
-          Addon:Concat("+", L.CONTROL_KEY, L.ALT_KEY, L.SHIFT_KEY, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
         )
       end,
@@ -119,17 +118,21 @@ Components.ItemsFrame = Components.Content:AddChild({
         tooltip:SetOwner(self, "ANCHOR_RIGHT")
         tooltip:SetBagItem(self.item.bag, self.item.slot)
         tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+        if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
+          tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+        end
         tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
         tooltip:AddDoubleLine(
-          Addon:Concat("+", L.SHIFT_KEY, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
           L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
         )
-        tooltip:AddDoubleLine(Addon:Concat("+", L.ALT_KEY, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
+        tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
       end,
       itemButtonOnClick = function(self, button)
         if button == "LeftButton" then
-          Seller:HandleItem(self.item)
+          if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
+            Seller:HandleItem(self.item)
+          end
         end
 
         if button == "RightButton" then

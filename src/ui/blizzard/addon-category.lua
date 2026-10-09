@@ -8,7 +8,7 @@ local categoryFrame = Widgets:Frame({ name = "DejunkAddOnCategoryFrame" })
 
 local optionsButton = Widgets:Button({
   parent = categoryFrame,
-  labelText = L.TOGGLE_OPTIONS_FRAME,
+  labelText = L.TOGGLE_MAIN_WINDOW,
   points = {
     { "TOPLEFT", categoryFrame, "TOPLEFT", Widgets:Padding(2), -Widgets:Padding(2) },
     { "TOPRIGHT", categoryFrame, "TOPRIGHT", -Widgets:Padding(2), -Widgets:Padding(2) }

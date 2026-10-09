@@ -2,12 +2,13 @@
 
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
-Harness:Load("src/store/default-states.lua")
-Harness:Load("src/store/migrations.lua")
 
-local Addon = Harness.Addon
-local DefaultStates = Addon:GetModule("DefaultStates")
-local Migrations = Addon:GetModule("Migrations")
+local Context = Harness:NewContext()
+Context:Load("src/store/default-states.lua")
+Context:Load("src/store/migrations.lua")
+
+local DefaultStates = Context:GetModule("DefaultStates")
+local Migrations = Context:GetModule("Migrations")
 
 -- ============================================================================
 -- Setup
