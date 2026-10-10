@@ -108,7 +108,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setSafeDestroy(false), path = "global.safeDestroy", expected = false },
   { action = ActionCreators.Global.setSafeSell(true), path = "global.safeSell", expected = true },
   { action = ActionCreators.Global.patchMinimapIcon({ hide = true }), path = "global.minimapIcon.hide", expected = true },
-  { action = ActionCreators.Global.patchKeyBindings({ toggleMainWindow = "CTRL-O" }), path = "global.keyBindings.toggleMainWindow", expected = "CTRL-O" },
+  { action = ActionCreators.Global.patchKeybindings({ toggleMainWindow = "CTRL-O" }), path = "global.keybindings.toggleMainWindow", expected = "CTRL-O" },
   { action = ActionCreators.Global.setInclusions({ ["1001"] = true }), path = "global.inclusions", expected = { ["1001"] = true } },
   { action = ActionCreators.Global.setExclusions({ ["2001"] = true }), path = "global.exclusions", expected = { ["2001"] = true } },
   { action = ActionCreators.Global.points.mainWindow.set(POINT), path = "global.points.mainWindow", expected = POINT },

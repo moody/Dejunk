@@ -22,7 +22,7 @@ ActionTypes.Global = {
   SET_EXCLUSIONS = "global/exclusions/set",
 
   PATCH_MINIMAP_ICON = "global/minimapIcon/patch",
-  PATCH_KEY_BINDINGS = "global/keyBindings/patch",
+  PATCH_KEYBINDINGS = "global/keybindings/patch",
   RESET_JUNK_FRAME_POINT = "global/points/junkFrame/reset",
   RESET_LOOTABLE_FRAME_POINT = "global/points/lootableFrame/reset",
   RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",

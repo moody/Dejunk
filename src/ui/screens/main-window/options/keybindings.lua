@@ -1,7 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
 local DefaultStates = Addon:GetModule("DefaultStates")
-local KeyBindings = Addon:GetModule("KeyBindings")
+local Keybindings = Addon:GetModule("Keybindings")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local OptionsBuilder = Addon:GetModule("OptionsBuilder")
@@ -18,31 +18,31 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- @param bindingName BindingName
 --- @param labelText string
 --- @param descriptionText? string
-local function addBindingCard(group, bindingName, labelText, descriptionText)
-  group:AddKeyBindingCard({
+local function addKeybindingCard(group, bindingName, labelText, descriptionText)
+  group:AddKeybindingCard({
     labelText = labelText,
     descriptionText = descriptionText,
     get = function()
-      local key = KeyBindings:GetKey(bindingName)
+      local key = Keybindings:GetKey(bindingName)
       if key ~= DefaultStates.UNBOUND_KEY then return key end
     end,
     set = function(key)
       if key and key ~= DefaultStates.UNBOUND_KEY then
-        KeyBindings:SetKey(bindingName, key)
+        Keybindings:SetKey(bindingName, key)
       else
-        KeyBindings:RemoveKey(bindingName)
+        Keybindings:RemoveKey(bindingName)
       end
     end
   })
 end
 
 -- ============================================================================
--- MainWindowOptions - Key Bindings
+-- MainWindowOptions - Keybindings
 -- ============================================================================
 
---- Creates the panel of key bindings.
+--- Creates the panel of keybindings.
 --- @return TitledPanelComponent panel
-function MainWindowOptions:CreateKeyBindingsPanel()
+function MainWindowOptions:CreateKeybindingsPanel()
   local panel, container = OptionsBuilder:CreatePanel({
     titleText = Colors.Blue(L.KEYBINDS),
     titleJustify = "LEFT"
@@ -54,14 +54,14 @@ function MainWindowOptions:CreateKeyBindingsPanel()
 
   -- Windows.
   local windows = OptionsBuilder:AddGroup(container, L.WINDOWS)
-  addBindingCard(windows, "toggleMainWindow", L.TOGGLE_MAIN_WINDOW)
-  addBindingCard(windows, "toggleJunkFrame", L.TOGGLE_JUNK_FRAME)
-  addBindingCard(windows, "toggleLootableFrame", L.TOGGLE_LOOTABLE_FRAME)
+  addKeybindingCard(windows, "toggleMainWindow", L.TOGGLE_MAIN_WINDOW)
+  addKeybindingCard(windows, "toggleJunkFrame", L.TOGGLE_JUNK_FRAME)
+  addKeybindingCard(windows, "toggleLootableFrame", L.TOGGLE_LOOTABLE_FRAME)
 
   -- Actions.
   local actions = OptionsBuilder:AddGroup(container, L.ACTIONS)
-  addBindingCard(actions, "startSelling", L.START_SELLING, L.KEYBIND_DESCRIPTION_START_SELLING)
-  addBindingCard(actions, "destroyNextItem", L.DESTROY_NEXT_ITEM)
+  addKeybindingCard(actions, "startSelling", L.START_SELLING, L.KEYBIND_DESCRIPTION_START_SELLING)
+  addKeybindingCard(actions, "destroyNextItem", L.DESTROY_NEXT_ITEM)
 
   -- Lists.
   local profileLists = OptionsBuilder:AddGroup(container, L.PROFILE_LISTS)
@@ -93,14 +93,14 @@ function MainWindowOptions:CreateKeyBindingsPanel()
       removeBindingName = "removeFromProfileExclusions"
     }
   }) do
-    addBindingCard(
+    addKeybindingCard(
       entry.group,
       entry.addBindingName,
       L.ADD_TO_LIST:format(entry.list.name),
       L.KEYBIND_DESCRIPTION_ADD_TO_LIST
     )
 
-    addBindingCard(
+    addKeybindingCard(
       entry.group,
       entry.removeBindingName,
       L.REMOVE_FROM_LIST:format(entry.list.name),

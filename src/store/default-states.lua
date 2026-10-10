@@ -78,7 +78,7 @@ DefaultStates.Global = {
   --- Maps binding names to keys.
   --- Example: `{ toggleMainWindow = "CTRL-O", ... }`
   --- @enum (key) BindingName
-  keyBindings = {
+  keybindings = {
     toggleMainWindow = DefaultStates.UNBOUND_KEY,
     toggleJunkFrame = DefaultStates.UNBOUND_KEY,
     toggleLootableFrame = DefaultStates.UNBOUND_KEY,

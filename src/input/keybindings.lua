@@ -9,8 +9,8 @@ local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 
---- @class KeyBindings
-local KeyBindings = Addon:GetModule("KeyBindings")
+--- @class Keybindings
+local Keybindings = Addon:GetModule("Keybindings")
 
 --- Owner of every override binding Dejunk sets.
 local owner = B.Utils:CreateFrame("Frame")
@@ -37,7 +37,7 @@ local function removeFromList(listKey)
   if itemId then Lists[listKey]:Remove(itemId) end
 end
 
---- Runs the command of each binding, by binding name. Mirrors keys in `DefaultStates.Global.keyBindings`.
+--- Runs the command of each binding, by binding name. Mirrors keys in `DefaultStates.Global.keybindings`.
 --- @type table<BindingName, function>
 local handlers = {
   toggleMainWindow = Commands.options,
@@ -60,7 +60,7 @@ local handlers = {
 --- @return Button
 local function getButton(bindingName)
   if not buttons[bindingName] then
-    local button = B.Utils:CreateFrame("Button", "DejunkKeyBinding_" .. bindingName)
+    local button = B.Utils:CreateFrame("Button", "DejunkKeybinding_" .. bindingName)
     button:SetScript("OnClick", handlers[bindingName])
     buttons[bindingName] = button
   end
@@ -72,7 +72,7 @@ end
 local function refreshOverrides()
   B.Bindings:ClearOverrides(owner)
 
-  for bindingName, key in pairs(StateManager:GetGlobalState().keyBindings) do
+  for bindingName, key in pairs(StateManager:GetGlobalState().keybindings) do
     if handlers[bindingName] and key ~= DefaultStates.UNBOUND_KEY then
       B.Bindings:SetClickOverride(owner, key, getButton(bindingName):GetName())
     end
@@ -83,25 +83,25 @@ end
 --- @type function
 local debounceRefresh
 debounceRefresh = TickerManager:NewDebouncer(0.1, function()
-  if KeyBindings:IsLocked() then return debounceRefresh() end
+  if Keybindings:IsLocked() then return debounceRefresh() end
   refreshOverrides()
 end)
 
 -- ============================================================================
--- KeyBindings
+-- Keybindings
 -- ============================================================================
 
---- Returns `true` while key bindings cannot be changed.
+--- Returns `true` while keybindings cannot be changed.
 --- @return boolean
-function KeyBindings:IsLocked()
+function Keybindings:IsLocked()
   return B.Utils:InCombatLockdown()
 end
 
 --- Returns the key saved for a binding, or the default if it is unbound.
 --- @param bindingName BindingName
 --- @return string key
-function KeyBindings:GetKey(bindingName)
-  return StateManager:GetGlobalState().keyBindings[bindingName] or DefaultStates.UNBOUND_KEY
+function Keybindings:GetKey(bindingName)
+  return StateManager:GetGlobalState().keybindings[bindingName] or DefaultStates.UNBOUND_KEY
 end
 
 --- Saves a key for a binding. Returns the name of an existing binding if one had the
@@ -109,31 +109,31 @@ end
 --- @param bindingName BindingName
 --- @param key string
 --- @return BindingName? replacedBindingName
-function KeyBindings:SetKey(bindingName, key)
+function Keybindings:SetKey(bindingName, key)
   if key == DefaultStates.UNBOUND_KEY then return self:RemoveKey(bindingName) end
 
   local patch = { [bindingName] = key }
   local replacedBindingName
 
-  for otherBindingName, otherKey in pairs(StateManager:GetGlobalState().keyBindings) do
+  for otherBindingName, otherKey in pairs(StateManager:GetGlobalState().keybindings) do
     if otherBindingName ~= bindingName and otherKey == key then
       patch[otherBindingName] = DefaultStates.UNBOUND_KEY
       replacedBindingName = otherBindingName
     end
   end
 
-  StateManager:Dispatch(ActionCreators.Global.patchKeyBindings(patch))
+  StateManager:Dispatch(ActionCreators.Global.patchKeybindings(patch))
   return replacedBindingName
 end
 
 --- Removes the key saved for a binding.
 --- @param bindingName BindingName
-function KeyBindings:RemoveKey(bindingName)
-  StateManager:Dispatch(ActionCreators.Global.patchKeyBindings({ [bindingName] = DefaultStates.UNBOUND_KEY }))
+function Keybindings:RemoveKey(bindingName)
+  StateManager:Dispatch(ActionCreators.Global.patchKeybindings({ [bindingName] = DefaultStates.UNBOUND_KEY }))
 end
 
 --- Sets the saved keys again, debouncing until lockdown ends if necessary.
-function KeyBindings:Refresh()
+function Keybindings:Refresh()
   if self:IsLocked() then
     debounceRefresh()
   else
@@ -145,12 +145,12 @@ end
 -- Events
 -- ============================================================================
 
-local keyBindings
+local keybindings
 
 -- Refresh when the saved keys change, which includes the first update after login.
 EventManager:On(E.StateUpdated, function(state)
-  if state.global.keyBindings ~= keyBindings then
-    keyBindings = state.global.keyBindings
-    KeyBindings:Refresh()
+  if state.global.keybindings ~= keybindings then
+    keybindings = state.global.keybindings
+    Keybindings:Refresh()
   end
 end)

@@ -101,6 +101,7 @@
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\key-binding-card.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
