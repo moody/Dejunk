@@ -33,7 +33,7 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @field tooltipText? string Shown below the label in a tooltip while hovering the chip.
 
 --- @class OptionsBuilderKeyBindingCardOptions
---- @field labelText string Command name.
+--- @field labelText string Label of the binding.
 --- @field descriptionText? string Shown in grey below the label.
 --- @field get fun(): string? Returns the bound key, or `nil` while there is none.
 --- @field set fun(key: string?) Called with the key the user chose, or `nil` to clear it.
