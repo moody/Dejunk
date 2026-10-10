@@ -72,9 +72,9 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<table<string, any>>
   patchMinimapIcon = Wux:CreateActionCreator(ActionTypes.Global.PATCH_MINIMAP_ICON),
 
-  --- Action creator for `ActionTypes.Global.PATCH_KEYBINDS`.
+  --- Action creator for `ActionTypes.Global.PATCH_KEY_BINDINGS`.
   --- @type WuxActionCreator<table<string, string>>
-  patchKeybinds = Wux:CreateActionCreator(ActionTypes.Global.PATCH_KEYBINDS),
+  patchKeyBindings = Wux:CreateActionCreator(ActionTypes.Global.PATCH_KEY_BINDINGS),
 
   --- Action creator for `ActionTypes.Global.SET_INCLUSIONS`.
   --- @type WuxActionCreator<ItemIdMap>

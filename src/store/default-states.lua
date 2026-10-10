@@ -9,6 +9,9 @@ DefaultStates.CURRENT_VERSION = 2
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
+--- Saved in place of a key when a binding has none.
+DefaultStates.UNBOUND_KEY = ""
+
 -- ============================================================================
 -- LuaCATS Annotations
 -- ============================================================================
@@ -72,23 +75,23 @@ DefaultStates.Global = {
   --- @type ItemIdMap
   exclusions = {},
 
-  --- Maps keybind names to keys. An empty string means no key.
+  --- Maps binding names to keys.
   --- Example: `{ toggleMainWindow = "CTRL-O", ... }`
-  --- @enum (key) KeybindName
-  keybinds = {
-    toggleMainWindow = "",
-    toggleJunkFrame = "",
-    toggleLootableFrame = "",
-    startSelling = "",
-    destroyNextItem = "",
-    addToProfileInclusions = "",
-    removeFromProfileInclusions = "",
-    addToProfileExclusions = "",
-    removeFromProfileExclusions = "",
-    addToGlobalInclusions = "",
-    removeFromGlobalInclusions = "",
-    addToGlobalExclusions = "",
-    removeFromGlobalExclusions = ""
+  --- @enum (key) BindingName
+  keyBindings = {
+    toggleMainWindow = DefaultStates.UNBOUND_KEY,
+    toggleJunkFrame = DefaultStates.UNBOUND_KEY,
+    toggleLootableFrame = DefaultStates.UNBOUND_KEY,
+    startSelling = DefaultStates.UNBOUND_KEY,
+    destroyNextItem = DefaultStates.UNBOUND_KEY,
+    addToProfileInclusions = DefaultStates.UNBOUND_KEY,
+    removeFromProfileInclusions = DefaultStates.UNBOUND_KEY,
+    addToProfileExclusions = DefaultStates.UNBOUND_KEY,
+    removeFromProfileExclusions = DefaultStates.UNBOUND_KEY,
+    addToGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    removeFromGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    addToGlobalExclusions = DefaultStates.UNBOUND_KEY,
+    removeFromGlobalExclusions = DefaultStates.UNBOUND_KEY
   },
 
   points = {
