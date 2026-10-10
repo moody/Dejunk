@@ -5,6 +5,7 @@ local Keybindings = Addon:GetModule("Keybindings")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local OptionsBuilder = Addon:GetModule("OptionsBuilder")
+local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class MainWindowOptions
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
@@ -47,6 +48,22 @@ function MainWindowOptions:CreateKeybindingsPanel()
     titleText = Colors.Blue(L.KEYBINDS),
     titleJustify = "LEFT"
   })
+
+  -- Disable and dim the panel while keybindings cannot be changed.
+  panel:WhenFrameReady(function(frame)
+    local wasLocked = false -- TEMP: debug
+
+    TickerManager:NewTicker(0.1, function()
+      local isLocked = Keybindings:IsLocked()
+      frame:FireEvent("ENABLED", not isLocked)
+      frame:SetAlpha(isLocked and 0.5 or 1)
+
+      if isLocked ~= wasLocked then -- TEMP: debug
+        wasLocked = isLocked -- TEMP: debug
+        Addon:Debug("Keybindings locked:", isLocked) -- TEMP: debug
+      end -- TEMP: debug
+    end):BindFrame(frame)
+  end)
 
   -- Footer.
   local footer = OptionsBuilder:AddMessageFooter(panel)

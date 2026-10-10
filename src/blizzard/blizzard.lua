@@ -20,9 +20,12 @@ end
 
 local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
 local CreateFrame = getGlobal("CreateFrame")
+local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
 local GameTooltip = getGlobal("GameTooltip")
+local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
 local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
 local InCombatLockdown = getGlobal("InCombatLockdown")
+local IsKeyPressIgnoredForBinding = getGlobal("IsKeyPressIgnoredForBinding")
 local SetOverrideBindingClick = getGlobal("SetOverrideBindingClick")
 
 -- =============================================================================
@@ -75,7 +78,7 @@ B.Strings = {
 -- Blizzard - Bindings
 -- =============================================================================
 
---- Functions for setting and clearing override bindings, which the game does not save.
+--- Functions for override bindings, which the game does not save, and the keys they use.
 B.Bindings = {}
 
 --- Clears every override binding set for `owner`. Cannot be called in combat.
@@ -91,6 +94,16 @@ end
 --- @param buttonName string
 function B.Bindings:SetClickOverride(owner, key, buttonName)
   SetOverrideBindingClick(owner, true, key, buttonName)
+end
+
+--- Returns the key for a key name or mouse button name with the held modifiers,
+--- such as `CTRL-BUTTON4`, or `nil` for a modifier key.
+--- @param input string
+--- @return string? key
+function B.Bindings:GetKeyFromInput(input)
+  local key = GetConvertedKeyOrButton(input)
+  if IsKeyPressIgnoredForBinding(key) then return nil end
+  return CreateKeyChordStringUsingMetaKeyState(key)
 end
 
 -- =============================================================================

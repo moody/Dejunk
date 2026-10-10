@@ -12,12 +12,27 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Keybindings
 local Keybindings = Addon:GetModule("Keybindings")
 
---- Owner of every override binding Dejunk sets.
-local owner = B.Utils:CreateFrame("Frame")
+--- The binding waiting for a key, or `nil` while none is.
+--- @type BindingName?
+Keybindings.listeningBindingName = nil
+
+--- Stops listening once keybindings are locked. Only runs while listening.
+Keybindings.lockTicker = TickerManager:NewTicker(0.05, function()
+  if Keybindings:IsLocked() then Keybindings:StopListening() end
+end)
+Keybindings.lockTicker:Cancel()
 
 --- Hidden buttons keyed by binding name.
 --- @type table<BindingName, Button>
 local buttons = {}
+
+--- Owner of every override binding Dejunk sets. It also receives keyboard
+--- input while a binding is waiting for a key.
+local BindingFrame = B.Utils:CreateFrame("Frame", nil, UIParent)
+BindingFrame:EnableKeyboard(false)
+BindingFrame:SetSize(1, 1)
+BindingFrame:SetPoint("CENTER")
+BindingFrame:SetScript("OnKeyDown", function(_, key) Keybindings:ProcessInput(key) end)
 
 -- ============================================================================
 -- Local Functions
@@ -37,7 +52,7 @@ local function removeFromList(listKey)
   if itemId then Lists[listKey]:Remove(itemId) end
 end
 
---- Runs the command of each binding, by binding name. Mirrors keys in `DefaultStates.Global.keybindings`.
+--- Runs each binding's command. Mirrors the keys of `DefaultStates.Global.keybindings`.
 --- @type table<BindingName, function>
 local handlers = {
   toggleMainWindow = Commands.options,
@@ -70,11 +85,11 @@ end
 
 --- Clears every override binding and sets the saved keys again.
 local function refreshOverrides()
-  B.Bindings:ClearOverrides(owner)
+  B.Bindings:ClearOverrides(BindingFrame)
 
   for bindingName, key in pairs(StateManager:GetGlobalState().keybindings) do
     if handlers[bindingName] and key ~= DefaultStates.UNBOUND_KEY then
-      B.Bindings:SetClickOverride(owner, key, getButton(bindingName):GetName())
+      B.Bindings:SetClickOverride(BindingFrame, key, getButton(bindingName):GetName())
     end
   end
 end
@@ -97,7 +112,7 @@ function Keybindings:IsLocked()
   return B.Utils:InCombatLockdown()
 end
 
---- Returns the key saved for a binding, or the default if it is unbound.
+--- Returns the key saved for a binding, or `UNBOUND_KEY` if it has none.
 --- @param bindingName BindingName
 --- @return string key
 function Keybindings:GetKey(bindingName)
@@ -141,10 +156,60 @@ function Keybindings:Refresh()
   end
 end
 
+--- Returns the binding waiting for a key, or `nil` while none is.
+--- @return BindingName? bindingName
+function Keybindings:GetListeningBindingName()
+  return self.listeningBindingName
+end
+
+--- Starts waiting for the next input to bind to a binding. Does nothing while locked.
+--- @param bindingName BindingName
+function Keybindings:StartListening(bindingName)
+  if self:IsLocked() then return end
+  self:StopListening()
+
+  self.listeningBindingName = bindingName
+  BindingFrame:EnableKeyboard(true)
+  self.lockTicker:Restart()
+
+  Addon:Debug("Keybindings: listening for", bindingName) -- TEMP: debug
+end
+
+--- Binds the input to the binding waiting for a key, then stops listening.
+--- Escape stops without binding. Does nothing while no binding is waiting.
+--- @param input string Key name or mouse button name.
+function Keybindings:ProcessInput(input)
+  if not self.listeningBindingName then return end
+
+  if input == "ESCAPE" then
+    self:StopListening()
+    return
+  end
+
+  local key = B.Bindings:GetKeyFromInput(input)
+  if not key then return end
+
+  self:StopListening()
+
+  Addon:Debug("Keybindings: would bind", self.listeningBindingName, key) -- TEMP: debug
+end
+
+--- Stops waiting for an input.
+function Keybindings:StopListening()
+  if not self.listeningBindingName then return end
+
+  Addon:Debug("Keybindings: stopped listening for", self.listeningBindingName) -- TEMP: debug
+
+  self.listeningBindingName = nil
+  BindingFrame:EnableKeyboard(false)
+  self.lockTicker:Cancel()
+end
+
 -- ============================================================================
 -- Events
 -- ============================================================================
 
+--- The saved keybindings as of the last refresh.
 local keybindings
 
 -- Refresh when the saved keys change, which includes the first update after login.
