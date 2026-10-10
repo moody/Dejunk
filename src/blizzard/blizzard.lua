@@ -59,3 +59,74 @@ B.Strings = {
   --- Error message shown when a vendor does not buy an item.
   VENDOR_DOESNT_BUY_ERROR_TEXT = getGlobal("ERR_VENDOR_DOESNT_BUY"),
 }
+
+-- =============================================================================
+-- Blizzard - Bindings
+-- =============================================================================
+
+local clearOverrideBindings = getGlobal("ClearOverrideBindings")
+local setOverrideBindingClick = getGlobal("SetOverrideBindingClick")
+
+--- Functions for setting and clearing override bindings, which the game does not save.
+B.Bindings = {}
+
+--- Clears every override binding set for `owner`. Cannot be called in combat.
+--- @param owner Frame
+function B.Bindings:ClearOverrides(owner)
+  clearOverrideBindings(owner)
+end
+
+--- Makes `key` click the button named `buttonName`, taking priority over other
+--- override bindings. Cannot be called in combat.
+--- @param owner Frame
+--- @param key string
+--- @param buttonName string
+function B.Bindings:SetClickOverride(owner, key, buttonName)
+  setOverrideBindingClick(owner, true, key, buttonName)
+end
+
+-- =============================================================================
+-- Blizzard - Tooltip
+-- =============================================================================
+
+local gameTooltip = getGlobal("GameTooltip")
+local getItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
+
+--- Functions for reading the game tooltip.
+B.Tooltip = {}
+
+--- Returns the ID of the item shown in the game tooltip, or `nil` if it shows
+--- no item.
+--- @return number? itemId
+function B.Tooltip:GetItemId()
+  local name, link = gameTooltip:GetItem()
+  if name and link then return (getItemInfoFromHyperlink(link)) end
+end
+
+-- =============================================================================
+-- Blizzard - Utils
+-- =============================================================================
+
+local createFrame = getGlobal("CreateFrame")
+local inCombatLockdown = getGlobal("InCombatLockdown")
+
+--- Game functions that have no group of their own yet.
+B.Utils = {}
+
+--- Creates a frame.
+--- @generic T
+--- @param frameType `T` | FrameType
+--- @param name? string
+--- @param parent? Frame
+--- @param template? string
+--- @return T frameType
+function B.Utils:CreateFrame(frameType, name, parent, template)
+  return createFrame(frameType, name, parent, template)
+end
+
+--- Returns `true` while the game blocks protected actions, such as changing
+--- key bindings.
+--- @return boolean
+function B.Utils:InCombatLockdown()
+  return inCombatLockdown()
+end

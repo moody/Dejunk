@@ -47,6 +47,7 @@
 
   <!-- Input -->
   <Script file="src\input\commands.lua"/>
+  <Script file="src\input\key-bindings.lua"/>
 
   <!-- Junk Filter -->
   <Script file="src\junk-filter\item-filters.lua"/>
