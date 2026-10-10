@@ -32,7 +32,6 @@ local BindingFrame = B.Utils:CreateFrame("Frame", nil, UIParent)
 BindingFrame:EnableKeyboard(false)
 BindingFrame:SetSize(1, 1)
 BindingFrame:SetPoint("CENTER")
-BindingFrame:SetScript("OnKeyDown", function(_, key) Keybindings:ProcessInput(key) end)
 
 -- ============================================================================
 -- Local Functions
@@ -170,6 +169,7 @@ function Keybindings:StartListening(bindingName)
 
   self.listeningBindingName = bindingName
   BindingFrame:EnableKeyboard(true)
+  BindingFrame:SetScript("OnKeyDown", function(_, key) Keybindings:ProcessInput(key) end)
   self.lockTicker:Restart()
 
   Addon:Debug("Keybindings: listening for", bindingName) -- TEMP: debug
@@ -189,9 +189,9 @@ function Keybindings:ProcessInput(input)
   local key = B.Bindings:GetKeyFromInput(input)
   if not key then return end
 
-  self:StopListening()
-
   Addon:Debug("Keybindings: would bind", self.listeningBindingName, key) -- TEMP: debug
+
+  self:StopListening()
 end
 
 --- Stops waiting for an input.
@@ -202,6 +202,7 @@ function Keybindings:StopListening()
 
   self.listeningBindingName = nil
   BindingFrame:EnableKeyboard(false)
+  BindingFrame:SetScript("OnKeyDown", nil)
   self.lockTicker:Cancel()
 end
 
