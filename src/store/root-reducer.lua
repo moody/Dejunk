@@ -92,6 +92,8 @@ function RootReducer:Build()
       inclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_INCLUSIONS, DefaultStates.Global.inclusions),
       exclusions = Wux:CreatePayloadReducer(ActionTypes.Global.SET_EXCLUSIONS, DefaultStates.Global.exclusions),
 
+      keybinds = Wux:CreatePatchReducer(ActionTypes.Global.PATCH_KEYBINDS, DefaultStates.Global.keybinds),
+
       points = Wux:CombineReducers({
         mainWindow = createPointsReducer(
           ActionTypes.Global.SET_MAIN_WINDOW_POINT,

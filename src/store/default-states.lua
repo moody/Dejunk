@@ -72,6 +72,24 @@ DefaultStates.Global = {
   --- @type ItemIdMap
   exclusions = {},
 
+  --- Maps command IDs to keys. An empty string means no key.
+  --- Example: `{ toggleMainWindow = "CTRL-O", ... }`
+  keybinds = {
+    toggleMainWindow = "",
+    toggleJunkFrame = "",
+    toggleLootableFrame = "",
+    startSelling = "",
+    destroyNextItem = "",
+    addToProfileInclusions = "",
+    removeFromProfileInclusions = "",
+    addToProfileExclusions = "",
+    removeFromProfileExclusions = "",
+    addToGlobalInclusions = "",
+    removeFromGlobalInclusions = "",
+    addToGlobalExclusions = "",
+    removeFromGlobalExclusions = ""
+  },
+
   points = {
     mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
