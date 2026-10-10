@@ -72,8 +72,9 @@ DefaultStates.Global = {
   --- @type ItemIdMap
   exclusions = {},
 
-  --- Maps command IDs to keys. An empty string means no key.
+  --- Maps keybind names to keys. An empty string means no key.
   --- Example: `{ toggleMainWindow = "CTRL-O", ... }`
+  --- @enum (key) KeybindName
   keybinds = {
     toggleMainWindow = "",
     toggleJunkFrame = "",
