@@ -88,7 +88,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
   end)
 
   -- Footer.
-  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White })
+  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White, defaultMessage = L.KEYBINDINGS_PRIORITY_NOTE })
   footer:SetOrder(1000) -- Position at the end.
 
   EventManager:On(E.KeybindingListeningChanged, function(bindingName)
