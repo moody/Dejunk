@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
@@ -67,7 +68,17 @@ function ComponentFactory:KeybindingCard(options)
         parent = parent,
         labelText = L.NOT_BOUND,
         labelColor = Colors.Grey,
-        onClick = function(_, mouseButton) options.onClick(mouseButton) end
+        onClick = function(_, mouseButton) options.onClick(mouseButton) end,
+        tooltipAnchor = "ANCHOR_RIGHT",
+
+        --- Shows the binding and its key, or nothing while there is no key.
+        onUpdateTooltip = function(_, tooltip)
+          local key = options.get()
+          if not key then return end
+
+          tooltip:SetText(B.Strings.KEY_BINDING_NAME_AND_KEY_TEXT:format(options.labelText, key))
+          tooltip:AddLine(B.Strings.KEY_BINDING_TOOLTIP_TEXT)
+        end
       })
       button:RegisterForClicks("AnyUp")
 

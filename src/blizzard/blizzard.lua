@@ -74,6 +74,12 @@ B.Strings = {
   --- Prompt shown while a binding waits for a key. Takes the label of the binding and the name of the Escape key.
   ASSIGN_KEY_PROMPT_TEXT = getGlobal("SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL"),
 
+  --- Title of the tooltip of a bound key. Takes the label of the binding and the text of the key.
+  KEY_BINDING_NAME_AND_KEY_TEXT = getGlobal("KEY_BINDING_NAME_AND_KEY"),
+
+  --- Hint shown in the tooltip of a bound key.
+  KEY_BINDING_TOOLTIP_TEXT = getGlobal("KEY_BINDING_TOOLTIP"),
+
   --- Message shown after a key is bound.
   KEY_BOUND_TEXT = getGlobal("KEY_BOUND"),
 
