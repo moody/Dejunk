@@ -87,6 +87,7 @@ function ComponentFactory:KeybindingCard(options)
         local key = options.get()
         button.label:SetText(key or L.NOT_BOUND)
         button:SetLabelColor(key and Colors.White or Colors.Grey)
+        if button:GetEventValue("HOVERED") then button:UpdateTooltip() end
       end
 
       EventManager:On(E.StateUpdated, refresh)
