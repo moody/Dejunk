@@ -22,6 +22,7 @@ local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
 local CreateFrame = getGlobal("CreateFrame")
 local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
 local GameTooltip = getGlobal("GameTooltip")
+local GetBindingText = getGlobal("GetBindingText")
 local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
 local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
 local InCombatLockdown = getGlobal("InCombatLockdown")
@@ -70,6 +71,15 @@ B.Strings = {
   --- Label of the No button.
   NO_TEXT = getGlobal("NO"),
 
+  --- Prompt shown while a binding waits for a key. Takes the label of the binding and the name of the Escape key.
+  ASSIGN_KEY_PROMPT_TEXT = getGlobal("SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL"),
+
+  --- Message shown after a key is bound.
+  KEY_BOUND_TEXT = getGlobal("KEY_BOUND"),
+
+  --- Message shown when a key is taken from another binding. Takes the label of that binding.
+  KEY_UNBOUND_ERROR_TEXT = getGlobal("KEY_UNBOUND_ERROR"),
+
   --- Error message shown when a vendor does not buy an item.
   VENDOR_DOESNT_BUY_ERROR_TEXT = getGlobal("ERR_VENDOR_DOESNT_BUY"),
 }
@@ -104,6 +114,13 @@ function B.Bindings:GetKeyFromInput(input)
   local key = GetConvertedKeyOrButton(input)
   if IsKeyPressIgnoredForBinding(key) then return nil end
   return CreateKeyChordStringUsingMetaKeyState(key)
+end
+
+--- Returns the text the game shows for a key.
+--- @param key string
+--- @return string text
+function B.Bindings:GetKeyText(key)
+  return GetBindingText(key)
 end
 
 -- =============================================================================

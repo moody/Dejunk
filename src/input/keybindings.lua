@@ -137,6 +137,7 @@ function Keybindings:SetKey(bindingName, key)
   end
 
   StateManager:Dispatch(ActionCreators.Global.patchKeybindings(patch))
+  EventManager:Fire(E.KeybindingBound, bindingName, key, replacedBindingName)
   return replacedBindingName
 end
 
@@ -172,8 +173,6 @@ function Keybindings:StartListening(bindingName)
   BindingFrame:EnableKeyboard(true)
   BindingFrame:SetScript("OnKeyDown", function(_, key) Keybindings:ProcessInput(key) end)
   self.lockTicker:Restart()
-
-  Addon:Debug("Keybindings: listening for", bindingName) -- TEMP: debug
 end
 
 --- Binds the input to the binding waiting for a key, then stops listening.
@@ -190,16 +189,13 @@ function Keybindings:ProcessInput(input)
   local key = B.Bindings:GetKeyFromInput(input)
   if not key then return end
 
-  Addon:Debug("Keybindings: would bind", self.listeningBindingName, key) -- TEMP: debug
-
+  self:SetKey(self.listeningBindingName, key)
   self:StopListening()
 end
 
 --- Stops waiting for an input.
 function Keybindings:StopListening()
   if not self.listeningBindingName then return end
-
-  Addon:Debug("Keybindings: stopped listening for", self.listeningBindingName) -- TEMP: debug
 
   self.listeningBindingName = nil
   EventManager:Fire(E.KeybindingListeningChanged, nil)
