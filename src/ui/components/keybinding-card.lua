@@ -17,6 +17,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field descriptionText? string Shown in grey below the label.
 --- @field get fun(): string? Returns the bound key, or `nil` while there is none.
 --- @field set fun(key: string?) Called with the key the user chose, or `nil` to clear it.
+--- @field isListening fun(): boolean Returns whether the card's binding is waiting for a key.
+--- @field onClick fun(mouseButton: string) Called when the button is clicked.
 
 -- =============================================================================
 -- ComponentFactory - KeybindingCard
@@ -65,7 +67,8 @@ function ComponentFactory:KeybindingCard(options)
       local button = Widgets:Button({
         parent = parent,
         labelText = L.NOT_BOUND,
-        labelColor = Colors.Grey
+        labelColor = Colors.Grey,
+        onClick = function(_, mouseButton) options.onClick(mouseButton) end
       })
 
       --- Shows the key, or that there is none.
@@ -74,6 +77,9 @@ function ComponentFactory:KeybindingCard(options)
       end
 
       EventManager:On(E.StateUpdated, refresh)
+      EventManager:On(E.KeybindingListeningChanged, function()
+        button:FireEvent("FOCUSED", options.isListening())
+      end)
       refresh()
 
       return button

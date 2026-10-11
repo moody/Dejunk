@@ -33,6 +33,16 @@ local function addKeybindingCard(group, bindingName, labelText, descriptionText)
       else
         Keybindings:RemoveKey(bindingName)
       end
+    end,
+    isListening = function()
+      return Keybindings:GetListeningBindingName() == bindingName
+    end,
+    onClick = function()
+      if Keybindings:GetListeningBindingName() == bindingName then
+        Keybindings:StopListening()
+      else
+        Keybindings:StartListening(bindingName)
+      end
     end
   })
 end
@@ -51,6 +61,8 @@ function MainWindowOptions:CreateKeybindingsPanel()
 
   -- Disable and dim the panel while keybindings cannot be changed.
   panel:WhenFrameReady(function(frame)
+    frame:HookScript("OnHide", function() Keybindings:StopListening() end)
+
     local wasLocked = false -- TEMP: debug
 
     TickerManager:NewTicker(0.1, function()

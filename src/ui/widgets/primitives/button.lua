@@ -22,9 +22,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return ButtonWidget frame
 function Widgets:Button(options)
   -- Defaults.
-  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Button"))
+  options.name = options.name or Widgets:GetUniqueName("Button")
   options.frameType = "Button"
-  options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
+  options.labelColor = options.labelColor or Colors.Gold
 
   ---@class ButtonWidget : FrameWidget, Button
   local frame = self:Frame(options)
@@ -49,13 +49,13 @@ function Widgets:Button(options)
     if self.onClick then self.onClick(self, button) end
   end)
 
-  --- Colors the button as disabled, highlighted, or normal.
+  --- Colors the button as disabled, highlighted while hovered or focused, or normal.
   local function refresh()
     if not frame:GetEventValue("ENABLED") then
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
       frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
       frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
-    elseif frame:GetEventValue("HOVERED") then
+    elseif frame:GetEventValue("HOVERED") or frame:GetEventValue("FOCUSED") then
       frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
       frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
       frame.label:SetTextColor(Colors.White:GetRGBA(1))
@@ -67,6 +67,12 @@ function Widgets:Button(options)
   end
   frame:OnEvent("HOVERED", refresh)
   frame:OnEvent("ENABLED", refresh)
+
+  local originalColor = options.labelColor
+  frame:OnEvent("FOCUSED", function(isFocused)
+    options.labelColor = isFocused and Colors.Yellow or originalColor
+    refresh()
+  end)
 
   return frame
 end

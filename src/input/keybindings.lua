@@ -168,6 +168,7 @@ function Keybindings:StartListening(bindingName)
   self:StopListening()
 
   self.listeningBindingName = bindingName
+  EventManager:Fire(E.KeybindingListeningChanged, bindingName)
   BindingFrame:EnableKeyboard(true)
   BindingFrame:SetScript("OnKeyDown", function(_, key) Keybindings:ProcessInput(key) end)
   self.lockTicker:Restart()
@@ -201,6 +202,7 @@ function Keybindings:StopListening()
   Addon:Debug("Keybindings: stopped listening for", self.listeningBindingName) -- TEMP: debug
 
   self.listeningBindingName = nil
+  EventManager:Fire(E.KeybindingListeningChanged, nil)
   BindingFrame:EnableKeyboard(false)
   BindingFrame:SetScript("OnKeyDown", nil)
   self.lockTicker:Cancel()
@@ -213,10 +215,11 @@ end
 --- The saved keybindings as of the last refresh.
 local keybindings
 
--- Refresh when the saved keys change, which includes the first update after login.
+-- Stop listening and refresh when the saved keys change, which includes the first update after login.
 EventManager:On(E.StateUpdated, function(state)
   if state.global.keybindings ~= keybindings then
     keybindings = state.global.keybindings
+    Keybindings:StopListening()
     Keybindings:Refresh()
   end
 end)
