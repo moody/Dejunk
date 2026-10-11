@@ -86,22 +86,6 @@ function Controller:PreloadScreens()
   self:SelectSidebarRow("LISTS")
 end
 
-function Controller:OpenKeybindings()
-  CloseMenus()
-  CloseAllWindows()
-
-  -- See: https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_SettingsDefinitions_Frame/PingSystem.lua#L76
-  local keybindsCategory = SettingsPanel:GetCategory(Settings.KEYBINDINGS_CATEGORY_ID)
-  local keybindsLayout = SettingsPanel:GetLayout(keybindsCategory)
-  for _, initializer in keybindsLayout:EnumerateInitializers() do
-    if initializer:GetName() == BINDING_CATEGORY_DEJUNK then
-      initializer.data.expanded = true
-      Settings.OpenToCategory(Settings.KEYBINDINGS_CATEGORY_ID, BINDING_CATEGORY_DEJUNK)
-      return
-    end
-  end
-end
-
 -- ============================================================================
 -- Root Component
 -- ============================================================================
@@ -157,21 +141,7 @@ Components.TitleBarVersionText:AddChild({
 
 Components.TitleBarButtonsRow = Components.Root.TitleRow:AddRow({ justify = "END" })
 
--- Keybinds button.
-Components.TitleBarButtonsRow:AttachComponent(
-  ComponentFactory:IconButton({
-    name = "$parent_KeybindsButton",
-    icon = Addon:GetAsset("keyboard-icon"),
-    iconSize = 18,
-    highlightColor = Colors.Blue,
-    onClick = function() Controller:OpenKeybindings() end,
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(L.KEYBINDS)
-    end
-  })
-)
-
--- Reuse Window()'s close button, just moved into this row alongside the others.
+-- Reuse Window()'s close button, just moved into this row.
 Components.TitleBarButtonsRow:AttachComponent(Components.Root.CloseButton:Detach())
 
 -- ============================================================================
@@ -337,7 +307,7 @@ Controller:AddSidebarRow({
 
 Controller:AddSidebarRow({
   key = "KEYBINDINGS",
-  labelText = L.KEYBINDS,
+  labelText = L.KEYBINDINGS,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateKeybindingsPanel()) end
 })
 

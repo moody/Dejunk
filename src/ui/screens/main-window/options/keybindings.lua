@@ -67,7 +67,7 @@ end
 --- @return TitledPanelComponent panel
 function MainWindowOptions:CreateKeybindingsPanel()
   local panel, container = OptionsBuilder:CreatePanel({
-    titleText = Colors.Blue(L.KEYBINDS),
+    titleText = Colors.Blue(L.KEYBINDINGS),
     titleJustify = "LEFT",
     interceptMouseWheel = function(delta)
       if not Keybindings:GetListeningBindingName() then return false end
