@@ -70,6 +70,7 @@ function ComponentFactory:KeybindingCard(options)
         labelColor = Colors.Grey,
         onClick = function(_, mouseButton) options.onClick(mouseButton) end
       })
+      button:RegisterForClicks("AnyUp")
 
       --- Shows the key, or that there is none.
       local function refresh()

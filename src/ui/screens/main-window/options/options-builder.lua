@@ -16,6 +16,7 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 
 --- @class OptionsBuilderPanelOptions : TitledPanelComponentOptions
 --- @field descriptionText? string Small grey text above the first group, followed by a divider.
+--- @field interceptMouseWheel? fun(delta: number): boolean Called first on each wheel notch over the panel. Return `true` to take the notch so the panel does not scroll.
 
 --- @class OptionsBuilderTextOptions
 --- @field labelText string Option name.
@@ -231,7 +232,7 @@ end
 --- @return WaffleFlexComponent content Component the panel's rows are added to.
 function OptionsBuilder:CreatePanel(options)
   local panel = ComponentFactory:TitledPanel(options)
-  local scrollPanel = panel.Content:AttachComponent(ComponentFactory:ScrollPanel())
+  local scrollPanel = panel.Content:AttachComponent(ComponentFactory:ScrollPanel({ interceptMouseWheel = options.interceptMouseWheel }))
   local content = scrollPanel.ScrollChild
   content:SetGap(Widgets:Padding())
 

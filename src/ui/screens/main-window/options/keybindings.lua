@@ -37,11 +37,15 @@ local function addKeybindingCard(group, bindingName, labelText, descriptionText)
     isListening = function()
       return Keybindings:GetListeningBindingName() == bindingName
     end,
-    onClick = function()
-      if Keybindings:GetListeningBindingName() == bindingName then
-        Keybindings:StopListening()
-      else
-        Keybindings:StartListening(bindingName)
+    onClick = function(mouseButton)
+      if mouseButton == "LeftButton" then
+        if Keybindings:GetListeningBindingName() == bindingName then
+          Keybindings:StopListening()
+        else
+          Keybindings:StartListening(bindingName)
+        end
+      elseif mouseButton ~= "RightButton" then
+        Keybindings:ProcessInput(mouseButton)
       end
     end
   })
@@ -56,7 +60,12 @@ end
 function MainWindowOptions:CreateKeybindingsPanel()
   local panel, container = OptionsBuilder:CreatePanel({
     titleText = Colors.Blue(L.KEYBINDS),
-    titleJustify = "LEFT"
+    titleJustify = "LEFT",
+    interceptMouseWheel = function(delta)
+      if not Keybindings:GetListeningBindingName() then return false end
+      Keybindings:ProcessInput(delta > 0 and "MOUSEWHEELUP" or "MOUSEWHEELDOWN")
+      return true
+    end
   })
 
   -- Disable and dim the panel while keybindings cannot be changed.

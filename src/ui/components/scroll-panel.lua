@@ -6,6 +6,13 @@ local Widgets = Addon:GetModule("Widgets")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
 -- =============================================================================
+-- LuaCATS Annotations
+-- =============================================================================
+
+--- @class ScrollPanelComponentOptions
+--- @field interceptMouseWheel? fun(delta: number): boolean Called first on each wheel notch. Return `true` to take the notch so the panel does not scroll.
+
+-- =============================================================================
 -- Local Functions
 -- =============================================================================
 
@@ -29,8 +36,10 @@ end
 
 --- Creates a vertically scrollable Waffle region. Its slider only shows when
 --- the content actually overflows the viewport.
+--- @param options? ScrollPanelComponentOptions
 --- @return ScrollPanelComponent root
-function ComponentFactory:ScrollPanel()
+function ComponentFactory:ScrollPanel(options)
+  options = options or {}
   local Components = {}
 
   ------------------------------------------------------------
@@ -82,6 +91,8 @@ function ComponentFactory:ScrollPanel()
       frame:SetBackdropBorderColor(0, 0, 0, 0)
       frame:EnableMouseWheel(true)
       frame:SetScript("OnMouseWheel", function(_, delta)
+        if options.interceptMouseWheel and options.interceptMouseWheel(delta) then return end
+
         local _, max = slider:GetMinMaxValues()
         -- An eighth of the range, from a third of WHEEL_STEP up to WHEEL_STEP.
         local step = Clamp(max / 8, WHEEL_STEP / 3, WHEEL_STEP)
