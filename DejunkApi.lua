@@ -15,6 +15,31 @@ local function notifyListeners(event)
   end
 end
 
+--- Results of `DejunkApi:IsJunk()` by `bagId * 1000 + slotId`.
+--- @type table<integer, boolean>
+local cachedResults = {}
+
+--- IDs of the items that the cached results are for, by the same keys.
+--- @type table<integer, integer>
+local cachedItemIds = {}
+
+local cacheClearedTime = 0
+
+local function clearCache()
+  for k in pairs(cachedResults) do cachedResults[k] = nil end
+  for k in pairs(cachedItemIds) do cachedItemIds[k] = nil end
+  cacheClearedTime = GetTime()
+end
+
+-- Clear the cache when anything that decides it changes.
+EventManager:On(E.Wow.BagUpdate, clearCache)
+EventManager:On(E.Wow.BagUpdateDelayed, clearCache)
+EventManager:On(E.Wow.EquipmentSetsChanged, clearCache)
+EventManager:On(E.Wow.ItemLocked, clearCache)
+EventManager:On(E.Wow.ItemUnlocked, clearCache)
+EventManager:On(E.BagsUpdated, clearCache)
+EventManager:On(E.StateUpdated, clearCache)
+
 -- Register events to notify listeners.
 EventManager:Once(E.StoreCreated, function()
   EventManager:On(E.BagsUpdated, function() notifyListeners(DejunkApi.Events.BagsUpdated) end)
@@ -55,6 +80,19 @@ end
 --- @return boolean isJunk
 function DejunkApi:IsJunk(bagId, slotId)
   if StateManager:GetStore() == nil then return false end
+
+  -- Clear the cache if at least 1 second has passed.
+  if GetTime() - cacheClearedTime >= 1 then clearCache() end
+
+  -- Use the cached result while the slot still holds the same item.
+  local key = bagId * 1000 + slotId
+  local itemId = C_Container.GetContainerItemID(bagId, slotId)
+  if itemId and cachedItemIds[key] == itemId then return cachedResults[key] end
+  cachedItemIds[key] = itemId
+
   local item = Items:GetFreshItem(bagId, slotId)
-  return item and JunkFilter:IsJunkItem(item) or false
+  local isJunk = item and JunkFilter:IsJunkItem(item) or false
+  cachedResults[key] = isJunk
+
+  return isJunk
 end

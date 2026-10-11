@@ -191,13 +191,26 @@ end)
 -- Bags
 -- ============================================================================
 
---- Creates a new `BagItem` for the given `bag` and `slot`.
---- @param bag integer
---- @param slot integer
---- @return BagItem? item
-function Items:GetFreshItem(bag, slot)
-  EquipmentSetsCache:Refresh()
-  return getItem(bag, slot)
+-- Items:GetFreshItem()
+do
+  --- @type number?
+  local lastRefreshTime
+
+  --- Creates a new `BagItem` for the given `bag` and `slot`.
+  --- @param bag integer
+  --- @param slot integer
+  --- @return BagItem? item
+  function Items:GetFreshItem(bag, slot)
+    local now = GetTime()
+
+    -- Refresh equipment sets once per frame.
+    if now ~= lastRefreshTime then
+      lastRefreshTime = now
+      EquipmentSetsCache:Refresh()
+    end
+
+    return getItem(bag, slot)
+  end
 end
 
 --- Returns a cached `BagItem` for the given `bag` and `slot`, if available.
