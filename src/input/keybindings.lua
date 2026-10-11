@@ -211,7 +211,7 @@ end
 --- The saved keybindings as of the last refresh.
 local keybindings
 
--- Stop listening and refresh when the saved keys change, which includes the first update after login.
+-- Stop listening and refresh when the saved keys change, including the first update after login.
 EventManager:On(E.StateUpdated, function(state)
   if state.global.keybindings ~= keybindings then
     keybindings = state.global.keybindings

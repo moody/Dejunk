@@ -10,7 +10,7 @@ local Widgets = Addon:GetModule("Widgets")
 
 --- @class ButtonWidgetOptions : FrameWidgetOptions
 --- @field labelText string
---- @field labelColor? Color
+--- @field labelColor? Color Defaults to `Colors.Gold`.
 --- @field onClick? fun(self: ButtonWidget, button: string)
 
 -- =============================================================================
@@ -49,6 +49,9 @@ function Widgets:Button(options)
     if self.onClick then self.onClick(self, button) end
   end)
 
+  --- @type Color
+  local labelColor = options.labelColor
+
   --- Colors the button as disabled, highlighted while hovered or focused, or normal.
   local function refresh()
     if not frame:GetEventValue("ENABLED") then
@@ -56,23 +59,27 @@ function Widgets:Button(options)
       frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
       frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
     elseif frame:GetEventValue("HOVERED") or frame:GetEventValue("FOCUSED") then
-      frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
-      frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
+      --- @type Color
+      local highlightColor = frame:GetEventValue("FOCUSED") and Colors.Yellow or labelColor
+      frame:SetBackdropColor(highlightColor:GetRGBA(0.25))
+      frame:SetBackdropBorderColor(highlightColor:GetRGBA(1))
       frame.label:SetTextColor(Colors.White:GetRGBA(1))
     else
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
       frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-      frame.label:SetTextColor(options.labelColor:GetRGBA(1))
+      frame.label:SetTextColor(labelColor:GetRGBA(1))
     end
   end
   frame:OnEvent("HOVERED", refresh)
   frame:OnEvent("ENABLED", refresh)
+  frame:OnEvent("FOCUSED", refresh)
 
-  local originalColor = options.labelColor
-  frame:OnEvent("FOCUSED", function(isFocused)
-    options.labelColor = isFocused and Colors.Yellow or originalColor
+  --- Sets the label color.
+  --- @param color Color
+  function frame:SetLabelColor(color)
+    labelColor = color
     refresh()
-  end)
+  end
 
   return frame
 end

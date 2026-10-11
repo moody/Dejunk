@@ -15,7 +15,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @class KeybindingCardOptions
 --- @field labelText string Label of the binding.
 --- @field descriptionText? string Shown in grey below the label.
---- @field get fun(): string? Returns the bound key, or `nil` while there is none.
+--- @field get fun(): string? Returns the text of the bound key, or `nil` while there is none.
 --- @field isListening fun(): boolean Returns whether the card's binding is waiting for a key.
 --- @field onClick fun(mouseButton: string) Called when the button is clicked.
 
@@ -71,9 +71,11 @@ function ComponentFactory:KeybindingCard(options)
       })
       button:RegisterForClicks("AnyUp")
 
-      --- Shows the key, or that there is none.
+      --- Shows the key in white, or that there is none in grey.
       local function refresh()
-        button.label:SetText(options.get() or L.NOT_BOUND)
+        local key = options.get()
+        button.label:SetText(key or L.NOT_BOUND)
+        button:SetLabelColor(key and Colors.White or Colors.Grey)
       end
 
       EventManager:On(E.StateUpdated, refresh)

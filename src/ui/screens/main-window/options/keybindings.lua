@@ -76,7 +76,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
     end
   })
 
-  -- Disable and dim the panel while keybindings cannot be changed.
+  -- Stop listening when hidden. Disable and dim the panel while keybindings cannot be changed.
   panel:WhenFrameReady(function(frame)
     frame:HookScript("OnHide", function() Keybindings:StopListening() end)
 
@@ -88,13 +88,13 @@ function MainWindowOptions:CreateKeybindingsPanel()
   end)
 
   -- Footer.
-  local footer = OptionsBuilder:AddMessageFooter(panel)
+  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White })
   footer:SetOrder(1000) -- Position at the end.
 
   EventManager:On(E.KeybindingListeningChanged, function(bindingName)
     footer:SetMessage(
       bindingName and
-      Colors.White(B.Strings.ASSIGN_KEY_PROMPT_TEXT:format(labels[bindingName], B.Bindings:GetKeyText("ESCAPE")))
+      B.Strings.ASSIGN_KEY_PROMPT_TEXT:format(labels[bindingName], B.Bindings:GetKeyText("ESCAPE"))
       or nil
     )
   end)
@@ -102,7 +102,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
   EventManager:On(E.KeybindingBound, function(_, _, replacedBindingName)
     footer:SetMessage(replacedBindingName
       and Colors.Red(B.Strings.KEY_UNBOUND_ERROR_TEXT:format(labels[replacedBindingName]))
-      or Colors.White(B.Strings.KEY_BOUND_TEXT))
+      or B.Strings.KEY_BOUND_TEXT)
   end)
 
   -- Windows.

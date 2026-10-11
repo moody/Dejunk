@@ -18,6 +18,10 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @field descriptionText? string Small grey text above the first group, followed by a divider.
 --- @field interceptMouseWheel? fun(delta: number): boolean Called first on each wheel notch over the panel. Return `true` to take the notch so the panel does not scroll.
 
+--- @class OptionsBuilderMessageFooterOptions
+--- @field fontObject? string Font of the message. Defaults to `GameFontNormal`.
+--- @field color? Color Default color of the message. Defaults to `Colors.Grey`.
+
 --- @class OptionsBuilderTextOptions
 --- @field labelText string Option name.
 --- @field descriptionText string Shown in grey below the label.
@@ -328,8 +332,11 @@ end
 --- Adds a footer below `panel`'s scroll panel, under a divider, that shows a centered message. It is hidden
 --- until a message is set.
 --- @param panel TitledPanelComponent
+--- @param options? OptionsBuilderMessageFooterOptions
 --- @return OptionsBuilderMessageFooter footer
-function OptionsBuilder:AddMessageFooter(panel)
+function OptionsBuilder:AddMessageFooter(panel, options)
+  options = options or {}
+
   --- @class OptionsBuilderMessageFooter : WaffleFlexComponent
   local footer = panel.Content:AttachComponent(Addon.Waffle:Flex({
     direction = "COLUMN",
@@ -343,8 +350,8 @@ function OptionsBuilder:AddMessageFooter(panel)
 
   local text = footer:AttachComponent(ComponentFactory:Text({
     text = "",
-    fontObject = "GameFontNormalSmall",
-    color = Colors.Grey,
+    fontObject = options.fontObject or "GameFontNormal",
+    color = options.color or Colors.Grey,
     justifyH = "CENTER"
   }))
 
