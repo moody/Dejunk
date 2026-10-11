@@ -137,7 +137,7 @@ function Keybindings:SetKey(bindingName, key)
   end
 
   StateManager:Dispatch(ActionCreators.Global.patchKeybindings(patch))
-  EventManager:Fire(E.KeybindingBound, bindingName, key, replacedBindingName)
+  EventManager:Fire(E.KeybindingBound, bindingName, key, replacedBindingName, B.Bindings:GetGameBindingName(key))
   return replacedBindingName
 end
 

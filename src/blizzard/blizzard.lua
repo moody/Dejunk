@@ -22,6 +22,8 @@ local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
 local CreateFrame = getGlobal("CreateFrame")
 local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
 local GameTooltip = getGlobal("GameTooltip")
+local GetBindingAction = getGlobal("GetBindingAction")
+local GetBindingName = getGlobal("GetBindingName")
 local GetBindingText = getGlobal("GetBindingText")
 local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
 local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
@@ -120,6 +122,15 @@ function B.Bindings:GetKeyFromInput(input)
   local key = GetConvertedKeyOrButton(input)
   if IsKeyPressIgnoredForBinding(key) then return nil end
   return CreateKeyChordStringUsingMetaKeyState(key)
+end
+
+--- Returns the name of the game's own binding that uses `key`, or `nil` if none
+--- does. Override bindings are not included.
+--- @param key string
+--- @return string? name
+function B.Bindings:GetGameBindingName(key)
+  local action = GetBindingAction(key)
+  if action ~= "" then return GetBindingName(action) end
 end
 
 --- Returns the text the game shows for a key.

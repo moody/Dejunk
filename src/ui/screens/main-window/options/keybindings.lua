@@ -94,15 +94,33 @@ function MainWindowOptions:CreateKeybindingsPanel()
   EventManager:On(E.KeybindingListeningChanged, function(bindingName)
     footer:SetMessage(
       bindingName and
-      B.Strings.ASSIGN_KEY_PROMPT_TEXT:format(labels[bindingName], B.Bindings:GetKeyText("ESCAPE"))
+      Colors.Gold(
+        B.Strings.ASSIGN_KEY_PROMPT_TEXT:format(
+          Colors.White(labels[bindingName]),
+          Colors.White(B.Bindings:GetKeyText("ESCAPE"))
+        )
+      )
       or nil
     )
   end)
 
-  EventManager:On(E.KeybindingBound, function(_, _, replacedBindingName)
-    footer:SetMessage(replacedBindingName
-      and Colors.Red(B.Strings.KEY_UNBOUND_ERROR_TEXT:format(labels[replacedBindingName]))
-      or B.Strings.KEY_BOUND_TEXT)
+  EventManager:On(E.KeybindingBound, function(_, key, replacedBindingName, gameBindingName)
+    local lines = {}
+
+    if replacedBindingName then
+      lines[#lines + 1] = Colors.Red(B.Strings.KEY_UNBOUND_ERROR_TEXT:format(Colors.White(labels[replacedBindingName])))
+    end
+
+    if gameBindingName then
+      lines[#lines + 1] = Colors.Gold(
+        L.KEY_ALSO_USED_BY_GAME:format(
+          Colors.White(B.Bindings:GetKeyText(key)),
+          Colors.White(gameBindingName)
+        )
+      )
+    end
+
+    footer:SetMessage(#lines > 0 and table.concat(lines, "|n") or B.Strings.KEY_BOUND_TEXT)
   end)
 
   -- Windows.
