@@ -10,7 +10,7 @@ local Widgets = Addon:GetModule("Widgets")
 
 --- @class ButtonWidgetOptions : FrameWidgetOptions
 --- @field labelText string
---- @field labelColor? Color Defaults to `Colors.Gold`.
+--- @field labelColor? Color
 --- @field onClick? fun(self: ButtonWidget, button: string)
 
 -- =============================================================================
@@ -22,9 +22,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @return ButtonWidget frame
 function Widgets:Button(options)
   -- Defaults.
-  options.name = options.name or Widgets:GetUniqueName("Button")
+  options.name = Addon:IfNil(options.name, Widgets:GetUniqueName("Button"))
   options.frameType = "Button"
-  options.labelColor = options.labelColor or Colors.Gold
+  options.labelColor = Addon:IfNil(options.labelColor, Colors.Gold)
 
   ---@class ButtonWidget : FrameWidget, Button
   local frame = self:Frame(options)
@@ -49,37 +49,24 @@ function Widgets:Button(options)
     if self.onClick then self.onClick(self, button) end
   end)
 
-  --- @type Color
-  local labelColor = options.labelColor
-
-  --- Colors the button as disabled, highlighted while hovered or focused, or normal.
+  --- Colors the button as disabled, highlighted, or normal.
   local function refresh()
     if not frame:GetEventValue("ENABLED") then
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.5))
       frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
       frame.label:SetTextColor(Colors.Grey:GetRGBA(0.75))
-    elseif frame:GetEventValue("HOVERED") or frame:GetEventValue("FOCUSED") then
-      --- @type Color
-      local highlightColor = frame:GetEventValue("FOCUSED") and Colors.Yellow or labelColor
-      frame:SetBackdropColor(highlightColor:GetRGBA(0.25))
-      frame:SetBackdropBorderColor(highlightColor:GetRGBA(1))
+    elseif frame:GetEventValue("HOVERED") then
+      frame:SetBackdropColor(options.labelColor:GetRGBA(0.25))
+      frame:SetBackdropBorderColor(options.labelColor:GetRGBA(1))
       frame.label:SetTextColor(Colors.White:GetRGBA(1))
     else
       frame:SetBackdropColor(Colors.DarkGrey:GetRGBA(0.75))
       frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
-      frame.label:SetTextColor(labelColor:GetRGBA(1))
+      frame.label:SetTextColor(options.labelColor:GetRGBA(1))
     end
   end
   frame:OnEvent("HOVERED", refresh)
   frame:OnEvent("ENABLED", refresh)
-  frame:OnEvent("FOCUSED", refresh)
-
-  --- Sets the label color.
-  --- @param color Color
-  function frame:SetLabelColor(color)
-    labelColor = color
-    refresh()
-  end
 
   return frame
 end
