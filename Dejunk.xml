@@ -127,9 +127,7 @@
 
   <!-- UI Blizzard -->
   <Script file="src\ui\blizzard\addon-category.lua"/>
-
-  <!-- Bindings -->
-  <Script file="Bindings.lua"/>
+  <Script file="src\ui\blizzard\addon-compartment.lua"/>
 
   <!-- Dejunk API -->
   <Script file="DejunkApi.lua"/>
