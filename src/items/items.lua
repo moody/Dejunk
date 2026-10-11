@@ -14,7 +14,7 @@ local TickerManager = Addon:GetModule("TickerManager")
 local Items = Addon:GetModule("Items")
 Items.location = ItemLocation:CreateEmpty()
 
---- @type table<string, BagItem>
+--- @type table<integer, BagItem>
 local bagItemCache = {}
 
 -- ============================================================================
@@ -26,7 +26,7 @@ local bagItemCache = {}
 --- @param slot integer
 --- @return BagItem
 local function getCachedItem(bag, slot)
-  return bagItemCache[bag .. "," .. slot]
+  return bagItemCache[Items:GetSlotKey(bag, slot)]
 end
 
 --- Sets the item for the `bag` and `slot` in the cache.
@@ -34,7 +34,7 @@ end
 --- @param slot integer
 --- @param item BagItem|nil
 local function setCachedItem(bag, slot, item)
-  bagItemCache[bag .. "," .. slot] = item
+  bagItemCache[Items:GetSlotKey(bag, slot)] = item
 end
 
 local getContainerItem
@@ -190,6 +190,14 @@ end)
 -- ============================================================================
 -- Bags
 -- ============================================================================
+
+--- Returns an integer that identifies the given `bag` and `slot`, for use as a table key.
+--- @param bag integer
+--- @param slot integer
+--- @return integer key
+function Items:GetSlotKey(bag, slot)
+  return bag * 1000 + slot
+end
 
 -- Items:GetFreshItem()
 do

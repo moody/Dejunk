@@ -15,7 +15,7 @@ local function notifyListeners(event)
   end
 end
 
---- Results of `DejunkApi:IsJunk()` by `bagId * 1000 + slotId`.
+--- Results of `DejunkApi:IsJunk()` by `Items:GetSlotKey()`.
 --- @type table<integer, boolean>
 local cachedResults = {}
 
@@ -85,7 +85,7 @@ function DejunkApi:IsJunk(bagId, slotId)
   if GetTime() - cacheClearedTime >= 1 then clearCache() end
 
   -- Use the cached result while the slot still holds the same item.
-  local key = bagId * 1000 + slotId
+  local key = Items:GetSlotKey(bagId, slotId)
   local itemId = C_Container.GetContainerItemID(bagId, slotId)
   if itemId and cachedItemIds[key] == itemId then return cachedResults[key] end
   cachedItemIds[key] = itemId
