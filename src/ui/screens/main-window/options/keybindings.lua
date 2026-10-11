@@ -76,9 +76,16 @@ function MainWindowOptions:CreateKeybindingsPanel()
     end
   })
 
-  -- Stop listening when hidden. Disable and dim the panel while keybindings cannot be changed.
+  -- Footer.
+  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White, defaultMessage = L.KEYBINDINGS_PRIORITY_NOTE })
+  footer:SetOrder(1000) -- Position at the end.
+
+  -- Stop listening and reset the footer when hidden. Disable and dim the panel while keybindings cannot be changed.
   panel:WhenFrameReady(function(frame)
-    frame:HookScript("OnHide", function() Keybindings:StopListening() end)
+    frame:HookScript("OnHide", function()
+      Keybindings:StopListening()
+      footer:SetMessage(nil)
+    end)
 
     TickerManager:NewTicker(0.1, function()
       local isLocked = Keybindings:IsLocked()
@@ -86,10 +93,6 @@ function MainWindowOptions:CreateKeybindingsPanel()
       frame:SetAlpha(isLocked and 0.5 or 1)
     end):BindFrame(frame)
   end)
-
-  -- Footer.
-  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White, defaultMessage = L.KEYBINDINGS_PRIORITY_NOTE })
-  footer:SetOrder(1000) -- Position at the end.
 
   EventManager:On(E.KeybindingListeningChanged, function(bindingName)
     footer:SetMessage(
