@@ -9,6 +9,9 @@ DefaultStates.CURRENT_VERSION = 2
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
+--- Saved in place of a key when a binding has none.
+DefaultStates.UNBOUND_KEY = ""
+
 -- ============================================================================
 -- LuaCATS Annotations
 -- ============================================================================
@@ -71,6 +74,25 @@ DefaultStates.Global = {
   inclusions = {},
   --- @type ItemIdMap
   exclusions = {},
+
+  --- Maps binding names to keys.
+  --- Example: `{ toggleMainWindow = "CTRL-O", ... }`
+  --- @enum (key) BindingName
+  keybindings = {
+    toggleMainWindow = DefaultStates.UNBOUND_KEY,
+    toggleJunkFrame = DefaultStates.UNBOUND_KEY,
+    toggleLootableFrame = DefaultStates.UNBOUND_KEY,
+    startSelling = DefaultStates.UNBOUND_KEY,
+    destroyNextItem = DefaultStates.UNBOUND_KEY,
+    addToProfileInclusions = DefaultStates.UNBOUND_KEY,
+    removeFromProfileInclusions = DefaultStates.UNBOUND_KEY,
+    addToProfileExclusions = DefaultStates.UNBOUND_KEY,
+    removeFromProfileExclusions = DefaultStates.UNBOUND_KEY,
+    addToGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    removeFromGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    addToGlobalExclusions = DefaultStates.UNBOUND_KEY,
+    removeFromGlobalExclusions = DefaultStates.UNBOUND_KEY
+  },
 
   points = {
     mainWindow = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },

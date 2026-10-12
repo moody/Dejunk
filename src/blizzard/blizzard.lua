@@ -15,6 +15,23 @@ local function getGlobal(name)
 end
 
 -- =============================================================================
+-- Globals
+-- =============================================================================
+
+local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
+local CreateFrame = getGlobal("CreateFrame")
+local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
+local GameTooltip = getGlobal("GameTooltip")
+local GetBindingAction = getGlobal("GetBindingAction")
+local GetBindingName = getGlobal("GetBindingName")
+local GetBindingText = getGlobal("GetBindingText")
+local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
+local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
+local InCombatLockdown = getGlobal("InCombatLockdown")
+local IsKeyPressIgnoredForBinding = getGlobal("IsKeyPressIgnoredForBinding")
+local SetOverrideBindingClick = getGlobal("SetOverrideBindingClick")
+
+-- =============================================================================
 -- Blizzard - Strings
 -- =============================================================================
 
@@ -56,6 +73,109 @@ B.Strings = {
   --- Label of the No button.
   NO_TEXT = getGlobal("NO"),
 
+  --- Prompt shown while a binding waits for a key. Takes the label of the binding and the name of the Escape key.
+  ASSIGN_KEY_PROMPT_TEXT = getGlobal("SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL"),
+
+  --- Title of the tooltip of a bound key. Takes the label of the binding and the text of the key.
+  KEY_BINDING_NAME_AND_KEY_TEXT = getGlobal("KEY_BINDING_NAME_AND_KEY"),
+
+  --- Hint shown in the tooltip of a bound key.
+  KEY_BINDING_TOOLTIP_TEXT = getGlobal("KEY_BINDING_TOOLTIP"),
+
+  --- Message shown after a key is bound.
+  KEY_BOUND_TEXT = getGlobal("KEY_BOUND"),
+
+  --- Message shown when a key is taken from another binding. Takes the label of that binding.
+  KEY_UNBOUND_ERROR_TEXT = getGlobal("KEY_UNBOUND_ERROR"),
+
   --- Error message shown when a vendor does not buy an item.
   VENDOR_DOESNT_BUY_ERROR_TEXT = getGlobal("ERR_VENDOR_DOESNT_BUY"),
 }
+
+-- =============================================================================
+-- Blizzard - Bindings
+-- =============================================================================
+
+--- Functions for override bindings, which the game does not save, and the keys they use.
+B.Bindings = {}
+
+--- Clears every override binding set for `owner`. Cannot be called in combat.
+--- @param owner Frame
+function B.Bindings:ClearOverrides(owner)
+  ClearOverrideBindings(owner)
+end
+
+--- Makes `key` click the button named `buttonName`, taking priority over other
+--- override bindings. Cannot be called in combat.
+--- @param owner Frame
+--- @param key string
+--- @param buttonName string
+function B.Bindings:SetClickOverride(owner, key, buttonName)
+  SetOverrideBindingClick(owner, true, key, buttonName)
+end
+
+--- Returns the key for a key name or mouse button name with the held modifiers,
+--- such as `CTRL-BUTTON4`, or `nil` for a modifier key.
+--- @param input string
+--- @return string? key
+function B.Bindings:GetKeyFromInput(input)
+  local key = GetConvertedKeyOrButton(input)
+  if IsKeyPressIgnoredForBinding(key) then return nil end
+  return CreateKeyChordStringUsingMetaKeyState(key)
+end
+
+--- Returns the name of the game's own binding that uses `key`, or `nil` if none
+--- does. Override bindings are not included.
+--- @param key string
+--- @return string? name
+function B.Bindings:GetGameBindingName(key)
+  local action = GetBindingAction(key)
+  if action ~= "" then return GetBindingName(action) end
+end
+
+--- Returns the text the game shows for a key.
+--- @param key string
+--- @return string text
+function B.Bindings:GetKeyText(key)
+  return GetBindingText(key)
+end
+
+-- =============================================================================
+-- Blizzard - Tooltip
+-- =============================================================================
+
+--- Functions for reading the game tooltip.
+B.Tooltip = {}
+
+--- Returns the ID of the item shown in the game tooltip, or `nil` if it shows
+--- no item.
+--- @return number? itemId
+function B.Tooltip:GetItemId()
+  local name, link = GameTooltip:GetItem()
+  if name and link then return (GetItemInfoFromHyperlink(link)) end
+end
+
+-- =============================================================================
+-- Blizzard - Utils
+-- =============================================================================
+
+--- Game functions that have no group of their own yet.
+B.Utils = {}
+
+--- Creates a frame.
+--- @generic T
+--- @param frameType `T` | FrameType
+--- @param name? string
+--- @param parent? Frame
+--- @param template? string
+--- @return T frameType
+function B.Utils:CreateFrame(frameType, name, parent, template)
+  return CreateFrame(frameType, name, parent, template)
+end
+
+--- Returns `true` while the game blocks protected actions, such as changing
+--- keybindings.
+--- @return boolean
+function B.Utils:InCombatLockdown()
+  return InCombatLockdown()
+end

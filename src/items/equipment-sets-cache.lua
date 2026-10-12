@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Items = Addon:GetModule("Items")
 
 --- @class EquipmentSetsCache
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
@@ -6,17 +7,6 @@ local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EMPTY = {}
 
 local cache = {}
-
--- ============================================================================
--- Local Functions
--- ============================================================================
-
---- Returns a cache key for the given bag and slot.
---- @param bag number
---- @param slot number
-local function getCacheKey(bag, slot)
-  return ("%s_%s"):format(bag, slot)
-end
 
 -- ============================================================================
 -- Functions
@@ -38,7 +28,7 @@ function EquipmentSetsCache:Refresh()
           itemLocation = itemLocation - ITEM_INVENTORY_LOCATION_PLAYER - ITEM_INVENTORY_LOCATION_BAGS
           local bag = bit.rshift(itemLocation, ITEM_INVENTORY_BAG_BIT_OFFSET)
           local slot = itemLocation - bit.lshift(bag, ITEM_INVENTORY_BAG_BIT_OFFSET)
-          cache[getCacheKey(bag, slot)] = true
+          cache[Items:GetSlotKey(bag, slot)] = true
         end
       end
     end
@@ -50,5 +40,5 @@ end
 --- @param bag number
 --- @param slot number
 function EquipmentSetsCache:IsBagSlotCached(bag, slot)
-  return cache[getCacheKey(bag, slot)] == true
+  return cache[Items:GetSlotKey(bag, slot)] == true
 end

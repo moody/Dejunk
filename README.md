@@ -86,6 +86,16 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 
 ![Lootable Items Frame](/.github/images/LootablesFrame.png?raw=true)
 
+### Keybindings
+
+The `Keybindings` page of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to or removing it from each list. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
+
+- A key set here takes priority over the game's own binding for it, and a note names the binding it covers.
+- Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
+- Keys cannot be changed in combat, and gamepad buttons cannot be bound.
+
+![Keybindings](/.github/images/Keybindings.png?raw=true)
+
 ## Chat Commands
 
 ```bash

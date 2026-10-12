@@ -45,8 +45,9 @@
   <Script file="src\store\root-reducer.lua"/>
   <Script file="src\store\state-manager.lua"/>
 
-  <!-- Commands -->
-  <Script file="src\commands\commands.lua"/>
+  <!-- Input -->
+  <Script file="src\input\commands.lua"/>
+  <Script file="src\input\keybindings.lua"/>
 
   <!-- Junk Filter -->
   <Script file="src\junk-filter\item-filters.lua"/>
@@ -100,6 +101,7 @@
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\keybinding-card.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
@@ -117,6 +119,7 @@
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
   <Script file="src\ui\screens\main-window\options\global-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\keybindings.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
   <Script file="src\ui\screens\profiles-frame.lua"/>
@@ -124,9 +127,7 @@
 
   <!-- UI Blizzard -->
   <Script file="src\ui\blizzard\addon-category.lua"/>
-
-  <!-- Bindings -->
-  <Script file="Bindings.lua"/>
+  <Script file="src\ui\blizzard\addon-compartment.lua"/>
 
   <!-- Dejunk API -->
   <Script file="DejunkApi.lua"/>

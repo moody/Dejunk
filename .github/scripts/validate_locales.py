@@ -23,8 +23,7 @@ def getEntries():
 def getReferences():
     references = {}
 
-    paths = ["Bindings.lua"]
-    paths.extend(str(p) for p in Path("src").rglob("*.lua") if "locales" not in str(p))
+    paths = [str(p) for p in Path("src").rglob("*.lua") if "locales" not in str(p)]
 
     for path in paths:
         with open(path) as f:
