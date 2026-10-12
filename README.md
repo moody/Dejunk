@@ -94,6 +94,8 @@ The `Keybindings` page of the main window sets keys for the Main Window, Junk It
 - Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
 - Keys cannot be changed in combat, and gamepad buttons cannot be bound.
 
+![Keybindings](/.github/images/Keybindings.png?raw=true)
+
 ## Chat Commands
 
 ```bash
