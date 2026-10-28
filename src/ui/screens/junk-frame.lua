@@ -7,7 +7,6 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local L = Addon:GetModule("Locale")
@@ -48,7 +47,7 @@ local function refreshComponents()
   for _, item in pairs(junkItems) do
     totalJunkValue = totalJunkValue + (item.noValue and 0 or (item.price * item.quantity))
   end
-  Components.ItemsFrame:GetFrame().title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
+  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(totalJunkValue)))
 
   if Addon:IsBusy() then
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
@@ -91,73 +90,80 @@ Components.Content = Components.Root:AddChild({
   gap = Widgets:Padding(0.5),
 })
 
-Components.ItemsFrame = Components.Content:AddChild({
-  frameFactory = function()
-    local itemsFrame = Widgets:ItemsFrame({
-      name = "$parent_ItemsFrame",
-      displayPrice = true,
-      titleText = Colors.White(L.JUNK_ITEMS),
-      onUpdateTooltip = function(self, tooltip)
-        tooltip:SetText(L.JUNK_ITEMS)
-        tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
-          Lists.ProfileInclusions.name,
-          Lists.GlobalInclusions.name,
-          Colors.White(B.Strings.SHIFT_KEY_TEXT)
-        ))
-        tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
-          L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
-        )
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
-          L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
-        )
-      end,
-      itemButtonOnUpdateTooltip = function(self, tooltip)
-        tooltip:SetOwner(self, "ANCHOR_RIGHT")
-        tooltip:SetBagItem(self.item.bag, self.item.slot)
-        tooltip:AddLine(" ")
-        if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
-          tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
-        end
-        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
-          L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
-        )
-        tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
-      end,
-      itemButtonOnClick = function(self, button)
-        if button == "LeftButton" then
-          if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
-            Seller:HandleItem(self.item)
-          end
-        end
+-- Title bar shows the total value. Ctrl+Alt+Right-click on it adds every junk item to an Exclusions list.
+Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:TitledPanel({
+  titleText = Colors.White(L.JUNK_ITEMS),
 
-        if button == "RightButton" then
-          if IsAltKeyDown() then
-            Destroyer:HandleItem(self.item)
-          else
-            local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-            list:Add(self.item.id)
-          end
-        end
-      end,
-      getItems = function() return junkItems end,
-      addItem = function(itemId)
-        local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.ProfileInclusions
-        list:Add(itemId)
-      end,
-      removeAllItems = function()
-        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-        for _, item in pairs(junkItems) do list:Add(item.id) end
-      end
-    })
-
-    return itemsFrame
+  onUpdateTooltip = function(_, tooltip)
+    tooltip:SetText(L.JUNK_ITEMS)
+    tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
+      Lists.ProfileInclusions.name,
+      Lists.GlobalInclusions.name,
+      Colors.White(B.Strings.SHIFT_KEY_TEXT)
+    ))
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
+      L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
+    )
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+      L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
+    )
   end
-})
+}))
+
+Components.ItemsPanel.TitleBar:WhenFrameReady(function(titleBar)
+  titleBar:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+  titleBar:SetScript("OnClick", function(_, button)
+    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+      for _, item in pairs(junkItems) do list:Add(item.id) end
+    end
+  end)
+end)
+
+Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
+  cardCount = 7,
+  displayPrice = true,
+  getItems = function() return junkItems end,
+
+  onUpdateItemTooltip = function(item, tooltip)
+    tooltip:SetBagItem(item.bag, item.slot)
+    tooltip:AddLine(" ")
+    if Addon:IsAtMerchant() and Items:IsItemSellable(item) then
+      tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+    end
+    tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+      L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+    )
+    tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
+  end,
+
+  onItemClick = function(item, button)
+    if button == "LeftButton" then
+      if Addon:IsAtMerchant() and Items:IsItemSellable(item) then
+        Seller:HandleItem(item)
+      end
+    end
+
+    if button == "RightButton" then
+      if IsAltKeyDown() then
+        Destroyer:HandleItem(item)
+      else
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+        list:Add(item.id)
+      end
+    end
+  end,
+
+  addItem = function(itemId)
+    local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.ProfileInclusions
+    list:Add(itemId)
+  end
+}))
 
 Components.ButtonRow = Components.Content:AddRow({
   maxHeight = 30,

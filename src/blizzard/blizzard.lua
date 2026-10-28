@@ -18,6 +18,7 @@ end
 -- Globals
 -- =============================================================================
 
+local ClearCursor = getGlobal("ClearCursor")
 local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
 local CreateFrame = getGlobal("CreateFrame")
 local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
@@ -25,7 +26,9 @@ local GameTooltip = getGlobal("GameTooltip")
 local GetBindingAction = getGlobal("GetBindingAction")
 local GetBindingName = getGlobal("GetBindingName")
 local GetBindingText = getGlobal("GetBindingText")
+local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or getGlobal("GetCoinTextureString")
 local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
+local GetCursorInfo = getGlobal("GetCursorInfo")
 local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
 local InCombatLockdown = getGlobal("InCombatLockdown")
 local IsKeyPressIgnoredForBinding = getGlobal("IsKeyPressIgnoredForBinding")
@@ -93,6 +96,29 @@ B.Strings = {
 }
 
 -- =============================================================================
+-- Blizzard - Font Objects
+-- =============================================================================
+
+--- The game's own font objects, from smallest to largest.
+B.FontObjects = {
+  --- Small text, 10 pixels high on a Latin client.
+  --- @type Font
+  Small = getGlobal("GameFontNormalSmall"),
+
+  --- Default text, 12 pixels high on a Latin client.
+  --- @type Font
+  Normal = getGlobal("GameFontNormal"),
+
+  --- Medium text, 14 pixels high on a Latin client.
+  --- @type Font
+  Medium = getGlobal("GameFontNormalMed2"),
+
+  --- Large text, 16 pixels high on a Latin client.
+  --- @type Font
+  Large = getGlobal("GameFontNormalLarge"),
+}
+
+-- =============================================================================
 -- Blizzard - Bindings
 -- =============================================================================
 
@@ -138,6 +164,39 @@ end
 --- @return string text
 function B.Bindings:GetKeyText(key)
   return GetBindingText(key)
+end
+
+-- =============================================================================
+-- Blizzard - Cursor
+-- =============================================================================
+
+--- Functions for the item held on the cursor.
+B.Cursor = {}
+
+--- Returns the ID of the item held on the cursor, or `nil` if it holds no item.
+--- @return number? itemId
+function B.Cursor:GetItemId()
+  local infoType, itemId = GetCursorInfo()
+  if infoType == "item" then return itemId end
+end
+
+--- Empties the cursor.
+function B.Cursor:Clear()
+  ClearCursor()
+end
+
+-- =============================================================================
+-- Blizzard - Money
+-- =============================================================================
+
+--- Game functions for money.
+B.Money = {}
+
+--- Returns the amount of copper as text with coin icons.
+--- @param copper number
+--- @return string
+function B.Money:GetCoinText(copper)
+  return GetCoinTextureString(copper)
 end
 
 -- =============================================================================
