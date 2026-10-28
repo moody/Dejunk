@@ -25,9 +25,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- Creates a small checkbox and label, sized to the label. Clicking anywhere on
 --- the chip toggles it.
 --- @param options CheckChipComponentOptions
---- @return WaffleFlexComponent root
+--- @return CheckChipComponent root
 function ComponentFactory:CheckChip(options)
-  --- @class CheckChipComponent : WaffleFlexComponent
+  --- @class CheckChipComponent : WaffleFlexComponent<CheckChipWidget>
+  --- @field Checkbox WaffleFlexComponent<CheckboxWidget>
   local chip = Addon.Waffle:Flex({
     width = "AUTO",
     height = "AUTO",
@@ -72,7 +73,6 @@ function ComponentFactory:CheckChip(options)
   -- Refresh on hover, enabled, and state changes.
   chip.Label:WhenFrameReady(function(label)
     chip.Checkbox:WhenFrameReady(function(checkbox)
-      --- @cast checkbox CheckboxWidget
       --- @type FrameWidget
       local frame = chip:GetFrame()
 

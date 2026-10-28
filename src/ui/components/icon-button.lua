@@ -25,7 +25,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @param options IconButtonComponentOptions
 --- @return IconButtonComponent
 function ComponentFactory:IconButton(options)
-  --- @class IconButtonComponent : WaffleFlexComponent
+  --- @class IconButtonComponent : WaffleFlexComponent<IconButtonWidget>
   local root = Addon.Waffle:Flex({
     width = options.width or 46,
     frameFactory = function(parent)

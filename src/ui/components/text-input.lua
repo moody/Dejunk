@@ -27,7 +27,8 @@ function ComponentFactory:TextInput(options)
   local fontObject = options.fontObject or Widgets.CONTROL_FONT
   local _, fontHeight = _G[fontObject]:GetFont()
 
-  --- @class TextInputComponent : WaffleFlexComponent
+  --- @class TextInputComponent : WaffleFlexComponent<FrameWidget>
+  --- @field Input WaffleFlexComponent<TextInputWidget>
   local root = Addon.Waffle:Flex({
     direction = "ROW",
     height = fontHeight + Widgets:Padding(2),

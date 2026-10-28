@@ -56,7 +56,7 @@ function Controller:AddSidebarRow(options)
     row = Components.Sidebar:AttachComponent(ComponentFactory:SelectableRow({
       labelText = options.labelText,
       onClick = function() self:SelectSidebarRow(options.key) end
-    })) --[[@as SelectableRowComponent]]
+    }))
   }
 end
 
@@ -203,7 +203,6 @@ Controller:AddSidebarRow({
     -- The button follows the box. While the box is empty, the button is disabled and dimmed unless the box has
     -- focus, and the mouse passes through it to the box.
     Components.SearchButton:WhenFrameReady(function(button)
-      --- @cast button IconButtonWidget
       button:PropagateWhenDisabled(true)
 
       Components.SearchBox.Input:WhenFrameReady(function(editBox)

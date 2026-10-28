@@ -69,12 +69,11 @@ end
 --- Attaches a number input to the line, passing the mouse through while disabled.
 --- @param line WaffleFlexComponent
 --- @param options NumberInputComponentOptions
---- @return WaffleFlexComponent input
+--- @return NumberInputComponent input
 local function attachNumberInput(line, options)
   local input = line:AttachComponent(ComponentFactory:NumberInput(options))
 
   input:WhenFrameReady(function(frame)
-    --- @cast frame NumberInputWidget
     frame:PropagateWhenDisabled(true)
   end)
 
@@ -122,7 +121,6 @@ local function addPriceLine(self, getState, mergeAction)
 
     -- Tab and Shift+Tab move between the inputs.
     input:WhenFrameReady(function(frame)
-      --- @cast frame NumberInputWidget
       editBoxes[index] = frame
       frame:SetScript("OnTabPressed", function()
         local step = IsShiftKeyDown() and -1 or 1

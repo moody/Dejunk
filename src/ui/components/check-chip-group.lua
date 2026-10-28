@@ -46,7 +46,6 @@ function ComponentFactory:CheckChipGroup(options)
 
     -- Pass the mouse through while disabled.
     chip:WhenFrameReady(function(frame)
-      --- @cast frame CheckChipWidget
       frame:PropagateWhenDisabled(true)
     end)
   end

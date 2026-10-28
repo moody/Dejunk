@@ -25,9 +25,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- Creates an edit box for a whole number. Escape, or leaving it empty,
 --- restores the current value.
 --- @param options NumberInputComponentOptions
---- @return WaffleFlexComponent root
+--- @return NumberInputComponent root
 function ComponentFactory:NumberInput(options)
-  return Addon.Waffle:Flex({
+  --- @class NumberInputComponent : WaffleFlexComponent<NumberInputWidget>
+  local root = Addon.Waffle:Flex({
     width = options.width or 80,
     height = "AUTO",
 
@@ -101,4 +102,6 @@ function ComponentFactory:NumberInput(options)
       return width, fontHeight + Widgets.CONTROL_PADDING * 2
     end
   })
+
+  return root
 end
