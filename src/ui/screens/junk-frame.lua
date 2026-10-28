@@ -110,18 +110,15 @@ Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:Titl
       Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
       L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
     )
-  end
-}))
+  end,
 
-Components.ItemsPanel.TitleBar:WhenFrameReady(function(titleBar)
-  titleBar:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-  titleBar:SetScript("OnClick", function(_, button)
+  onClick = function(button)
     if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
       local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
       for _, item in pairs(junkItems) do list:Add(item.id) end
     end
-  end)
-end)
+  end
+}))
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
   cardCount = 7,

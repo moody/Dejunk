@@ -13,6 +13,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field titleText string
 --- @field titleJustify? "LEFT" | "CENTER" | "RIGHT" Defaults to `CENTER`.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the title bar.
+--- @field onClick? fun(button: string) Called when the title bar is clicked with the left or right button.
 
 -- =============================================================================
 -- ComponentFactory - TitledPanel
@@ -39,7 +40,6 @@ function ComponentFactory:TitledPanel(options)
 
   root.TitleBar = root:AddRow({
     height = "AUTO",
-    padding = Widgets:Padding(),
     frameFactory = function(parent)
       local frame = Widgets:Frame({
         parent = parent,
@@ -47,12 +47,19 @@ function ComponentFactory:TitledPanel(options)
         onUpdateTooltip = options.onUpdateTooltip
       })
       frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
+
+      if options.onClick then
+        frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+        frame:SetScript("OnClick", function(_, button) options.onClick(button) end)
+      end
+
       return frame
     end
   })
 
   local titleBarText = root.TitleBar:AddChild({
     height = "AUTO",
+    margin = Widgets:Padding(),
 
     --- @param parent Frame
     frameFactory = function(parent)
