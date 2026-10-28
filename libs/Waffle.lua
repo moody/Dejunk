@@ -1,5 +1,5 @@
 -- =============================================================================
--- Waffle: 0.12.1 - https://github.com/moody/Waffle
+-- Waffle: 0.12.2 - https://github.com/moody/Waffle
 -- =============================================================================
 
 local _, Addon = ...
@@ -1444,9 +1444,13 @@ end
 -- =============================================================================
 
 --- Wraps a single node, with or without children. Returned by `Waffle:Flex()`, `AddChild`, `AddRow`, `AddColumn`,
---- `AttachComponent`, `FindByKey`, and `GetChildren`.
---- @class WaffleFlexComponent
+--- `AttachComponent`, `FindByKey`, and `GetChildren`. `F` is the type of the node's frame.
+--- @class WaffleFlexComponent<F>
 --- @field package node WaffleFlexNode
+--- @field GetFrame fun(self: WaffleFlexComponent<F>): F?
+--- @field WhenFrameReady fun(self: WaffleFlexComponent<F>, callback: fun(frame: F))
+--- @field SetOnLayout fun(self: WaffleFlexComponent<F>, onLayout?: fun(frame: F, width: integer, height: integer))
+--- @field SetOnMeasure fun(self: WaffleFlexComponent<F>, onMeasure?: fun(frame: F, width?: number, height?: number): number, number)
 _W.FlexComponent = {}
 _W.FlexComponent.__index = _W.FlexComponent
 
@@ -1994,7 +1998,6 @@ end
 
 --- Sets the callback fired once this node's own `Layout()` pass is
 --- resolved and clean. `nil` removes it.
---- @param onLayout? fun(frame: WaffleFrame, width: integer, height: integer)
 function _W.FlexComponent:SetOnLayout(onLayout)
   if self.node.onLayout ~= onLayout then
     self.node.onLayout = onLayout
@@ -2011,7 +2014,6 @@ end
 
 --- Sets the callback that sizes this node's content when it leaves a size
 --- `"AUTO"`. `nil` removes it.
---- @param onMeasure? fun(frame: WaffleFrame, width?: number, height?: number): number, number
 function _W.FlexComponent:SetOnMeasure(onMeasure)
   if self.node.onMeasure ~= onMeasure then
     self.node.onMeasure = onMeasure
@@ -2053,7 +2055,6 @@ end
 
 --- Returns this node's frame, `nil` if not resolved yet, e.g. a
 --- `frameFactory` not yet laid out.
---- @return WaffleFrame?
 function _W.FlexComponent:GetFrame()
   return self.node.frame
 end
@@ -2063,7 +2064,6 @@ end
 --- parented, sized, or shown. Callbacks run in registration order. When one
 --- runs during a `Layout()` pass, touch only the frame; mutating the tree
 --- is unsupported.
---- @param callback fun(frame: WaffleFrame)
 function _W.FlexComponent:WhenFrameReady(callback)
   local node = self.node
   if node.frame then
@@ -2195,8 +2195,9 @@ end
 --- `component` already belongs to a different one, call
 --- `DetachComponent()` on that one first to move it here. No-ops if
 --- `component` is already this node's own, still returns it.
---- @param component WaffleFlexComponent
---- @return WaffleFlexComponent
+--- @generic T : WaffleFlexComponent
+--- @param component T
+--- @return T
 function _W.FlexComponent:AttachComponent(component)
   local node = component.node
   if _W.Ownership:Claim(node, self.node) then
@@ -2210,7 +2211,9 @@ end
 --- Detaches this component from its current owner, if it has one, the
 --- same as calling `DetachComponent()` on that owner. Always returns
 --- itself, whether or not it actually had an owner to release.
---- @return WaffleFlexComponent
+--- @generic T : WaffleFlexComponent
+--- @param self T
+--- @return T
 function _W.FlexComponent:Detach()
   _W.Ownership:Detach(self.node)
   return self
