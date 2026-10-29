@@ -1,9 +1,8 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local E = Addon:GetModule("Events")
 local EquipmentSetsCache = Addon:GetModule("EquipmentSetsCache")
 local EventManager = Addon:GetModule("EventManager")
-local GetItemInfo = C_Item.GetItemInfo or GetItemInfo
-local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 local TickerManager = Addon:GetModule("TickerManager")
 
 --- @class BagItemsCache
@@ -32,35 +31,6 @@ local function setCachedItem(bag, slot, item)
   cache[BagItemsCache:GetSlotKey(bag, slot)] = item
 end
 
---- Custom iterator for each bag and slot. Usage:
---- ```
---- for bag, slot, itemId in iterateBags() do
----   -- Do stuff.
---- end
---- ```
----@return function
-local function iterateBags()
-  local bag, slot = BACKPACK_CONTAINER, 0
-  local numSlots = C_Container.GetContainerNumSlots(bag)
-
-  return function()
-    slot = slot + 1
-
-    if slot > numSlots then
-      slot = 1
-
-      -- Move to next bag
-      repeat
-        bag = bag + 1
-        if bag > NUM_BAG_SLOTS then return nil end
-        numSlots = C_Container.GetContainerNumSlots(bag)
-      until numSlots > 0
-    end
-
-    return bag, slot, C_Container.GetContainerItemID(bag, slot)
-  end
-end
-
 --- Updates the item cache and fires the `BagsUpdated` event.
 local function updateCache()
   EquipmentSetsCache:Refresh()
@@ -69,7 +39,7 @@ local function updateCache()
 
   local allItemsCached = true
 
-  for bag, slot, itemId in iterateBags() do
+  for bag, slot, itemId in B.Container:IterateSlots() do
     if itemId then
       local item = BagItemsCache:CreateItem(bag, slot)
       if item then
@@ -102,7 +72,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   -- A refund window can expire with no bag event to catch it, so poll for
   -- that and fire `BagsUpdated` when it happens.
   TickerManager:NewTicker(1, function()
-    local now = GetTime()
+    local now = B.Utils:GetTime()
     local anyExpired = false
 
     for _, item in pairs(cache) do
@@ -154,59 +124,36 @@ function BagItemsCache:GetSlotKey(bag, slot)
   return bag * 1000 + slot
 end
 
--- BagItemsCache:CreateItem()
-do
-  --- @class BagItemInfoBuffer : ContainerItemInfo
-  local t = {}
+--- Creates a new `BagItem` for the given `bag` and `slot`, or returns `nil` if the slot is empty or its item data is
+--- not loaded.
+--- @param bag integer
+--- @param slot integer
+--- @return BagItem? item
+function BagItemsCache:CreateItem(bag, slot)
+  --- @class BagItem : BagItemInfo
+  --- @field reason? string
+  local item = B.Container:GetItemInfo(bag, slot)
+  if item == nil then return nil end
 
-  --- Creates a new `BagItem` for the given `bag` and `slot`, or returns `nil` if the slot is empty or its item data is
-  --- not loaded.
-  --- @param bag integer
-  --- @param slot integer
-  --- @return BagItem? item
-  function BagItemsCache:CreateItem(bag, slot)
-    --- @class BagItem : table
-    --- @field reason? string
-    local item = C_Container.GetContainerItemInfo(bag, slot)
-    if type(item) ~= "table" then return nil end
-
-    for k in pairs(t) do t[k] = nil end
-    for k in pairs(item) do
-      t[k] = item[k]
-      item[k] = nil
-    end
-
-    item.bag = bag
-    item.slot = slot
-    item.texture = t.iconFileID
-    item.quantity = t.stackCount
-    item.quality = t.quality
-    item.lootable = t.hasLoot
-    item.link = t.hyperlink
-    item.noValue = t.hasNoValue
-    item.id = t.itemID
-
-    -- GetItemInfo.
-    local name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.link)
-    if name == nil then
-      name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item.id)
-      if name == nil then return nil end
-    end
-
-    item.name = name
-    item.baseItemLevel = baseItemLevel
-    item.invType = invType
-    item.price = price
-    item.classId = classId
-    item.subclassId = subclassId
-    item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
-
-    local purchaseInfo = C_Container.GetContainerItemPurchaseInfo(bag, slot, false)
-    local refundSeconds = purchaseInfo and purchaseInfo.refundSeconds
-    item.refundExpirationTime = refundSeconds and refundSeconds > 0 and (GetTime() + refundSeconds) or nil
-
-    return item
+  -- Item info.
+  local name, baseItemLevel, invType, price, classId, subclassId = B.Item:GetInfo(item.link)
+  if name == nil then
+    name, baseItemLevel, invType, price, classId, subclassId = B.Item:GetInfo(item.id)
+    if name == nil then return nil end
   end
+
+  item.name = name
+  item.baseItemLevel = baseItemLevel
+  item.invType = invType
+  item.price = price
+  item.classId = classId
+  item.subclassId = subclassId
+  item.isEquipmentSet = EquipmentSetsCache:IsBagSlotCached(bag, slot)
+
+  local refundSeconds = B.Container:GetRefundSeconds(bag, slot)
+  item.refundExpirationTime = refundSeconds and refundSeconds > 0 and (B.Utils:GetTime() + refundSeconds) or nil
+
+  return item
 end
 
 -- BagItemsCache:GetFreshItem()
@@ -219,7 +166,7 @@ do
   --- @param slot integer
   --- @return BagItem? item
   function BagItemsCache:GetFreshItem(bag, slot)
-    local now = GetTime()
+    local now = B.Utils:GetTime()
 
     -- Refresh equipment sets once per frame.
     if now ~= lastRefreshTime then

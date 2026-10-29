@@ -18,6 +18,8 @@ end
 -- Globals
 -- =============================================================================
 
+local BACKPACK_CONTAINER = getGlobal("BACKPACK_CONTAINER")
+local C_Container = getGlobal("C_Container")
 local ClearCursor = getGlobal("ClearCursor")
 local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
 local CreateFrame = getGlobal("CreateFrame")
@@ -27,11 +29,18 @@ local GetBindingAction = getGlobal("GetBindingAction")
 local GetBindingName = getGlobal("GetBindingName")
 local GetBindingText = getGlobal("GetBindingText")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or getGlobal("GetCoinTextureString")
+local GetContainerItemID = C_Container.GetContainerItemID
+local GetContainerItemInfo = C_Container.GetContainerItemInfo
+local GetContainerItemPurchaseInfo = C_Container.GetContainerItemPurchaseInfo
+local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
 local GetCursorInfo = getGlobal("GetCursorInfo")
+local GetItemInfo = C_Item.GetItemInfo or getGlobal("GetItemInfo")
 local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
+local GetTime = getGlobal("GetTime")
 local InCombatLockdown = getGlobal("InCombatLockdown")
 local IsKeyPressIgnoredForBinding = getGlobal("IsKeyPressIgnoredForBinding")
+local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or getGlobal("NUM_BAG_SLOTS")
 local SetOverrideBindingClick = getGlobal("SetOverrideBindingClick")
 
 -- =============================================================================
@@ -167,6 +176,87 @@ function B.Bindings:GetKeyText(key)
 end
 
 -- =============================================================================
+-- Blizzard - Container
+-- =============================================================================
+
+--- Game functions for the bags.
+B.Container = {}
+
+--- Returns an iterator over every slot in the bags, in order. Each step gives the `bag`, the `slot`, and the ID of the
+--- item in it, which is `nil` for an empty slot. Usage:
+--- ```
+--- for bag, slot, itemId in B.Container:IterateSlots() do
+---   -- Do stuff.
+--- end
+--- ```
+--- @return function
+function B.Container:IterateSlots()
+  local bag, slot = BACKPACK_CONTAINER, 0
+  local numSlots = GetContainerNumSlots(bag)
+
+  return function()
+    slot = slot + 1
+
+    if slot > numSlots then
+      slot = 1
+
+      -- Move to next bag
+      repeat
+        bag = bag + 1
+        if bag > NUM_BAG_SLOTS then return nil end
+        numSlots = GetContainerNumSlots(bag)
+      until numSlots > 0
+    end
+
+    return bag, slot, GetContainerItemID(bag, slot)
+  end
+end
+
+-- B.Container:GetItemInfo()
+do
+  --- @class BagItemInfoBuffer : ContainerItemInfo
+  local t = {}
+
+  --- Returns the item in the slot as a table with the fields `bag`, `slot`, `texture`, `quantity`, `quality`,
+  --- `lootable`, `link`, `noValue`, and `id`, or `nil` if the slot is empty.
+  --- @param bag integer
+  --- @param slot integer
+  --- @return BagItemInfo? item
+  function B.Container:GetItemInfo(bag, slot)
+    --- @class BagItemInfo : table
+    local item = GetContainerItemInfo(bag, slot)
+    if type(item) ~= "table" then return nil end
+
+    for k in pairs(t) do t[k] = nil end
+    for k in pairs(item) do
+      t[k] = item[k]
+      item[k] = nil
+    end
+
+    item.bag = bag
+    item.slot = slot
+    item.texture = t.iconFileID
+    item.quantity = t.stackCount
+    item.quality = t.quality
+    item.lootable = t.hasLoot
+    item.link = t.hyperlink
+    item.noValue = t.hasNoValue
+    item.id = t.itemID
+
+    return item
+  end
+end
+
+--- Returns the seconds left to refund the item in the slot, or `nil` if it has no refund window.
+--- @param bag integer
+--- @param slot integer
+--- @return number? seconds
+function B.Container:GetRefundSeconds(bag, slot)
+  local purchaseInfo = GetContainerItemPurchaseInfo(bag, slot, false)
+  return purchaseInfo and purchaseInfo.refundSeconds
+end
+
+-- =============================================================================
 -- Blizzard - Cursor
 -- =============================================================================
 
@@ -183,6 +273,27 @@ end
 --- Empties the cursor.
 function B.Cursor:Clear()
   ClearCursor()
+end
+
+-- =============================================================================
+-- Blizzard - Item
+-- =============================================================================
+
+--- Game functions for items.
+B.Item = {}
+
+--- Returns the name, base item level, inventory type, price, class ID, and subclass ID of an item, or `nil` until it
+--- is cached.
+--- @param item string | number Item ID, link, or name.
+--- @return string? name
+--- @return number? baseItemLevel
+--- @return string? invType
+--- @return number? price Of one item, in copper.
+--- @return number? classId
+--- @return number? subclassId
+function B.Item:GetInfo(item)
+  local name, _, _, baseItemLevel, _, _, _, _, invType, _, price, classId, subclassId = GetItemInfo(item)
+  return name, baseItemLevel, invType, price, classId, subclassId
 end
 
 -- =============================================================================
@@ -230,6 +341,12 @@ B.Utils = {}
 --- @return T frameType
 function B.Utils:CreateFrame(frameType, name, parent, template)
   return CreateFrame(frameType, name, parent, template)
+end
+
+--- Returns the current time in seconds. It is the same for every call within a frame.
+--- @return number
+function B.Utils:GetTime()
+  return GetTime()
 end
 
 --- Returns `true` while the game blocks protected actions, such as changing
