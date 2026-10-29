@@ -14,9 +14,6 @@ local FRAME_SECONDS = 0.05
 --- The seconds between the `BAG_UPDATE` events of a burst.
 local BAG_UPDATE_GAP_SECONDS = 0.25
 
---- Enough time for the cache to try again after an item's data was not loaded.
-local RETRY_SECONDS = 0.5
-
 --- The seconds left to refund an item in the refund tests.
 local REFUND_SECONDS = 30
 
@@ -41,7 +38,10 @@ local function setupContext()
 
     --- The IDs of the items whose data is not loaded. `Blizzard.Item:GetInfo()` returns nothing for them.
     --- @type table<integer, true>
-    unloadedItemIds = {}
+    unloadedItemIds = {},
+
+    --- The number of times the cache has scanned every slot.
+    scanCount = 0
   }
 
   -- `Blizzard`, reading from `game.slots`.
@@ -50,6 +50,7 @@ local function setupContext()
   local ContainerSpy = Mocks:CreateSpy(Blizzard.Container)
 
   ContainerSpy:Stub("IterateSlots"):Invokes(function()
+    game.scanCount = game.scanCount + 1
     local index = 0
 
     return function()
@@ -225,27 +226,42 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(RETRY_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
   assert(BagItemsCache:GetItem(0, 1) == nil)
 
   game.unloadedItemIds[100] = nil
-  game.Advance(RETRY_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 1).id == 100)
+end
+
+-- Test: retries a slot whose item data was not loaded without scanning every slot again.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  game.unloadedItemIds[100] = nil
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(game.scanCount == 1)
 end
 
 -- ============================================================================
 -- Tests - BagsUpdated
 -- ============================================================================
 
--- Test: fires once after the cache updates, with `true` when every item's data is loaded.
+-- Test: fires once after the cache updates, with `true` when no item is pending.
 do
   local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   local payloads = {}
-  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
-    payloads[#payloads + 1] = allItemsCached
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
@@ -261,14 +277,55 @@ do
   game.unloadedItemIds[100] = true
 
   local payloads = {}
-  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
-    payloads[#payloads + 1] = allItemsCached
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
   game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(payloads[1] == false)
+end
+
+-- Test: fires again with `true` once the pending item's data loads.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
+  end)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  game.unloadedItemIds[100] = nil
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(Matchers:IsDeepEqual(payloads, { false, true }))
+end
+
+-- Test: an update leaves nothing pending for a slot that has since been emptied.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
+  end)
+
+  game.slots = { { bag = 0, slot = 1 } }
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(Matchers:IsDeepEqual(payloads, { true }))
 end
 
 -- ============================================================================
@@ -356,6 +413,25 @@ do
   assert(updates == 0)
 end
 
+-- Test: holds back retries of pending slots while BAG_UPDATE events keep arriving.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  game.unloadedItemIds[100] = nil
+  fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS / 2)
+  assert(BagItemsCache:GetItem(0, 1) == nil)
+
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(BagItemsCache:GetItem(0, 1).id == 100)
+end
+
 -- Test: updates once after BAG_UPDATE_DELAYED ends a burst of BAG_UPDATE events.
 do
   local BagItemsCache, game = setupContext()
@@ -406,14 +482,54 @@ do
   assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
 
   local payloads = {}
-  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
-    payloads[#payloads + 1] = allItemsCached
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
   end)
 
   game.Advance(REFUND_SECONDS + BagItemsCache.REFUND_POLL_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 1).refundExpirationTime == nil)
   assert(Matchers:IsDeepEqual(payloads, { true }))
+end
+
+-- ============================================================================
+-- Tests - BagItemsCache:GetSlotKey()
+-- ============================================================================
+
+-- Test: returns a different key for each bag and slot, including negative bags.
+do
+  local BagItemsCache = setupContext()
+  local keys = {}
+  local count = 0
+
+  for bag = -2, 12 do
+    for slot = 1, 98 do
+      keys[BagItemsCache:GetSlotKey(bag, slot)] = true
+      count = count + 1
+    end
+  end
+
+  local uniqueCount = 0
+  for _ in pairs(keys) do uniqueCount = uniqueCount + 1 end
+
+  assert(uniqueCount == count)
+end
+
+-- ============================================================================
+-- Tests - BagItemsCache:GetSlotFromKey()
+-- ============================================================================
+
+-- Test: returns the bag and slot that a slot key was made from, including negative bags.
+do
+  local BagItemsCache = setupContext()
+  local slots = { { 0, 1 }, { 5, 98 }, { -1, 28 }, { -2, 32 } }
+
+  for _, entry in ipairs(slots) do
+    local key = BagItemsCache:GetSlotKey(entry[1], entry[2])
+    local bag, slot = BagItemsCache:GetSlotFromKey(key)
+    assert(bag == entry[1])
+    assert(slot == entry[2])
+  end
 end
 
 -- ============================================================================

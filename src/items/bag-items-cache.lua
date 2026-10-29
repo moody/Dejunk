@@ -23,6 +23,10 @@ BagItemsCache.REFUND_POLL_SECONDS = 1
 --- @type table<integer, BagItem>
 local cache = {}
 
+--- The keys of the slots whose item data is not loaded.
+--- @type table<integer, boolean>
+local pending = {}
+
 --- Whether the next tick updates the cache.
 local isDirty = false
 
@@ -70,8 +74,7 @@ local function updateCache()
   EquipmentSetsCache:Refresh()
 
   for k in pairs(cache) do cache[k] = nil end
-
-  local allItemsCached = true
+  for k in pairs(pending) do pending[k] = nil end
 
   for bag, slot, itemId in B.Container:IterateSlots() do
     if itemId then
@@ -79,15 +82,29 @@ local function updateCache()
       if item then
         setCachedItem(bag, slot, item)
       else
-        allItemsCached = false
+        pending[BagItemsCache:GetSlotKey(bag, slot)] = true
       end
     end
   end
 
-  -- Try again on the next tick.
-  if not allItemsCached then markDirty() end
+  EventManager:Fire(E.BagsUpdated, next(pending) == nil)
+end
 
-  EventManager:Fire(E.BagsUpdated, allItemsCached)
+--- Tries again to cache the slots whose item data was not loaded, and fires `BagsUpdated` if any were cached.
+local function updatePending()
+  local anyCached = false
+
+  for key in pairs(pending) do
+    local bag, slot = BagItemsCache:GetSlotFromKey(key)
+    local item = BagItemsCache:CreateItem(bag, slot)
+    if item then
+      setCachedItem(bag, slot, item)
+      pending[key] = nil
+      anyCached = true
+    end
+  end
+
+  if anyCached then EventManager:Fire(E.BagsUpdated, next(pending) == nil) end
 end
 
 -- ============================================================================
@@ -112,9 +129,15 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
   EventManager:On(E.Wow.EquipmentSetsChanged, markDirty)
 
-  -- Update the cache at most once per tick, and not during a burst.
+  -- Update the cache at most once per tick, and not during a burst. With nothing to update, retry the pending slots.
   TickerManager:NewTicker(BagItemsCache.UPDATE_TICK_SECONDS, function()
-    if isDirty and not isBurstActive() then updateCache() end
+    if isBurstActive() then return end
+
+    if isDirty then
+      updateCache()
+    elseif next(pending) then
+      updatePending()
+    end
   end)
 
   -- A refund window can expire with no bag event to catch it, so poll for
@@ -170,6 +193,14 @@ end
 --- @return integer key
 function BagItemsCache:GetSlotKey(bag, slot)
   return bag * 1000 + slot
+end
+
+--- Returns the bag and slot that the given `key` from `GetSlotKey()` identifies.
+--- @param key integer
+--- @return integer bag, integer slot
+function BagItemsCache:GetSlotFromKey(key)
+  local slot = key % 1000
+  return (key - slot) / 1000, slot
 end
 
 --- Creates a new `BagItem` for the given `bag` and `slot`, or returns `nil` if the slot is empty or its item data is
