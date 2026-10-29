@@ -2,6 +2,12 @@
 
 Older release notes for [Dejunk](https://github.com/moody/Dejunk). See [CHANGELOG.md](CHANGELOG.md) for the current and most recent release.
 
+## [3.4.1] - 2026-10-13
+
+### Changed
+
+- Updated the Retail interface version for patch 12.1.5.
+
 ## [3.4.0] - 2026-10-11
 
 ### Added
