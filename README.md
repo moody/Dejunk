@@ -74,11 +74,7 @@ The `Auto Junk Frame` option shows the frame automatically at a merchant when yo
 
 Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
 
-Every character starts on the `Default` profile. Changing a profile option or adding an item to a profile list while on `Default` creates a new profile for that character and switches to it automatically.
-
-Profiles can also be created, switched, renamed, and deleted directly from the Profiles Frame, opened via `/dejunk profiles` or the gear icon in the main window's footer. The footer also shows the name of the active profile. The `Default` profile cannot be renamed or deleted, and deleting the active profile switches back to `Default`.
-
-![Profiles Frame](/.github/images/ProfilesFrame.png?raw=true)
+Every character starts on the `Default` profile. Profiles are created, activated, renamed, reset, and deleted on the `Profiles` page of the main window, which `/dejunk profiles` also opens. The footer shows the active profile. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
 
 ### Lootable Items
 
@@ -114,7 +110,7 @@ The `Keybindings` page of the main window sets keys for the Main Window, Junk It
 # Toggle the lootable items frame.
 /dejunk loot
 
-# Toggle the profiles frame.
+# Open the profiles page.
 /dejunk profiles
 
 # Display a list of commands.
