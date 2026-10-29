@@ -34,8 +34,8 @@ local pending = {}
 --- Increases whenever the cache changes.
 local version = 0
 
---- Whether the next tick updates the cache.
-local isDirty = false
+--- Whether the next tick updates the cache. True until the first update.
+local isDirty = true
 
 --- The time the current burst of `BAG_UPDATE` events started, or `nil` if there is none.
 --- @type number?
@@ -130,8 +130,6 @@ end
 
 -- Register events to trigger cache updates.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  markDirty()
-
   -- Starts a burst.
   EventManager:On(E.Wow.BagUpdate, function()
     burstStartTime = burstStartTime or B.Utils:GetTime()
@@ -208,6 +206,12 @@ end
 --- @return integer version
 function BagItemsCache:GetVersion()
   return version
+end
+
+--- Returns whether the cache is up to date and no slot is waiting for item data.
+--- @return boolean
+function BagItemsCache:IsSettled()
+  return not isDirty and next(pending) == nil
 end
 
 --- Returns an integer that identifies the given `bag` and `slot`, for use as a table key.

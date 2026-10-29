@@ -656,6 +656,70 @@ do
 end
 
 -- ============================================================================
+-- Tests - BagItemsCache:IsSettled()
+-- ============================================================================
+
+-- Test: is false until the cache has updated for the first time.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  assert(BagItemsCache:IsSettled() == false)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:IsSettled() == true)
+end
+
+-- Test: is false from a bag event until the cache has updated.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  assert(BagItemsCache:IsSettled() == false)
+
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:IsSettled() == true)
+end
+
+-- Test: is false while a slot is pending, and true once its item data loads.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  assert(BagItemsCache:IsSettled() == false)
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:IsSettled() == true)
+end
+
+-- Test: is true once a pending slot is dropped at its deadline.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  assert(BagItemsCache:IsSettled() == false)
+
+  game.Advance(BagItemsCache.PENDING_DEADLINE_SECONDS)
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:IsSettled() == true)
+end
+
+-- ============================================================================
 -- Tests - BagItemsCache:GetSlotKey()
 -- ============================================================================
 
