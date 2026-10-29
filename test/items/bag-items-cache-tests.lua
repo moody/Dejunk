@@ -11,8 +11,8 @@ local Mocks = require("test/mocks")
 --- Seconds per frame in the fake game.
 local FRAME_SECONDS = 0.05
 
---- Enough time for the cache to update after a bag event, however it schedules the update.
-local UPDATE_SECONDS = 0.2
+--- The seconds between the `BAG_UPDATE` events of a burst.
+local BAG_UPDATE_GAP_SECONDS = 0.25
 
 --- Enough time for the cache to try again after an item's data was not loaded.
 local RETRY_SECONDS = 0.5
@@ -137,6 +137,19 @@ local function getSortedIds(items)
   return ids
 end
 
+--- Fires `BAG_UPDATE` every `BAG_UPDATE_GAP_SECONDS` until `seconds` have passed.
+--- @param game table
+--- @param seconds number
+local function fireBagUpdatesFor(game, seconds)
+  local elapsed = 0
+
+  while elapsed < seconds do
+    game.Fire(game.E.Wow.BagUpdate)
+    game.Advance(BAG_UPDATE_GAP_SECONDS)
+    elapsed = elapsed + BAG_UPDATE_GAP_SECONDS
+  end
+end
+
 -- ============================================================================
 -- Tests - BagItemsCache:GetItems()
 -- ============================================================================
@@ -151,7 +164,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(Matchers:IsDeepEqual(getSortedIds(BagItemsCache:GetItems()), { 100, 200 }))
 end
@@ -162,7 +175,7 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   local given = { "stale", "stale" }
   local items = BagItemsCache:GetItems(given)
@@ -186,7 +199,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(1, 1).id == 200)
   assert(BagItemsCache:GetItem(0, 2) == nil)
@@ -202,7 +215,7 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 1) == nil)
   assert(BagItemsCache:GetItem(0, 2).id == 200)
@@ -230,7 +243,7 @@ end
 
 -- Test: fires once after the cache updates, with `true` when every item's data is loaded.
 do
-  local _, game = setupContext()
+  local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   local payloads = {}
@@ -239,14 +252,14 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(Matchers:IsDeepEqual(payloads, { true }))
 end
 
 -- Test: fires with `false` while an item's data is not loaded.
 do
-  local _, game = setupContext()
+  local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
   game.unloadedItemIds[100] = true
 
@@ -256,7 +269,7 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(payloads[1] == false)
 end
@@ -265,17 +278,17 @@ end
 -- Tests - Bag events
 -- ============================================================================
 
--- Test: BAG_UPDATE makes the cache catch up with the bags.
+-- Test: BAG_UPDATE makes the cache catch up with the bags, even if BAG_UPDATE_DELAYED does not arrive.
 do
   local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.BagUpdate)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.BURST_MAX_SECONDS + BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
@@ -286,11 +299,11 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.BagUpdateDelayed)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
@@ -301,22 +314,22 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.EquipmentSetsChanged)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
 
 -- Test: events that arrive together cause one update.
 do
-  local _, game = setupContext()
+  local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
 
   local updates = 0
   game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
@@ -325,7 +338,57 @@ do
   game.Fire(game.E.Wow.BagUpdate)
   game.Fire(game.E.Wow.BagUpdateDelayed)
   game.Fire(game.E.Wow.EquipmentSetsChanged)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(updates == 1)
+end
+
+-- Test: holds back updates while BAG_UPDATE events keep arriving.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  local updates = 0
+  game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
+
+  fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS / 2)
+
+  assert(updates == 0)
+end
+
+-- Test: updates once after BAG_UPDATE_DELAYED ends a burst of BAG_UPDATE events.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  local updates = 0
+  game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
+
+  fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS / 2)
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  assert(updates == 1)
+end
+
+-- Test: updates once a burst reaches its maximum age, however many BAG_UPDATE events keep arriving.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+
+  local updates = 0
+  game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
+
+  fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS * 1.5)
 
   assert(updates == 1)
 end
@@ -342,7 +405,7 @@ do
   game.refundSeconds = REFUND_SECONDS
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(UPDATE_SECONDS)
+  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
   assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
 
   local payloads = {}

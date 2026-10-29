@@ -8,11 +8,23 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class BagItemsCache
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 
+--- Seconds between checks for whether the cache needs updating.
+--- @type number
+BagItemsCache.UPDATE_TICK_SECONDS = 0.1
+
+--- Seconds that a burst of `BAG_UPDATE` events can hold back an update.
+--- @type number
+BagItemsCache.BURST_MAX_SECONDS = 2
+
 --- @type table<integer, BagItem>
 local cache = {}
 
 --- Whether the next tick updates the cache.
 local isDirty = false
+
+--- The time the current burst of `BAG_UPDATE` events started, or `nil` if there is none.
+--- @type number?
+local burstStartTime
 
 -- ============================================================================
 -- Local Functions
@@ -21,6 +33,13 @@ local isDirty = false
 --- Marks the cache to be updated on the next tick.
 local function markDirty()
   isDirty = true
+end
+
+--- Returns whether a burst of `BAG_UPDATE` events is holding back updates. A burst ends after `BURST_MAX_SECONDS`
+--- even if `BAG_UPDATE_DELAYED` does not arrive.
+--- @return boolean
+local function isBurstActive()
+  return burstStartTime ~= nil and B.Utils:GetTime() - burstStartTime < BagItemsCache.BURST_MAX_SECONDS
 end
 
 --- Returns the item cached for the `bag` and `slot`, if it exists.
@@ -42,6 +61,8 @@ end
 --- Updates the item cache and fires the `BagsUpdated` event.
 local function updateCache()
   isDirty = false
+  burstStartTime = nil
+
   EquipmentSetsCache:Refresh()
 
   for k in pairs(cache) do cache[k] = nil end
@@ -71,14 +92,26 @@ end
 
 -- Register events to trigger cache updates.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  TickerManager:NewTicker(0.1, function()
-    if isDirty then updateCache() end
+  markDirty()
+
+  -- Starts a burst.
+  EventManager:On(E.Wow.BagUpdate, function()
+    burstStartTime = burstStartTime or B.Utils:GetTime()
+    markDirty()
   end)
 
-  markDirty()
-  EventManager:On(E.Wow.BagUpdate, markDirty)
-  EventManager:On(E.Wow.BagUpdateDelayed, markDirty)
+  -- Ends the burst.
+  EventManager:On(E.Wow.BagUpdateDelayed, function()
+    burstStartTime = nil
+    markDirty()
+  end)
+
   EventManager:On(E.Wow.EquipmentSetsChanged, markDirty)
+
+  -- Update the cache at most once per tick, and not during a burst.
+  TickerManager:NewTicker(BagItemsCache.UPDATE_TICK_SECONDS, function()
+    if isDirty and not isBurstActive() then updateCache() end
+  end)
 
   -- A refund window can expire with no bag event to catch it, so poll for
   -- that and fire `BagsUpdated` when it happens.
