@@ -7,41 +7,59 @@ local B = Addon:GetModule("Blizzard")
 -- Local Functions
 -- =============================================================================
 
---- Returns the game's global with the given `name`. Throws an error if the client does not have it.
---- @param name string
+--- Throws an error saying that the game value at `path` does not exist on this client. It is the last alternative of a
+--- lookup, as in `GetTime or throw("GetTime")`.
+--- @param path string
 --- @return any
-local function getGlobal(name)
-  return _G[name] or error(("The game global `%s` does not exist on this client."):format(name), 2)
+local function throw(path)
+  error(("The game value `%s` does not exist on this client."):format(path), 2)
 end
 
 -- =============================================================================
 -- Globals
 -- =============================================================================
 
-local BACKPACK_CONTAINER = getGlobal("BACKPACK_CONTAINER")
-local C_Container = getGlobal("C_Container")
-local ClearCursor = getGlobal("ClearCursor")
-local ClearOverrideBindings = getGlobal("ClearOverrideBindings")
-local CreateFrame = getGlobal("CreateFrame")
-local CreateKeyChordStringUsingMetaKeyState = getGlobal("CreateKeyChordStringUsingMetaKeyState")
-local GameTooltip = getGlobal("GameTooltip")
-local GetBindingAction = getGlobal("GetBindingAction")
-local GetBindingName = getGlobal("GetBindingName")
-local GetBindingText = getGlobal("GetBindingText")
-local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or getGlobal("GetCoinTextureString")
-local GetContainerItemID = C_Container.GetContainerItemID
-local GetContainerItemInfo = C_Container.GetContainerItemInfo
-local GetContainerItemPurchaseInfo = C_Container.GetContainerItemPurchaseInfo
-local GetContainerNumSlots = C_Container.GetContainerNumSlots
-local GetConvertedKeyOrButton = getGlobal("GetConvertedKeyOrButton")
-local GetCursorInfo = getGlobal("GetCursorInfo")
-local GetItemInfo = C_Item.GetItemInfo or getGlobal("GetItemInfo")
-local GetItemInfoFromHyperlink = getGlobal("GetItemInfoFromHyperlink")
-local GetTime = getGlobal("GetTime")
-local InCombatLockdown = getGlobal("InCombatLockdown")
-local IsKeyPressIgnoredForBinding = getGlobal("IsKeyPressIgnoredForBinding")
-local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or getGlobal("NUM_BAG_SLOTS")
-local SetOverrideBindingClick = getGlobal("SetOverrideBindingClick")
+-- Bindings.
+local ClearOverrideBindings = ClearOverrideBindings or throw("ClearOverrideBindings")
+local CreateKeyChordStringUsingMetaKeyState = CreateKeyChordStringUsingMetaKeyState or throw("CreateKeyChordStringUsingMetaKeyState")
+local GetBindingAction = GetBindingAction or throw("GetBindingAction")
+local GetBindingName = GetBindingName or throw("GetBindingName")
+local GetBindingText = GetBindingText or throw("GetBindingText")
+local GetConvertedKeyOrButton = GetConvertedKeyOrButton or throw("GetConvertedKeyOrButton")
+local IsKeyPressIgnoredForBinding = IsKeyPressIgnoredForBinding or throw("IsKeyPressIgnoredForBinding")
+local SetOverrideBindingClick = SetOverrideBindingClick or throw("SetOverrideBindingClick")
+
+-- Container.
+local BACKPACK_CONTAINER = BACKPACK_CONTAINER or throw("BACKPACK_CONTAINER")
+local C_Container = C_Container or throw("C_Container")
+local GetContainerItemID = C_Container.GetContainerItemID or throw("C_Container.GetContainerItemID")
+local GetContainerItemInfo = C_Container.GetContainerItemInfo or throw("C_Container.GetContainerItemInfo")
+local GetContainerNumSlots = C_Container.GetContainerNumSlots or throw("C_Container.GetContainerNumSlots")
+local GetContainerItemPurchaseInfo = C_Container.GetContainerItemPurchaseInfo or throw("C_Container.GetContainerItemPurchaseInfo")
+local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or throw("NUM_BAG_SLOTS")
+
+-- Cursor.
+local ClearCursor = ClearCursor or throw("ClearCursor")
+local GetCursorInfo = GetCursorInfo or throw("GetCursorInfo")
+
+-- Item.
+local GetItemInfo = C_Item.GetItemInfo or GetItemInfo or throw("GetItemInfo")
+
+-- Money.
+local GetCoinTextureString = (
+  C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or
+  GetCoinTextureString or
+  throw("GetCoinTextureString")
+)
+
+-- Tooltip.
+local GameTooltip = GameTooltip or throw("GameTooltip")
+local GetItemInfoFromHyperlink = GetItemInfoFromHyperlink or throw("GetItemInfoFromHyperlink")
+
+-- Utils.
+local CreateFrame = CreateFrame or throw("CreateFrame")
+local GetTime = GetTime or throw("GetTime")
+local InCombatLockdown = InCombatLockdown or throw("InCombatLockdown")
 
 -- =============================================================================
 -- Blizzard - Strings
@@ -50,58 +68,76 @@ local SetOverrideBindingClick = getGlobal("SetOverrideBindingClick")
 --- The game's own localized strings.
 B.Strings = {
   --- Name of the Alt key.
-  ALT_KEY_TEXT = getGlobal("ALT_KEY_TEXT"),
+  --- @type string
+  ALT_KEY_TEXT = ALT_KEY_TEXT or throw("ALT_KEY_TEXT"),
 
   --- Name of the Ctrl key.
-  CTRL_KEY_TEXT = getGlobal("CTRL_KEY_TEXT"),
+  --- @type string
+  CTRL_KEY_TEXT = CTRL_KEY_TEXT or throw("CTRL_KEY_TEXT"),
 
   --- Name of the Shift key.
-  SHIFT_KEY_TEXT = getGlobal("SHIFT_KEY_TEXT"),
+  --- @type string
+  SHIFT_KEY_TEXT = SHIFT_KEY_TEXT or throw("SHIFT_KEY_TEXT"),
 
   --- Name of the Poor item quality.
-  POOR_TEXT = getGlobal("ITEM_QUALITY0_DESC"),
+  --- @type string
+  POOR_TEXT = ITEM_QUALITY0_DESC or throw("ITEM_QUALITY0_DESC"),
 
   --- Name of the Common item quality.
-  COMMON_TEXT = getGlobal("ITEM_QUALITY1_DESC"),
+  --- @type string
+  COMMON_TEXT = ITEM_QUALITY1_DESC or throw("ITEM_QUALITY1_DESC"),
 
   --- Name of the Uncommon item quality.
-  UNCOMMON_TEXT = getGlobal("ITEM_QUALITY2_DESC"),
+  --- @type string
+  UNCOMMON_TEXT = ITEM_QUALITY2_DESC or throw("ITEM_QUALITY2_DESC"),
 
   --- Name of the Rare item quality.
-  RARE_TEXT = getGlobal("ITEM_QUALITY3_DESC"),
+  --- @type string
+  RARE_TEXT = ITEM_QUALITY3_DESC or throw("ITEM_QUALITY3_DESC"),
 
   --- Name of the Epic item quality.
-  EPIC_TEXT = getGlobal("ITEM_QUALITY4_DESC"),
+  --- @type string
+  EPIC_TEXT = ITEM_QUALITY4_DESC or throw("ITEM_QUALITY4_DESC"),
 
   --- Label of the Accept button.
-  ACCEPT_TEXT = getGlobal("ACCEPT"),
+  --- @type string
+  ACCEPT_TEXT = ACCEPT or throw("ACCEPT"),
 
   --- Label of the Cancel button.
-  CANCEL_TEXT = getGlobal("CANCEL"),
+  --- @type string
+  CANCEL_TEXT = CANCEL or throw("CANCEL"),
 
   --- Label of the Yes button.
-  YES_TEXT = getGlobal("YES"),
+  --- @type string
+  YES_TEXT = YES or throw("YES"),
 
   --- Label of the No button.
-  NO_TEXT = getGlobal("NO"),
+  --- @type string
+  NO_TEXT = NO or throw("NO"),
 
   --- Prompt shown while a binding waits for a key. Takes the label of the binding and the name of the Escape key.
-  ASSIGN_KEY_PROMPT_TEXT = getGlobal("SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL"),
+  --- @type string
+  ASSIGN_KEY_PROMPT_TEXT = SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL or throw("SETTINGS_BIND_KEY_TO_COMMAND_OR_CANCEL"),
 
   --- Title of the tooltip of a bound key. Takes the label of the binding and the text of the key.
-  KEY_BINDING_NAME_AND_KEY_TEXT = getGlobal("KEY_BINDING_NAME_AND_KEY"),
+  --- @type string
+  KEY_BINDING_NAME_AND_KEY_TEXT = KEY_BINDING_NAME_AND_KEY or throw("KEY_BINDING_NAME_AND_KEY"),
 
   --- Hint shown in the tooltip of a bound key.
-  KEY_BINDING_TOOLTIP_TEXT = getGlobal("KEY_BINDING_TOOLTIP"),
+  --- @type string
+  KEY_BINDING_TOOLTIP_TEXT = KEY_BINDING_TOOLTIP or throw("KEY_BINDING_TOOLTIP"),
 
   --- Message shown after a key is bound.
-  KEY_BOUND_TEXT = getGlobal("KEY_BOUND"),
+  --- @type string
+  KEY_BOUND_TEXT = KEY_BOUND or throw("KEY_BOUND"),
 
   --- Message shown when a key is taken from another binding. Takes the label of that binding.
-  KEY_UNBOUND_ERROR_TEXT = getGlobal("KEY_UNBOUND_ERROR"),
+  --- @type string
+  KEY_UNBOUND_ERROR_TEXT = KEY_UNBOUND_ERROR or throw("KEY_UNBOUND_ERROR"),
 
   --- Error message shown when a vendor does not buy an item.
-  VENDOR_DOESNT_BUY_ERROR_TEXT = getGlobal("ERR_VENDOR_DOESNT_BUY"),
+  --- @type string
+  VENDOR_DOESNT_BUY_ERROR_TEXT = ERR_VENDOR_DOESNT_BUY or throw("ERR_VENDOR_DOESNT_BUY"),
 }
 
 -- =============================================================================
@@ -112,19 +148,19 @@ B.Strings = {
 B.FontObjects = {
   --- Small text, 10 pixels high on a Latin client.
   --- @type Font
-  Small = getGlobal("GameFontNormalSmall"),
+  Small = GameFontNormalSmall or throw("GameFontNormalSmall"),
 
   --- Default text, 12 pixels high on a Latin client.
   --- @type Font
-  Normal = getGlobal("GameFontNormal"),
+  Normal = GameFontNormal or throw("GameFontNormal"),
 
   --- Medium text, 14 pixels high on a Latin client.
   --- @type Font
-  Medium = getGlobal("GameFontNormalMed2"),
+  Medium = GameFontNormalMed2 or throw("GameFontNormalMed2"),
 
   --- Large text, 16 pixels high on a Latin client.
   --- @type Font
-  Large = getGlobal("GameFontNormalLarge"),
+  Large = GameFontNormalLarge or throw("GameFontNormalLarge"),
 }
 
 -- =============================================================================
