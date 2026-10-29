@@ -17,6 +17,12 @@ local UPDATE_SECONDS = 0.2
 --- Enough time for the cache to try again after an item's data was not loaded.
 local RETRY_SECONDS = 0.5
 
+--- The seconds left to refund an item in the refund tests.
+local REFUND_SECONDS = 30
+
+--- Enough time for the refund poll to run once.
+local REFUND_POLL_SECONDS = 1.5
+
 --- Returns `BagItemsCache` and a fake game, from a new context. The cache sees a fake `Blizzard` that reads
 --- `game.slots`, and the real `EventManager` and `TickerManager`, which the game drives with events and time.
 --- @return BagItemsCache BagItemsCache
@@ -253,6 +259,101 @@ do
   game.Advance(UPDATE_SECONDS)
 
   assert(payloads[1] == false)
+end
+
+-- ============================================================================
+-- Tests - Bag events
+-- ============================================================================
+
+-- Test: BAG_UPDATE makes the cache catch up with the bags.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(UPDATE_SECONDS)
+
+  game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
+  game.Fire(game.E.Wow.BagUpdate)
+  game.Advance(UPDATE_SECONDS)
+
+  assert(BagItemsCache:GetItem(0, 2).id == 200)
+end
+
+-- Test: BAG_UPDATE_DELAYED makes the cache catch up with the bags.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(UPDATE_SECONDS)
+
+  game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.Advance(UPDATE_SECONDS)
+
+  assert(BagItemsCache:GetItem(0, 2).id == 200)
+end
+
+-- Test: EQUIPMENT_SETS_CHANGED makes the cache catch up with the bags.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(UPDATE_SECONDS)
+
+  game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
+  game.Fire(game.E.Wow.EquipmentSetsChanged)
+  game.Advance(UPDATE_SECONDS)
+
+  assert(BagItemsCache:GetItem(0, 2).id == 200)
+end
+
+-- Test: events that arrive together cause one update.
+do
+  local _, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(UPDATE_SECONDS)
+
+  local updates = 0
+  game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
+
+  game.Fire(game.E.Wow.BagUpdate)
+  game.Fire(game.E.Wow.BagUpdate)
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.Fire(game.E.Wow.EquipmentSetsChanged)
+  game.Advance(UPDATE_SECONDS)
+
+  assert(updates == 1)
+end
+
+-- ============================================================================
+-- Tests - Refund poll
+-- ============================================================================
+
+-- Test: clears `refundExpirationTime` when the refund window ends, and fires `BagsUpdated` with `true`.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.time = 100
+  game.refundSeconds = REFUND_SECONDS
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(UPDATE_SECONDS)
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
+    payloads[#payloads + 1] = allItemsCached
+  end)
+
+  game.Advance(REFUND_SECONDS + REFUND_POLL_SECONDS)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime == nil)
+  assert(Matchers:IsDeepEqual(payloads, { true }))
 end
 
 -- ============================================================================
