@@ -556,6 +556,105 @@ do
   assert(Matchers:IsDeepEqual(payloads, { true }))
 end
 
+-- Test: fires `BagsUpdated` with `false` when the refund window ends while another slot is pending.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = {
+    { bag = 0, slot = 1, itemId = 100 },
+    { bag = 0, slot = 2, itemId = 200 }
+  }
+  game.unloadedItemIds[200] = true
+  game.refundSeconds = BagItemsCache.PENDING_DEADLINE_SECONDS / 2
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
+  end)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  game.Advance(game.refundSeconds + BagItemsCache.REFUND_POLL_SECONDS * 2)
+
+  assert(Matchers:IsDeepEqual(payloads, { false, false }))
+end
+
+-- ============================================================================
+-- Tests - BagItemsCache:GetVersion()
+-- ============================================================================
+
+-- Test: increases when the cache updates.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  local version = BagItemsCache:GetVersion()
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:GetVersion() > version)
+end
+
+-- Test: stays the same while nothing changes.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  local version = BagItemsCache:GetVersion()
+
+  game.AdvanceTicks(10)
+
+  assert(BagItemsCache:GetVersion() == version)
+end
+
+-- Test: increases when a refund window ends.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.refundSeconds = REFUND_SECONDS
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  local version = BagItemsCache:GetVersion()
+
+  game.Advance(REFUND_SECONDS + BagItemsCache.REFUND_POLL_SECONDS * 2)
+
+  assert(BagItemsCache:GetVersion() > version)
+end
+
+-- Test: increases when a pending slot's item data loads.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  local version = BagItemsCache:GetVersion()
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:GetVersion() > version)
+end
+
+-- Test: increases when a pending slot is dropped at its deadline.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  local version = BagItemsCache:GetVersion()
+
+  game.Advance(BagItemsCache.PENDING_DEADLINE_SECONDS)
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:GetVersion() > version)
+end
+
 -- ============================================================================
 -- Tests - BagItemsCache:GetSlotKey()
 -- ============================================================================

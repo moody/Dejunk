@@ -31,6 +31,9 @@ local cache = {}
 --- @type table<integer, number>
 local pending = {}
 
+--- Increases whenever the cache changes.
+local version = 0
+
 --- Whether the next tick updates the cache.
 local isDirty = false
 
@@ -70,6 +73,13 @@ local function setCachedItem(bag, slot, item)
   cache[BagItemsCache:GetSlotKey(bag, slot)] = item
 end
 
+--- Increases the version and fires the `BagsUpdated` event.
+--- @param noItemsPending boolean
+local function fireBagsUpdated(noItemsPending)
+  version = version + 1
+  EventManager:Fire(E.BagsUpdated, noItemsPending)
+end
+
 --- Updates the item cache and fires the `BagsUpdated` event.
 local function updateCache()
   isDirty = false
@@ -91,7 +101,7 @@ local function updateCache()
     end
   end
 
-  EventManager:Fire(E.BagsUpdated, next(pending) == nil)
+  fireBagsUpdated(next(pending) == nil)
 end
 
 --- Tries again to cache the slots whose item data was not loaded, and drops the ones past their deadline. Fires
@@ -111,7 +121,7 @@ local function updatePending()
     end
   end
 
-  if anyResolved then EventManager:Fire(E.BagsUpdated, next(pending) == nil) end
+  if anyResolved then fireBagsUpdated(next(pending) == nil) end
 end
 
 -- ============================================================================
@@ -160,7 +170,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
       end
     end
 
-    if anyExpired then EventManager:Fire(E.BagsUpdated, true) end
+    if anyExpired then fireBagsUpdated(next(pending) == nil) end
   end)
 end)
 
@@ -192,6 +202,12 @@ end
 --- @return BagItem? item
 function BagItemsCache:GetItem(bag, slot)
   return getCachedItem(bag, slot)
+end
+
+--- Returns a number that increases whenever the cache changes.
+--- @return integer version
+function BagItemsCache:GetVersion()
+  return version
 end
 
 --- Returns an integer that identifies the given `bag` and `slot`, for use as a table key.
