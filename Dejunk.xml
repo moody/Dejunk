@@ -95,6 +95,7 @@
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
 
   <!-- UI Components -->
+  <Script file="src\ui\components\card-list.lua"/>
   <Script file="src\ui\components\check-chip-group.lua"/>
   <Script file="src\ui\components\check-chip.lua"/>
   <Script file="src\ui\components\divider.lua"/>
