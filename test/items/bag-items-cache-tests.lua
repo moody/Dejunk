@@ -21,7 +21,11 @@ local function setupContext()
     slots = {},
 
     --- The time that `Blizzard.Utils:GetTime()` returns.
-    time = 0
+    time = 0,
+
+    --- The seconds left to refund every item, or `nil` if it has no refund window.
+    --- @type number?
+    refundSeconds = nil
   }
 
   -- `Blizzard`, reading from `game.slots`.
@@ -47,7 +51,7 @@ local function setupContext()
     end
   end)
 
-  ContainerSpy:Stub("GetRefundSeconds"):Returns(nil)
+  ContainerSpy:Stub("GetRefundSeconds"):Invokes(function() return game.refundSeconds end)
 
   Mocks:CreateSpy(Blizzard.Item):Stub("GetInfo"):Returns("Name", 10, "INVTYPE_HEAD", 100, 2, 1)
   Mocks:CreateSpy(Blizzard.Utils):Stub("GetTime"):Invokes(function() return game.time end)
@@ -88,6 +92,7 @@ local function setupContext()
   end
 
   game.E = Context:GetModule("Events")
+  game.EventManager = EventManager
 
   return Context:GetModule("BagItemsCache"), game
 end
@@ -119,4 +124,96 @@ do
   game.Advance(0.2)
 
   assert(Matchers:IsDeepEqual(getSortedIds(BagItemsCache:GetItems()), { 100, 200 }))
+end
+
+-- Test: fills and returns the array it is given, replacing what it held.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.2)
+
+  local given = { "stale", "stale" }
+  local items = BagItemsCache:GetItems(given)
+
+  assert(items == given)
+  assert(#items == 1)
+  assert(items[1].id == 100)
+end
+
+-- ============================================================================
+-- Tests - BagItemsCache:GetItem()
+-- ============================================================================
+
+-- Test: returns the item cached for a slot, and nothing for an empty slot.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = {
+    { bag = 0, slot = 1, itemId = 100 },
+    { bag = 0, slot = 2 },
+    { bag = 1, slot = 1, itemId = 200 }
+  }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.2)
+
+  assert(BagItemsCache:GetItem(1, 1).id == 200)
+  assert(BagItemsCache:GetItem(0, 2) == nil)
+end
+
+-- ============================================================================
+-- Tests - BagsUpdated
+-- ============================================================================
+
+-- Test: fires once after the cache updates, with `true` when every item's data is loaded.
+do
+  local _, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
+    payloads[#payloads + 1] = allItemsCached
+  end)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.2)
+
+  assert(Matchers:IsDeepEqual(payloads, { true }))
+end
+
+-- ============================================================================
+-- Tests - BagItemsCache:CreateItem()
+-- ============================================================================
+
+-- Test: builds the item from the slot and the item's info.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 2, slot = 3, itemId = 300 } }
+
+  local item = BagItemsCache:CreateItem(2, 3)
+
+  assert(Matchers:IsDeepEqual(item, {
+    bag = 2,
+    slot = 3,
+    id = 300,
+    link = "item:300",
+    name = "Name",
+    baseItemLevel = 10,
+    invType = "INVTYPE_HEAD",
+    price = 100,
+    classId = 2,
+    subclassId = 1,
+    isEquipmentSet = false
+  }))
+end
+
+-- Test: sets when the refund window ends, from the seconds left to refund.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.time = 100
+  game.refundSeconds = 30
+
+  assert(BagItemsCache:CreateItem(0, 1).refundExpirationTime == 130)
 end
