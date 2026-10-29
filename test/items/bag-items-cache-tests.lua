@@ -20,9 +20,6 @@ local RETRY_SECONDS = 0.5
 --- The seconds left to refund an item in the refund tests.
 local REFUND_SECONDS = 30
 
---- Enough time for the refund poll to run once.
-local REFUND_POLL_SECONDS = 1.5
-
 --- Returns `BagItemsCache` and a fake game, from a new context. The cache sees a fake `Blizzard` that reads
 --- `game.slots`, and the real `EventManager` and `TickerManager`, which the game drives with events and time.
 --- @return BagItemsCache BagItemsCache
@@ -413,7 +410,7 @@ do
     payloads[#payloads + 1] = allItemsCached
   end)
 
-  game.Advance(REFUND_SECONDS + REFUND_POLL_SECONDS)
+  game.Advance(REFUND_SECONDS + BagItemsCache.REFUND_POLL_SECONDS * 2)
 
   assert(BagItemsCache:GetItem(0, 1).refundExpirationTime == nil)
   assert(Matchers:IsDeepEqual(payloads, { true }))

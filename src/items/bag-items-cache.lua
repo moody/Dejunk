@@ -16,6 +16,10 @@ BagItemsCache.UPDATE_TICK_SECONDS = 0.1
 --- @type number
 BagItemsCache.BURST_MAX_SECONDS = 2
 
+--- Seconds between checks for whether an item's refund window has ended.
+--- @type number
+BagItemsCache.REFUND_POLL_SECONDS = 1
+
 --- @type table<integer, BagItem>
 local cache = {}
 
@@ -115,7 +119,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
 
   -- A refund window can expire with no bag event to catch it, so poll for
   -- that and fire `BagsUpdated` when it happens.
-  TickerManager:NewTicker(1, function()
+  TickerManager:NewTicker(BagItemsCache.REFUND_POLL_SECONDS, function()
     local now = B.Utils:GetTime()
     local anyExpired = false
 
