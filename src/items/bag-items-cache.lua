@@ -20,11 +20,15 @@ BagItemsCache.BURST_MAX_SECONDS = 2
 --- @type number
 BagItemsCache.REFUND_POLL_SECONDS = 1
 
+--- Seconds to retry a slot whose item data is not loaded before giving up on it.
+--- @type number
+BagItemsCache.PENDING_DEADLINE_SECONDS = 5
+
 --- @type table<integer, BagItem>
 local cache = {}
 
---- The keys of the slots whose item data is not loaded.
---- @type table<integer, boolean>
+--- The time to stop retrying each slot whose item data is not loaded, by slot key.
+--- @type table<integer, number>
 local pending = {}
 
 --- Whether the next tick updates the cache.
@@ -82,7 +86,7 @@ local function updateCache()
       if item then
         setCachedItem(bag, slot, item)
       else
-        pending[BagItemsCache:GetSlotKey(bag, slot)] = true
+        pending[BagItemsCache:GetSlotKey(bag, slot)] = B.Utils:GetTime() + BagItemsCache.PENDING_DEADLINE_SECONDS
       end
     end
   end
@@ -90,21 +94,24 @@ local function updateCache()
   EventManager:Fire(E.BagsUpdated, next(pending) == nil)
 end
 
---- Tries again to cache the slots whose item data was not loaded, and fires `BagsUpdated` if any were cached.
+--- Tries again to cache the slots whose item data was not loaded, and drops the ones past their deadline. Fires
+--- `BagsUpdated` if any slot was cached or dropped.
 local function updatePending()
-  local anyCached = false
+  local anyResolved = false
+  local now = B.Utils:GetTime()
 
-  for key in pairs(pending) do
+  for key, deadline in pairs(pending) do
     local bag, slot = BagItemsCache:GetSlotFromKey(key)
     local item = BagItemsCache:CreateItem(bag, slot)
-    if item then
-      setCachedItem(bag, slot, item)
+    if item then setCachedItem(bag, slot, item) end
+
+    if item or now >= deadline then
       pending[key] = nil
-      anyCached = true
+      anyResolved = true
     end
   end
 
-  if anyCached then EventManager:Fire(E.BagsUpdated, next(pending) == nil) end
+  if anyResolved then EventManager:Fire(E.BagsUpdated, next(pending) == nil) end
 end
 
 -- ============================================================================

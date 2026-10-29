@@ -98,6 +98,7 @@ local function setupContext()
 
   Context:Load("src/items/bag-items-cache.lua")
 
+  local BagItemsCache = Context:GetModule("BagItemsCache")
   local EventManager = Context:GetModule("EventManager")
 
   --- Fires a game event, as the game does.
@@ -119,10 +120,16 @@ local function setupContext()
     end
   end
 
+  --- Moves the game's time forward by `count` update ticks of the cache, plus a frame so the last tick has run.
+  --- @param count integer
+  function game.AdvanceTicks(count)
+    game.Advance(count * BagItemsCache.UPDATE_TICK_SECONDS + FRAME_SECONDS)
+  end
+
   game.E = Context:GetModule("Events")
   game.EventManager = EventManager
 
-  return Context:GetModule("BagItemsCache"), game
+  return BagItemsCache, game
 end
 
 --- Returns the IDs of the given items, sorted.
@@ -162,7 +169,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(Matchers:IsDeepEqual(getSortedIds(BagItemsCache:GetItems()), { 100, 200 }))
 end
@@ -173,7 +180,7 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local given = { "stale", "stale" }
   local items = BagItemsCache:GetItems(given)
@@ -197,7 +204,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(1, 1).id == 200)
   assert(BagItemsCache:GetItem(0, 2) == nil)
@@ -213,7 +220,7 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 1) == nil)
   assert(BagItemsCache:GetItem(0, 2).id == 200)
@@ -226,28 +233,84 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
   assert(BagItemsCache:GetItem(0, 1) == nil)
 
   game.unloadedItemIds[100] = nil
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 1).id == 100)
 end
 
 -- Test: retries a slot whose item data was not loaded without scanning every slot again.
 do
+  local _, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+
+  assert(game.scanCount == 1)
+end
+
+-- Test: keeps retrying a slot until its deadline.
+do
   local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.Advance(BagItemsCache.PENDING_DEADLINE_SECONDS - BagItemsCache.UPDATE_TICK_SECONDS)
 
   game.unloadedItemIds[100] = nil
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
-  assert(game.scanCount == 1)
+  assert(BagItemsCache:GetItem(0, 1).id == 100)
+end
+
+-- Test: gives up on a slot whose item data does not load by its deadline, and fires `BagsUpdated` with `true`.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
+  end)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  game.Advance(BagItemsCache.PENDING_DEADLINE_SECONDS)
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(payloads, { false, true }))
+  assert(BagItemsCache:GetItem(0, 1) == nil)
+end
+
+-- Test: does not retry a slot after its deadline, so an item that loads later waits for the next update.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  game.Advance(BagItemsCache.PENDING_DEADLINE_SECONDS)
+  game.AdvanceTicks(1)
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+  assert(BagItemsCache:GetItem(0, 1) == nil)
+
+  game.Fire(game.E.Wow.BagUpdateDelayed)
+  game.AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).id == 100)
 end
 
 -- ============================================================================
@@ -256,7 +319,7 @@ end
 
 -- Test: fires once after the cache updates, with `true` when no item is pending.
 do
-  local BagItemsCache, game = setupContext()
+  local _, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   local payloads = {}
@@ -265,14 +328,14 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(Matchers:IsDeepEqual(payloads, { true }))
 end
 
 -- Test: fires with `false` while an item's data is not loaded.
 do
-  local BagItemsCache, game = setupContext()
+  local _, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
   game.unloadedItemIds[100] = true
 
@@ -282,14 +345,14 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(payloads[1] == false)
 end
 
 -- Test: fires again with `true` once the pending item's data loads.
 do
-  local BagItemsCache, game = setupContext()
+  local _, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
   game.unloadedItemIds[100] = true
 
@@ -299,22 +362,22 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   game.unloadedItemIds[100] = nil
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(Matchers:IsDeepEqual(payloads, { false, true }))
 end
 
 -- Test: an update leaves nothing pending for a slot that has since been emptied.
 do
-  local BagItemsCache, game = setupContext()
+  local _, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local payloads = {}
   game.EventManager:On(game.E.BagsUpdated, function(noItemsPending)
@@ -323,7 +386,7 @@ do
 
   game.slots = { { bag = 0, slot = 1 } }
   game.Fire(game.E.Wow.BagUpdateDelayed)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(Matchers:IsDeepEqual(payloads, { true }))
 end
@@ -338,11 +401,12 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.BagUpdate)
-  game.Advance(BagItemsCache.BURST_MAX_SECONDS + BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.Advance(BagItemsCache.BURST_MAX_SECONDS)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
@@ -353,11 +417,11 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.BagUpdateDelayed)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
@@ -368,22 +432,22 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   game.slots[2] = { bag = 0, slot = 2, itemId = 200 }
   game.Fire(game.E.Wow.EquipmentSetsChanged)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
 
 -- Test: events that arrive together cause one update.
 do
-  local BagItemsCache, game = setupContext()
+  local _, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local updates = 0
   game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
@@ -392,7 +456,7 @@ do
   game.Fire(game.E.Wow.BagUpdate)
   game.Fire(game.E.Wow.BagUpdateDelayed)
   game.Fire(game.E.Wow.EquipmentSetsChanged)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(updates == 1)
 end
@@ -403,7 +467,7 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local updates = 0
   game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
@@ -420,14 +484,14 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   game.unloadedItemIds[100] = nil
   fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS / 2)
   assert(BagItemsCache:GetItem(0, 1) == nil)
 
   game.Fire(game.E.Wow.BagUpdateDelayed)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(BagItemsCache:GetItem(0, 1).id == 100)
 end
@@ -438,14 +502,14 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local updates = 0
   game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
 
   fireBagUpdatesFor(game, BagItemsCache.BURST_MAX_SECONDS / 2)
   game.Fire(game.E.Wow.BagUpdateDelayed)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   assert(updates == 1)
 end
@@ -456,7 +520,7 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
 
   local updates = 0
   game.EventManager:On(game.E.BagsUpdated, function() updates = updates + 1 end)
@@ -478,7 +542,7 @@ do
   game.refundSeconds = REFUND_SECONDS
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(BagItemsCache.UPDATE_TICK_SECONDS * 2)
+  game.AdvanceTicks(1)
   assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
 
   local payloads = {}
