@@ -54,6 +54,7 @@
   <Script file="src\junk-filter\junk-filter.lua"/>
 
   <!-- Items -->
+  <Script file="src\items\bag-items-cache.lua"/>
   <Script file="src\items\equipment-sets-cache.lua"/>
   <Script file="src\items\equipment-types.lua"/>
   <Script file="src\items\items.lua"/>

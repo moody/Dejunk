@@ -49,6 +49,7 @@ local LAST_FILTER_NAME = ORDERED_FILTER_NAMES[#ORDERED_FILTER_NAMES]
 --- @return JunkFilter JunkFilter
 --- @return MockSpy ItemFiltersSpy
 --- @return MockSpy ItemsSpy
+--- @return MockSpy BagItemsCacheSpy
 local function setupContext(options)
   options = options or {}
 
@@ -65,6 +66,9 @@ local function setupContext(options)
   local ItemFilters = { JUNK = JUNK, NOT_JUNK = NOT_JUNK, PASS = PASS }
   local ItemFiltersSpy = Mocks:CreateSpy(ItemFilters)
   for _, name in ipairs(ORDERED_FILTER_NAMES) do ItemFiltersSpy:Stub(name):Returns(PASS) end
+
+  local BagItemsCache = {}
+  local BagItemsCacheSpy = Mocks:CreateSpy(BagItemsCache)
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
@@ -90,6 +94,7 @@ local function setupContext(options)
     }
   })
 
+  Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("ItemFilters", ItemFilters)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
@@ -100,15 +105,15 @@ local function setupContext(options)
   Context:SetModule("StateManager", StateManager)
   Context:Load("src/junk-filter/junk-filter.lua")
 
-  return Context:GetModule("JunkFilter"), ItemFiltersSpy, ItemsSpy
+  return Context:GetModule("JunkFilter"), ItemFiltersSpy, ItemsSpy, BagItemsCacheSpy
 end
 
---- Stubs `Items:GetItems()` like the real method: it empties the given array, or a new one, and fills it with
---- `bagItems`.
---- @param ItemsSpy MockSpy
+--- Stubs `BagItemsCache:GetItems()` like the real method: it empties the given array, or a new one, and fills it
+--- with `bagItems`.
+--- @param BagItemsCacheSpy MockSpy
 --- @param bagItems BagItem[]
-local function stubGetItems(ItemsSpy, bagItems)
-  ItemsSpy:Stub("GetItems"):Invokes(function(_, items)
+local function stubGetItems(BagItemsCacheSpy, bagItems)
+  BagItemsCacheSpy:Stub("GetItems"):Invokes(function(_, items)
     items = items or {}
     for key in pairs(items) do items[key] = nil end
     for i, item in ipairs(bagItems) do items[i] = item end
@@ -424,8 +429,8 @@ end
 
 -- Test: returns the array it is given.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
-  stubGetItems(ItemsSpy, {})
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  stubGetItems(BagItemsCacheSpy, {})
   local given = {}
 
   assert(JunkFilter:GetJunkItems(given) == given)
@@ -433,9 +438,9 @@ end
 
 -- Test: keeps the items that IsJunkItem finds junk, with its reason, and removes the rest.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA, itemB, itemC, itemD = { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 }
-  stubGetItems(ItemsSpy, { itemA, itemB, itemC, itemD })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
   Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Invokes(function(_, item, filterType)
     assert(filterType == nil, "GetJunkItems must ask IsJunkItem without a filter type")
     return item == itemC, "junk reason"
@@ -448,11 +453,11 @@ end
 
 -- Test: sorts by the price of the whole stack, lowest first.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 4, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
-  stubGetItems(ItemsSpy, { itemA, itemB, itemC })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
   Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkFilter:GetJunkItems()
@@ -462,10 +467,10 @@ end
 
 -- Test: sorts items of the same price by quality, lowest first.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 3 }
   local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(ItemsSpy, { itemA, itemB })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
   Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkFilter:GetJunkItems()
@@ -475,10 +480,10 @@ end
 
 -- Test: sorts items of the same price and quality by name.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "b", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(ItemsSpy, { itemA, itemB })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
   Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkFilter:GetJunkItems()
@@ -488,10 +493,10 @@ end
 
 -- Test: sorts items of the same price, quality, and name by quantity, lowest first.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "a", price = 2, quantity = 2, quality = 1 }
   local itemB = { name = "a", price = 4, quantity = 1, quality = 1 }
-  stubGetItems(ItemsSpy, { itemA, itemB })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
   Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkFilter:GetJunkItems()
@@ -505,8 +510,8 @@ end
 
 -- Test: returns how many items are sellable junk and how many are destroyable junk.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
-  stubGetItems(ItemsSpy, {
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  stubGetItems(BagItemsCacheSpy, {
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true },
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true },
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true, canDestroy = true },
@@ -533,11 +538,11 @@ end
 
 -- Test: returns the first sellable junk item in sort order.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1, canSell = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canSell = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canSell = false }
-  stubGetItems(ItemsSpy, { itemA, itemB, itemC })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
   JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
     return item.canSell, "reason"
@@ -548,8 +553,8 @@ end
 
 -- Test: returns nil when no item is sellable junk.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
-  stubGetItems(ItemsSpy, { {} })
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  stubGetItems(BagItemsCacheSpy, { {} })
   Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(false)
 
   assert(JunkFilter:GetNextSellableJunkItem() == nil)
@@ -561,11 +566,11 @@ end
 
 -- Test: returns the first destroyable junk item in sort order.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1, canDestroy = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canDestroy = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canDestroy = false }
-  stubGetItems(ItemsSpy, { itemA, itemB, itemC })
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
   JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
     return item.canDestroy, "reason"
@@ -576,8 +581,8 @@ end
 
 -- Test: returns nil when no item is destroyable junk.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
-  stubGetItems(ItemsSpy, { {} })
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  stubGetItems(BagItemsCacheSpy, { {} })
   Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(false)
 
   assert(JunkFilter:GetNextDestroyableJunkItem() == nil)

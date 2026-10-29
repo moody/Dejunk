@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local BagItemsCache = Addon:GetModule("BagItemsCache")
 local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
@@ -35,7 +36,7 @@ end
 --- @param items? BagItem[]
 --- @return BagItem[] junkItems
 local function getJunkItems(filterFunc, items)
-  items = Items:GetItems(items)
+  items = BagItemsCache:GetItems(items)
 
   for i = #items, 1, -1 do
     local item = items[i]

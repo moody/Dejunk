@@ -1,5 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
@@ -9,7 +10,7 @@ local StateManager = Addon:GetModule("StateManager")
 hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
   if not StateManager:GetGlobalState().itemTooltips or Items:IsBagSlotEmpty(bag, slot) then return end
 
-  local item = Items:GetItem(bag, slot)
+  local item = BagItemsCache:GetItem(bag, slot)
   if not item then return end
 
   local isSellJunk, sellReason = JunkFilter:IsJunkItem(item, "SELL")

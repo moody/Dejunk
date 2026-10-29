@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local E = Addon:GetModule("Events")
@@ -28,7 +29,7 @@ local ignoredItemIds = {}
 
 --- Repopulates `lootableItems` with the current lootable, non-ignored items.
 local function updateLootableItems()
-  Items:GetItems(lootableItems)
+  BagItemsCache:GetItems(lootableItems)
   for i = #lootableItems, 1, -1 do
     if not lootableItems[i].lootable or ignoredItemIds[lootableItems[i].id] then
       table.remove(lootableItems, i)
