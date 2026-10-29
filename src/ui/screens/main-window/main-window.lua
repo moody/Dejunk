@@ -329,21 +329,15 @@ footerRow:AddRow({ justify = "CENTER" }):AddChild({
 })
 
 -- Edit profiles button.
-footerRow:AddRow({ justify = "END" }):AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_EditProfilesButton",
-      texture = Addon:GetAsset("gear-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Yellow,
-      onClick = function() ProfilesFrame:Toggle() end,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(L.PROFILES)
-      end
-    })
+footerRow:AddRow({ justify = "END" }):AttachComponent(ComponentFactory:IconButton({
+  name = "$parent_EditProfilesButton",
+  icon = Addon:GetAsset("gear-icon"),
+  highlightColor = Colors.Yellow,
+  onClick = function() ProfilesFrame:Toggle() end,
+  onUpdateTooltip = function(_, tooltip)
+    tooltip:SetText(L.PROFILES)
   end
-})
+}))
 
 -- ============================================================================
 -- MainWindow
