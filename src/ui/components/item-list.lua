@@ -15,10 +15,11 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @class ItemListComponentOptions
 --- @field getItems fun(): (BagItem | ListItem)[] Returns the items to list, in order.
 --- @field cardCount integer Number of items shown at once. The rest are reached by scrolling.
---- @field addItem fun(itemId: number) Called with the ID of an item dropped on the list.
+--- @field addItem? fun(itemId: number) Called with the ID of an item dropped on the list. Drops do nothing without it.
 --- @field displayPrice? boolean Shows the price of each stack. Defaults to `false`.
 --- @field iconSize? integer Defaults to the `ItemCard` default.
 --- @field fontObject? Font Defaults to the `ItemCard` default.
+--- @field iconButton? ItemCardIconButtonOptions Adds a button to the right of each card.
 --- @field onUpdateItemTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Defaults to the item's tooltip.
 --- @field onItemClick? fun(item: BagItem | ListItem, button: string)
 
@@ -44,7 +45,7 @@ function ComponentFactory:ItemList(options)
   --- Adds the item held on the cursor to the list, then empties the cursor.
   local function addCursorItem()
     local itemId = B.Cursor:GetItemId()
-    if itemId then
+    if itemId and options.addItem then
       options.addItem(itemId)
       B.Cursor:Clear()
     end
@@ -82,6 +83,7 @@ function ComponentFactory:ItemList(options)
       displayPrice = options.displayPrice,
       iconSize = options.iconSize,
       fontObject = options.fontObject,
+      iconButton = options.iconButton,
       onUpdateTooltip = options.onUpdateItemTooltip,
 
       onClick = function(item, button)

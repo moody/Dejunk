@@ -12,7 +12,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class LootableFrame
 local LootableFrame = Addon:GetModule("LootableFrame")
 
-local NUM_LOOTABLE_PANEL_BUTTONS = 5
+local LOOTABLE_CARD_COUNT = 5
 
 local Components = {}
 
@@ -48,31 +48,6 @@ local function refreshComponents()
   Components.Root.TitleText:GetFrame():SetText(
     Colors.Yellow(("%s (%s)"):format(L.LOOTABLE_ITEMS, Colors.White(#lootableItems)))
   )
-
-  --- @type SliderWidget
-  local slider = Components.LootablePanelSlider:GetFrame()
-  local offset = math.floor(slider:GetValue() + 0.5)
-
-  -- Update button rows.
-  for i, lootablePanelButtonRow in ipairs(Components.LootablePanelButtonRows) do
-    local item = lootableItems[i + offset]
-    --- @type ItemButtonWidget
-    local itemButton = lootablePanelButtonRow.ItemButton:GetFrame()
-    if item then itemButton:SetItem(item) end
-    lootablePanelButtonRow:SetVisibility(item and "VISIBLE" or "INVISIBLE")
-  end
-
-  -- Update slider.
-  local maxScroll = math.max(#lootableItems - NUM_LOOTABLE_PANEL_BUTTONS, 0)
-  if slider then slider:SetMinMaxValues(0, maxScroll) end
-  Components.LootablePanelSlider:SetVisibility(maxScroll <= 0 and "GONE" or "VISIBLE")
-
-  -- Update "no items" text.
-  --- @type LootablePanelWidget
-  local panel = Components.LootablePanel:GetFrame()
-  if #lootableItems == 0 then panel.noItemsText:Show() else panel.noItemsText:Hide() end
-
-  Components.Root:Layout()
 end
 
 -- ============================================================================
@@ -96,96 +71,46 @@ Components.Root = ComponentFactory:Window({
 -- Content Components
 -- ============================================================================
 
--- Container for the lootable item buttons and slider.
+-- Panel around the item list.
 Components.LootablePanel = Components.Root:AddColumn({ padding = Widgets:Padding() }):AddChild({
   padding = Widgets:Padding(),
+
+  --- @param parent Frame
   frameFactory = function(parent)
-    --- @class LootablePanelWidget : FrameWidget
-    --- @field noItemsText FontString
-    local frame = Widgets:Frame({ parent = parent, name = "$parent_LootablePanel" })
-
-    -- No items text.
-    frame.noItemsText = frame:CreateFontString("$parent_NoItemsText", "ARTWORK", "GameFontNormal")
-    frame.noItemsText:SetPoint("CENTER")
-    frame.noItemsText:SetText(Colors.White(L.NO_ITEMS))
-    frame.noItemsText:SetAlpha(0.3)
-
-    -- Scroll on mouse wheel.
-    frame:EnableMouseWheel(true)
-    frame:SetScript("OnMouseWheel", function(_, delta)
-      local slider = Components.LootablePanelSlider:GetFrame()
-      if slider then slider:SetValue(slider:GetValue() - delta) end
-    end)
-
-    return frame
+    return Widgets:Frame({ parent = parent })
   end
 })
 
-local lootablePanelContent = Components.LootablePanel:AddRow({ gap = Widgets:Padding() })
+Components.ItemList = Components.LootablePanel:AttachComponent(ComponentFactory:ItemList({
+  cardCount = LOOTABLE_CARD_COUNT,
+  getItems = function() return lootableItems end,
 
--- Container for the item buttons.
-local lootablePanelButtonColumn = lootablePanelContent:AddColumn({ gap = Widgets:Padding(0.5) })
+  onUpdateItemTooltip = function(item, tooltip)
+    tooltip:SetBagItem(item.bag, item.slot)
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(L.LEFT_CLICK, L.LOOT)
+  end,
 
-Components.LootablePanelSlider = lootablePanelContent:AddChild({
-  width = 12,
-  frameFactory = function(parent)
-    return Widgets:Slider({ name = "$parent_Slider", parent = parent })
-  end
-})
-
-Components.LootablePanelButtonRows = {}
-for i = 1, NUM_LOOTABLE_PANEL_BUTTONS do
-  --- @class LootablePanelButtonRow : WaffleFlexComponent
-  local lootablePanelButtonRow = lootablePanelButtonColumn:AddRow({ gap = Widgets:Padding(0.5), visibility = "INVISIBLE" })
-  Components.LootablePanelButtonRows[i] = lootablePanelButtonRow
-
-  lootablePanelButtonRow.ItemButton = lootablePanelButtonRow:AddChild({
-    frameFactory = function()
-      local frame = Widgets:ItemButton({
-        onUpdateTooltip = function(self, tooltip)
-          if not self.item then return end
-          tooltip:SetOwner(self, "ANCHOR_RIGHT")
-          tooltip:SetBagItem(self.item.bag, self.item.slot)
-          tooltip:AddLine(" ")
-          tooltip:AddDoubleLine(L.LEFT_CLICK, L.LOOT)
-        end
-      })
-
-      frame:SetScript("OnClick", function(self, button)
-        if button == "LeftButton" then
-          if not self.item then return end
-          if Addon:IsBusy() then return end
-          if not Items:IsItemStillInBags(self.item) then return end
-          if Items:IsItemLocked(self.item) then return end
-          C_Container.UseContainerItem(self.item.bag, self.item.slot)
-        end
-      end)
-
-      return frame
+  onItemClick = function(item, button)
+    if button == "LeftButton" then
+      if Addon:IsBusy() then return end
+      if not Items:IsItemStillInBags(item) then return end
+      if Items:IsItemLocked(item) then return end
+      C_Container.UseContainerItem(item.bag, item.slot)
     end
-  })
+  end,
 
   -- Ignores every item sharing this item's ID for the remainder of the session.
-  lootablePanelButtonRow.IgnoreButton = lootablePanelButtonRow:AddChild({
-    width = 32,
-    frameFactory = function()
-      return Widgets:TitleFrameIconButton({
-        texture = Addon:GetAsset("eye-slash-icon"),
-        textureSize = 14,
-        highlightColor = Colors.Yellow,
-        onClick = function()
-          --- @type ItemButtonWidget
-          local itemButton = lootablePanelButtonRow.ItemButton:GetFrame()
-          if itemButton.item then ignoredItemIds[itemButton.item.id] = true end
-        end,
-        onUpdateTooltip = function(_, tooltip)
-          tooltip:SetText(L.IGNORE)
-          tooltip:AddLine(L.IGNORE_LOOTABLE_ITEM_TOOLTIP)
-        end
-      })
+  iconButton = {
+    icon = Addon:GetAsset("eye-slash-icon"),
+    highlightColor = Colors.Yellow,
+    onClick = function(item) ignoredItemIds[item.id] = true end,
+    onUpdateTooltip = function(_, tooltip)
+      tooltip:SetText(L.IGNORE)
+      tooltip:AddLine(L.IGNORE_LOOTABLE_ITEM_TOOLTIP)
     end
-  })
-end
+  }
+}))
 
 -- ============================================================================
 -- LootableFrame

@@ -16,10 +16,17 @@ local DEFAULT_ICON_SIZE = 24
 -- LuaCATS Annotations
 -- =============================================================================
 
+--- @class ItemCardIconButtonOptions
+--- @field icon string Texture of the icon.
+--- @field highlightColor Color Fill color while hovered.
+--- @field onClick fun(item: BagItem | ListItem) Called when the button is clicked.
+--- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the button.
+
 --- @class ItemCardComponentOptions
 --- @field displayPrice? boolean Shows the price of the stack at the right edge. Defaults to `false`.
 --- @field iconSize? integer Width and height of the icon. Defaults to `24`.
 --- @field fontObject? Font Font of the link and price. Defaults to `B.FontObjects.Normal`.
+--- @field iconButton? ItemCardIconButtonOptions Adds a button at the right edge, the full height of the card.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the card. Defaults to the item's tooltip.
 --- @field onClick? fun(item: BagItem | ListItem, button: string) Called when the card is clicked with the left or right button.
 
@@ -135,6 +142,23 @@ function ComponentFactory:ItemCard(options)
       truncationTooltip = false,
       width = "AUTO"
     }))
+  end
+
+  -- Icon button, the full height of the card.
+  local iconButton = options.iconButton
+  if iconButton then
+    local button = root:AttachComponent(ComponentFactory:IconButton({
+      icon = iconButton.icon,
+      highlightColor = iconButton.highlightColor,
+      width = 32,
+      onClick = function()
+        if item then iconButton.onClick(item) end
+      end,
+      onUpdateTooltip = iconButton.onUpdateTooltip and function(_, tooltip)
+        if item then iconButton.onUpdateTooltip(item, tooltip) end
+      end
+    }))
+    button:SetAlignSelf("STRETCH")
   end
 
   --- Shows the item, or hides the card if it has none. Call it again to refresh the item.
