@@ -21,13 +21,14 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - IconButton
 -- =============================================================================
 
---- Creates a fixed-width button with an icon.
+--- Creates a fixed-width button with an icon, stretched to the height of its parent.
 --- @param options IconButtonComponentOptions
 --- @return IconButtonComponent
 function ComponentFactory:IconButton(options)
   --- @class IconButtonComponent : WaffleFlexComponent<IconButtonWidget>
   local root = Addon.Waffle:Flex({
     width = options.width or 46,
+    alignSelf = "STRETCH",
     frameFactory = function(parent)
       --- @class IconButtonWidget : FrameWidget, Button
       local frame = Widgets:Frame({

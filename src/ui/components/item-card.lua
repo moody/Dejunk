@@ -147,7 +147,7 @@ function ComponentFactory:ItemCard(options)
   -- Icon button, the full height of the card.
   local iconButton = options.iconButton
   if iconButton then
-    local button = root:AttachComponent(ComponentFactory:IconButton({
+    root:AttachComponent(ComponentFactory:IconButton({
       icon = iconButton.icon,
       highlightColor = iconButton.highlightColor,
       width = 32,
@@ -158,7 +158,6 @@ function ComponentFactory:ItemCard(options)
         if item then iconButton.onUpdateTooltip(item, tooltip) end
       end
     }))
-    button:SetAlignSelf("STRETCH")
   end
 
   --- Shows the item, or hides the card if it has none. Call it again to refresh the item.

@@ -118,16 +118,14 @@ function ComponentFactory:ProfileCard(options)
     onClick = function() if profile then options.onRename(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.RENAME) end
   }))
-  renameButton:SetAlignSelf("STRETCH")
 
-  local resetButton = root:AttachComponent(ComponentFactory:IconButton({
+  root:AttachComponent(ComponentFactory:IconButton({
     icon = Addon:GetAsset("reset-icon"),
     highlightColor = Colors.Yellow,
     width = BUTTON_WIDTH,
     onClick = function() if profile then options.onReset(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.RESET) end
   }))
-  resetButton:SetAlignSelf("STRETCH")
 
   local deleteButton = root:AttachComponent(ComponentFactory:IconButton({
     icon = Addon:GetAsset("trash-icon"),
@@ -136,7 +134,6 @@ function ComponentFactory:ProfileCard(options)
     onClick = function() if profile then options.onDelete(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.DELETE) end
   }))
-  deleteButton:SetAlignSelf("STRETCH")
 
   -- Rename and delete are dimmed and disabled for a protected profile.
   for _, button in ipairs({ renameButton, deleteButton }) do
