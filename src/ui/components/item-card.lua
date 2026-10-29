@@ -9,8 +9,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- Width of the quality strip on the card's left edge.
 local ACCENT_WIDTH = 3
 
---- Width and height of the item icon.
-local ICON_SIZE = 24
+--- Default width and height of the item icon.
+local DEFAULT_ICON_SIZE = 24
 
 -- =============================================================================
 -- LuaCATS Annotations
@@ -18,6 +18,8 @@ local ICON_SIZE = 24
 
 --- @class ItemCardComponentOptions
 --- @field displayPrice? boolean Shows the price of the stack at the right edge. Defaults to `false`.
+--- @field iconSize? integer Width and height of the icon. Defaults to `24`.
+--- @field fontObject? Font Font of the link and price. Defaults to `B.FontObjects.Normal`.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the card. Defaults to the item's tooltip.
 --- @field onClick? fun(item: BagItem | ListItem, button: string) Called when the card is clicked with the left or right button.
 
@@ -103,8 +105,8 @@ function ComponentFactory:ItemCard(options)
 
   -- Icon.
   content:AddChild({
-    width = ICON_SIZE,
-    height = ICON_SIZE,
+    width = options.iconSize or DEFAULT_ICON_SIZE,
+    height = options.iconSize or DEFAULT_ICON_SIZE,
 
     --- @param parent Frame
     frameFactory = function(parent)
@@ -117,6 +119,7 @@ function ComponentFactory:ItemCard(options)
 
   -- Item link and quantity.
   local title = content:AttachComponent(ComponentFactory:Text({
+    fontObject = options.fontObject,
     wordWrap = false,
     truncationTooltip = false
   }))
@@ -126,6 +129,7 @@ function ComponentFactory:ItemCard(options)
   local priceText
   if options.displayPrice then
     priceText = content:AttachComponent(ComponentFactory:Text({
+      fontObject = options.fontObject,
       justifyH = "RIGHT",
       wordWrap = false,
       truncationTooltip = false,

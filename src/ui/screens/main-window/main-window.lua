@@ -16,7 +16,8 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindow
 local MainWindow = Addon:GetModule("MainWindow")
 
-local NUM_LIST_FRAME_BUTTONS = 7
+local LIST_PANEL_CARD_COUNT = 7
+local LIST_PANEL_ICON_SIZE = 18
 
 local Components = {}
 
@@ -232,63 +233,38 @@ Controller:AddSidebarRow({
     -- Divider below the search box.
     screen:AttachComponent(ComponentFactory:Divider()):SetMarginTop(Widgets:Padding(0.25))
 
+    --- Returns the text the lists are filtered by.
+    local function getSearchText() return Controller.searchText end
+
     -- Global lists row.
-    screen:AddRow({
-      gap = Widgets:Padding(0.5),
-      children = {
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_GlobalInclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.GlobalInclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        },
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_GlobalExclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.GlobalExclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        }
-      }
-    })
+    local globalRow = screen:AddRow({ gap = Widgets:Padding(0.5) })
+    globalRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.GlobalInclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
+    globalRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.GlobalExclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
 
     -- Profile lists row.
-    screen:AddRow({
-      gap = Widgets:Padding(0.5),
-      children = {
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_ProfileInclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.ProfileInclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        },
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_ProfileExclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.ProfileExclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        }
-      }
-    })
+    local profileRow = screen:AddRow({ gap = Widgets:Padding(0.5) })
+    profileRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.ProfileInclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
+    profileRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.ProfileExclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
   end
 })
 

@@ -17,6 +17,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field cardCount integer Number of items shown at once. The rest are reached by scrolling.
 --- @field addItem fun(itemId: number) Called with the ID of an item dropped on the list.
 --- @field displayPrice? boolean Shows the price of each stack. Defaults to `false`.
+--- @field iconSize? integer Defaults to the `ItemCard` default.
+--- @field fontObject? Font Defaults to the `ItemCard` default.
 --- @field onUpdateItemTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Defaults to the item's tooltip.
 --- @field onItemClick? fun(item: BagItem | ListItem, button: string)
 
@@ -78,6 +80,8 @@ function ComponentFactory:ItemList(options)
   for i = 1, options.cardCount do
     cards[i] = cardColumn:AttachComponent(ComponentFactory:ItemCard({
       displayPrice = options.displayPrice,
+      iconSize = options.iconSize,
+      fontObject = options.fontObject,
       onUpdateTooltip = options.onUpdateItemTooltip,
 
       onClick = function(item, button)

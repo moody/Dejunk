@@ -104,6 +104,7 @@
   <Script file="src\ui\components\item-card.lua"/>
   <Script file="src\ui\components\item-list.lua"/>
   <Script file="src\ui\components\keybinding-card.lua"/>
+  <Script file="src\ui\components\list-panel.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
