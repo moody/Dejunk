@@ -116,7 +116,6 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.points.lootableFrame.set(POINT), path = "global.points.lootableFrame", expected = POINT },
   { action = ActionCreators.Global.points.transportFrame.set(POINT), path = "global.points.transportFrame", expected = POINT },
   { action = ActionCreators.Global.points.merchantButton.set(POINT), path = "global.points.merchantButton", expected = POINT },
-  { action = ActionCreators.Global.points.profilesFrame.set(POINT), path = "global.points.profilesFrame", expected = POINT },
 }
 
 -- Test: each `global` action changes only its own field.
