@@ -4,6 +4,8 @@ local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local DefaultStates = Addon:GetModule("DefaultStates")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Popup = Addon:GetModule("Popup")
 local StateManager = Addon:GetModule("StateManager")
@@ -108,8 +110,18 @@ function MainWindowOptions:CreateProfilesPanel()
   })
   panel.Content:SetGap(Widgets:Padding())
 
+  -- Title shows the active profile.
+  EventManager:WaitForFirst(E.StoreCreated, function()
+    local function refreshTitle()
+      local profileName = StateManager:GetProfileState().name
+      panel:SetTitleText(Colors.Blue("%s (%s)"):format(L.PROFILES, Colors.White(profileName)))
+    end
+    EventManager:On(E.StateUpdated, refreshTitle)
+    refreshTitle()
+  end)
+
   panel.Content:AttachComponent(ComponentFactory:Text({
-    text = L.PROFILES_DESCRIPTION,
+    text = L.PROFILES_DESCRIPTION:format(L.DEFAULT_PROFILE_NAME),
     fontObject = B.FontObjects.Small,
     color = Colors.Grey,
     justifyH = "CENTER"
