@@ -25,7 +25,11 @@ local function setupContext()
 
     --- The seconds left to refund every item, or `nil` if it has no refund window.
     --- @type number?
-    refundSeconds = nil
+    refundSeconds = nil,
+
+    --- The IDs of the items whose data is not loaded. `Blizzard.Item:GetInfo()` returns nothing for them.
+    --- @type table<integer, true>
+    unloadedItemIds = {}
   }
 
   -- `Blizzard`, reading from `game.slots`.
@@ -53,7 +57,12 @@ local function setupContext()
 
   ContainerSpy:Stub("GetRefundSeconds"):Invokes(function() return game.refundSeconds end)
 
-  Mocks:CreateSpy(Blizzard.Item):Stub("GetInfo"):Returns("Name", 10, "INVTYPE_HEAD", 100, 2, 1)
+  Mocks:CreateSpy(Blizzard.Item):Stub("GetInfo"):Invokes(function(_, item)
+    local itemId = type(item) == "number" and item or tonumber(tostring(item):match("%d+"))
+    if game.unloadedItemIds[itemId] then return end
+
+    return "Name", 10, "INVTYPE_HEAD", 100, 2, 1
+  end)
   Mocks:CreateSpy(Blizzard.Utils):Stub("GetTime"):Invokes(function() return game.time end)
 
   Context:SetModule("Blizzard", Blizzard)
@@ -84,11 +93,17 @@ local function setupContext()
     EventManager:Fire(event)
   end
 
-  --- Moves the game's time forward and runs the tickers that are due.
+  --- Moves the game's time forward a frame at a time, running the tickers that are due.
   --- @param seconds number
   function game.Advance(seconds)
-    game.time = game.time + seconds
-    tickerFrame._test.scripts.OnUpdate(tickerFrame, seconds)
+    local remaining = seconds
+
+    while remaining > 0 do
+      local elapsed = math.min(remaining, 0.05)
+      remaining = remaining - elapsed
+      game.time = game.time + elapsed
+      tickerFrame._test.scripts.OnUpdate(tickerFrame, elapsed)
+    end
   end
 
   game.E = Context:GetModule("Events")
@@ -162,6 +177,38 @@ do
   assert(BagItemsCache:GetItem(0, 2) == nil)
 end
 
+-- Test: leaves out an item whose data is not loaded.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = {
+    { bag = 0, slot = 1, itemId = 100 },
+    { bag = 0, slot = 2, itemId = 200 }
+  }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.2)
+
+  assert(BagItemsCache:GetItem(0, 1) == nil)
+  assert(BagItemsCache:GetItem(0, 2).id == 200)
+end
+
+-- Test: returns an item once its data loads, without another bag event.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.5)
+  assert(BagItemsCache:GetItem(0, 1) == nil)
+
+  game.unloadedItemIds[100] = nil
+  game.Advance(0.5)
+
+  assert(BagItemsCache:GetItem(0, 1).id == 100)
+end
+
 -- ============================================================================
 -- Tests - BagsUpdated
 -- ============================================================================
@@ -180,6 +227,23 @@ do
   game.Advance(0.2)
 
   assert(Matchers:IsDeepEqual(payloads, { true }))
+end
+
+-- Test: fires with `false` while an item's data is not loaded.
+do
+  local _, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  local payloads = {}
+  game.EventManager:On(game.E.BagsUpdated, function(allItemsCached)
+    payloads[#payloads + 1] = allItemsCached
+  end)
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.Advance(0.2)
+
+  assert(payloads[1] == false)
 end
 
 -- ============================================================================
