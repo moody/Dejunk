@@ -11,9 +11,17 @@ local BagItemsCache = Addon:GetModule("BagItemsCache")
 --- @type table<integer, BagItem>
 local cache = {}
 
+--- Whether the next tick updates the cache.
+local isDirty = false
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
+
+--- Marks the cache to be updated on the next tick.
+local function markDirty()
+  isDirty = true
+end
 
 --- Returns the item cached for the `bag` and `slot`, if it exists.
 --- @param bag integer
@@ -33,6 +41,7 @@ end
 
 --- Updates the item cache and fires the `BagsUpdated` event.
 local function updateCache()
+  isDirty = false
   EquipmentSetsCache:Refresh()
 
   for k in pairs(cache) do cache[k] = nil end
@@ -50,6 +59,9 @@ local function updateCache()
     end
   end
 
+  -- Try again on the next tick.
+  if not allItemsCached then markDirty() end
+
   EventManager:Fire(E.BagsUpdated, allItemsCached)
 end
 
@@ -59,15 +71,14 @@ end
 
 -- Register events to trigger cache updates.
 EventManager:Once(E.Wow.PlayerLogin, function()
-  local debounce = TickerManager:NewDebouncer(0.1, updateCache)
-  debounce()
-
-  EventManager:On(E.Wow.BagUpdate, debounce)
-  EventManager:On(E.Wow.BagUpdateDelayed, debounce)
-  EventManager:On(E.Wow.EquipmentSetsChanged, debounce)
-  EventManager:On(E.BagsUpdated, function(allItemsCached)
-    if not allItemsCached then TickerManager:After(0.01, debounce) end
+  TickerManager:NewTicker(0.1, function()
+    if isDirty then updateCache() end
   end)
+
+  markDirty()
+  EventManager:On(E.Wow.BagUpdate, markDirty)
+  EventManager:On(E.Wow.BagUpdateDelayed, markDirty)
+  EventManager:On(E.Wow.EquipmentSetsChanged, markDirty)
 
   -- A refund window can expire with no bag event to catch it, so poll for
   -- that and fire `BagsUpdated` when it happens.
