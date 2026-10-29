@@ -89,7 +89,6 @@
   <Script file="src\ui\widgets\primitives\slider.lua"/>
 
   <!-- UI Widgets - Composites -->
-  <Script file="src\ui\widgets\composites\options\option-button.lua"/>
   <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\composites\text-frame.lua"/>
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
@@ -106,6 +105,7 @@
   <Script file="src\ui\components\list-panel.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\profile-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
   <Script file="src\ui\components\selectable-row.lua"/>
@@ -121,10 +121,10 @@
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
   <Script file="src\ui\screens\main-window\options\global-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\profiles.lua"/>
   <Script file="src\ui\screens\main-window\options\keybindings.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
-  <Script file="src\ui\screens\profiles-frame.lua"/>
   <Script file="src\ui\screens\transport-frame.lua"/>
 
   <!-- UI Blizzard -->

@@ -8,7 +8,6 @@ local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
-local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -25,7 +24,7 @@ local Components = {}
 -- Controller
 -- ============================================================================
 
---- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILE_OPTIONS" | "KEYBINDINGS"
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS"
 
 --- @class SidebarRowOptions
 --- @field key SidebarRowKey
@@ -281,6 +280,12 @@ Controller:AddSidebarRow({
 })
 
 Controller:AddSidebarRow({
+  key = "PROFILES",
+  labelText = L.PROFILES,
+  createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfilesPanel()) end
+})
+
+Controller:AddSidebarRow({
   key = "KEYBINDINGS",
   labelText = L.KEYBINDINGS,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateKeybindingsPanel()) end
@@ -328,22 +333,18 @@ footerRow:AddRow({ justify = "CENTER" }):AddChild({
   end
 })
 
--- Edit profiles button.
-footerRow:AddRow({ justify = "END" }):AttachComponent(ComponentFactory:IconButton({
-  name = "$parent_EditProfilesButton",
-  icon = Addon:GetAsset("gear-icon"),
-  highlightColor = Colors.Yellow,
-  onClick = function() ProfilesFrame:Toggle() end,
-  onUpdateTooltip = function(_, tooltip)
-    tooltip:SetText(L.PROFILES)
-  end
-}))
+-- Empty, so the active profile name stays centered.
+footerRow:AddRow()
 
 -- ============================================================================
 -- MainWindow
 -- ============================================================================
 
-function MainWindow:Show()
+--- Shows the window, on the screen of the sidebar row `key` if one is given.
+--- @param key? SidebarRowKey
+function MainWindow:Show(key)
+  if key then Controller:SelectSidebarRow(key) end
+
   Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
