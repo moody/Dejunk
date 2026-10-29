@@ -8,8 +8,17 @@ local Mocks = require("test/mocks")
 -- Setup
 -- ============================================================================
 
---- Returns `BagItemsCache` and a fake game, from a new context. The cache uses a fake `Blizzard` that reads the bags
---- from `game.slots`, and the real `EventManager` and `TickerManager`, which the fake game drives with events and time.
+--- Seconds per frame in the fake game.
+local FRAME_SECONDS = 0.05
+
+--- Enough time for the cache to update after a bag event, however it schedules the update.
+local UPDATE_SECONDS = 0.2
+
+--- Enough time for the cache to try again after an item's data was not loaded.
+local RETRY_SECONDS = 0.5
+
+--- Returns `BagItemsCache` and a fake game, from a new context. The cache sees a fake `Blizzard` that reads
+--- `game.slots`, and the real `EventManager` and `TickerManager`, which the game drives with events and time.
 --- @return BagItemsCache BagItemsCache
 --- @return table game
 local function setupContext()
@@ -99,7 +108,7 @@ local function setupContext()
     local remaining = seconds
 
     while remaining > 0 do
-      local elapsed = math.min(remaining, 0.05)
+      local elapsed = math.min(remaining, FRAME_SECONDS)
       remaining = remaining - elapsed
       game.time = game.time + elapsed
       tickerFrame._test.scripts.OnUpdate(tickerFrame, elapsed)
@@ -126,7 +135,7 @@ end
 -- Tests - BagItemsCache:GetItems()
 -- ============================================================================
 
--- Test: returns an item for each occupied slot once the cache has updated after login.
+-- Test: returns an item for each occupied slot after login.
 do
   local BagItemsCache, game = setupContext()
   game.slots = {
@@ -136,7 +145,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   assert(Matchers:IsDeepEqual(getSortedIds(BagItemsCache:GetItems()), { 100, 200 }))
 end
@@ -147,7 +156,7 @@ do
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   local given = { "stale", "stale" }
   local items = BagItemsCache:GetItems(given)
@@ -171,7 +180,7 @@ do
   }
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   assert(BagItemsCache:GetItem(1, 1).id == 200)
   assert(BagItemsCache:GetItem(0, 2) == nil)
@@ -187,7 +196,7 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   assert(BagItemsCache:GetItem(0, 1) == nil)
   assert(BagItemsCache:GetItem(0, 2).id == 200)
@@ -200,11 +209,11 @@ do
   game.unloadedItemIds[100] = true
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.5)
+  game.Advance(RETRY_SECONDS)
   assert(BagItemsCache:GetItem(0, 1) == nil)
 
   game.unloadedItemIds[100] = nil
-  game.Advance(0.5)
+  game.Advance(RETRY_SECONDS)
 
   assert(BagItemsCache:GetItem(0, 1).id == 100)
 end
@@ -224,7 +233,7 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   assert(Matchers:IsDeepEqual(payloads, { true }))
 end
@@ -241,7 +250,7 @@ do
   end)
 
   game.Fire(game.E.Wow.PlayerLogin)
-  game.Advance(0.2)
+  game.Advance(UPDATE_SECONDS)
 
   assert(payloads[1] == false)
 end
@@ -272,7 +281,7 @@ do
   }))
 end
 
--- Test: sets when the refund window ends, from the seconds left to refund.
+-- Test: sets `refundExpirationTime` from the seconds left to refund.
 do
   local BagItemsCache, game = setupContext()
   game.slots = { { bag = 0, slot = 1, itemId = 100 } }
