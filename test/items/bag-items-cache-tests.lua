@@ -1,15 +1,12 @@
 --- @diagnostic disable: undefined-global
 
+local FakeGame = require("test/fake-game")
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
-local Mocks = require("test/mocks")
 
 -- ============================================================================
 -- Setup
 -- ============================================================================
-
---- Seconds per frame in the fake game.
-local FRAME_SECONDS = 0.05
 
 --- The seconds between the `BAG_UPDATE` events of a burst.
 local BAG_UPDATE_GAP_SECONDS = 0.25
@@ -17,119 +14,16 @@ local BAG_UPDATE_GAP_SECONDS = 0.25
 --- The seconds left to refund an item in the refund tests.
 local REFUND_SECONDS = 30
 
---- Returns `BagItemsCache` and a fake game, from a new context. The cache sees a fake `Blizzard` that reads
---- `game.slots`, and the real `EventManager` and `TickerManager`, which the game drives with events and time.
+--- Returns `BagItemsCache` and a fake game, from a new context.
 --- @return BagItemsCache BagItemsCache
---- @return table game
+--- @return FakeGameInstance game
 local function setupContext()
   local Context = Harness:NewContext()
-
-  local game = {
-    --- Every slot in the bags, in order. A slot with no `itemId` is empty.
-    --- @type { bag: integer, slot: integer, itemId: integer? }[]
-    slots = {},
-
-    --- The time that `Blizzard.Utils:GetTime()` returns.
-    time = 0,
-
-    --- The seconds left to refund every item, or `nil` if it has no refund window.
-    --- @type number?
-    refundSeconds = nil,
-
-    --- The IDs of the items whose data is not loaded. `Blizzard.Item:GetInfo()` returns nothing for them.
-    --- @type table<integer, true>
-    unloadedItemIds = {},
-
-    --- The number of times the cache has scanned every slot.
-    scanCount = 0
-  }
-
-  -- `Blizzard`, reading from `game.slots`.
-  local Blizzard = { Container = {}, Item = {}, Utils = {} }
-
-  local ContainerSpy = Mocks:CreateSpy(Blizzard.Container)
-
-  ContainerSpy:Stub("IterateSlots"):Invokes(function()
-    game.scanCount = game.scanCount + 1
-    local index = 0
-
-    return function()
-      index = index + 1
-      local entry = game.slots[index]
-      if entry then return entry.bag, entry.slot, entry.itemId end
-    end
-  end)
-
-  ContainerSpy:Stub("GetItemInfo"):Invokes(function(_, bag, slot)
-    for _, entry in ipairs(game.slots) do
-      if entry.bag == bag and entry.slot == slot and entry.itemId then
-        return { bag = bag, slot = slot, id = entry.itemId, link = "item:" .. entry.itemId }
-      end
-    end
-  end)
-
-  ContainerSpy:Stub("GetRefundSeconds"):Invokes(function() return game.refundSeconds end)
-
-  Mocks:CreateSpy(Blizzard.Item):Stub("GetInfo"):Invokes(function(_, item)
-    local itemId = type(item) == "number" and item or tonumber(tostring(item):match("%d+"))
-    if game.unloadedItemIds[itemId] then return end
-
-    return "Name", 10, "INVTYPE_HEAD", 100, 2, 1
-  end)
-  Mocks:CreateSpy(Blizzard.Utils):Stub("GetTime"):Invokes(function() return game.time end)
-
-  Context:SetModule("Blizzard", Blizzard)
-
-  local EquipmentSetsCache = {}
-  local EquipmentSetsCacheSpy = Mocks:CreateSpy(EquipmentSetsCache)
-  EquipmentSetsCacheSpy:Stub("Refresh")
-  EquipmentSetsCacheSpy:Stub("IsBagSlotCached"):Returns(false)
-  Context:SetModule("EquipmentSetsCache", EquipmentSetsCache)
-
-  -- The real event and ticker managers, each with a frame that the test drives.
-  local tickerFrame = Mocks:CreateFrame()
-
-  Context:SetGlobal("CreateFrame", function() return Mocks:CreateFrame() end)
-  Context:Load("src/events/events.lua")
-  Context:Load("src/events/event-manager.lua")
-
-  Context:SetGlobal("CreateFrame", function() return tickerFrame end)
-  Context:Load("src/utils/ticker-manager.lua")
+  local game = FakeGame:Create(Context)
 
   Context:Load("src/items/bag-items-cache.lua")
 
-  local BagItemsCache = Context:GetModule("BagItemsCache")
-  local EventManager = Context:GetModule("EventManager")
-
-  --- Fires a game event, as the game does.
-  --- @param event string
-  function game.Fire(event)
-    EventManager:Fire(event)
-  end
-
-  --- Moves the game's time forward a frame at a time, running the tickers that are due.
-  --- @param seconds number
-  function game.Advance(seconds)
-    local remaining = seconds
-
-    while remaining > 0 do
-      local elapsed = math.min(remaining, FRAME_SECONDS)
-      remaining = remaining - elapsed
-      game.time = game.time + elapsed
-      tickerFrame._test.scripts.OnUpdate(tickerFrame, elapsed)
-    end
-  end
-
-  --- Moves the game's time forward by `count` update ticks of the cache, plus a frame so the last tick has run.
-  --- @param count integer
-  function game.AdvanceTicks(count)
-    game.Advance(count * BagItemsCache.UPDATE_TICK_SECONDS + FRAME_SECONDS)
-  end
-
-  game.E = Context:GetModule("Events")
-  game.EventManager = EventManager
-
-  return BagItemsCache, game
+  return Context:GetModule("BagItemsCache"), game
 end
 
 --- Returns the IDs of the given items, sorted.
@@ -880,9 +774,9 @@ do
     BagItemsCache:WhenSettled(function() secondFrame = frame end, BagItemsCache.BURST_MAX_SECONDS)
   end, BagItemsCache.BURST_MAX_SECONDS)
 
-  for _ = 1, BagItemsCache.BURST_MAX_SECONDS / FRAME_SECONDS do
+  for _ = 1, BagItemsCache.BURST_MAX_SECONDS / FakeGame.FRAME_SECONDS do
     frame = frame + 1
-    game.Advance(FRAME_SECONDS)
+    game.Advance(FakeGame.FRAME_SECONDS)
   end
 
   assert(secondFrame > firstFrame)
