@@ -1,6 +1,6 @@
 --- @diagnostic disable: undefined-global
 
-local FakeGame = require("test/fake-game")
+local TestGame = require("test/test-game")
 local Harness = require("test/harness")
 local Matchers = require("test/matchers")
 local Mocks = require("test/mocks")
@@ -12,17 +12,17 @@ local Mocks = require("test/mocks")
 --- The seconds between sales.
 local SALE_SECONDS = 0.2
 
---- Returns `Seller`, a fake game, and the spies of the modules it uses, from a new context. The merchant is open,
+--- Returns `Seller`, a test game, and the spies of the modules it uses, from a new context. The merchant is open,
 --- Safe Sell is off, and nothing is sellable. A test changes a stub with `GetStub()`.
 --- @return Seller Seller
---- @return FakeGameInstance game
+--- @return TestGameInstance Game
 --- @return SellerTestSpies spies
 local function setupContext()
   local Context = Harness:NewContext()
   Context.Addon.IS_VANILLA = false
   Context.Addon.IS_TBC = false
 
-  local game = FakeGame:Create(Context)
+  local Game = TestGame:New(Context)
 
   -- The `Addon` helpers that `Seller` calls.
   Mocks:CreateSpy(Context.Addon):Stub("GetLatency"):Returns(SALE_SECONDS)
@@ -75,14 +75,14 @@ local function setupContext()
     StateManagerSpy = StateManagerSpy
   }
 
-  return Context:GetModule("Seller"), game, spies
+  return Context:GetModule("Seller"), Game, spies
 end
 
 --- Moves the game's time forward by `count` sales, plus a frame so the last sale has run.
---- @param game FakeGameInstance
+--- @param game TestGameInstance
 --- @param count integer
 local function advanceSales(game, count)
-  game.Advance(count * SALE_SECONDS + FakeGame.FRAME_SECONDS)
+  game:Advance(count * SALE_SECONDS + game.FRAME_SECONDS)
 end
 
 -- ============================================================================
@@ -91,7 +91,7 @@ end
 
 -- Test: sells the last item in the list first, one item per sale.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   local lowest = { bag = 0, slot = 1 }
   local middle = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
@@ -100,18 +100,18 @@ do
   Seller:Start()
   assert(#spies.ContainerSpy.calls == 0)
 
-  advanceSales(game, 1)
+  advanceSales(Game, 1)
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
     { "UseContainerItem", 0, 3 }
   }))
 
-  advanceSales(game, 1)
+  advanceSales(Game, 1)
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
     { "UseContainerItem", 0, 3 },
     { "UseContainerItem", 0, 2 }
   }))
 
-  advanceSales(game, 1)
+  advanceSales(Game, 1)
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
     { "UseContainerItem", 0, 3 },
     { "UseContainerItem", 0, 2 },
@@ -121,47 +121,47 @@ end
 
 -- Test: fires `SellerStarted` when it starts and `SellerStopped` on the sale after the last item.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
   spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local started, stopped = 0, 0
-  game.EventManager:On(game.E.SellerStarted, function() started = started + 1 end)
-  game.EventManager:On(game.E.SellerStopped, function() stopped = stopped + 1 end)
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
 
   Seller:Start()
   assert(started == 1)
   assert(stopped == 0)
 
-  advanceSales(game, 2)
+  advanceSales(Game, 2)
   assert(started == 1)
   assert(stopped == 0)
 
-  advanceSales(game, 1)
+  advanceSales(Game, 1)
   assert(started == 1)
   assert(stopped == 1)
 end
 
 -- Test: fires `AttemptedToSellItem` for each item, in order.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
   spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local attempted = {}
-  game.EventManager:On(game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
 
   Seller:Start()
-  advanceSales(game, 2)
+  advanceSales(Game, 2)
 
   assert(Matchers:IsDeepEqual(attempted, { second, first }))
 end
 
 -- Test: with Safe Sell on, sells only the first items in the list, up to the limit.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
 
   local items = {}
@@ -172,17 +172,17 @@ do
   for slot = Seller.SAFE_SELL_LIMIT, 1, -1 do expectedCalls[#expectedCalls + 1] = { "UseContainerItem", 0, slot } end
 
   Seller:Start()
-  advanceSales(game, Seller.SAFE_SELL_LIMIT)
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT)
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, expectedCalls))
 
   -- Nothing more is sold.
-  advanceSales(game, 3)
+  advanceSales(Game, 3)
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, expectedCalls))
 end
 
 -- Test: with Safe Sell off, sells every item.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = false })
 
   local count = Seller.SAFE_SELL_LIMIT + 2
@@ -191,14 +191,14 @@ do
   spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns(items)
 
   Seller:Start()
-  advanceSales(game, count)
+  advanceSales(Game, count)
 
   assert(#spies.ContainerSpy.calls == count)
 end
 
 -- Test: skips an item that is no longer in the bags.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   local lowest = { bag = 0, slot = 1 }
   local gone = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
@@ -206,10 +206,10 @@ do
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= gone end)
 
   local attempted = {}
-  game.EventManager:On(game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
 
   Seller:Start()
-  advanceSales(game, 3)
+  advanceSales(Game, 3)
 
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
     { "UseContainerItem", 0, 3 },
@@ -220,7 +220,7 @@ end
 
 -- Test: skips an item that is locked.
 do
-  local Seller, game, spies = setupContext()
+  local Seller, Game, spies = setupContext()
   local lowest = { bag = 0, slot = 1 }
   local locked = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
@@ -228,10 +228,10 @@ do
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item == locked end)
 
   local attempted = {}
-  game.EventManager:On(game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
 
   Seller:Start()
-  advanceSales(game, 3)
+  advanceSales(Game, 3)
 
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
     { "UseContainerItem", 0, 3 },

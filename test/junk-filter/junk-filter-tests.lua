@@ -110,10 +110,10 @@ end
 
 --- Stubs `BagItemsCache:GetItems()` like the real method: it empties the given array, or a new one, and fills it
 --- with `bagItems`.
---- @param BagItemsCacheSpy MockSpy
+--- @param bagItemsCacheSpy MockSpy
 --- @param bagItems BagItem[]
-local function stubGetItems(BagItemsCacheSpy, bagItems)
-  BagItemsCacheSpy:Stub("GetItems"):Invokes(function(_, items)
+local function stubGetItems(bagItemsCacheSpy, bagItems)
+  bagItemsCacheSpy:Stub("GetItems"):Invokes(function(_, items)
     items = items or {}
     for key in pairs(items) do items[key] = nil end
     for i, item in ipairs(bagItems) do items[i] = item end

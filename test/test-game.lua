@@ -1,21 +1,21 @@
---- @diagnostic disable: undefined-global, missing-fields
+--- @diagnostic disable: undefined-global
 
 local Mocks = require("test/mocks")
 
---- A fake game for tests that run the real `EventManager` and `TickerManager`, with `Blizzard` and
---- `EquipmentSetsCache` faked.
---- @class FakeGame
-local FakeGame = {
-  --- Seconds per frame.
-  FRAME_SECONDS = 0.05
-}
+--- A test game that runs the real `EventManager` and `TickerManager`, with `Blizzard` and `EquipmentSetsCache`
+--- faked.
+--- @class TestGame
+local TestGame = {}
 
---- Sets up the fake game in the given context. Call it before loading the files under test.
---- @param Context TestContext
---- @return FakeGameInstance game
-function FakeGame:Create(Context)
-  --- @class FakeGameInstance
+--- Returns a new test game in the given context. Call it before loading the files under test.
+--- @param context TestContext
+--- @return TestGameInstance game
+function TestGame:New(context)
+  --- @class TestGameInstance
   local game = {
+    --- Seconds per frame.
+    FRAME_SECONDS = 0.05,
+
     --- Every slot in the bags, in order. A slot with no `itemId` is empty.
     --- @type { bag: integer, slot: integer, itemId: integer? }[]
     slots = {},
@@ -69,7 +69,7 @@ function FakeGame:Create(Context)
   end)
   Mocks:CreateSpy(Blizzard.Utils):Stub("GetTime"):Invokes(function() return game.time end)
 
-  Context:SetModule("Blizzard", Blizzard)
+  context:SetModule("Blizzard", Blizzard)
 
   --- The fake `Blizzard` module. A test can add what it needs.
   game.Blizzard = Blizzard
@@ -78,35 +78,35 @@ function FakeGame:Create(Context)
   local EquipmentSetsCacheSpy = Mocks:CreateSpy(EquipmentSetsCache)
   EquipmentSetsCacheSpy:Stub("Refresh")
   EquipmentSetsCacheSpy:Stub("IsBagSlotCached"):Returns(false)
-  Context:SetModule("EquipmentSetsCache", EquipmentSetsCache)
+  context:SetModule("EquipmentSetsCache", EquipmentSetsCache)
 
   -- The real event and ticker managers, each with a frame that the test drives.
   local tickerFrame = Mocks:CreateFrame()
 
-  Context:SetGlobal("CreateFrame", function() return Mocks:CreateFrame() end)
-  Context:Load("src/events/events.lua")
-  Context:Load("src/events/event-manager.lua")
+  context:SetGlobal("CreateFrame", function() return Mocks:CreateFrame() end)
+  context:Load("src/events/events.lua")
+  context:Load("src/events/event-manager.lua")
 
-  Context:SetGlobal("CreateFrame", function() return tickerFrame end)
-  Context:Load("src/utils/ticker-manager.lua")
+  context:SetGlobal("CreateFrame", function() return tickerFrame end)
+  context:Load("src/utils/ticker-manager.lua")
 
-  local EventManager = Context:GetModule("EventManager")
+  local EventManager = context:GetModule("EventManager")
 
   --- Fires a game event, as the game does.
   --- @param event string
-  function game.Fire(event)
+  function game:Fire(event)
     EventManager:Fire(event)
   end
 
   --- Moves the game's time forward a frame at a time, running the tickers that are due.
   --- @param seconds number
-  function game.Advance(seconds)
+  function game:Advance(seconds)
     local remaining = seconds
 
     while remaining > 0 do
-      local elapsed = math.min(remaining, FakeGame.FRAME_SECONDS)
+      local elapsed = math.min(remaining, self.FRAME_SECONDS)
       remaining = remaining - elapsed
-      game.time = game.time + elapsed
+      self.time = self.time + elapsed
       tickerFrame._test.scripts.OnUpdate(tickerFrame, elapsed)
     end
   end
@@ -114,13 +114,13 @@ function FakeGame:Create(Context)
   --- Moves the game's time forward by `count` update ticks of the bag items cache, plus a frame so the last tick has
   --- run.
   --- @param count integer
-  function game.AdvanceTicks(count)
-    local BagItemsCache = Context:GetModule("BagItemsCache")
-    game.Advance(count * BagItemsCache.UPDATE_TICK_SECONDS + FakeGame.FRAME_SECONDS)
+  function game:AdvanceTicks(count)
+    local BagItemsCache = context:GetModule("BagItemsCache")
+    self:Advance(count * BagItemsCache.UPDATE_TICK_SECONDS + self.FRAME_SECONDS)
   end
 
   --- The `Events` module.
-  game.E = Context:GetModule("Events")
+  game.E = context:GetModule("Events")
 
   --- The real `EventManager`.
   game.EventManager = EventManager
@@ -128,4 +128,4 @@ function FakeGame:Create(Context)
   return game
 end
 
-return FakeGame
+return TestGame
