@@ -4,6 +4,7 @@ local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local OptionsBuilder = Addon:GetModule("OptionsBuilder")
+local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
 
 --- @class MainWindowOptions
@@ -35,7 +36,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Safe sell.
   safety:AddOptionCard({
     labelText = L.SAFE_SELL_TEXT,
-    descriptionText = L.SAFE_SELL_DESCRIPTION,
+    descriptionText = L.SAFE_SELL_DESCRIPTION:format(Seller.SAFE_SELL_LIMIT),
     get = function() return StateManager:GetGlobalState().safeSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
   })
