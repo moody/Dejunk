@@ -12,6 +12,10 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Seller
 local Seller = Addon:GetModule("Seller")
 
+--- The most items Safe Sell sells in one run.
+--- @type integer
+Seller.SAFE_SELL_LIMIT = 12
+
 -- ============================================================================
 -- Events
 -- ============================================================================
@@ -110,7 +114,7 @@ function Seller:Start(auto)
 
   -- Safe sell.
   if StateManager:GetGlobalState().safeSell then
-    while #self.items > 12 do table.remove(self.items) end
+    while #self.items > Seller.SAFE_SELL_LIMIT do table.remove(self.items) end
   end
 
   -- Start ticker.
