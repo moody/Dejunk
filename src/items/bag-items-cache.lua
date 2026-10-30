@@ -41,6 +41,18 @@ local isDirty = true
 --- @type number?
 local burstStartTime
 
+--- @class BagItemsCacheWaiter
+--- @field callback fun(isSettled: boolean)
+--- @field deadline number The time to call back even if the cache is not settled.
+
+--- The callers of `WhenSettled()` that are still waiting.
+--- @type BagItemsCacheWaiter[]
+local queuedWaiters = {}
+
+--- The waiters that `processWaiters()` is about to call.
+--- @type BagItemsCacheWaiter[]
+local readyWaiters = {}
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
@@ -104,8 +116,7 @@ local function updateCache()
   fireBagsUpdated(next(pending) == nil)
 end
 
---- Tries again to cache the slots whose item data was not loaded, and drops the ones past their deadline. Fires
---- `BagsUpdated` if any slot was cached or dropped.
+--- Retries the pending slots, and fires `BagsUpdated` if any were cached or dropped.
 local function updatePending()
   local anyResolved = false
   local now = B.Utils:GetTime()
@@ -122,6 +133,26 @@ local function updatePending()
   end
 
   if anyResolved then fireBagsUpdated(next(pending) == nil) end
+end
+
+--- Calls the waiters when the cache is settled or their deadline has passed, in the order they were added.
+local function processWaiters()
+  if #queuedWaiters == 0 then return end
+
+  local now = B.Utils:GetTime()
+  local isSettled = BagItemsCache:IsSettled()
+
+  -- Collect first, so callbacks can add waiters.
+  for i = #queuedWaiters, 1, -1 do
+    if isSettled or now >= queuedWaiters[i].deadline then
+      readyWaiters[#readyWaiters + 1] = table.remove(queuedWaiters, i)
+    end
+  end
+
+  -- Collected newest first, so removing from the end calls the oldest first.
+  for _ = 1, #readyWaiters do
+    table.remove(readyWaiters).callback(isSettled)
+  end
 end
 
 -- ============================================================================
@@ -145,14 +176,17 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   EventManager:On(E.Wow.EquipmentSetsChanged, markDirty)
 
   -- Update the cache at most once per tick, and not during a burst. With nothing to update, retry the pending slots.
+  -- Waiters are checked every tick, even during a burst.
   TickerManager:NewTicker(BagItemsCache.UPDATE_TICK_SECONDS, function()
-    if isBurstActive() then return end
-
-    if isDirty then
-      updateCache()
-    elseif next(pending) then
-      updatePending()
+    if not isBurstActive() then
+      if isDirty then
+        updateCache()
+      elseif next(pending) then
+        updatePending()
+      end
     end
+
+    processWaiters()
   end)
 
   -- A refund window can expire with no bag event to catch it, so poll for
@@ -212,6 +246,15 @@ end
 --- @return boolean
 function BagItemsCache:IsSettled()
   return not isDirty and next(pending) == nil
+end
+
+--- Calls `callback` on the next tick that finds the cache settled, or when `maxWait` runs out.
+--- @param callback fun(isSettled: boolean) Receives `false` if `maxWait` ran out first.
+--- @param maxWait number The seconds to wait for the cache to settle.
+--- @param force? boolean Ends a burst in progress, so the cache can update right away.
+function BagItemsCache:WhenSettled(callback, maxWait, force)
+  if force then burstStartTime = nil end
+  queuedWaiters[#queuedWaiters + 1] = { callback = callback, deadline = B.Utils:GetTime() + maxWait }
 end
 
 --- Returns an integer that identifies the given `bag` and `slot`, for use as a table key.

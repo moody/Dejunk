@@ -720,6 +720,175 @@ do
 end
 
 -- ============================================================================
+-- Tests - BagItemsCache:WhenSettled()
+-- ============================================================================
+
+-- Test: calls back once, on a later tick, when the cache is settled.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local calls = {}
+  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, BagItemsCache.BURST_MAX_SECONDS)
+  assert(#calls == 0)
+
+  game.AdvanceTicks(5)
+
+  assert(Matchers:IsDeepEqual(calls, { true }))
+end
+
+-- Test: waits until the cache settles.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local maxWait = BagItemsCache.PENDING_DEADLINE_SECONDS
+  local calls = {}
+  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+
+  game.AdvanceTicks(1)
+  assert(#calls == 0)
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(calls, { true }))
+end
+
+-- Test: calls back with `false` once `maxWait` has passed without the cache settling.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local maxWait = BagItemsCache.PENDING_DEADLINE_SECONDS / 2
+  local calls = {}
+  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+
+  game.Advance(maxWait)
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(calls, { false }))
+end
+
+-- Test: calls back with `false` once `maxWait` has passed, even while a burst holds back updates.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  game.Fire(game.E.Wow.BagUpdate)
+
+  local maxWait = BagItemsCache.BURST_MAX_SECONDS / 4
+  local calls = {}
+  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+
+  game.Advance(maxWait)
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(calls, { false }))
+end
+
+-- Test: `force` ends a burst, so the cache can settle before the burst's maximum age.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+  game.Fire(game.E.Wow.BagUpdate)
+
+  local maxWait = BagItemsCache.BURST_MAX_SECONDS
+  local calls = {}
+  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait, true)
+
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(calls, { true }))
+end
+
+-- Test: handles each waiter on its own.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  game.unloadedItemIds[100] = true
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local shortWait = BagItemsCache.PENDING_DEADLINE_SECONDS / 4
+  local longWait = BagItemsCache.PENDING_DEADLINE_SECONDS
+  local callsA = {}
+  local callsB = {}
+  BagItemsCache:WhenSettled(function(isSettled) callsA[#callsA + 1] = isSettled end, shortWait)
+  BagItemsCache:WhenSettled(function(isSettled) callsB[#callsB + 1] = isSettled end, longWait)
+
+  game.Advance(shortWait)
+  game.AdvanceTicks(1)
+  assert(Matchers:IsDeepEqual(callsA, { false }))
+  assert(#callsB == 0)
+
+  game.unloadedItemIds[100] = nil
+  game.AdvanceTicks(1)
+
+  assert(Matchers:IsDeepEqual(callsA, { false }))
+  assert(Matchers:IsDeepEqual(callsB, { true }))
+end
+
+-- Test: calls waiters that are due on the same tick in the order they were added.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local maxWait = BagItemsCache.BURST_MAX_SECONDS
+  local order = {}
+  BagItemsCache:WhenSettled(function() order[#order + 1] = "first" end, maxWait)
+  BagItemsCache:WhenSettled(function() order[#order + 1] = "second" end, maxWait)
+  BagItemsCache:WhenSettled(function() order[#order + 1] = "third" end, maxWait)
+
+  game.AdvanceTicks(5)
+
+  assert(Matchers:IsDeepEqual(order, { "first", "second", "third" }))
+end
+
+-- Test: calls a waiter that was added by a callback on a later tick.
+do
+  local BagItemsCache, game = setupContext()
+  game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+
+  game.Fire(game.E.Wow.PlayerLogin)
+  game.AdvanceTicks(1)
+
+  local frame = 0
+  local firstFrame, secondFrame
+  BagItemsCache:WhenSettled(function()
+    firstFrame = frame
+    BagItemsCache:WhenSettled(function() secondFrame = frame end, BagItemsCache.BURST_MAX_SECONDS)
+  end, BagItemsCache.BURST_MAX_SECONDS)
+
+  for _ = 1, BagItemsCache.BURST_MAX_SECONDS / FRAME_SECONDS do
+    frame = frame + 1
+    game.Advance(FRAME_SECONDS)
+  end
+
+  assert(secondFrame > firstFrame)
+end
+
+-- ============================================================================
 -- Tests - BagItemsCache:GetSlotKey()
 -- ============================================================================
 
