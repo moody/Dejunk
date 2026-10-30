@@ -35,8 +35,9 @@ end
 --- @param filterFunc fun(self: JunkFilter, item: BagItem): boolean, string?
 --- @param items? BagItem[]
 --- @param limit? integer
+--- @param excludeLocked? boolean
 --- @return BagItem[] junkItems
-local function getJunkItems(filterFunc, items, limit)
+local function getJunkItems(filterFunc, items, limit, excludeLocked)
   items = BagItemsCache:GetItems(items)
 
   for i = #items, 1, -1 do
@@ -52,8 +53,22 @@ local function getJunkItems(filterFunc, items, limit)
 
   table.sort(items, itemSortFunc)
 
-  if limit then
-    for i = #items, limit + 1, -1 do items[i] = nil end
+  if limit or excludeLocked then
+    local numItems = #items
+    local numKept = 0
+
+    -- Keep the first `limit` items, skipping locked ones if `excludeLocked` is set.
+    for i = 1, numItems do
+      if limit and numKept >= limit then break end
+
+      local item = items[i]
+      if not (excludeLocked and Items:IsItemLocked(item)) then
+        numKept = numKept + 1
+        items[numKept] = item
+      end
+    end
+
+    for i = numItems, numKept + 1, -1 do items[i] = nil end
   end
 
   return items
@@ -66,7 +81,7 @@ end
 do -- Convenience methods.
   local items = {}
 
-  --- Returns the number of sellable and destroyable junk items.
+  --- Returns the number of sellable and destroyable junk items that are not locked.
   --- @return integer numSellable, integer numDestroyable
   function JunkFilter:GetNumJunkItems()
     local numSellable = #self:GetSellableJunkItems(items)
@@ -74,38 +89,38 @@ do -- Convenience methods.
     return numSellable, numDestroyable
   end
 
-  --- Returns the next sellable junk item if one exists.
+  --- Returns the next sellable junk item that is not locked, if one exists.
   --- @return BagItem|nil
   function JunkFilter:GetNextSellableJunkItem()
-    self:GetSellableJunkItems(items)
+    self:GetSellableJunkItems(items, 1)
     return items[1]
   end
 
-  --- Returns the next destroyable junk item if one exists.
+  --- Returns the next destroyable junk item that is not locked, if one exists.
   --- @return BagItem|nil
   function JunkFilter:GetNextDestroyableJunkItem()
-    self:GetDestroyableJunkItems(items)
+    self:GetDestroyableJunkItems(items, 1)
     return items[1]
   end
 end
 
---- Creates or updates an array of sellable junk items.
+--- Creates or updates an array of sellable junk items that are not locked.
 --- @param items? BagItem[]
 --- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] sellableItems
 function JunkFilter:GetSellableJunkItems(items, limit)
-  return getJunkItems(self.IsSellableJunkItem, items, limit)
+  return getJunkItems(self.IsSellableJunkItem, items, limit, true)
 end
 
---- Creates or updates an array of destroyable junk items.
+--- Creates or updates an array of destroyable junk items that are not locked.
 --- @param items? BagItem[]
 --- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] destroyableItems
 function JunkFilter:GetDestroyableJunkItems(items, limit)
-  return getJunkItems(self.IsDestroyableJunkItem, items, limit)
+  return getJunkItems(self.IsDestroyableJunkItem, items, limit, true)
 end
 
---- Creates or updates an array of junk items.
+--- Creates or updates an array of junk items, including locked ones.
 --- @param items? BagItem[]
 --- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] junkItems
