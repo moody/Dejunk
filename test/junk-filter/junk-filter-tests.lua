@@ -504,6 +504,68 @@ do
   assert(Matchers:IsDeepEqual(result, { itemB, itemA }))
 end
 
+-- Test: keeps only the first `limit` items in sort order.
+do
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
+  local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
+  local itemD = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
+  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+
+  local result = JunkFilter:GetJunkItems(nil, 2)
+
+  assert(Matchers:IsDeepEqual(result, { itemD, itemB }))
+end
+
+-- Test: keeps every item when `limit` is more than the number of junk items.
+do
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
+  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+
+  local result = JunkFilter:GetJunkItems(nil, 10)
+
+  assert(Matchers:IsDeepEqual(result, { itemB, itemA }))
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:GetSellableJunkItems()
+-- ============================================================================
+
+-- Test: keeps only the first `limit` items in sort order.
+do
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
+  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
+
+  local result = JunkFilter:GetSellableJunkItems(nil, 1)
+
+  assert(Matchers:IsDeepEqual(result, { itemB }))
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:GetDestroyableJunkItems()
+-- ============================================================================
+
+-- Test: keeps only the first `limit` items in sort order.
+do
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
+  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+
+  local result = JunkFilter:GetDestroyableJunkItems(nil, 1)
+
+  assert(Matchers:IsDeepEqual(result, { itemB }))
+end
+
 -- ============================================================================
 -- Tests - JunkFilter:GetNumJunkItems()
 -- ============================================================================

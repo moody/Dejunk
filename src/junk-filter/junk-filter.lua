@@ -34,8 +34,9 @@ end
 --- Returns junk items as determined by the given `filterFunc`.
 --- @param filterFunc fun(self: JunkFilter, item: BagItem): boolean, string?
 --- @param items? BagItem[]
+--- @param limit? integer
 --- @return BagItem[] junkItems
-local function getJunkItems(filterFunc, items)
+local function getJunkItems(filterFunc, items, limit)
   items = BagItemsCache:GetItems(items)
 
   for i = #items, 1, -1 do
@@ -50,6 +51,10 @@ local function getJunkItems(filterFunc, items)
   end
 
   table.sort(items, itemSortFunc)
+
+  if limit then
+    for i = #items, limit + 1, -1 do items[i] = nil end
+  end
 
   return items
 end
@@ -86,23 +91,26 @@ end
 
 --- Creates or updates an array of sellable junk items.
 --- @param items? BagItem[]
+--- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] sellableItems
-function JunkFilter:GetSellableJunkItems(items)
-  return getJunkItems(self.IsSellableJunkItem, items)
+function JunkFilter:GetSellableJunkItems(items, limit)
+  return getJunkItems(self.IsSellableJunkItem, items, limit)
 end
 
 --- Creates or updates an array of destroyable junk items.
 --- @param items? BagItem[]
+--- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] destroyableItems
-function JunkFilter:GetDestroyableJunkItems(items)
-  return getJunkItems(self.IsDestroyableJunkItem, items)
+function JunkFilter:GetDestroyableJunkItems(items, limit)
+  return getJunkItems(self.IsDestroyableJunkItem, items, limit)
 end
 
 --- Creates or updates an array of junk items.
 --- @param items? BagItem[]
+--- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] junkItems
-function JunkFilter:GetJunkItems(items)
-  return getJunkItems(self.IsJunkItem, items)
+function JunkFilter:GetJunkItems(items, limit)
+  return getJunkItems(self.IsJunkItem, items, limit)
 end
 
 --- Returns `true` and a reason string if the given `item` is junk and can be sold.
