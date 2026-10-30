@@ -102,17 +102,6 @@ function ItemFilters:Refundable(item)
   return self.PASS
 end
 
---- Locked items are never junk.
---- @param item BagItem
---- @return ItemFilterResult result, string? reason
-function ItemFilters:Locked(item)
-  if Items:IsItemLocked(item) then
-    return self.NOT_JUNK, L.ITEM_IS_LOCKED
-  end
-
-  return self.PASS
-end
-
 --- Equipment with an item level above the value is not junk, for the selected qualities and the option's scope.
 --- @param item BagItem
 --- @param state ItemLevelOptionState

@@ -95,38 +95,6 @@ do
 end
 
 -- ============================================================================
--- Tests - ItemFilters:Locked()
--- ============================================================================
-
--- Test: a locked item is not junk, with the locked reason.
-do
-  local Items = {}
-  local ItemsSpy = Mocks:CreateSpy(Items)
-  ItemsSpy:Stub("IsItemLocked"):Returns(true)
-
-  local ItemFilters, L = setupContext({ Items = Items })
-
-  local result, reason = ItemFilters:Locked({})
-
-  assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == L.ITEM_IS_LOCKED)
-end
-
--- Test: an item that is not locked passes, with no reason.
-do
-  local Items = {}
-  local ItemsSpy = Mocks:CreateSpy(Items)
-  ItemsSpy:Stub("IsItemLocked"):Returns(false)
-
-  local ItemFilters = setupContext({ Items = Items })
-
-  local result, reason = ItemFilters:Locked({})
-
-  assert(result == ItemFilters.PASS)
-  assert(reason == nil)
-end
-
--- ============================================================================
 -- Tests - ItemFilters:ExcludeAboveItemLevel()
 -- ============================================================================
 

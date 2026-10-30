@@ -180,12 +180,6 @@ function JunkFilter:IsJunkItem(item, filterType)
     return result == ItemFilters.JUNK, reason
   end
 
-  -- Locked.
-  result, reason = ItemFilters:Locked(item)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
   local profileSettings = StateManager:GetProfileState().settings
 
   -- Exclude equipment above item level. Runs before the lists so it can

@@ -18,7 +18,6 @@ local PASS = "PASS"
 --- The `ItemFilters` methods that `JunkFilter:IsJunkItem()` calls, in the order it calls them.
 local ORDERED_FILTER_NAMES = {
   "Refundable",
-  "Locked",
   "ExcludeAboveItemLevel",
   "ExcludeAbovePrice",
   "ByLists",
@@ -135,7 +134,6 @@ do
 
   assert(Matchers:IsDeepEqual(ItemFiltersSpy.calls, {
     { "Refundable", item },
-    { "Locked", item },
     { "ExcludeAboveItemLevel", item, "excludeAboveItemLevel", "SELL" },
     { "ExcludeAbovePrice", item, "excludeAbovePrice", "SELL" },
     { "ByLists", item },
