@@ -43,18 +43,30 @@ function ComponentFactory:ItemCard(options)
   local accent ---@type Texture?
   local icon ---@type Texture?
   local item ---@type (BagItem | ListItem)?
+  local isEnabled = true
   local accentR, accentG, accentB = 1, 1, 1
   local iconTexture ---@type (string | number)?
 
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
 
-  --- Brightens the card while hovered, if it has an item.
+  --- Brightens the card while hovered, if it has an item and is enabled.
   local function refreshBackdrop()
     if not frame then return end
 
-    local isHighlighted = item and frame:GetEventValue("HOVERED")
+    local isHighlighted = item and frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED")
     frame:SetBackdropColor(Colors.White:GetRGBA(isHighlighted and 0.06 or 0.03))
+  end
+
+  --- Dims the card while it is disabled.
+  local function refreshEnabled()
+    if not frame then return end
+
+    frame:SetAlpha(frame:GetEventValue("ENABLED") and 1 or 0.5)
+    refreshBackdrop()
+
+    -- A card under the mouse gets no new enter event, so refresh its tooltip.
+    if frame:GetEventValue("HOVERED") then frame:UpdateTooltip() end
   end
 
   --- @class ItemCardComponent : WaffleFlexComponent<FrameWidget>
@@ -71,8 +83,8 @@ function ComponentFactory:ItemCard(options)
         tooltipAnchor = "ANCHOR_RIGHT",
 
         --- @param tooltip Tooltip
-        onUpdateTooltip = function(_, tooltip)
-          if not item then
+        onUpdateTooltip = function(self, tooltip)
+          if not item or not self:GetEventValue("ENABLED") then
             tooltip:Hide()
           elseif options.onUpdateTooltip then
             options.onUpdateTooltip(item, tooltip)
@@ -83,6 +95,7 @@ function ComponentFactory:ItemCard(options)
       })
       frame:SetBackdropBorderColor(0, 0, 0, 0)
       frame:OnEvent("HOVERED", refreshBackdrop)
+      frame:OnEvent("ENABLED", refreshEnabled)
       refreshBackdrop()
 
       frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -160,6 +173,17 @@ function ComponentFactory:ItemCard(options)
     }))
   end
 
+  --- Dims the card and turns off its mouse input while disabled. Cards start enabled.
+  --- @param enabled boolean
+  function root:SetEnabled(enabled)
+    if enabled == isEnabled then return end
+    isEnabled = enabled
+
+    self:WhenFrameReady(function(readyFrame)
+      readyFrame:FireEvent("ENABLED", enabled)
+    end)
+  end
+
   --- Shows the item, or hides the card if it has none. Call it again to refresh the item.
   --- @param newItem? BagItem | ListItem
   function root:SetItem(newItem)
@@ -207,7 +231,7 @@ function ComponentFactory:ItemCard(options)
     if accent then accent:SetColorTexture(accentR, accentG, accentB) end
 
     -- A card under the mouse gets no new enter event when its item changes, so refresh its tooltip.
-    if frame and frame:IsVisible() and frame:IsMouseOver() then frame:UpdateTooltip() end
+    if frame and frame:GetEventValue("HOVERED") then frame:UpdateTooltip() end
   end
 
   return root

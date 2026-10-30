@@ -85,6 +85,7 @@ Components.LootablePanel = Components.Root:AddColumn({ padding = Widgets:Padding
 Components.ItemList = Components.LootablePanel:AttachComponent(ComponentFactory:ItemList({
   cardCount = LOOTABLE_CARD_COUNT,
   getItems = function() return lootableItems end,
+  isItemEnabled = function(item) return not Items:IsItemLocked(item) end,
 
   onUpdateItemTooltip = function(item, tooltip)
     tooltip:SetBagItem(item.bag, item.slot)

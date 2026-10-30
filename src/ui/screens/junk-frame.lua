@@ -127,6 +127,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   cardCount = 7,
   displayPrice = true,
   getItems = function() return junkItems end,
+  isItemEnabled = function(item) return not Items:IsItemLocked(item) end,
 
   onUpdateItemTooltip = function(item, tooltip)
     tooltip:SetBagItem(item.bag, item.slot)
