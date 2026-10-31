@@ -403,3 +403,112 @@ do
   advanceSales(Game, 1)
   assert(#spies.ContainerSpy.calls == 2)
 end
+
+-- ============================================================================
+-- Tests - Seller MerchantShow
+-- ============================================================================
+
+-- Test: with Auto Sell on, starts selling once the delay after the merchant window opens has passed.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = true } })
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Game:Fire(Game.E.Wow.MerchantShow)
+  Game:Advance(Seller.ON_MERCHANT_SHOW_DELAY - Game.FRAME_SECONDS)
+  assert(started == 0)
+  assert(not Seller:IsBusy())
+
+  Game:Advance(Game.FRAME_SECONDS)
+  assert(started == 1)
+  assert(Seller:IsBusy())
+  assert(#spies.ContainerSpy.calls == 0)
+
+  advanceSales(Game, 1)
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", 0, 2 } }))
+end
+
+-- Test: with Auto Sell on, prints nothing when there are no items to sell.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = true } })
+
+  Game:Fire(Game.E.Wow.MerchantShow)
+  Game:Advance(Seller.ON_MERCHANT_SHOW_DELAY + Game.FRAME_SECONDS)
+
+  assert(#spies.AddonSpy:GetStub("Print").calls == 0)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: with Auto Sell off, does not start selling.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:Returns({ item })
+
+  Game:Fire(Game.E.Wow.MerchantShow)
+  Game:Advance(Seller.ON_MERCHANT_SHOW_DELAY + Game.FRAME_SECONDS)
+  advanceSales(Game, 1)
+
+  assert(#GetSellableJunkItems.calls == 0)
+  assert(not Seller:IsBusy())
+  assert(#spies.ContainerSpy.calls == 0)
+end
+
+-- ============================================================================
+-- Tests - Seller:HandleItem()
+-- ============================================================================
+
+-- Test: sells the item at once and fires `AttemptedToSellItem` with it.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 2, slot = 5 }
+
+  local attempted = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attemptedItem) attempted[#attempted + 1] = attemptedItem end)
+
+  Seller:HandleItem(item)
+
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", 2, 5 } }))
+  assert(Matchers:IsDeepEqual(attempted, { item }))
+  assert(not Seller:IsBusy())
+end
+
+-- Test: prints a message instead of selling when the merchant window is not shown.
+do
+  local Seller, Game, spies = setupContext()
+  spies.MerchantFrameSpy:GetStub("IsShown"):Returns(false)
+  local item = { bag = 2, slot = 5 }
+
+  local attempted = 0
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function() attempted = attempted + 1 end)
+
+  Seller:HandleItem(item)
+
+  assert(Matchers:IsDeepEqual(spies.AddonSpy:GetStub("Print").calls, { { "CANNOT_SELL_WITHOUT_MERCHANT" } }))
+  assert(#spies.ContainerSpy.calls == 0)
+  assert(attempted == 0)
+end
+
+-- Test: does nothing while a run is in progress.
+do
+  local Seller, Game, spies = setupContext()
+  local first = { bag = 0, slot = 1 }
+  local other = { bag = 2, slot = 5 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first })
+
+  local attempted = 0
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function() attempted = attempted + 1 end)
+
+  Seller:Start()
+  Seller:HandleItem(other)
+
+  assert(#spies.ContainerSpy.calls == 0)
+  assert(attempted == 0)
+end

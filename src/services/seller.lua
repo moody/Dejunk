@@ -16,12 +16,16 @@ local Seller = Addon:GetModule("Seller")
 --- @type integer
 Seller.SAFE_SELL_LIMIT = 12
 
+--- The seconds after the merchant window opens before Auto Repair and Auto Sell run.
+--- @type number
+Seller.ON_MERCHANT_SHOW_DELAY = 0.1
+
 -- ============================================================================
 -- Events
 -- ============================================================================
 
 EventManager:On(E.Wow.MerchantShow, function()
-  TickerManager:After(0.1, function()
+  TickerManager:After(Seller.ON_MERCHANT_SHOW_DELAY, function()
     local profileSettings = StateManager:GetProfileState().settings
 
     -- Auto repair.
