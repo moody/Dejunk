@@ -136,6 +136,21 @@ function Mocks:CreateSpy(mock)
       return self
     end
 
+    --- Sets the values the stubbed function returns, one per call in order. The last one is returned again on every
+    --- call after. Returns the stub.
+    --- @param ... any
+    --- @return MockSpyStub
+    function Stub:ReturnsInOrder(...)
+      -- Store the number of values, since # is unreliable with nils.
+      local results = { n = select("#", ...), ... }
+      local callCount = 0
+      implementation = function()
+        callCount = callCount + 1
+        return results[math.min(callCount, results.n)]
+      end
+      return self
+    end
+
     --- Sets a function to run on each call instead, with the arguments as passed, including the mock for a method.
     --- Returns the stub.
     --- @param fn function
