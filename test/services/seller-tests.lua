@@ -51,6 +51,7 @@ local function setupContext()
   local JunkFilter = {}
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
   JunkFilterSpy:Stub("GetSellableJunkItems"):Returns({})
+  JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true)
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
@@ -87,7 +88,8 @@ local function setupContext()
     --- Stubs the `Items` methods that check whether an item can be sold.
     ItemsSpy = ItemsSpy,
 
-    --- Stubs `JunkFilter:GetSellableJunkItems()`, which returns the lowest price first.
+    --- Stubs `JunkFilter:GetSellableJunkItems()`, which returns the lowest price first, and
+    --- `JunkFilter:IsSellableJunkItem()`, which is true for every item.
     JunkFilterSpy = JunkFilterSpy,
 
     --- Stubs whether the merchant window is shown.
@@ -261,6 +263,28 @@ do
   local highest = { bag = 0, slot = 3 }
   spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, locked, highest })
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item == locked end)
+
+  local attempted = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+
+  Seller:Start()
+  advanceSales(Game, 3)
+
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
+    { "UseContainerItem", 0, 3 },
+    { "UseContainerItem", 0, 1 }
+  }))
+  assert(Matchers:IsDeepEqual(attempted, { highest, lowest }))
+end
+
+-- Test: skips an item that is no longer sellable junk.
+do
+  local Seller, Game, spies = setupContext()
+  local lowest = { bag = 0, slot = 1 }
+  local stale = { bag = 0, slot = 2 }
+  local highest = { bag = 0, slot = 3 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, stale, highest })
+  spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Invokes(function(_, item) return item ~= stale end)
 
   local attempted = {}
   Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)

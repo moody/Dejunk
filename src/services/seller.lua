@@ -166,7 +166,9 @@ function RunState:Sell()
     self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
       local item = Addon:IsAtMerchant() and table.remove(self.items)
       if not item then return Seller:Stop() end
-      handleItem(item)
+
+      -- Skip an item that stopped being junk since the fetch.
+      if JunkFilter:IsSellableJunkItem(item) then handleItem(item) end
     end)
     return true
   end
