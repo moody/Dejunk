@@ -12,6 +12,10 @@
 - The Junk Items frame, the Lootable Items frame, and the lists now show items as cards with a strip in the item's quality color.
 - An item that is locked, such as one on the cursor or in a trade, now stays in the Junk Items frame, dimmed, and keeps its bag icon and tooltip reason, instead of dropping out until it unlocks.
 
+### Fixed
+
+- Fixed Auto Sell and the sell buttons stopping after a small first batch when the bags had not finished loading. Selling now waits for the bags to settle and continues until no sellable junk is left.
+
 ### Removed
 
 - Removed the Profiles Frame and the gear button in the main window's footer that opened it.
