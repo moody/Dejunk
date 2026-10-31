@@ -118,6 +118,18 @@ local function callWaiter(whenSettled, waitNumber)
   callback(true)
 end
 
+--- Returns `count` items in slots 1 to `count` of `bag`. Each ID is unique to its slot.
+--- @param bag integer
+--- @param count integer
+--- @return BagItem[]
+local function createItems(bag, count)
+  local items = {}
+  for slot = 1, count do
+    items[slot] = { bag = bag, slot = slot, id = bag * 1000 + slot }
+  end
+  return items
+end
+
 -- ============================================================================
 -- Tests - Seller:Start()
 -- ============================================================================
@@ -822,4 +834,119 @@ do
   callWaiter(WhenSettled, 2)
   assert(#GetSellableJunkItems.calls == 1)
   assert(stopped == 1)
+end
+
+-- ============================================================================
+-- Tests - Seller:Start() Safe Sell
+-- ============================================================================
+
+-- Test: with Safe Sell on, ends the run without another fetch when a batch spends the limit.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(1, Seller.SAFE_SELL_LIMIT))
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+
+  assert(#spies.ContainerSpy.calls == Seller.SAFE_SELL_LIMIT)
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(stopped == 1)
+end
+
+-- Test: with Safe Sell on, spends the limit across batches, then ends the run.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  -- The first batch leaves room for one more sale.
+  local numFirstBatch = Seller.SAFE_SELL_LIMIT - 1
+  GetSellableJunkItems:ReturnsInOrder(createItems(0, numFirstBatch), createItems(1, Seller.SAFE_SELL_LIMIT))
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+
+  -- Only the first item of the second batch is sold.
+  local calls = spies.ContainerSpy.calls
+  assert(#calls == Seller.SAFE_SELL_LIMIT)
+  assert(Matchers:IsDeepEqual(calls[numFirstBatch + 1], { "UseContainerItem", 1, 1 }))
+  assert(#GetSellableJunkItems.calls == 2)
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: with Safe Sell on, an item that was not sold counts nothing against the limit.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
+  local items = createItems(0, Seller.SAFE_SELL_LIMIT)
+  local gone = items[1]
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):ReturnsInOrder(items, createItems(1, Seller.SAFE_SELL_LIMIT))
+  spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= gone end)
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+
+  -- The first batch attempts one fewer than the limit, so the second batch keeps one item.
+  local calls = spies.ContainerSpy.calls
+  assert(#calls == Seller.SAFE_SELL_LIMIT)
+  assert(Matchers:IsDeepEqual(calls[#calls], { "UseContainerItem", 1, 1 }))
+end
+
+-- Test: with Safe Sell turned on during a run, ends the run at the limit.
+do
+  local Seller, Game, spies = setupContext()
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:Returns(createItems(0, Seller.SAFE_SELL_LIMIT * 2))
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+  assert(#spies.ContainerSpy.calls == 1)
+
+  spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+
+  assert(#spies.ContainerSpy.calls == Seller.SAFE_SELL_LIMIT)
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(stopped == 1)
+end
+
+-- Test: with Safe Sell off, sells past the limit across batches.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+      :ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(1, 1), {})
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+
+  assert(#spies.ContainerSpy.calls == Seller.SAFE_SELL_LIMIT + 1)
+end
+
+-- Test: with Safe Sell on, a new run starts with the whole limit.
+do
+  local Seller, Game, spies = setupContext()
+  spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
+  -- One list per run, since a run empties the list it sells.
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+      :ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(0, Seller.SAFE_SELL_LIMIT))
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+  assert(#spies.ContainerSpy.calls == Seller.SAFE_SELL_LIMIT)
+  assert(not Seller:IsBusy())
+
+  Seller:Start()
+  advanceSales(Game, Seller.SAFE_SELL_LIMIT * 2)
+  assert(#spies.ContainerSpy.calls == Seller.SAFE_SELL_LIMIT * 2)
 end

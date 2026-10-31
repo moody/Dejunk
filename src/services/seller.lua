@@ -140,6 +140,9 @@ local RunState = {
   --- @type table<integer, integer>
   attempted = {},
 
+  --- The calls to `UseContainerItem` this run, which count against the Safe Sell limit.
+  numAttempted = 0,
+
   --- The calls to `UseContainerItem` since the last fetch. A batch with none ends the run.
   numBatchAttempts = 0,
 
@@ -158,6 +161,12 @@ end
 --- @return boolean
 function RunState:HasStarted()
   return self.hasStarted
+end
+
+--- Returns `true` if Safe Sell is on and the run has attempted its limit.
+--- @return boolean
+function RunState:IsSafeSellLimitReached()
+  return (StateManager:GetGlobalState().safeSell and self.numAttempted >= Seller.SAFE_SELL_LIMIT) or false
 end
 
 --- Waits for the bag items cache to settle, then calls `callback`. The call is dropped if the run ends first.
@@ -181,23 +190,27 @@ end
 --- @param item BagItem
 function RunState:AddAttempt(item)
   self.attempted[BagItemsCache:GetSlotKey(item.bag, item.slot)] = item.id
+  self.numAttempted = self.numAttempted + 1
   self.numBatchAttempts = self.numBatchAttempts + 1
 end
 
---- Begins selling the junk items that were not attempted this run, highest price first, up to the Safe Sell
---- limit when it is on. Returns `true` if there were any.
+--- Begins selling the junk items that were not attempted this run, highest price first, up to what is left of the Safe
+--- Sell limit when it is on. Returns `true` if there were any.
 --- @param onWaitEnded fun() Called when the batch is sold and the cache has settled again.
 --- @return boolean hasItems
 function RunState:Sell(onWaitEnded)
-  local limit = StateManager:GetGlobalState().safeSell and Seller.SAFE_SELL_LIMIT or nil
-  local items = JunkFilter:GetSellableJunkItems(nil, limit)
+  local safeSell = StateManager:GetGlobalState().safeSell
 
-  -- Leave out attempted slots.
+  -- Ask for the full limit, since attempted items may still be in the bags.
+  local items = JunkFilter:GetSellableJunkItems(nil, safeSell and Seller.SAFE_SELL_LIMIT or nil)
+  local maxKept = safeSell and Seller.SAFE_SELL_LIMIT - self.numAttempted or #items
+
+  -- Leave out attempted slots, and items past what is left of the Safe Sell limit.
   local numKept = 0
   for i = 1, #items do
     local item = items[i]
     local attemptedId = self.attempted[BagItemsCache:GetSlotKey(item.bag, item.slot)]
-    if attemptedId == nil or attemptedId ~= item.id then
+    if numKept < maxKept and (attemptedId == nil or attemptedId ~= item.id) then
       numKept = numKept + 1
       items[numKept] = item
     end
@@ -210,7 +223,9 @@ function RunState:Sell(onWaitEnded)
     self.phase = RunPhases.SELLING
     self.numBatchAttempts = 0
     self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
-      if not Addon:IsAtMerchant() then return Seller:Stop() end
+      if not Addon:IsAtMerchant() or self:IsSafeSellLimitReached() then
+        return Seller:Stop()
+      end
 
       local item = table.remove(self.items)
       if not item then
@@ -242,6 +257,7 @@ function RunState:Reset()
   self.runId = self.runId + 1
   self.phase = RunPhases.IDLE
   self.hasStarted = false
+  self.numAttempted = 0
   self.numBatchAttempts = 0
   self.ticker = nil
   for slotKey in pairs(self.attempted) do self.attempted[slotKey] = nil end
@@ -269,7 +285,8 @@ local function onWaitEnded(auto)
   end
 end
 
---- Waits for the bag items cache to settle, then sells the junk items, highest price first, until none are left.
+--- Waits for the bag items cache to settle, then sells the junk items, highest price first, until none are left or the
+--- Safe Sell limit is reached.
 --- @param auto? boolean If `true`, no message is printed when there are no items to sell.
 function Seller:Start(auto)
   -- Do not start if busy.
