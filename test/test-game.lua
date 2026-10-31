@@ -94,8 +94,9 @@ function TestGame:New(context)
 
   --- Fires a game event, as the game does.
   --- @param event string
-  function game:Fire(event)
-    EventManager:Fire(event)
+  --- @param ... any The arguments the event carries.
+  function game:Fire(event, ...)
+    EventManager:Fire(event, ...)
   end
 
   --- Moves the game's time forward a frame at a time, running the tickers that are due.

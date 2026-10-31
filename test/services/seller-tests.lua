@@ -13,7 +13,7 @@ local Mocks = require("test/mocks")
 local SALE_SECONDS = 0.2
 
 --- Returns `Seller`, a test game, and the spies of the modules it uses, from a new context. The merchant is open,
---- Safe Sell is off, and nothing is sellable. A test changes a stub with `GetStub()`.
+--- Safe Sell and Auto Sell are off, and nothing is sellable. A test changes a stub with `GetStub()`.
 --- @return Seller Seller
 --- @return TestGameInstance Game
 --- @return SellerTestSpies spies
@@ -25,11 +25,14 @@ local function setupContext()
   local Game = TestGame:New(Context)
 
   -- The `Addon` helpers that `Seller` calls.
-  Mocks:CreateSpy(Context.Addon):Stub("GetLatency"):Returns(SALE_SECONDS)
+  local AddonSpy = Mocks:CreateSpy(Context.Addon)
+  AddonSpy:Stub("GetLatency"):Returns(SALE_SECONDS)
+  AddonSpy:Stub("Print")
   Mocks:CreateSpy(Context:GetModule("Confirmer")):Stub("IsBusy"):Returns(false)
 
   local MerchantFrame = {}
-  Mocks:CreateSpy(MerchantFrame):Stub("IsShown"):Returns(true)
+  local MerchantFrameSpy = Mocks:CreateSpy(MerchantFrame)
+  MerchantFrameSpy:Stub("IsShown"):Returns(true)
   Context:SetGlobal("MerchantFrame", MerchantFrame)
 
   -- What `Seller` calls to sell an item and to close a popup.
@@ -55,13 +58,19 @@ local function setupContext()
 
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("Items", Items)
-  Context:SetModule("Locale", {})
+  Context:SetModule("Locale", {
+    CANNOT_SELL_WITHOUT_MERCHANT = "CANNOT_SELL_WITHOUT_MERCHANT",
+    NO_JUNK_ITEMS_TO_SELL = "NO_JUNK_ITEMS_TO_SELL"
+  })
   Context:SetModule("StateManager", StateManager)
 
   Context:Load("src/services/seller.lua")
 
   --- @class SellerTestSpies
   local spies = {
+    --- Records the `Addon:Print()` calls.
+    AddonSpy = AddonSpy,
+
     --- Records the `C_Container.UseContainerItem()` calls.
     ContainerSpy = ContainerSpy,
 
@@ -70,6 +79,9 @@ local function setupContext()
 
     --- Stubs `JunkFilter:GetSellableJunkItems()`, which returns the lowest price first.
     JunkFilterSpy = JunkFilterSpy,
+
+    --- Stubs whether the merchant window is shown.
+    MerchantFrameSpy = MerchantFrameSpy,
 
     --- Stubs the global state, which holds the Safe Sell option.
     StateManagerSpy = StateManagerSpy
@@ -238,4 +250,156 @@ do
     { "UseContainerItem", 0, 1 }
   }))
   assert(Matchers:IsDeepEqual(attempted, { highest, lowest }))
+end
+
+-- ============================================================================
+-- Tests - Seller:Start() guards
+-- ============================================================================
+
+-- Test: prints a message instead of starting when the merchant window is not shown.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  spies.MerchantFrameSpy:GetStub("IsShown"):Returns(false)
+  local Print = spies.AddonSpy:GetStub("Print")
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  assert(Matchers:IsDeepEqual(Print.calls, { { "CANNOT_SELL_WITHOUT_MERCHANT" } }))
+  assert(started == 0)
+  assert(not Seller:IsBusy())
+  assert(#spies.ContainerSpy.calls == 0)
+end
+
+-- Test: prints a message instead of starting when there are no items to sell.
+do
+  local Seller, Game, spies = setupContext()
+  local Print = spies.AddonSpy:GetStub("Print")
+
+  local started, stopped = 0, 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  assert(Matchers:IsDeepEqual(Print.calls, { { "NO_JUNK_ITEMS_TO_SELL" } }))
+  assert(started == 0)
+  assert(stopped == 0)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: prints nothing when there are no items to sell and the start is automatic.
+do
+  local Seller, Game, spies = setupContext()
+  local Print = spies.AddonSpy:GetStub("Print")
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start(true)
+  advanceSales(Game, 1)
+
+  assert(#Print.calls == 0)
+  assert(started == 0)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: does not start again while a run is in progress.
+do
+  local Seller, Game, spies = setupContext()
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:Returns({ first, second })
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start()
+  Seller:Start()
+
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(started == 1)
+
+  advanceSales(Game, 2)
+  assert(#spies.ContainerSpy.calls == 2)
+end
+
+-- ============================================================================
+-- Tests - Seller:Stop() triggers
+-- ============================================================================
+
+-- Test: stops the run when the merchant window closes.
+do
+  local Seller, Game, spies = setupContext()
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  local third = { bag = 0, slot = 3 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+  assert(#spies.ContainerSpy.calls == 1)
+
+  Game:Fire(Game.E.Wow.MerchantClosed)
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+
+  advanceSales(Game, 2)
+  assert(#spies.ContainerSpy.calls == 1)
+end
+
+-- Test: stops the run when the vendor does not buy the item.
+do
+  local Seller, Game, spies = setupContext()
+  Game.Blizzard.Strings = { VENDOR_DOESNT_BUY_ERROR_TEXT = "VENDOR_DOESNT_BUY_ERROR_TEXT" }
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  local third = { bag = 0, slot = 3 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+  assert(#spies.ContainerSpy.calls == 1)
+
+  Game:Fire(Game.E.Wow.UIErrorMessage, 0, "VENDOR_DOESNT_BUY_ERROR_TEXT")
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+
+  advanceSales(Game, 2)
+  assert(#spies.ContainerSpy.calls == 1)
+end
+
+-- Test: keeps the run going on any other error message.
+do
+  local Seller, Game, spies = setupContext()
+  Game.Blizzard.Strings = { VENDOR_DOESNT_BUY_ERROR_TEXT = "VENDOR_DOESNT_BUY_ERROR_TEXT" }
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  Game:Fire(Game.E.Wow.UIErrorMessage, 0, "ANOTHER_ERROR_TEXT")
+  assert(stopped == 0)
+  assert(Seller:IsBusy())
+
+  advanceSales(Game, 1)
+  assert(#spies.ContainerSpy.calls == 2)
 end
