@@ -114,8 +114,7 @@ local RunPhases = {
   SELLING = "SELLING"
 }
 
---- The state of the current run, from `Start()` to `Stop()`. A run waits for the bag items cache to settle, then
---- sells. Only its methods change it.
+--- The state of the current run, from `Start()` to `Stop()`. Only its methods change it.
 --- @class SellerRunState
 local RunState = {
   --- @type SellerRunPhase
@@ -125,9 +124,9 @@ local RunState = {
   --- @type integer
   runId = 0,
 
-  --- The items left to sell, while selling.
-  --- @type BagItem[]?
-  items = nil,
+  --- The items left to sell. Every `Sell()` refills the same table.
+  --- @type BagItem[]
+  items = {},
 
   --- Runs one sale per tick, while selling.
   --- @type Ticker?
@@ -155,17 +154,24 @@ function RunState:IsCurrent(runId)
   return self.runId == runId
 end
 
---- Begins selling `items`, highest price first, one per tick. Stops the run when none are left or the merchant window
---- is not shown.
---- @param items BagItem[]
-function RunState:Sell(items)
-  self.phase = RunPhases.SELLING
-  self.items = items
-  self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
-    local item = Addon:IsAtMerchant() and table.remove(self.items)
-    if not item then return Seller:Stop() end
-    handleItem(item)
-  end)
+--- Begins selling the sellable junk items, highest price first, up to the Safe Sell limit when it is on. Returns
+--- whether there were any.
+--- @return boolean hasItems
+function RunState:Sell()
+  local limit = StateManager:GetGlobalState().safeSell and Seller.SAFE_SELL_LIMIT or nil
+  self.items = JunkFilter:GetSellableJunkItems(self.items, limit)
+
+  if #self.items > 0 then
+    self.phase = RunPhases.SELLING
+    self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
+      local item = Addon:IsAtMerchant() and table.remove(self.items)
+      if not item then return Seller:Stop() end
+      handleItem(item)
+    end)
+    return true
+  end
+
+  return false
 end
 
 --- Ends the run and cancels its ticker. Returns whether it was selling.
@@ -176,7 +182,6 @@ function RunState:Reset()
 
   self.runId = self.runId + 1
   self.phase = RunPhases.IDLE
-  self.items = nil
   self.ticker = nil
 
   return wasSelling
@@ -186,8 +191,8 @@ end
 -- Seller
 -- ============================================================================
 
---- Called when the wait for the cache ends, whether it settled or timed out. Gets the junk items and starts selling
---- them, unless the merchant window is closed or there are no items.
+--- Called when the wait for the cache ends, settled or timed out. Starts selling unless the merchant window is closed or
+--- there are no items.
 --- @param auto? boolean Whether Auto Sell started the run.
 local function onWaitEnded(auto)
   -- End the wait. Every exit below leaves the Seller idle.
@@ -196,31 +201,21 @@ local function onWaitEnded(auto)
   -- Do not start if the merchant closed while waiting.
   if not Addon:IsAtMerchant() then return end
 
-  -- Get filtered items.
-  local items = JunkFilter:GetSellableJunkItems()
-
-  -- Return if no items.
-  if #items == 0 then
+  -- Start selling, or return if no items.
+  if not RunState:Sell() then
     if not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
     return
   end
 
-  -- Safe sell.
-  if StateManager:GetGlobalState().safeSell then
-    while #items > Seller.SAFE_SELL_LIMIT do table.remove(items) end
-  end
-
-  -- Start selling.
-  RunState:Sell(items)
   EventManager:Fire(E.SellerStarted)
 end
 
 --- Waits for the bag items cache to settle, then sells the junk items, highest price first.
 --- @param auto? boolean If `true`, no message is printed when there are no items to sell.
 function Seller:Start(auto)
-  -- Don't start if busy.
+  -- Do not start if busy.
   if Addon:IsBusy() then return end
-  -- Don't start without merchant.
+  -- Do not start without merchant.
   if not Addon:IsAtMerchant() then
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end

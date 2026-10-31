@@ -189,41 +189,46 @@ do
   assert(Matchers:IsDeepEqual(attempted, { second, first }))
 end
 
--- Test: with Safe Sell on, sells only the first items in the list, up to the limit.
+-- Test: with Safe Sell on, asks for items up to the Safe Sell limit.
 do
-  local Seller, Game, spies = setupContext()
+  local Seller, _, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
-
-  local items = {}
-  for slot = 1, Seller.SAFE_SELL_LIMIT + 2 do items[slot] = { bag = 0, slot = slot } end
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns(items)
-
-  local expectedCalls = {}
-  for slot = Seller.SAFE_SELL_LIMIT, 1, -1 do expectedCalls[#expectedCalls + 1] = { "UseContainerItem", 0, slot } end
+  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
 
   Seller:Start()
-  advanceSales(Game, Seller.SAFE_SELL_LIMIT)
-  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, expectedCalls))
 
-  -- Nothing more is sold.
-  advanceSales(Game, 3)
-  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, expectedCalls))
+  assert(#getSellableJunkItems.calls == 1)
+  assert(getSellableJunkItems.calls[1][2] == Seller.SAFE_SELL_LIMIT)
 end
 
--- Test: with Safe Sell off, sells every item.
+-- Test: with Safe Sell off, asks for items with no limit.
 do
-  local Seller, Game, spies = setupContext()
+  local Seller, _, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = false })
-
-  local count = Seller.SAFE_SELL_LIMIT + 2
-  local items = {}
-  for slot = 1, count do items[slot] = { bag = 0, slot = slot } end
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns(items)
+  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
 
   Seller:Start()
-  advanceSales(Game, count)
 
-  assert(#spies.ContainerSpy.calls == count)
+  assert(#getSellableJunkItems.calls == 1)
+  assert(getSellableJunkItems.calls[1][2] == nil)
+end
+
+-- Test: gets the items into the same table on every run.
+do
+  local Seller, Game, spies = setupContext()
+  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  getSellableJunkItems:Invokes(function(_, items)
+    items[1] = { bag = 0, slot = 1 }
+    return items
+  end)
+
+  Seller:Start()
+  advanceSales(Game, 2)
+  Seller:Start()
+
+  assert(#getSellableJunkItems.calls == 2)
+  assert(type(getSellableJunkItems.calls[1][1]) == "table")
+  assert(getSellableJunkItems.calls[2][1] == getSellableJunkItems.calls[1][1])
 end
 
 -- Test: skips an item that is no longer in the bags.
