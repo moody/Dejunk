@@ -249,10 +249,10 @@ function BagItemsCache:IsSettled()
 end
 
 --- Calls `callback` on the next tick that finds the cache settled, or when `maxWait` runs out.
---- @param callback fun(isSettled: boolean) Receives `false` if `maxWait` ran out first.
 --- @param maxWait number The seconds to wait for the cache to settle.
+--- @param callback fun(isSettled: boolean) Receives `false` if `maxWait` ran out first.
 --- @param force? boolean Ends a burst in progress, so the cache can update right away.
-function BagItemsCache:WhenSettled(callback, maxWait, force)
+function BagItemsCache:WhenSettled(maxWait, callback, force)
   if force then burstStartTime = nil end
   queuedWaiters[#queuedWaiters + 1] = { callback = callback, deadline = B.Utils:GetTime() + maxWait }
 end

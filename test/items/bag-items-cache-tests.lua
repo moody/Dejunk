@@ -626,7 +626,7 @@ do
   Game:AdvanceTicks(1)
 
   local calls = {}
-  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, BagItemsCache.BURST_MAX_SECONDS)
+  BagItemsCache:WhenSettled(BagItemsCache.BURST_MAX_SECONDS, function(isSettled) calls[#calls + 1] = isSettled end)
   assert(#calls == 0)
 
   Game:AdvanceTicks(5)
@@ -645,7 +645,7 @@ do
 
   local maxWait = BagItemsCache.PENDING_DEADLINE_SECONDS
   local calls = {}
-  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+  BagItemsCache:WhenSettled(maxWait, function(isSettled) calls[#calls + 1] = isSettled end)
 
   Game:AdvanceTicks(1)
   assert(#calls == 0)
@@ -667,7 +667,7 @@ do
 
   local maxWait = BagItemsCache.PENDING_DEADLINE_SECONDS / 2
   local calls = {}
-  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+  BagItemsCache:WhenSettled(maxWait, function(isSettled) calls[#calls + 1] = isSettled end)
 
   Game:Advance(maxWait)
   Game:AdvanceTicks(1)
@@ -686,7 +686,7 @@ do
 
   local maxWait = BagItemsCache.BURST_MAX_SECONDS / 4
   local calls = {}
-  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait)
+  BagItemsCache:WhenSettled(maxWait, function(isSettled) calls[#calls + 1] = isSettled end)
 
   Game:Advance(maxWait)
   Game:AdvanceTicks(1)
@@ -705,7 +705,7 @@ do
 
   local maxWait = BagItemsCache.BURST_MAX_SECONDS
   local calls = {}
-  BagItemsCache:WhenSettled(function(isSettled) calls[#calls + 1] = isSettled end, maxWait, true)
+  BagItemsCache:WhenSettled(maxWait, function(isSettled) calls[#calls + 1] = isSettled end, true)
 
   Game:AdvanceTicks(1)
 
@@ -725,8 +725,8 @@ do
   local longWait = BagItemsCache.PENDING_DEADLINE_SECONDS
   local callsA = {}
   local callsB = {}
-  BagItemsCache:WhenSettled(function(isSettled) callsA[#callsA + 1] = isSettled end, shortWait)
-  BagItemsCache:WhenSettled(function(isSettled) callsB[#callsB + 1] = isSettled end, longWait)
+  BagItemsCache:WhenSettled(shortWait, function(isSettled) callsA[#callsA + 1] = isSettled end)
+  BagItemsCache:WhenSettled(longWait, function(isSettled) callsB[#callsB + 1] = isSettled end)
 
   Game:Advance(shortWait)
   Game:AdvanceTicks(1)
@@ -750,9 +750,9 @@ do
 
   local maxWait = BagItemsCache.BURST_MAX_SECONDS
   local order = {}
-  BagItemsCache:WhenSettled(function() order[#order + 1] = "first" end, maxWait)
-  BagItemsCache:WhenSettled(function() order[#order + 1] = "second" end, maxWait)
-  BagItemsCache:WhenSettled(function() order[#order + 1] = "third" end, maxWait)
+  BagItemsCache:WhenSettled(maxWait, function() order[#order + 1] = "first" end)
+  BagItemsCache:WhenSettled(maxWait, function() order[#order + 1] = "second" end)
+  BagItemsCache:WhenSettled(maxWait, function() order[#order + 1] = "third" end)
 
   Game:AdvanceTicks(5)
 
@@ -769,10 +769,10 @@ do
 
   local frame = 0
   local firstFrame, secondFrame
-  BagItemsCache:WhenSettled(function()
+  BagItemsCache:WhenSettled(BagItemsCache.BURST_MAX_SECONDS, function()
     firstFrame = frame
-    BagItemsCache:WhenSettled(function() secondFrame = frame end, BagItemsCache.BURST_MAX_SECONDS)
-  end, BagItemsCache.BURST_MAX_SECONDS)
+    BagItemsCache:WhenSettled(BagItemsCache.BURST_MAX_SECONDS, function() secondFrame = frame end)
+  end)
 
   for _ = 1, BagItemsCache.BURST_MAX_SECONDS / Game.FRAME_SECONDS do
     frame = frame + 1
