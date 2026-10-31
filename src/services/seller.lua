@@ -86,15 +86,20 @@ local function handleStaticPopup()
   end
 end
 
---- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags or locked.
+--- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags or locked. Returns `true` if a sale
+--- was attempted.
+--- @param item BagItem
+--- @return boolean wasAttempted
 local function handleItem(item)
-  if not Items:IsItemStillInBags(item) then return end
-  if Items:IsItemLocked(item) then return end
+  if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) then
+    C_Container.UseContainerItem(item.bag, item.slot)
+    handleStaticPopup()
 
-  C_Container.UseContainerItem(item.bag, item.slot)
-  handleStaticPopup()
+    EventManager:Fire(E.AttemptedToSellItem, item)
+    return true
+  end
 
-  EventManager:Fire(E.AttemptedToSellItem, item)
+  return false
 end
 
 -- ============================================================================
@@ -107,7 +112,7 @@ local RunPhases = {
   --- No run is in progress.
   IDLE = "IDLE",
 
-  --- `Start()` is waiting for the bag items cache to settle.
+  --- Waiting for the bag items cache to settle, before the first batch or between batches.
   WAITING = "WAITING",
 
   --- Items are being sold, one per tick.
@@ -120,55 +125,107 @@ local RunState = {
   --- @type SellerRunPhase
   phase = RunPhases.IDLE,
 
-  --- Changes each time a run begins or ends. A wait keeps the id it began with, so it can tell the run was stopped.
+  --- Changes each time a run begins, waits, or ends, so a pending wait can tell it is out of date.
   --- @type integer
   runId = 0,
 
-  --- The items left to sell. Every `Sell()` refills the same table.
+  --- Set when `Sell()` first finds items, which is when `SellerStarted` fires.
+  hasStarted = false,
+
+  --- The items left to sell.
   --- @type BagItem[]
   items = {},
+
+  --- The item ID of each attempted sale this run, by slot key.
+  --- @type table<integer, integer>
+  attempted = {},
+
+  --- The calls to `UseContainerItem` since the last fetch. A batch with none ends the run.
+  numBatchAttempts = 0,
 
   --- Runs one sale per tick, while selling.
   --- @type Ticker?
   ticker = nil
 }
 
---- Returns whether a run is waiting or selling.
+--- Returns `true` if a run is waiting or selling.
 --- @return boolean
 function RunState:IsBusy()
   return self.phase ~= RunPhases.IDLE
 end
 
---- Begins the wait for the bag items cache. Returns the run's id, which `IsCurrent()` checks.
---- @return integer runId
-function RunState:Wait()
+--- Returns `true` if the run has started selling.
+--- @return boolean
+function RunState:HasStarted()
+  return self.hasStarted
+end
+
+--- Waits for the bag items cache to settle, then calls `callback`. The call is dropped if the run ends first.
+--- @param callback fun()
+function RunState:Wait(callback)
+  if self.ticker then
+    self.ticker:Cancel()
+    self.ticker = nil
+  end
+
   self.runId = self.runId + 1
   self.phase = RunPhases.WAITING
-  return self.runId
+
+  local runId = self.runId
+  BagItemsCache:WhenSettled(Seller.MAX_SETTLE_SECONDS, function()
+    if self.runId == runId then callback() end
+  end)
 end
 
---- Returns whether `runId` belongs to the run in progress, not one that was stopped.
---- @param runId integer
---- @return boolean
-function RunState:IsCurrent(runId)
-  return self.runId == runId
+--- Records that a sale of `item` was attempted. Later fetches leave out its slot while it holds the same item.
+--- @param item BagItem
+function RunState:AddAttempt(item)
+  self.attempted[BagItemsCache:GetSlotKey(item.bag, item.slot)] = item.id
+  self.numBatchAttempts = self.numBatchAttempts + 1
 end
 
---- Begins selling the sellable junk items, highest price first, up to the Safe Sell limit when it is on. Returns
---- whether there were any.
+--- Begins selling the junk items that were not attempted this run, highest price first, up to the Safe Sell
+--- limit when it is on. Returns `true` if there were any.
+--- @param onWaitEnded fun() Called when the batch is sold and the cache has settled again.
 --- @return boolean hasItems
-function RunState:Sell()
+function RunState:Sell(onWaitEnded)
   local limit = StateManager:GetGlobalState().safeSell and Seller.SAFE_SELL_LIMIT or nil
-  self.items = JunkFilter:GetSellableJunkItems(self.items, limit)
+  local items = JunkFilter:GetSellableJunkItems(nil, limit)
 
-  if #self.items > 0 then
+  -- Leave out attempted slots.
+  local numKept = 0
+  for i = 1, #items do
+    local item = items[i]
+    local attemptedId = self.attempted[BagItemsCache:GetSlotKey(item.bag, item.slot)]
+    if attemptedId == nil or attemptedId ~= item.id then
+      numKept = numKept + 1
+      items[numKept] = item
+    end
+  end
+  for i = #items, numKept + 1, -1 do items[i] = nil end
+  self.items = items
+
+  if #items > 0 then
+    self.hasStarted = true
     self.phase = RunPhases.SELLING
+    self.numBatchAttempts = 0
     self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
-      local item = Addon:IsAtMerchant() and table.remove(self.items)
-      if not item then return Seller:Stop() end
+      if not Addon:IsAtMerchant() then return Seller:Stop() end
+
+      local item = table.remove(self.items)
+      if not item then
+        -- Fetch again once the cache settles, unless the batch made no attempts.
+        if self.numBatchAttempts > 0 then
+          return self:Wait(onWaitEnded)
+        else
+          return Seller:Stop()
+        end
+      end
 
       -- Skip an item that stopped being junk since the fetch.
-      if JunkFilter:IsSellableJunkItem(item) then handleItem(item) end
+      if JunkFilter:IsSellableJunkItem(item) and handleItem(item) then
+        self:AddAttempt(item)
+      end
     end)
     return true
   end
@@ -176,43 +233,43 @@ function RunState:Sell()
   return false
 end
 
---- Ends the run and cancels its ticker. Returns whether it was selling.
---- @return boolean wasSelling
+--- Ends the run and cancels its ticker. Returns `true` if the run had started selling.
+--- @return boolean hasStarted
 function RunState:Reset()
-  local wasSelling = self.phase == RunPhases.SELLING
-  if wasSelling then self.ticker:Cancel() end
+  local hasStarted = self.hasStarted
+  if self.ticker then self.ticker:Cancel() end
 
   self.runId = self.runId + 1
   self.phase = RunPhases.IDLE
+  self.hasStarted = false
+  self.numBatchAttempts = 0
   self.ticker = nil
+  for slotKey in pairs(self.attempted) do self.attempted[slotKey] = nil end
 
-  return wasSelling
+  return hasStarted
 end
 
 -- ============================================================================
 -- Seller
 -- ============================================================================
 
---- Called when the wait for the cache ends, settled or timed out. Starts selling unless the merchant window is closed or
---- there are no items.
+--- Called when the wait for the cache ends, settled or timed out. Sells the next batch, or ends the run if the
+--- merchant window is closed or there are no items.
 --- @param auto? boolean Whether Auto Sell started the run.
 local function onWaitEnded(auto)
-  -- End the wait. Every exit below leaves the Seller idle.
-  RunState:Reset()
+  -- End the run if the merchant closed while waiting.
+  if not Addon:IsAtMerchant() then return Seller:Stop() end
 
-  -- Do not start if the merchant closed while waiting.
-  if not Addon:IsAtMerchant() then return end
-
-  -- Start selling, or return if no items.
-  if not RunState:Sell() then
-    if not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
-    return
+  local hasStarted = RunState:HasStarted()
+  if RunState:Sell(onWaitEnded) then
+    if not hasStarted then EventManager:Fire(E.SellerStarted) end
+  else
+    if not hasStarted and not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
+    Seller:Stop()
   end
-
-  EventManager:Fire(E.SellerStarted)
 end
 
---- Waits for the bag items cache to settle, then sells the junk items, highest price first.
+--- Waits for the bag items cache to settle, then sells the junk items, highest price first, until none are left.
 --- @param auto? boolean If `true`, no message is printed when there are no items to sell.
 function Seller:Start(auto)
   -- Do not start if busy.
@@ -223,13 +280,10 @@ function Seller:Start(auto)
   end
 
   -- Wait for the bag items cache to settle.
-  local runId = RunState:Wait()
-  BagItemsCache:WhenSettled(Seller.MAX_SETTLE_SECONDS, function()
-    if RunState:IsCurrent(runId) then onWaitEnded(auto) end
-  end)
+  RunState:Wait(function() onWaitEnded(auto) end)
 end
 
---- Ends the run, whether it is waiting or selling. Fires `SellerStopped` only if it was selling.
+--- Ends the run, whether it is waiting or selling. Fires `SellerStopped` only if `SellerStarted` fired.
 function Seller:Stop()
   if RunState:Reset() then
     EventManager:Fire(E.SellerStopped)
@@ -248,7 +302,7 @@ function Seller:HandleItem(item)
   handleItem(item)
 end
 
---- Returns whether a run is waiting for the cache or selling.
+--- Returns `true` if a run is waiting for the cache or selling.
 --- @return boolean
 function Seller:IsBusy()
   return RunState:IsBusy()

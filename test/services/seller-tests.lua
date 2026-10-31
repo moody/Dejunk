@@ -32,7 +32,9 @@ local function setupContext()
 
   Mocks:CreateSpy(Context:GetModule("Confirmer")):Stub("IsBusy"):Returns(false)
 
-  local BagItemsCache = {}
+  -- What `Seller` calls on the bag items cache. Only `WhenSettled()` is stubbed.
+  Context:Load("src/items/bag-items-cache.lua")
+  local BagItemsCache = Context:GetModule("BagItemsCache")
   local BagItemsCacheSpy = Mocks:CreateSpy(BagItemsCache)
   BagItemsCacheSpy:Stub("WhenSettled"):Invokes(function(_, _, callback) callback(true) end)
 
@@ -63,7 +65,6 @@ local function setupContext()
   StateManagerSpy:Stub("GetGlobalState"):Returns({ safeSell = false })
   StateManagerSpy:Stub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = false } })
 
-  Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
@@ -111,7 +112,7 @@ end
 
 --- Calls the callback of the `waitNumber`th `WhenSettled()` call, as the bag items cache does when it settles.
 --- @param whenSettled MockSpyStub The stub of `BagItemsCache:WhenSettled()`.
---- @param waitNumber integer Which call to answer, in the order `Seller:Start()` made them.
+--- @param waitNumber integer Which call to answer, in the order `Seller` made them.
 local function callWaiter(whenSettled, waitNumber)
   local callback = whenSettled.calls[waitNumber][2]
   callback(true)
@@ -213,24 +214,6 @@ do
 
   assert(#getSellableJunkItems.calls == 1)
   assert(getSellableJunkItems.calls[1][2] == nil)
-end
-
--- Test: gets the items into the same table on every run.
-do
-  local Seller, Game, spies = setupContext()
-  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
-  getSellableJunkItems:Invokes(function(_, items)
-    items[1] = { bag = 0, slot = 1 }
-    return items
-  end)
-
-  Seller:Start()
-  advanceSales(Game, 2)
-  Seller:Start()
-
-  assert(#getSellableJunkItems.calls == 2)
-  assert(type(getSellableJunkItems.calls[1][1]) == "table")
-  assert(getSellableJunkItems.calls[2][1] == getSellableJunkItems.calls[1][1])
 end
 
 -- Test: skips an item that is no longer in the bags.
@@ -713,4 +696,130 @@ do
   callWaiter(WhenSettled, 2)
   assert(#GetSellableJunkItems.calls == 1)
   assert(started == 1)
+end
+
+-- ============================================================================
+-- Tests - Seller:Start() loop
+-- ============================================================================
+
+-- Test: gets the items again after a batch is sold, firing one `SellerStarted` and one `SellerStopped`.
+do
+  local Seller, Game, spies = setupContext()
+  local first = { bag = 0, slot = 1, id = 1 }
+  local second = { bag = 0, slot = 2, id = 2 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:ReturnsInOrder({ first }, { second }, {})
+
+  local started, stopped = 0, 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 5)
+
+  assert(#GetSellableJunkItems.calls == 3)
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
+    { "UseContainerItem", first.bag, first.slot },
+    { "UseContainerItem", second.bag, second.slot }
+  }))
+  assert(started == 1)
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: does not attempt a slot again while it holds the same item.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1, id = 1 }
+  local sameItem = { bag = 0, slot = 1, id = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:ReturnsInOrder({ item }, { sameItem })
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 5)
+
+  assert(#GetSellableJunkItems.calls == 2)
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", item.bag, item.slot } }))
+  assert(stopped == 1)
+end
+
+-- Test: attempts a slot again when it holds a different item.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1, id = 1 }
+  local differentItem = { bag = 0, slot = 1, id = 2 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:ReturnsInOrder({ item }, { differentItem }, {})
+
+  Seller:Start()
+  advanceSales(Game, 5)
+
+  assert(#spies.ContainerSpy.calls == 2)
+end
+
+-- Test: attempts the same item in a different slot.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1, id = 1 }
+  local sameItemElsewhere = { bag = 0, slot = 2, id = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  GetSellableJunkItems:ReturnsInOrder({ item }, { sameItemElsewhere }, {})
+
+  Seller:Start()
+  advanceSales(Game, 5)
+
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
+    { "UseContainerItem", item.bag, item.slot },
+    { "UseContainerItem", sameItemElsewhere.bag, sameItemElsewhere.slot }
+  }))
+end
+
+-- Test: ends the run when a batch makes no attempts.
+do
+  local Seller, Game, spies = setupContext()
+  local stale = { bag = 0, slot = 1, id = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ stale })
+  spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Returns(false)
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled")
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 3)
+
+  assert(#WhenSettled.calls == 1)
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: stopping between batches fires `SellerStopped` once and ignores the pending wait.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1, id = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled")
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+
+  -- The second wait is left pending.
+  WhenSettled:Returns()
+  advanceSales(Game, 2)
+  assert(#WhenSettled.calls == 2)
+  assert(Seller:IsBusy())
+
+  Seller:Stop()
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+
+  callWaiter(WhenSettled, 2)
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(stopped == 1)
 end
