@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local B = Addon:GetModule("Blizzard")
+local BagItemsCache = Addon:GetModule("BagItemsCache")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
@@ -19,6 +20,10 @@ Seller.SAFE_SELL_LIMIT = 12
 --- The seconds after the merchant window opens before Auto Repair and Auto Sell run.
 --- @type number
 Seller.ON_MERCHANT_SHOW_DELAY = 0.1
+
+--- The maximum seconds `Start()` waits for the bag items cache to settle.
+--- @type number
+Seller.MAX_SETTLE_SECONDS = 0.4
 
 -- ============================================================================
 -- Events
@@ -59,6 +64,7 @@ end)
 -- Local Functions
 -- ============================================================================
 
+--- Confirms `popup` if it asks to remove an item's trade timer.
 local function handlePopup(popup)
   if popup and popup:IsShown() and popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL" then
     local button = popup.GetButton1 and popup:GetButton1() or popup.button1
@@ -66,6 +72,7 @@ local function handlePopup(popup)
   end
 end
 
+--- Confirms a shown popup that asks to remove an item's trade timer. Does nothing on Classic Era and TBC.
 local function handleStaticPopup()
   if (Addon.IS_VANILLA or Addon.IS_TBC) then return end
 
@@ -79,6 +86,7 @@ local function handleStaticPopup()
   end
 end
 
+--- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags or locked.
 local function handleItem(item)
   if not Items:IsItemStillInBags(item) then return end
   if Items:IsItemLocked(item) then return end
@@ -89,16 +97,126 @@ local function handleItem(item)
   EventManager:Fire(E.AttemptedToSellItem, item)
 end
 
-local function tickerCallback()
-  local item = table.remove(Seller.items)
-  if not item then return Seller:Stop() end
-  handleItem(item)
+-- ============================================================================
+-- Run State
+-- ============================================================================
+
+--- The phases of a run.
+--- @enum SellerRunPhase
+local RunPhases = {
+  --- No run is in progress.
+  IDLE = "IDLE",
+
+  --- `Start()` is waiting for the bag items cache to settle.
+  WAITING = "WAITING",
+
+  --- Items are being sold, one per tick.
+  SELLING = "SELLING"
+}
+
+--- The state of the current run, from `Start()` to `Stop()`. A run waits for the bag items cache to settle, then
+--- sells. Only its methods change it.
+--- @class SellerRunState
+local RunState = {
+  --- @type SellerRunPhase
+  phase = RunPhases.IDLE,
+
+  --- Changes each time a run begins or ends. A wait keeps the id it began with, so it can tell the run was stopped.
+  --- @type integer
+  runId = 0,
+
+  --- The items left to sell, while selling.
+  --- @type BagItem[]?
+  items = nil,
+
+  --- Runs one sale per tick, while selling.
+  --- @type Ticker?
+  ticker = nil
+}
+
+--- Returns whether a run is waiting or selling.
+--- @return boolean
+function RunState:IsBusy()
+  return self.phase ~= RunPhases.IDLE
+end
+
+--- Begins the wait for the bag items cache. Returns the run's id, which `IsCurrent()` checks.
+--- @return integer runId
+function RunState:Wait()
+  self.runId = self.runId + 1
+  self.phase = RunPhases.WAITING
+  return self.runId
+end
+
+--- Returns whether `runId` belongs to the run in progress, not one that was stopped.
+--- @param runId integer
+--- @return boolean
+function RunState:IsCurrent(runId)
+  return self.runId == runId
+end
+
+--- Begins selling `items`, highest price first, one per tick. Stops the run when none are left or the merchant window
+--- is not shown.
+--- @param items BagItem[]
+function RunState:Sell(items)
+  self.phase = RunPhases.SELLING
+  self.items = items
+  self.ticker = TickerManager:NewTicker(Addon:GetLatency(), function()
+    local item = Addon:IsAtMerchant() and table.remove(self.items)
+    if not item then return Seller:Stop() end
+    handleItem(item)
+  end)
+end
+
+--- Ends the run and cancels its ticker. Returns whether it was selling.
+--- @return boolean wasSelling
+function RunState:Reset()
+  local wasSelling = self.phase == RunPhases.SELLING
+  if wasSelling then self.ticker:Cancel() end
+
+  self.runId = self.runId + 1
+  self.phase = RunPhases.IDLE
+  self.items = nil
+  self.ticker = nil
+
+  return wasSelling
 end
 
 -- ============================================================================
 -- Seller
 -- ============================================================================
 
+--- Called when the wait for the cache ends, whether it settled or timed out. Gets the junk items and starts selling
+--- them, unless the merchant window is closed or there are no items.
+--- @param auto? boolean Whether Auto Sell started the run.
+local function onWaitEnded(auto)
+  -- End the wait. Every exit below leaves the Seller idle.
+  RunState:Reset()
+
+  -- Do not start if the merchant closed while waiting.
+  if not Addon:IsAtMerchant() then return end
+
+  -- Get filtered items.
+  local items = JunkFilter:GetSellableJunkItems()
+
+  -- Return if no items.
+  if #items == 0 then
+    if not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
+    return
+  end
+
+  -- Safe sell.
+  if StateManager:GetGlobalState().safeSell then
+    while #items > Seller.SAFE_SELL_LIMIT do table.remove(items) end
+  end
+
+  -- Start selling.
+  RunState:Sell(items)
+  EventManager:Fire(E.SellerStarted)
+end
+
+--- Waits for the bag items cache to settle, then sells the junk items, highest price first.
+--- @param auto? boolean If `true`, no message is printed when there are no items to sell.
 function Seller:Start(auto)
   -- Don't start if busy.
   if Addon:IsBusy() then return end
@@ -107,32 +225,22 @@ function Seller:Start(auto)
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
-  -- Get filtered items.
-  self.items = JunkFilter:GetSellableJunkItems()
-
-  -- Return if no items.
-  if #self.items == 0 then
-    if not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
-    return
-  end
-
-  -- Safe sell.
-  if StateManager:GetGlobalState().safeSell then
-    while #self.items > Seller.SAFE_SELL_LIMIT do table.remove(self.items) end
-  end
-
-  -- Start ticker.
-  self.ticker = TickerManager:NewTicker(Addon:GetLatency(), tickerCallback)
-  EventManager:Fire(E.SellerStarted)
+  -- Wait for the bag items cache to settle.
+  local runId = RunState:Wait()
+  BagItemsCache:WhenSettled(Seller.MAX_SETTLE_SECONDS, function()
+    if RunState:IsCurrent(runId) then onWaitEnded(auto) end
+  end)
 end
 
+--- Ends the run, whether it is waiting or selling. Fires `SellerStopped` only if it was selling.
 function Seller:Stop()
-  if self:IsBusy() then
-    self.ticker:Cancel()
+  if RunState:Reset() then
     EventManager:Fire(E.SellerStopped)
   end
 end
 
+--- Sells one item at once, without starting a run. Does nothing while busy.
+--- @param item BagItem
 function Seller:HandleItem(item)
   if Addon:IsBusy() then return end
 
@@ -143,6 +251,8 @@ function Seller:HandleItem(item)
   handleItem(item)
 end
 
+--- Returns whether a run is waiting for the cache or selling.
+--- @return boolean
 function Seller:IsBusy()
-  return self.ticker and not self.ticker:IsCancelled()
+  return RunState:IsBusy()
 end

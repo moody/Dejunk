@@ -13,7 +13,8 @@ local Mocks = require("test/mocks")
 local SALE_SECONDS = 0.2
 
 --- Returns `Seller`, a test game, and the spies of the modules it uses, from a new context. The merchant is open,
---- Safe Sell and Auto Sell are off, and nothing is sellable. A test changes a stub with `GetStub()`.
+--- the bag items cache settles at once, Safe Sell and Auto Sell are off, and nothing is sellable. A test changes a
+--- stub with `GetStub()`.
 --- @return Seller Seller
 --- @return TestGameInstance Game
 --- @return SellerTestSpies spies
@@ -28,7 +29,12 @@ local function setupContext()
   local AddonSpy = Mocks:CreateSpy(Context.Addon)
   AddonSpy:Stub("GetLatency"):Returns(SALE_SECONDS)
   AddonSpy:Stub("Print")
+
   Mocks:CreateSpy(Context:GetModule("Confirmer")):Stub("IsBusy"):Returns(false)
+
+  local BagItemsCache = {}
+  local BagItemsCacheSpy = Mocks:CreateSpy(BagItemsCache)
+  BagItemsCacheSpy:Stub("WhenSettled"):Invokes(function(_, _, callback) callback(true) end)
 
   local MerchantFrame = {}
   local MerchantFrameSpy = Mocks:CreateSpy(MerchantFrame)
@@ -56,6 +62,7 @@ local function setupContext()
   StateManagerSpy:Stub("GetGlobalState"):Returns({ safeSell = false })
   StateManagerSpy:Stub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = false } })
 
+  Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
@@ -70,6 +77,9 @@ local function setupContext()
   local spies = {
     --- Records the `Addon:Print()` calls.
     AddonSpy = AddonSpy,
+
+    --- Stubs `BagItemsCache:WhenSettled()`, which calls back at once with `true`.
+    BagItemsCacheSpy = BagItemsCacheSpy,
 
     --- Records the `C_Container.UseContainerItem()` calls.
     ContainerSpy = ContainerSpy,
@@ -95,6 +105,14 @@ end
 --- @param count integer
 local function advanceSales(game, count)
   game:Advance(count * SALE_SECONDS + game.FRAME_SECONDS)
+end
+
+--- Calls the callback of the `waitNumber`th `WhenSettled()` call, as the bag items cache does when it settles.
+--- @param whenSettled MockSpyStub The stub of `BagItemsCache:WhenSettled()`.
+--- @param waitNumber integer Which call to answer, in the order `Seller:Start()` made them.
+local function callWaiter(whenSettled, waitNumber)
+  local callback = whenSettled.calls[waitNumber][2]
+  callback(true)
 end
 
 -- ============================================================================
@@ -315,8 +333,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
-  GetSellableJunkItems:Returns({ first, second })
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local started = 0
   Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
@@ -404,6 +421,29 @@ do
   assert(#spies.ContainerSpy.calls == 2)
 end
 
+-- Test: stops the run when the merchant window is not shown at the next sale.
+do
+  local Seller, Game, spies = setupContext()
+  local first = { bag = 0, slot = 1 }
+  local second = { bag = 0, slot = 2 }
+  local third = { bag = 0, slot = 3 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+
+  local stopped = 0
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+  assert(#spies.ContainerSpy.calls == 1)
+
+  spies.MerchantFrameSpy:GetStub("IsShown"):Returns(false)
+  advanceSales(Game, 1)
+
+  assert(#spies.ContainerSpy.calls == 1)
+  assert(stopped == 1)
+  assert(not Seller:IsBusy())
+end
+
 -- ============================================================================
 -- Tests - Seller MerchantShow
 -- ============================================================================
@@ -430,7 +470,7 @@ do
   assert(#spies.ContainerSpy.calls == 0)
 
   advanceSales(Game, 1)
-  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", 0, 2 } }))
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", second.bag, second.slot } }))
 end
 
 -- Test: with Auto Sell on, prints nothing when there are no items to sell.
@@ -449,8 +489,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
-  GetSellableJunkItems:Returns({ item })
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
 
   Game:Fire(Game.E.Wow.MerchantShow)
   Game:Advance(Seller.ON_MERCHANT_SHOW_DELAY + Game.FRAME_SECONDS)
@@ -471,7 +510,9 @@ do
   local item = { bag = 2, slot = 5 }
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attemptedItem) attempted[#attempted + 1] = attemptedItem end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attemptedItem)
+    attempted[#attempted + 1] = attemptedItem
+  end)
 
   Seller:HandleItem(item)
 
@@ -511,4 +552,136 @@ do
 
   assert(#spies.ContainerSpy.calls == 0)
   assert(attempted == 0)
+end
+
+-- ============================================================================
+-- Tests - Seller:Start() waiting
+-- ============================================================================
+
+-- Test: waits for the bag items cache to settle before getting the items.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start()
+
+  assert(#WhenSettled.calls == 1)
+  assert(WhenSettled.calls[1][1] == Seller.MAX_SETTLE_SECONDS)
+  assert(Seller:IsBusy())
+  assert(#GetSellableJunkItems.calls == 0)
+  assert(started == 0)
+
+  callWaiter(WhenSettled, 1)
+
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(started == 1)
+  assert(Seller:IsBusy())
+
+  advanceSales(Game, 1)
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", item.bag, item.slot } }))
+end
+
+-- Test: does not start again while waiting.
+do
+  local Seller, _, spies = setupContext()
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  Seller:Start()
+  Seller:Start()
+
+  assert(#WhenSettled.calls == 1)
+  assert(#spies.AddonSpy:GetStub("Print").calls == 0)
+end
+
+-- Test: prints a message and ends the run when the wait finds no items to sell.
+do
+  local Seller, Game, spies = setupContext()
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  local started, stopped = 0, 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  assert(Seller:IsBusy())
+
+  callWaiter(WhenSettled, 1)
+
+  assert(Matchers:IsDeepEqual(spies.AddonSpy:GetStub("Print").calls, { { "NO_JUNK_ITEMS_TO_SELL" } }))
+  assert(not Seller:IsBusy())
+  assert(started == 0)
+  assert(stopped == 0)
+end
+
+-- Test: stopping during the wait fires no events and never gets the items.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  local started, stopped = 0, 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+  Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
+
+  Seller:Start()
+  Seller:Stop()
+  assert(not Seller:IsBusy())
+
+  callWaiter(WhenSettled, 1)
+
+  assert(#GetSellableJunkItems.calls == 0)
+  assert(started == 0)
+  assert(stopped == 0)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: ends the run without a message when the merchant window is not shown after the wait.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start()
+  spies.MerchantFrameSpy:GetStub("IsShown"):Returns(false)
+  callWaiter(WhenSettled, 1)
+
+  assert(#GetSellableJunkItems.calls == 0)
+  assert(#spies.AddonSpy:GetStub("Print").calls == 0)
+  assert(started == 0)
+  assert(not Seller:IsBusy())
+end
+
+-- Test: only the latest wait starts when the run is stopped and started again during the wait.
+do
+  local Seller, Game, spies = setupContext()
+  local item = { bag = 0, slot = 1 }
+  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
+
+  local started = 0
+  Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
+
+  Seller:Start()
+  Seller:Stop()
+  Seller:Start()
+  assert(#WhenSettled.calls == 2)
+
+  callWaiter(WhenSettled, 1)
+  assert(#GetSellableJunkItems.calls == 0)
+  assert(started == 0)
+  assert(Seller:IsBusy())
+
+  callWaiter(WhenSettled, 2)
+  assert(#GetSellableJunkItems.calls == 1)
+  assert(started == 1)
 end
