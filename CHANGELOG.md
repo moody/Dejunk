@@ -15,6 +15,7 @@
 ### Fixed
 
 - Fixed Auto Sell and the sell buttons stopping after a small first batch when the bags had not finished loading. Selling now waits for the bags to settle and continues until no sellable junk is left.
+- Fixed an item you just bought and can still refund showing as junk until the next bag update. It is now protected as soon as the game reports its refund time.
 
 ### Removed
 
