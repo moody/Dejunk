@@ -49,6 +49,13 @@ local function fireBagUpdatesFor(game, seconds)
   end
 end
 
+--- Fires `BAG_UPDATE_DELAYED` and waits for the update it causes.
+--- @param game TestGameInstance
+local function updateBags(game)
+  game:Fire(game.E.Wow.BagUpdateDelayed)
+  game:AdvanceTicks(1)
+end
+
 -- ============================================================================
 -- Tests - BagItemsCache:GetItems()
 -- ============================================================================
@@ -470,6 +477,119 @@ do
   Game:Advance(Game.refundSeconds + BagItemsCache.REFUND_POLL_SECONDS * 2)
 
   assert(Matchers:IsDeepEqual(payloads, { false, false }))
+end
+
+-- ============================================================================
+-- Tests - Late refund time
+-- ============================================================================
+
+-- Test: sets `refundExpirationTime` on an item that gains a refund time, and fires `BagsUpdated` with `true`.
+do
+  local BagItemsCache, Game = setupContext()
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:AdvanceTicks(1)
+
+  Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  updateBags(Game)
+  local item = BagItemsCache:GetItem(0, 1)
+  assert(item and item.refundExpirationTime == nil)
+
+  local payloads = {}
+  Game.EventManager:On(Game.E.BagsUpdated, function(noItemsPending)
+    payloads[#payloads + 1] = noItemsPending
+  end)
+  local version = BagItemsCache:GetVersion()
+
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(item.refundExpirationTime ~= nil)
+  assert(BagItemsCache:GetItem(0, 1) == item)
+  assert(Matchers:IsDeepEqual(payloads, { true }))
+  assert(BagItemsCache:GetVersion() > version)
+end
+
+-- Test: sets `refundExpirationTime` on an item that replaces another in the same slot.
+do
+  local BagItemsCache, Game = setupContext()
+  Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:AdvanceTicks(1)
+
+  Game.slots = { { bag = 0, slot = 1, itemId = 200 } }
+  updateBags(Game)
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
+end
+
+-- Test: keeps checking when the cache updates again before the refund time arrives.
+do
+  local BagItemsCache, Game = setupContext()
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:AdvanceTicks(1)
+
+  Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  updateBags(Game)
+  updateBags(Game)
+
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
+end
+
+-- Test: stops checking after `REFUND_WAIT_SECONDS`.
+do
+  local BagItemsCache, Game = setupContext()
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:AdvanceTicks(1)
+
+  Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  updateBags(Game)
+  Game:Advance(BagItemsCache.REFUND_WAIT_SECONDS + Game.FRAME_SECONDS)
+
+  local updates = 0
+  Game.EventManager:On(Game.E.BagsUpdated, function() updates = updates + 1 end)
+
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime == nil)
+  assert(updates == 0)
+end
+
+-- Test: sets `refundExpirationTime` on an item that was in its slot at the first update.
+do
+  local BagItemsCache, Game = setupContext()
+  Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:AdvanceTicks(1)
+
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime ~= nil)
+end
+
+-- Test: does not check again an item that was already in its slot at the previous update.
+do
+  local BagItemsCache, Game = setupContext()
+  Game.slots = {
+    { bag = 0, slot = 1, itemId = 100 },
+    { bag = 0, slot = 2 }
+  }
+  Game:Fire(Game.E.Wow.PlayerLogin)
+  Game:Advance(BagItemsCache.REFUND_WAIT_SECONDS + Game.FRAME_SECONDS)
+
+  Game.slots[2].itemId = 200
+  updateBags(Game)
+  Game.refundSeconds = REFUND_SECONDS
+  Game:AdvanceTicks(1)
+
+  assert(BagItemsCache:GetItem(0, 1).refundExpirationTime == nil)
+  assert(BagItemsCache:GetItem(0, 2).refundExpirationTime ~= nil)
 end
 
 -- ============================================================================

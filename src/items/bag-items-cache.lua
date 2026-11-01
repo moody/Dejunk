@@ -24,12 +24,28 @@ BagItemsCache.REFUND_POLL_SECONDS = 1
 --- @type number
 BagItemsCache.PENDING_DEADLINE_SECONDS = 5
 
+--- Seconds to check an item new to its slot for a late refund time.
+--- @type number
+BagItemsCache.REFUND_WAIT_SECONDS = 5
+
 --- @type table<integer, BagItem>
 local cache = {}
 
 --- The time to stop retrying each slot whose item data is not loaded, by slot key.
 --- @type table<integer, number>
 local pending = {}
+
+--- The time to stop checking each slot for a late refund time, by slot key.
+--- @type table<integer, number>
+local refundWatch = {}
+
+--- The ID of the item in each slot at the last update, by slot key.
+--- @type table<integer, integer>
+local previousItemIds = {}
+
+--- Filled by the update in progress, then swapped with `previousItemIds`.
+--- @type table<integer, integer>
+local currentItemIds = {}
 
 --- Increases whenever the cache changes.
 local version = 0
@@ -101,17 +117,28 @@ local function updateCache()
 
   for k in pairs(cache) do cache[k] = nil end
   for k in pairs(pending) do pending[k] = nil end
+  for k in pairs(currentItemIds) do currentItemIds[k] = nil end
 
   for bag, slot, itemId in B.Container:IterateSlots() do
     if itemId then
+      local key = BagItemsCache:GetSlotKey(bag, slot)
+      currentItemIds[key] = itemId
+
+      -- Watch an item that is new to its slot for a late refund time.
+      if previousItemIds[key] ~= itemId then
+        refundWatch[key] = B.Utils:GetTime() + BagItemsCache.REFUND_WAIT_SECONDS
+      end
+
       local item = BagItemsCache:CreateItem(bag, slot)
       if item then
         setCachedItem(bag, slot, item)
       else
-        pending[BagItemsCache:GetSlotKey(bag, slot)] = B.Utils:GetTime() + BagItemsCache.PENDING_DEADLINE_SECONDS
+        pending[key] = B.Utils:GetTime() + BagItemsCache.PENDING_DEADLINE_SECONDS
       end
     end
   end
+
+  previousItemIds, currentItemIds = currentItemIds, previousItemIds
 
   fireBagsUpdated(next(pending) == nil)
 end
@@ -133,6 +160,37 @@ local function updatePending()
   end
 
   if anyResolved then fireBagsUpdated(next(pending) == nil) end
+end
+
+--- Checks the watched slots for a refund time, and fires `BagsUpdated` if any item gained one.
+local function updateRefundWatch()
+  if next(refundWatch) == nil then return end
+
+  local anyGained = false
+  local now = B.Utils:GetTime()
+
+  for key, deadline in pairs(refundWatch) do
+    local item = cache[key]
+    local isDone = now >= deadline
+
+    if item then
+      if item.refundExpirationTime ~= nil then
+        isDone = true
+      else
+        local bag, slot = BagItemsCache:GetSlotFromKey(key)
+        local refundSeconds = B.Container:GetRefundSeconds(bag, slot)
+        if refundSeconds and refundSeconds > 0 then
+          item.refundExpirationTime = now + refundSeconds
+          anyGained = true
+          isDone = true
+        end
+      end
+    end
+
+    if isDone then refundWatch[key] = nil end
+  end
+
+  if anyGained then fireBagsUpdated(next(pending) == nil) end
 end
 
 --- Calls the waiters when the cache is settled or their deadline has passed, in the order they were added.
@@ -176,7 +234,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   EventManager:On(E.Wow.EquipmentSetsChanged, markDirty)
 
   -- Update the cache at most once per tick, and not during a burst. With nothing to update, retry the pending slots.
-  -- Waiters are checked every tick, even during a burst.
+  -- Then check the slots that are waiting for a refund time. Waiters are checked every tick, even during a burst.
   TickerManager:NewTicker(BagItemsCache.UPDATE_TICK_SECONDS, function()
     if not isBurstActive() then
       if isDirty then
@@ -184,6 +242,8 @@ EventManager:Once(E.Wow.PlayerLogin, function()
       elseif next(pending) then
         updatePending()
       end
+
+      updateRefundWatch()
     end
 
     processWaiters()
