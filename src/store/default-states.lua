@@ -5,7 +5,7 @@ local L = Addon:GetModule("Locale")
 local DefaultStates = Addon:GetModule("DefaultStates")
 
 --- Bump whenever a state change requires a migration.
-DefaultStates.CURRENT_VERSION = 2
+DefaultStates.CURRENT_VERSION = 3
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
