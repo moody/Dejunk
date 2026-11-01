@@ -53,11 +53,13 @@ local function setupContext()
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
   JunkFilterSpy:Stub("GetSellableJunkItems"):Returns({})
   JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true)
+  JunkFilterSpy:Stub("GetNumSellBlockedJunkItems"):Returns(0)
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
   ItemsSpy:Stub("IsItemStillInBags"):Returns(true)
   ItemsSpy:Stub("IsItemLocked"):Returns(false)
+  ItemsSpy:Stub("IsItemRefundable"):Returns(false)
 
   local StateManager = {}
   local StateManagerSpy = Mocks:CreateSpy(StateManager)
@@ -68,6 +70,7 @@ local function setupContext()
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
     CANNOT_SELL_WITHOUT_MERCHANT = "CANNOT_SELL_WITHOUT_MERCHANT",
+    JUNK_ITEMS_CANNOT_BE_SOLD_NOW = "JUNK_ITEMS_CANNOT_BE_SOLD_NOW",
     NO_JUNK_ITEMS_TO_SELL = "NO_JUNK_ITEMS_TO_SELL"
   })
   Context:SetModule("StateManager", StateManager)
@@ -271,6 +274,41 @@ do
   assert(Matchers:IsDeepEqual(attempted, { highest, lowest }))
 end
 
+-- Test: skips an item that is refundable.
+do
+  local Seller, Game, spies = setupContext()
+  local lowest = { bag = 0, slot = 1 }
+  local refundable = { bag = 0, slot = 2 }
+  local highest = { bag = 0, slot = 3 }
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, refundable, highest })
+  spies.ItemsSpy:GetStub("IsItemRefundable"):Invokes(function(_, item) return item == refundable end)
+
+  local attempted = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+
+  Seller:Start()
+  advanceSales(Game, 3)
+
+  assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, {
+    { "UseContainerItem", 0, 3 },
+    { "UseContainerItem", 0, 1 }
+  }))
+  assert(Matchers:IsDeepEqual(attempted, { highest, lowest }))
+end
+
+-- Test: stops the run when every item is refundable.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 }, { bag = 0, slot = 2 } })
+  spies.ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
+
+  Seller:Start()
+  advanceSales(Game, 3)
+
+  assert(#spies.ContainerSpy.calls == 0)
+  assert(not Seller:IsBusy())
+end
+
 -- Test: skips an item that is no longer sellable junk.
 do
   local Seller, Game, spies = setupContext()
@@ -333,6 +371,18 @@ do
   assert(started == 0)
   assert(stopped == 0)
   assert(not Seller:IsBusy())
+end
+
+-- Test: prints a message about blocked junk items instead of the no junk items message.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkFilterSpy:GetStub("GetNumSellBlockedJunkItems"):Returns(2)
+  local Print = spies.AddonSpy:GetStub("Print")
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  assert(Matchers:IsDeepEqual(Print.calls, { { "JUNK_ITEMS_CANNOT_BE_SOLD_NOW" } }))
 end
 
 -- Test: prints nothing when there are no items to sell and the start is automatic.

@@ -63,38 +63,6 @@ do
 end
 
 -- ============================================================================
--- Tests - ItemFilters:Refundable()
--- ============================================================================
-
--- Test: a refundable item is not junk, with the refundable reason.
-do
-  local Items = {}
-  local ItemsSpy = Mocks:CreateSpy(Items)
-  ItemsSpy:Stub("IsItemRefundable"):Returns(true)
-
-  local ItemFilters, L = setupContext({ Items = Items })
-
-  local result, reason = ItemFilters:Refundable({})
-
-  assert(result == ItemFilters.NOT_JUNK)
-  assert(reason == L.ITEM_IS_REFUNDABLE)
-end
-
--- Test: an item that is not refundable passes, with no reason.
-do
-  local Items = {}
-  local ItemsSpy = Mocks:CreateSpy(Items)
-  ItemsSpy:Stub("IsItemRefundable"):Returns(false)
-
-  local ItemFilters = setupContext({ Items = Items })
-
-  local result, reason = ItemFilters:Refundable({})
-
-  assert(result == ItemFilters.PASS)
-  assert(reason == nil)
-end
-
--- ============================================================================
 -- Tests - ItemFilters:ExcludeAboveItemLevel()
 -- ============================================================================
 

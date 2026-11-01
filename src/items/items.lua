@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local GetDetailedItemLevelInfo = C_Item.GetDetailedItemLevelInfo or GetDetailedItemLevelInfo
 local GetItemSubClassInfo = C_Item.GetItemSubClassInfo or GetItemSubClassInfo
 local IsCosmeticItem = C_Item.IsCosmeticItem or IsCosmeticItem
@@ -100,11 +101,21 @@ function Items:IsItemDestroyable(item)
   return self:IsItemJunkable(item)
 end
 
---- Returns `true` if the given `item` can be refunded.
+--- Returns `true` if the given `item` can still be refunded. Asks the game until the item is refundable, then uses the
+--- expiration time it remembered.
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemRefundable(item)
-  return item.refundExpirationTime ~= nil and item.refundExpirationTime > GetTime()
+  local now = B.Utils:GetTime()
+  if item.refundExpirationTime and item.refundExpirationTime > now then return true end
+
+  local refundSeconds = B.Container:GetRefundSeconds(item.bag, item.slot)
+  if refundSeconds and refundSeconds > 0 then
+    item.refundExpirationTime = now + refundSeconds
+    return true
+  end
+
+  return false
 end
 
 -- Items:IsItemEquipment()

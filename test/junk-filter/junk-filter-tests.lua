@@ -17,7 +17,6 @@ local PASS = "PASS"
 
 --- The `ItemFilters` methods that `JunkFilter:IsJunkItem()` calls, in the order it calls them.
 local ORDERED_FILTER_NAMES = {
-  "Refundable",
   "ExcludeAboveItemLevel",
   "ExcludeAbovePrice",
   "ByLists",
@@ -75,6 +74,7 @@ local function setupContext(options)
   ItemsSpy:Stub("IsItemLocked"):Returns(false)
   ItemsSpy:Stub("IsItemSellable"):Returns(true)
   ItemsSpy:Stub("IsItemDestroyable"):Returns(true)
+  ItemsSpy:Stub("IsItemRefundable"):Returns(false)
 
   local StateManager = {}
   Mocks:CreateSpy(StateManager):Stub("GetProfileState"):Returns({
@@ -100,6 +100,7 @@ local function setupContext(options)
   Context:SetModule("Locale", {
     ITEM_CANNOT_BE_DESTROYED = "ITEM_CANNOT_BE_DESTROYED",
     ITEM_CANNOT_BE_SOLD = "ITEM_CANNOT_BE_SOLD",
+    ITEM_IS_REFUNDABLE = "ITEM_IS_REFUNDABLE",
     NO_FILTERS_MATCHED = "NO_FILTERS_MATCHED"
   })
   Context:SetModule("StateManager", StateManager)
@@ -133,7 +134,6 @@ do
   JunkFilter:IsJunkItem(item, "SELL")
 
   assert(Matchers:IsDeepEqual(ItemFiltersSpy.calls, {
-    { "Refundable", item },
     { "ExcludeAboveItemLevel", item, "excludeAboveItemLevel", "SELL" },
     { "ExcludeAbovePrice", item, "excludeAbovePrice", "SELL" },
     { "ByLists", item },
@@ -392,6 +392,63 @@ do
 
   assert(isJunk == false)
   assert(reason == "ITEM_CANNOT_BE_SOLD")
+end
+
+-- Test: IsSellableJunkItem returns false with the block reason for a blocked junk item.
+do
+  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
+
+  local isJunk, reason = JunkFilter:IsSellableJunkItem({})
+
+  assert(isJunk == false)
+  assert(reason == "ITEM_IS_REFUNDABLE")
+end
+
+-- Test: IsSellableJunkItem does not look for a block unless the item is junk.
+do
+  local JunkFilter, _, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  JunkFilter:IsSellableJunkItem({})
+  assert(#ItemsSpy:GetStub("IsItemRefundable").calls == 0)
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:GetSellBlockReason()
+-- ============================================================================
+
+-- Test: returns the refundable reason for a refundable item.
+do
+  local JunkFilter, _, ItemsSpy = setupContext()
+  ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
+  assert(JunkFilter:GetSellBlockReason({}) == "ITEM_IS_REFUNDABLE")
+end
+
+-- Test: returns nothing when nothing blocks the sale.
+do
+  local JunkFilter = setupContext()
+  assert(JunkFilter:GetSellBlockReason({}) == nil)
+end
+
+-- ============================================================================
+-- Tests - JunkFilter:GetNumSellBlockedJunkItems()
+-- ============================================================================
+
+-- Test: counts the junk items for selling that cannot be sold right now.
+do
+  local JunkFilter, _, _, BagItemsCacheSpy = setupContext()
+  stubGetItems(BagItemsCacheSpy, {
+    { isJunk = true, isBlocked = true },
+    { isJunk = true, isBlocked = true },
+    { isJunk = true },
+    { isBlocked = true },
+    {}
+  })
+  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
+  JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.isJunk == true end)
+  JunkFilterSpy:Stub("GetSellBlockReason"):Invokes(function(_, item) return item.isBlocked and "reason" or nil end)
+
+  assert(JunkFilter:GetNumSellBlockedJunkItems() == 2)
 end
 
 -- ============================================================================

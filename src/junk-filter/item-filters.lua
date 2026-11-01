@@ -91,17 +91,6 @@ end
 -- ItemFilters
 -- ============================================================================
 
---- Refundable items are never junk.
---- @param item BagItem
---- @return ItemFilterResult result, string? reason
-function ItemFilters:Refundable(item)
-  if Items:IsItemRefundable(item) then
-    return self.NOT_JUNK, L.ITEM_IS_REFUNDABLE
-  end
-
-  return self.PASS
-end
-
 --- Equipment with an item level above the value is not junk, for the selected qualities and the option's scope.
 --- @param item BagItem
 --- @param state ItemLevelOptionState

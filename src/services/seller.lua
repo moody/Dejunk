@@ -64,12 +64,12 @@ end)
 -- Local Functions
 -- ============================================================================
 
---- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags or locked. Returns `true` if a sale
---- was attempted.
+--- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags, locked, or refundable. Returns
+--- `true` if a sale was attempted.
 --- @param item BagItem
 --- @return boolean wasAttempted
 local function handleItem(item)
-  if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) then
+  if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) and not Items:IsItemRefundable(item) then
     C_Container.UseContainerItem(item.bag, item.slot)
 
     EventManager:Fire(E.AttemptedToSellItem, item)
@@ -257,7 +257,13 @@ local function onWaitEnded(auto)
   if RunState:Sell(onWaitEnded) then
     if not hasStarted then EventManager:Fire(E.SellerStarted) end
   else
-    if not hasStarted and not auto then Addon:Print(L.NO_JUNK_ITEMS_TO_SELL) end
+    if not hasStarted and not auto then
+      if JunkFilter:GetNumSellBlockedJunkItems() > 0 then
+        Addon:Print(L.JUNK_ITEMS_CANNOT_BE_SOLD_NOW)
+      else
+        Addon:Print(L.NO_JUNK_ITEMS_TO_SELL)
+      end
+    end
     Seller:Stop()
   end
 end

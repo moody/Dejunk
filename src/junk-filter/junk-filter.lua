@@ -102,6 +102,20 @@ do -- Convenience methods.
     self:GetDestroyableJunkItems(items, 1)
     return items[1]
   end
+
+  --- Returns the number of junk items for selling that cannot be sold right now.
+  --- @return integer
+  function JunkFilter:GetNumSellBlockedJunkItems()
+    local numBlocked = 0
+
+    for _, item in ipairs(BagItemsCache:GetItems(items)) do
+      if self:IsJunkItem(item, "SELL") and self:GetSellBlockReason(item) then
+        numBlocked = numBlocked + 1
+      end
+    end
+
+    return numBlocked
+  end
 end
 
 --- Creates or updates an array of sellable junk items that are not locked.
@@ -128,11 +142,29 @@ function JunkFilter:GetJunkItems(items, limit)
   return getJunkItems(self.IsJunkItem, items, limit)
 end
 
---- Returns `true` and a reason string if the given `item` is junk and can be sold.
+--- Returns why the given `item` cannot be sold right now, or `nil` if nothing stops the sale. Does not check whether
+--- the item is junk.
+--- @param item BagItem
+--- @return string? reason
+function JunkFilter:GetSellBlockReason(item)
+  if Items:IsItemRefundable(item) then
+    return L.ITEM_IS_REFUNDABLE
+  end
+end
+
+--- Returns `true` and a reason string if the given `item` is junk and can be sold. A junk item that
+--- `GetSellBlockReason()` blocks returns `false` and that reason.
 --- @param item BagItem
 --- @return boolean isSellableJunk, string? reason
 function JunkFilter:IsSellableJunkItem(item)
-  return self:IsJunkItem(item, "SELL")
+  local isJunk, reason = self:IsJunkItem(item, "SELL")
+
+  if isJunk then
+    local blockReason = self:GetSellBlockReason(item)
+    if blockReason then return false, blockReason end
+  end
+
+  return isJunk, reason
 end
 
 --- Returns `true` and a reason string if the given `item` is junk and can be destroyed.
@@ -173,12 +205,6 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   --- @type ItemFilterResult, string?
   local result, reason
-
-  -- Refundable.
-  result, reason = ItemFilters:Refundable(item)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
 
   local profileSettings = StateManager:GetProfileState().settings
 

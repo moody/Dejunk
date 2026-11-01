@@ -13,7 +13,7 @@ hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
   local item = BagItemsCache:GetItem(bag, slot)
   if not item then return end
 
-  local isSellJunk, sellReason = JunkFilter:IsJunkItem(item, "SELL")
+  local isSellJunk, sellReason = JunkFilter:IsSellableJunkItem(item)
   local isDestroyJunk, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
 
   -- Add lines.

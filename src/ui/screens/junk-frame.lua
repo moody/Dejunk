@@ -146,7 +146,12 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   onItemClick = function(item, button)
     if button == "LeftButton" then
       if Addon:IsAtMerchant() and Items:IsItemSellable(item) then
-        Seller:HandleItem(item)
+        local blockReason = JunkFilter:GetSellBlockReason(item)
+        if blockReason then
+          Addon:Print(L.CANNOT_SELL_ITEM_NOW:format(item.link, blockReason))
+        else
+          Seller:HandleItem(item)
+        end
       end
     end
 
