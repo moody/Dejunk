@@ -84,14 +84,10 @@ DefaultStates.Global = {
     toggleLootableFrame = DefaultStates.UNBOUND_KEY,
     startSelling = DefaultStates.UNBOUND_KEY,
     destroyNextItem = DefaultStates.UNBOUND_KEY,
-    addToProfileInclusions = DefaultStates.UNBOUND_KEY,
-    removeFromProfileInclusions = DefaultStates.UNBOUND_KEY,
-    addToProfileExclusions = DefaultStates.UNBOUND_KEY,
-    removeFromProfileExclusions = DefaultStates.UNBOUND_KEY,
-    addToGlobalInclusions = DefaultStates.UNBOUND_KEY,
-    removeFromGlobalInclusions = DefaultStates.UNBOUND_KEY,
-    addToGlobalExclusions = DefaultStates.UNBOUND_KEY,
-    removeFromGlobalExclusions = DefaultStates.UNBOUND_KEY
+    addOrRemoveProfileInclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveProfileExclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveGlobalExclusions = DefaultStates.UNBOUND_KEY
   },
 
   points = {
