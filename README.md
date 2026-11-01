@@ -64,6 +64,7 @@ The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click o
 - Left-click an item to sell it
 - Right-click an item to add it to an Exclusions list
 - Drop an item into the frame to add it to an Inclusions list
+- A locked item, such as one on the cursor or in a trade, stays listed but dimmed, and cannot be clicked until it unlocks
 - `Start Selling` and `Destroy Next Item` act on the listed items that are junk for selling and destroying, respectively
 
 The `Auto Junk Frame` option shows the frame automatically at a merchant when you have junk items, and closes it once you don't.
@@ -84,7 +85,7 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 
 ### Keybindings
 
-The `Keybindings` page of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to or removing it from each list. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
+The `Keybindings` page of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
 
 - A key set here takes priority over the game's own binding for it, and a note names the binding it covers.
 - Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
