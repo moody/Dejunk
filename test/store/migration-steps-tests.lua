@@ -173,6 +173,162 @@ do
 end
 
 -- ============================================================================
+-- Tests - Migrations: Step 3
+-- ============================================================================
+
+--- The lists whose bindings step 3 combines.
+local STEP_3_LIST_NAMES = { "ProfileInclusions", "ProfileExclusions", "GlobalInclusions", "GlobalExclusions" }
+
+--- Returns a version 2 state with the given keybindings.
+--- @param keybindings table
+--- @return table
+local function stateWithKeybindings(keybindings)
+  return { version = 2, global = { keybindings = keybindings } }
+end
+
+-- Test: keeps the add key when both keys are bound, and drops the remove key.
+do
+  for _, listName in ipairs(STEP_3_LIST_NAMES) do
+    local state = stateWithKeybindings({ ["addTo" .. listName] = "CTRL-1", ["removeFrom" .. listName] = "CTRL-2" })
+    local keybindings = runStep(state, 3).global.keybindings
+    assert(Matchers:IsDeepEqual(keybindings, { ["addOrRemove" .. listName] = "CTRL-1" }), listName)
+  end
+end
+
+-- Test: keeps the remove key when only it is bound.
+do
+  for _, listName in ipairs(STEP_3_LIST_NAMES) do
+    local state = stateWithKeybindings({ ["removeFrom" .. listName] = "ALT-X" })
+    local keybindings = runStep(state, 3).global.keybindings
+    assert(Matchers:IsDeepEqual(keybindings, { ["addOrRemove" .. listName] = "ALT-X" }), listName)
+  end
+end
+
+-- Test: keeps the add key when only it is bound.
+do
+  for _, listName in ipairs(STEP_3_LIST_NAMES) do
+    local state = stateWithKeybindings({ ["addTo" .. listName] = "F5" })
+    local keybindings = runStep(state, 3).global.keybindings
+    assert(Matchers:IsDeepEqual(keybindings, { ["addOrRemove" .. listName] = "F5" }), listName)
+  end
+end
+
+-- Test: leaves the new binding out when neither key is bound, and drops both old bindings.
+do
+  for _, listName in ipairs(STEP_3_LIST_NAMES) do
+    local state = stateWithKeybindings({ ["addTo" .. listName] = "", ["removeFrom" .. listName] = "" })
+    local keybindings = runStep(state, 3).global.keybindings
+    assert(next(keybindings) == nil, listName)
+  end
+end
+
+-- Test: a value that is not a string counts as no key.
+do
+  local state = stateWithKeybindings({ addToGlobalExclusions = true, removeFromGlobalExclusions = "F1" })
+  local keybindings = runStep(state, 3).global.keybindings
+  assert(Matchers:IsDeepEqual(keybindings, { addOrRemoveGlobalExclusions = "F1" }))
+end
+
+-- Test: each list keeps its own key.
+do
+  local state = stateWithKeybindings({
+    addToProfileInclusions = "F1",
+    removeFromProfileExclusions = "F2",
+    addToGlobalInclusions = "F3",
+    removeFromGlobalInclusions = "F4"
+  })
+
+  local keybindings = runStep(state, 3).global.keybindings
+
+  assert(Matchers:IsDeepEqual(keybindings, {
+    addOrRemoveProfileInclusions = "F1",
+    addOrRemoveProfileExclusions = "F2",
+    addOrRemoveGlobalInclusions = "F3"
+  }))
+end
+
+-- Test: other bindings and other global settings are left unchanged.
+do
+  local state = stateWithKeybindings({ toggleMainWindow = "CTRL-O", startSelling = "", addToProfileInclusions = "F1" })
+  state.global.safeSell = true
+
+  local migrated = runStep(state, 3)
+
+  assert(migrated.global.safeSell == true)
+  assert(Matchers:IsDeepEqual(migrated.global.keybindings, {
+    toggleMainWindow = "CTRL-O",
+    startSelling = "",
+    addOrRemoveProfileInclusions = "F1"
+  }))
+end
+
+-- Test: a binding that already has a key is kept over the old keys.
+do
+  local state = stateWithKeybindings({ addOrRemoveProfileInclusions = "F9", addToProfileInclusions = "F1" })
+  local keybindings = runStep(state, 3).global.keybindings
+  assert(Matchers:IsDeepEqual(keybindings, { addOrRemoveProfileInclusions = "F9" }))
+end
+
+-- Test: keybindings that are already migrated are left unchanged.
+do
+  local keybindings = {
+    toggleMainWindow = "CTRL-O",
+    addOrRemoveGlobalInclusions = "F3",
+    addOrRemoveProfileExclusions = ""
+  }
+  local state = stateWithKeybindings(Wux:DeepCopy(keybindings))
+  local migrated = runStep(state, 3)
+  assert(Matchers:IsDeepEqual(migrated.global.keybindings, keybindings))
+end
+
+-- Test: missing data is tolerated and stays missing.
+do
+  local cases = {
+    noGlobal = { version = 2, profiles = {} },
+    globalNotATable = { version = 2, global = "corrupt" },
+    noKeybindings = { version = 2, global = { safeSell = true } },
+    keybindingsNotATable = { version = 2, global = { keybindings = "corrupt" } },
+    emptyKeybindings = { version = 2, global = { keybindings = {} } }
+  }
+
+  for name, state in pairs(cases) do
+    local expected = Wux:DeepCopy(state)
+    expected.version = 3
+
+    local migrated = runStep(state, 3)
+
+    assert(Matchers:IsDeepEqual(migrated, expected), name)
+  end
+end
+
+-- Test: the version 2 fixture converts the keybindings and changes nothing else.
+do
+  local fixture = loadFixture(2)
+
+  -- The expected state is the fixture at version 3, with the keybindings below changed to what the step should produce.
+  local expected = Wux:DeepCopy(fixture)
+  expected.version = 3
+  expected.global.keybindings = {
+    toggleMainWindow = "CTRL-O",
+    toggleJunkFrame = "",
+    toggleLootableFrame = "",
+    startSelling = "ALT-S",
+    destroyNextItem = "",
+    -- ProfileInclusions had both keys bound, so the add key is kept.
+    addOrRemoveProfileInclusions = "CTRL-1",
+    -- ProfileExclusions had only the remove key.
+    addOrRemoveProfileExclusions = "ALT-X",
+    -- GlobalInclusions had only the add key.
+    addOrRemoveGlobalInclusions = "F5"
+    -- GlobalExclusions had neither, so it has no binding.
+  }
+
+  local migrated = runStep(fixture, 3)
+
+  assert(Matchers:IsDeepEqual(migrated, expected))
+end
+
+-- ============================================================================
 -- Tests - Migrations fixtures
 -- ============================================================================
 
@@ -190,6 +346,20 @@ do
   local profile2Settings = profileMap.profile2.settings
   assert(Matchers:IsDeepEqual(profile2Settings.includeArtifactRelics, { enabled = true, scope = "BOTH" }))
   assert(Matchers:IsDeepEqual(profile2Settings.excludeEquipmentSets, { enabled = false, scope = "BOTH" }))
+end
+
+-- Test: the version 2 fixture migrates to the current version with the real steps.
+do
+  local migrated = Migrations:Migrate(loadFixture(2))
+  assert(migrated.version == DefaultStates.CURRENT_VERSION)
+
+  local keybindings = migrated.global.keybindings
+  assert(keybindings.addOrRemoveProfileInclusions == "CTRL-1")
+  assert(keybindings.addOrRemoveProfileExclusions == "ALT-X")
+  assert(keybindings.addOrRemoveGlobalInclusions == "F5")
+  assert(keybindings.addOrRemoveGlobalExclusions == nil)
+  assert(keybindings.addToProfileInclusions == nil)
+  assert(keybindings.removeFromProfileInclusions == nil)
 end
 
 print("All assertions passed.")
