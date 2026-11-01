@@ -137,7 +137,7 @@ local RunState = {
   items = {},
 
   --- The item ID of each attempted sale this run, by slot key.
-  --- @type table<integer, integer>
+  --- @type table<SlotKey, integer>
   attempted = {},
 
   --- The calls to `UseContainerItem` this run, which count against the Safe Sell limit.

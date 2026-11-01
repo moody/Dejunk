@@ -8,6 +8,9 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class BagItemsCache
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 
+--- An integer that identifies a bag slot, from `BagItemsCache:GetSlotKey()`.
+--- @alias SlotKey integer
+
 --- Seconds between checks for whether the cache needs updating.
 --- @type number
 BagItemsCache.UPDATE_TICK_SECONDS = 0.1
@@ -16,39 +19,55 @@ BagItemsCache.UPDATE_TICK_SECONDS = 0.1
 --- @type number
 BagItemsCache.BURST_MAX_SECONDS = 2
 
---- Seconds between checks for whether an item's refund window has ended.
---- @type number
-BagItemsCache.REFUND_POLL_SECONDS = 1
-
 --- Seconds to retry a slot whose item data is not loaded before giving up on it.
 --- @type number
 BagItemsCache.PENDING_DEADLINE_SECONDS = 5
+
+--- Seconds between checks for whether an item's refund window has ended.
+--- @type number
+BagItemsCache.REFUND_POLL_SECONDS = 1
 
 --- Seconds to check an item new to its slot for a late refund time.
 --- @type number
 BagItemsCache.REFUND_WAIT_SECONDS = 5
 
---- @type table<integer, BagItem>
+-- ============================================================================
+-- State
+-- ============================================================================
+
+-- --------------------------------------
+-- Items
+-- --------------------------------------
+
+--- @type table<SlotKey, BagItem>
 local cache = {}
 
 --- The time to stop retrying each slot whose item data is not loaded, by slot key.
---- @type table<integer, number>
+--- @type table<SlotKey, number>
 local pending = {}
-
---- The time to stop checking each slot for a late refund time, by slot key.
---- @type table<integer, number>
-local refundWatch = {}
-
---- The ID of the item in each slot at the last update, by slot key.
---- @type table<integer, integer>
-local previousItemIds = {}
-
---- Filled by the update in progress, then swapped with `previousItemIds`.
---- @type table<integer, integer>
-local currentItemIds = {}
 
 --- Increases whenever the cache changes.
 local version = 0
+
+-- --------------------------------------
+-- Late refund times
+-- --------------------------------------
+
+--- The time to stop checking each slot for a late refund time, by slot key.
+--- @type table<SlotKey, number>
+local refundWatch = {}
+
+--- The ID of the item in each slot at the last update, by slot key.
+--- @type table<SlotKey, integer>
+local previousItemIds = {}
+
+--- Filled by the update in progress, then swapped with `previousItemIds`.
+--- @type table<SlotKey, integer>
+local currentItemIds = {}
+
+-- --------------------------------------
+-- Update timing
+-- --------------------------------------
 
 --- Whether the next tick updates the cache. True until the first update.
 local isDirty = true
@@ -56,6 +75,10 @@ local isDirty = true
 --- The time the current burst of `BAG_UPDATE` events started, or `nil` if there is none.
 --- @type number?
 local burstStartTime
+
+-- --------------------------------------
+-- Waiters
+-- --------------------------------------
 
 --- @class BagItemsCacheWaiter
 --- @field callback fun(isSettled: boolean)
@@ -320,13 +343,13 @@ end
 --- Returns an integer that identifies the given `bag` and `slot`, for use as a table key.
 --- @param bag integer
 --- @param slot integer
---- @return integer key
+--- @return SlotKey key
 function BagItemsCache:GetSlotKey(bag, slot)
   return bag * 1000 + slot
 end
 
 --- Returns the bag and slot that the given `key` from `GetSlotKey()` identifies.
---- @param key integer
+--- @param key SlotKey
 --- @return integer bag, integer slot
 function BagItemsCache:GetSlotFromKey(key)
   local slot = key % 1000
