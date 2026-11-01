@@ -64,28 +64,6 @@ end)
 -- Local Functions
 -- ============================================================================
 
---- Confirms `popup` if it asks to remove an item's trade timer.
-local function handlePopup(popup)
-  if popup and popup:IsShown() and popup.which == "CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL" then
-    local button = popup.GetButton1 and popup:GetButton1() or popup.button1
-    button:Click()
-  end
-end
-
---- Confirms a shown popup that asks to remove an item's trade timer. Does nothing on Classic Era and TBC.
-local function handleStaticPopup()
-  if (Addon.IS_VANILLA or Addon.IS_TBC) then return end
-
-  if type(StaticPopup_ForEachShownDialog) == "function" then
-    StaticPopup_ForEachShownDialog(handlePopup)
-  else
-    for i = 1, STATICPOPUP_NUMDIALOGS do
-      local popup = _G["StaticPopup" .. i]
-      handlePopup(popup)
-    end
-  end
-end
-
 --- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags or locked. Returns `true` if a sale
 --- was attempted.
 --- @param item BagItem
@@ -93,7 +71,6 @@ end
 local function handleItem(item)
   if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) then
     C_Container.UseContainerItem(item.bag, item.slot)
-    handleStaticPopup()
 
     EventManager:Fire(E.AttemptedToSellItem, item)
     return true

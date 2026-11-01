@@ -43,12 +43,11 @@ local function setupContext()
   MerchantFrameSpy:Stub("IsShown"):Returns(true)
   Context:SetGlobal("MerchantFrame", MerchantFrame)
 
-  -- What `Seller` calls to sell an item and to close a popup.
+  -- What `Seller` calls to sell an item.
   local C_Container = {}
   local ContainerSpy = Mocks:CreateSpy(C_Container)
   ContainerSpy:Stub("UseContainerItem")
   Context:SetGlobal("C_Container", C_Container)
-  Context:SetGlobal("StaticPopup_ForEachShownDialog", function() end)
 
   local JunkFilter = {}
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
