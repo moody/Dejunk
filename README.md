@@ -65,6 +65,7 @@ The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click o
 - Right-click an item to add it to an Exclusions list
 - Drop an item into the frame to add it to an Inclusions list
 - A locked item, such as one on the cursor or in a trade, stays listed but dimmed, and cannot be clicked until it unlocks
+- An item you can still refund is listed, but selling skips it; its tooltip says why, and destroying it works
 - `Start Selling` and `Destroy Next Item` act on the listed items that are junk for selling and destroying, respectively
 
 The `Auto Junk Frame` option shows the frame automatically at a merchant when you have junk items, and closes it once you don't.
