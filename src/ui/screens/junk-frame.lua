@@ -9,6 +9,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local Seller = Addon:GetModule("Seller")
@@ -30,7 +31,7 @@ local junkItems = {}
 
 -- Refresh components based on junk item data.
 local function refreshComponents()
-  JunkFilter:GetJunkItems(junkItems)
+  JunkItemsCache:GetJunkItems(junkItems)
 
   -- Auto Junk Frame.
   if wasAutoShown and StateManager:GetGlobalState().autoJunkFrame and #junkItems == 0 then
@@ -196,7 +197,7 @@ Components.DestroyNextItemButton = Components.ButtonRow:AddChild({
       onClick = Commands.destroy,
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetOwner(self, "ANCHOR_RIGHT")
-        local item = JunkFilter:GetNextDestroyableJunkItem()
+        local item = JunkItemsCache:GetNextDestroyableJunkItem()
         if item then
           tooltip:SetBagItem(item.bag, item.slot)
         end
@@ -238,7 +239,7 @@ Addon:GetModule("TickerManager"):NewTicker(1 / 30, function()
   end
 
   if not (wasAutoShown or Components.Root:IsVisible()) then
-    JunkFilter:GetJunkItems(junkItems)
+    JunkItemsCache:GetJunkItems(junkItems)
     if #junkItems > 0 then
       wasAutoShown = true
       JunkFrame:Show()

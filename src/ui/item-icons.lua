@@ -2,7 +2,7 @@ local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -84,7 +84,7 @@ local function refreshIcons()
   local globalState = StateManager:GetGlobalState()
   if not globalState.itemIcons then return end
 
-  JunkFilter:GetJunkItems(junkItems)
+  JunkItemsCache:GetJunkItems(junkItems)
 
   for pluginName, plugin in pairs(itemIcons.plugins) do
     if plugin.isEnabled() then

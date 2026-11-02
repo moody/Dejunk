@@ -51,9 +51,12 @@ local function setupContext()
 
   local JunkFilter = {}
   local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("GetSellableJunkItems"):Returns({})
   JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true)
-  JunkFilterSpy:Stub("GetNumSellBlockedJunkItems"):Returns(0)
+
+  local JunkItemsCache = {}
+  local JunkItemsCacheSpy = Mocks:CreateSpy(JunkItemsCache)
+  JunkItemsCacheSpy:Stub("GetSellableJunkItems"):Returns({})
+  JunkItemsCacheSpy:Stub("GetNumSellBlockedJunkItems"):Returns(0)
 
   local Items = {}
   local ItemsSpy = Mocks:CreateSpy(Items)
@@ -67,6 +70,7 @@ local function setupContext()
   StateManagerSpy:Stub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = false } })
 
   Context:SetModule("JunkFilter", JunkFilter)
+  Context:SetModule("JunkItemsCache", JunkItemsCache)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
     CANNOT_SELL_WITHOUT_MERCHANT = "CANNOT_SELL_WITHOUT_MERCHANT",
@@ -91,9 +95,11 @@ local function setupContext()
     --- Stubs the `Items` methods that check whether an item can be sold.
     ItemsSpy = ItemsSpy,
 
-    --- Stubs `JunkFilter:GetSellableJunkItems()`, which returns the lowest price first, and
-    --- `JunkFilter:IsSellableJunkItem()`, which is true for every item.
+    --- Stubs `JunkFilter:IsSellableJunkItem()`, which is true for every item.
     JunkFilterSpy = JunkFilterSpy,
+
+    --- Stubs `JunkItemsCache:GetSellableJunkItems()`, which returns the lowest price first.
+    JunkItemsCacheSpy = JunkItemsCacheSpy,
 
     --- Stubs whether the merchant window is shown.
     MerchantFrameSpy = MerchantFrameSpy,
@@ -142,7 +148,7 @@ do
   local lowest = { bag = 0, slot = 1 }
   local middle = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, middle, highest })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, middle, highest })
 
   Seller:Start()
   assert(#spies.ContainerSpy.calls == 0)
@@ -171,7 +177,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local started, stopped = 0, 0
   Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
@@ -195,7 +201,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local attempted = {}
   Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
@@ -210,7 +216,7 @@ end
 do
   local Seller, _, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
-  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local getSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
 
   Seller:Start()
 
@@ -222,7 +228,7 @@ end
 do
   local Seller, _, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = false })
-  local getSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local getSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
 
   Seller:Start()
 
@@ -236,7 +242,7 @@ do
   local lowest = { bag = 0, slot = 1 }
   local gone = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, gone, highest })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, gone, highest })
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= gone end)
 
   local attempted = {}
@@ -258,7 +264,7 @@ do
   local lowest = { bag = 0, slot = 1 }
   local locked = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, locked, highest })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, locked, highest })
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item == locked end)
 
   local attempted = {}
@@ -280,7 +286,7 @@ do
   local lowest = { bag = 0, slot = 1 }
   local refundable = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, refundable, highest })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, refundable, highest })
   spies.ItemsSpy:GetStub("IsItemRefundable"):Invokes(function(_, item) return item == refundable end)
 
   local attempted = {}
@@ -299,7 +305,7 @@ end
 -- Test: stops the run when every item is refundable.
 do
   local Seller, Game, spies = setupContext()
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 }, { bag = 0, slot = 2 } })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 }, { bag = 0, slot = 2 } })
   spies.ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
 
   Seller:Start()
@@ -315,7 +321,7 @@ do
   local lowest = { bag = 0, slot = 1 }
   local stale = { bag = 0, slot = 2 }
   local highest = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, stale, highest })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ lowest, stale, highest })
   spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Invokes(function(_, item) return item ~= stale end)
 
   local attempted = {}
@@ -339,7 +345,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   spies.MerchantFrameSpy:GetStub("IsShown"):Returns(false)
   local Print = spies.AddonSpy:GetStub("Print")
 
@@ -376,7 +382,7 @@ end
 -- Test: prints a message about blocked junk items instead of the no junk items message.
 do
   local Seller, Game, spies = setupContext()
-  spies.JunkFilterSpy:GetStub("GetNumSellBlockedJunkItems"):Returns(2)
+  spies.JunkItemsCacheSpy:GetStub("GetNumSellBlockedJunkItems"):Returns(2)
   local Print = spies.AddonSpy:GetStub("Print")
 
   Seller:Start()
@@ -406,7 +412,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local started = 0
   Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
@@ -431,7 +437,7 @@ do
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
   local third = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
 
   local stopped = 0
   Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
@@ -455,7 +461,7 @@ do
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
   local third = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
 
   local stopped = 0
   Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
@@ -478,7 +484,7 @@ do
   Game.Blizzard.Strings = { VENDOR_DOESNT_BUY_ERROR_TEXT = "VENDOR_DOESNT_BUY_ERROR_TEXT" }
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local stopped = 0
   Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
@@ -500,7 +506,7 @@ do
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
   local third = { bag = 0, slot = 3 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second, third })
 
   local stopped = 0
   Game.EventManager:On(Game.E.SellerStopped, function() stopped = stopped + 1 end)
@@ -527,7 +533,7 @@ do
   spies.StateManagerSpy:GetStub("GetProfileState"):Returns({ settings = { autoRepair = false, autoSell = true } })
   local first = { bag = 0, slot = 1 }
   local second = { bag = 0, slot = 2 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local started = 0
   Game.EventManager:On(Game.E.SellerStarted, function() started = started + 1 end)
@@ -562,7 +568,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
 
   Game:Fire(Game.E.Wow.MerchantShow)
   Game:Advance(Seller.ON_MERCHANT_SHOW_DELAY + Game.FRAME_SECONDS)
@@ -615,7 +621,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1 }
   local other = { bag = 2, slot = 5 }
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ first })
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first })
 
   local attempted = 0
   Game.EventManager:On(Game.E.AttemptedToSellItem, function() attempted = attempted + 1 end)
@@ -635,7 +641,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
 
   local started = 0
@@ -695,7 +701,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
 
   local started, stopped = 0, 0
@@ -718,7 +724,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
 
   local started = 0
@@ -738,7 +744,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled"):Returns()
 
   local started = 0
@@ -768,7 +774,7 @@ do
   local Seller, Game, spies = setupContext()
   local first = { bag = 0, slot = 1, id = 1 }
   local second = { bag = 0, slot = 2, id = 2 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:ReturnsInOrder({ first }, { second }, {})
 
   local started, stopped = 0, 0
@@ -793,7 +799,7 @@ do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1, id = 1 }
   local sameItem = { bag = 0, slot = 1, id = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:ReturnsInOrder({ item }, { sameItem })
 
   local stopped = 0
@@ -812,7 +818,7 @@ do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1, id = 1 }
   local differentItem = { bag = 0, slot = 1, id = 2 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:ReturnsInOrder({ item }, { differentItem }, {})
 
   Seller:Start()
@@ -826,7 +832,7 @@ do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1, id = 1 }
   local sameItemElsewhere = { bag = 0, slot = 2, id = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:ReturnsInOrder({ item }, { sameItemElsewhere }, {})
 
   Seller:Start()
@@ -842,7 +848,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local stale = { bag = 0, slot = 1, id = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ stale })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ stale })
   spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Returns(false)
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled")
 
@@ -862,7 +868,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   local item = { bag = 0, slot = 1, id = 1 }
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):Returns({ item })
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ item })
   local WhenSettled = spies.BagItemsCacheSpy:GetStub("WhenSettled")
 
   local stopped = 0
@@ -893,7 +899,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(1, Seller.SAFE_SELL_LIMIT))
 
   local stopped = 0
@@ -911,7 +917,7 @@ end
 do
   local Seller, Game, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   -- The first batch leaves room for one more sale.
   local numFirstBatch = Seller.SAFE_SELL_LIMIT - 1
   GetSellableJunkItems:ReturnsInOrder(createItems(0, numFirstBatch), createItems(1, Seller.SAFE_SELL_LIMIT))
@@ -937,7 +943,7 @@ do
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
   local items = createItems(0, Seller.SAFE_SELL_LIMIT)
   local gone = items[1]
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems"):ReturnsInOrder(items, createItems(1, Seller.SAFE_SELL_LIMIT))
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):ReturnsInOrder(items, createItems(1, Seller.SAFE_SELL_LIMIT))
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= gone end)
 
   Seller:Start()
@@ -952,7 +958,7 @@ end
 -- Test: with Safe Sell turned on during a run, ends the run at the limit.
 do
   local Seller, Game, spies = setupContext()
-  local GetSellableJunkItems = spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  local GetSellableJunkItems = spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
   GetSellableJunkItems:Returns(createItems(0, Seller.SAFE_SELL_LIMIT * 2))
 
   local stopped = 0
@@ -973,7 +979,7 @@ end
 -- Test: with Safe Sell off, sells past the limit across batches.
 do
   local Seller, Game, spies = setupContext()
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
       :ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(1, 1), {})
 
   Seller:Start()
@@ -987,7 +993,7 @@ do
   local Seller, Game, spies = setupContext()
   spies.StateManagerSpy:GetStub("GetGlobalState"):Returns({ safeSell = true })
   -- One list per run, since a run empties the list it sells.
-  spies.JunkFilterSpy:GetStub("GetSellableJunkItems")
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems")
       :ReturnsInOrder(createItems(0, Seller.SAFE_SELL_LIMIT), createItems(0, Seller.SAFE_SELL_LIMIT))
 
   Seller:Start()

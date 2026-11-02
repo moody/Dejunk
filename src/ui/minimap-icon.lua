@@ -6,7 +6,7 @@ local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local LDB = Addon:GetLibrary("LDB") ---@type LibDataBroker-1.1
 local LDBIcon = Addon:GetLibrary("LDBIcon") ---@type LibDBIcon-1.0
@@ -35,7 +35,7 @@ local function onUpdateTooltip(frame)
   Tooltip:ClearLines()
 
   if IsAltKeyDown() then
-    local item = JunkFilter:GetNextDestroyableJunkItem()
+    local item = JunkItemsCache:GetNextDestroyableJunkItem()
     if item then
       Tooltip:SetBagItem(item.bag, item.slot)
       Tooltip:AddLine(" ")

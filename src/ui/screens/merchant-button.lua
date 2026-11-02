@@ -5,7 +5,7 @@ local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local DefaultStates = Addon:GetModule("DefaultStates")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
@@ -40,7 +40,7 @@ local rootComponent = Addon.Waffle:Flex({
         tooltip:SetOwner(this, "ANCHOR_RIGHT")
 
         if IsAltKeyDown() then
-          local item = JunkFilter:GetNextDestroyableJunkItem()
+          local item = JunkItemsCache:GetNextDestroyableJunkItem()
           if item then
             tooltip:SetBagItem(item.bag, item.slot)
             tooltip:AddLine(" ")
@@ -144,7 +144,7 @@ TickerManager:NewTicker(1 / 30, function()
   if show then
     --- @type FontString
     local label = labelComponent:GetFrame()
-    local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
+    local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
     local text = LABEL_TEXT_FORMAT:format(numSellable, numDestroyable)
 
     -- Update label text and icon size, only when the text actually changes.

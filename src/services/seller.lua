@@ -6,6 +6,7 @@ local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
@@ -179,7 +180,7 @@ function RunState:Sell(onWaitEnded)
   local safeSell = StateManager:GetGlobalState().safeSell
 
   -- Ask for the full limit, since attempted items may still be in the bags.
-  local items = JunkFilter:GetSellableJunkItems(nil, safeSell and Seller.SAFE_SELL_LIMIT or nil)
+  local items = JunkItemsCache:GetSellableJunkItems(nil, safeSell and Seller.SAFE_SELL_LIMIT or nil)
   local maxKept = safeSell and Seller.SAFE_SELL_LIMIT - self.numAttempted or #items
 
   -- Leave out attempted slots, and items past what is left of the Safe Sell limit.
@@ -258,7 +259,7 @@ local function onWaitEnded(auto)
     if not hasStarted then EventManager:Fire(E.SellerStarted) end
   else
     if not hasStarted and not auto then
-      if JunkFilter:GetNumSellBlockedJunkItems() > 0 then
+      if JunkItemsCache:GetNumSellBlockedJunkItems() > 0 then
         Addon:Print(L.JUNK_ITEMS_CANNOT_BE_SOLD_NOW)
       else
         Addon:Print(L.NO_JUNK_ITEMS_TO_SELL)
