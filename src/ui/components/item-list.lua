@@ -18,7 +18,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field iconButtons? ItemCardIconButtonOptions[] Adds buttons to the right of each card.
 --- @field onUpdateItemTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Defaults to the item's tooltip.
 --- @field onItemClick? fun(item: BagItem | ListItem, button: string)
---- @field isItemEnabled? fun(item: BagItem | ListItem): boolean Disabled items are dimmed and ignore the mouse.
+--- @field isItemEnabled? fun(item: BagItem | ListItem): boolean Disabled items are dimmed and pass the mouse to the list.
 
 -- =============================================================================
 -- ComponentFactory - ItemList

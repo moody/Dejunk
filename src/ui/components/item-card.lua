@@ -82,6 +82,7 @@ function ComponentFactory:ItemCard(options)
         parent = parent,
         frameType = "Button",
         tooltipAnchor = "ANCHOR_RIGHT",
+        propagateWhenDisabled = true,
 
         --- @param tooltip Tooltip
         onUpdateTooltip = function(self, tooltip)
@@ -205,7 +206,7 @@ function ComponentFactory:ItemCard(options)
     end
   end
 
-  --- Dims the card and turns off its mouse input while disabled. Cards start enabled.
+  --- Dims the card and passes the mouse to the frame behind it while disabled. Cards start enabled.
   --- @param enabled boolean
   function root:SetEnabled(enabled)
     if enabled == isEnabled then return end
