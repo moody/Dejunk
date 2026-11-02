@@ -43,9 +43,17 @@ local function setupContext()
   StateManagerSpy:Stub("GetGlobalState"):Returns({ inclusions = {}, exclusions = {} })
   StateManagerSpy:Stub("GetProfileState"):Returns({ settings = {} })
 
+  -- Keeps the handler registered for each event, so a test can fire it.
+  local handlers = {}
+  local EventManager = {}
+  local EventManagerSpy = Mocks:CreateSpy(EventManager)
+  EventManagerSpy:Stub("On"):Invokes(function(_, event, handler) handlers[event] = handler end)
+
+  Context:Load("src/events/events.lua")
   Context:SetModule("Blizzard", Blizzard)
   Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("Colors", Colors)
+  Context:SetModule("EventManager", EventManager)
   Context:SetModule("Items", Items)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("StateManager", StateManager)
@@ -68,6 +76,13 @@ local function setupContext()
     --- The settings and the global lists never change.
     StateManagerSpy = StateManagerSpy
   }
+
+  --- Calls the handler that `JunkItemsCache` registered for a game event.
+  --- @param event string
+  function spies.fireEvent(event) handlers[event]() end
+
+  --- @type Events
+  spies.E = Context:GetModule("Events")
 
   return Context:GetModule("JunkItemsCache"), spies
 end
@@ -153,6 +168,16 @@ do
 
     assert(JunkItemsCache:GetVersion() > version, listKey)
   end
+end
+
+-- Test: increases when the player levels up.
+do
+  local JunkItemsCache, spies = setupContext()
+  local version = JunkItemsCache:GetVersion()
+
+  spies.fireEvent(spies.E.Wow.PlayerLevelUp)
+
+  assert(JunkItemsCache:GetVersion() > version)
 end
 
 -- Test: stays the same when other global state changes.

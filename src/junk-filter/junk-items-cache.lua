@@ -2,6 +2,8 @@ local Addon = select(2, ...) ---@type Addon
 local B = Addon:GetModule("Blizzard")
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager")
@@ -168,10 +170,16 @@ end
 
 do -- JunkItemsCache:GetVersion()
   local version = 0
-  local lastCacheVersion, lastSettings, lastInclusions, lastExclusions
+  local lastCacheVersion, lastSettings, lastInclusions, lastExclusions, lastNumLevelUps
 
-  --- Returns a number that increases when a junk result may have changed: when the bag items changed, or the active
-  --- profile's settings or a global list did.
+  --- The times the player has leveled up.
+  local numLevelUps = 0
+
+  -- Some items may change with the player's level, without a bag event.
+  EventManager:On(E.Wow.PlayerLevelUp, function() numLevelUps = numLevelUps + 1 end)
+
+  --- Returns a number that increases when a junk result may have changed: when the bag items changed, the active
+  --- profile's settings or a global list did, or the player leveled up.
   --- @return integer
   function JunkItemsCache:GetVersion()
     local cacheVersion = BagItemsCache:GetVersion()
@@ -182,13 +190,15 @@ do -- JunkItemsCache:GetVersion()
           cacheVersion ~= lastCacheVersion or
           settings ~= lastSettings or
           globalState.inclusions ~= lastInclusions or
-          globalState.exclusions ~= lastExclusions
+          globalState.exclusions ~= lastExclusions or
+          numLevelUps ~= lastNumLevelUps
         ) then
       version = version + 1
       lastCacheVersion = cacheVersion
       lastSettings = settings
       lastInclusions = globalState.inclusions
       lastExclusions = globalState.exclusions
+      lastNumLevelUps = numLevelUps
     end
 
     return version
