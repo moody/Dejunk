@@ -6,12 +6,6 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
---- Width of the strip on the card's left edge.
-local ACCENT_WIDTH = 3
-
---- Width of each icon button.
-local BUTTON_WIDTH = 32
-
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
@@ -58,7 +52,7 @@ function ComponentFactory:ProfileCard(options)
   --- @class ProfileCardComponent : WaffleFlexComponent<FrameWidget>
   local root = Addon.Waffle:Flex({
     align = "CENTER",
-    paddingLeft = ACCENT_WIDTH,
+    paddingLeft = ComponentFactory.CARD_ACCENT_WIDTH,
     visibility = "INVISIBLE",
 
     --- @param parent Frame
@@ -86,7 +80,7 @@ function ComponentFactory:ProfileCard(options)
       end)
 
       accent = frame:CreateTexture("$parent_Accent", "ARTWORK")
-      accent:SetWidth(ACCENT_WIDTH)
+      accent:SetWidth(ComponentFactory.CARD_ACCENT_WIDTH)
       accent:SetPoint("TOPLEFT")
       accent:SetPoint("BOTTOMLEFT")
       refreshAccent()
@@ -114,7 +108,7 @@ function ComponentFactory:ProfileCard(options)
   local renameButton = root:AttachComponent(ComponentFactory:IconButton({
     icon = Addon:GetAsset("pencil-icon"),
     highlightColor = Colors.Blue,
-    width = BUTTON_WIDTH,
+    width = ComponentFactory.CARD_BUTTON_WIDTH,
     onClick = function() if profile then options.onRename(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.RENAME) end
   }))
@@ -122,7 +116,7 @@ function ComponentFactory:ProfileCard(options)
   root:AttachComponent(ComponentFactory:IconButton({
     icon = Addon:GetAsset("reset-icon"),
     highlightColor = Colors.Yellow,
-    width = BUTTON_WIDTH,
+    width = ComponentFactory.CARD_BUTTON_WIDTH,
     onClick = function() if profile then options.onReset(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.RESET) end
   }))
@@ -130,7 +124,7 @@ function ComponentFactory:ProfileCard(options)
   local deleteButton = root:AttachComponent(ComponentFactory:IconButton({
     icon = Addon:GetAsset("trash-icon"),
     highlightColor = Colors.Red,
-    width = BUTTON_WIDTH,
+    width = ComponentFactory.CARD_BUTTON_WIDTH,
     onClick = function() if profile then options.onDelete(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.DELETE) end
   }))

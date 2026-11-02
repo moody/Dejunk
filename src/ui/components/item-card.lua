@@ -6,9 +6,6 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
---- Width of the quality strip on the card's left edge.
-local ACCENT_WIDTH = 3
-
 --- Default width and height of the item icon.
 local DEFAULT_ICON_SIZE = 24
 
@@ -76,7 +73,7 @@ function ComponentFactory:ItemCard(options)
   --- @class ItemCardComponent : WaffleFlexComponent<FrameWidget>
   local root = Addon.Waffle:Flex({
     align = "CENTER",
-    paddingLeft = ACCENT_WIDTH,
+    paddingLeft = ComponentFactory.CARD_ACCENT_WIDTH,
     visibility = "INVISIBLE",
 
     --- @param parent Frame
@@ -108,7 +105,7 @@ function ComponentFactory:ItemCard(options)
       end)
 
       accent = frame:CreateTexture("$parent_Accent", "ARTWORK")
-      accent:SetWidth(ACCENT_WIDTH)
+      accent:SetWidth(ComponentFactory.CARD_ACCENT_WIDTH)
       accent:SetPoint("TOPLEFT")
       accent:SetPoint("BOTTOMLEFT")
       accent:SetColorTexture(accentR, accentG, accentB)
@@ -169,7 +166,7 @@ function ComponentFactory:ItemCard(options)
     local component = root:AttachComponent(ComponentFactory:IconButton({
       icon = buttonOptions.icon,
       highlightColor = buttonOptions.highlightColor,
-      width = 32,
+      width = ComponentFactory.CARD_BUTTON_WIDTH,
       tooltipAnchor = "ANCHOR_RIGHT",
       onClick = function()
         if item then buttonOptions.onClick(item) end

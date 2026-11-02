@@ -99,6 +99,7 @@
   <Script file="src\ui\components\card-list.lua"/>
   <Script file="src\ui\components\check-chip-group.lua"/>
   <Script file="src\ui\components\check-chip.lua"/>
+  <Script file="src\ui\components\component-factory.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
   <Script file="src\ui\components\item-card.lua"/>
