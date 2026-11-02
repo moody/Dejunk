@@ -74,7 +74,7 @@ local function setupContext()
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
     CANNOT_SELL_WITHOUT_MERCHANT = "CANNOT_SELL_WITHOUT_MERCHANT",
-    JUNK_ITEMS_CANNOT_BE_SOLD_NOW = "JUNK_ITEMS_CANNOT_BE_SOLD_NOW",
+    CANNOT_SELL_ANY_JUNK_ITEMS_NOW = "CANNOT_SELL_ANY_JUNK_ITEMS_NOW",
     NO_JUNK_ITEMS_TO_SELL = "NO_JUNK_ITEMS_TO_SELL"
   })
   Context:SetModule("StateManager", StateManager)
@@ -388,7 +388,7 @@ do
   Seller:Start()
   advanceSales(Game, 1)
 
-  assert(Matchers:IsDeepEqual(Print.calls, { { "JUNK_ITEMS_CANNOT_BE_SOLD_NOW" } }))
+  assert(Matchers:IsDeepEqual(Print.calls, { { "CANNOT_SELL_ANY_JUNK_ITEMS_NOW" } }))
 end
 
 -- Test: prints nothing when there are no items to sell and the start is automatic.

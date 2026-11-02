@@ -260,7 +260,7 @@ local function onWaitEnded(auto)
   else
     if not hasStarted and not auto then
       if JunkItemsCache:GetNumSellBlockedJunkItems() > 0 then
-        Addon:Print(L.JUNK_ITEMS_CANNOT_BE_SOLD_NOW)
+        Addon:Print(L.CANNOT_SELL_ANY_JUNK_ITEMS_NOW)
       else
         Addon:Print(L.NO_JUNK_ITEMS_TO_SELL)
       end
