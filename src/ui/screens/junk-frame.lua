@@ -125,7 +125,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   cardCount = 6,
   displayPrice = true,
   getItems = function() return junkItems end,
-  isItemEnabled = function(item) return not (B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
+  isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
   -- Sells or destroys the item. Each button is disabled unless the item is junk for its action and nothing blocks it.
   iconButtons = {
