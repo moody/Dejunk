@@ -40,9 +40,8 @@ local LAST_FILTER_NAME = ORDERED_FILTER_NAMES[#ORDERED_FILTER_NAMES]
 --- @class TestJunkFilterOptions
 --- @field addon? table Fields set on the addon, such as `IS_RETAIL`. The game version flags are `false` otherwise.
 
---- Returns `JunkFilter` and the spies of its mocks, from a new context where its collaborators are mocks. Every
---- `ItemFilters` method is stubbed to return `PASS`, and the item is in the bags, is not locked, and can be sold and
---- destroyed. A test changes what a method returns with `GetStub()`.
+--- Returns `JunkFilter` and the spies of its mocks, from a new context where the modules it uses are mocks.
+--- A test changes what a method returns with `GetStub()`.
 --- @param options? TestJunkFilterOptions
 --- @return JunkFilter JunkFilter
 --- @return JunkFilterTestSpies spies
@@ -102,10 +101,10 @@ local function setupContext(options)
 
   --- @class JunkFilterTestSpies
   local spies = {
-    --- Stubs every `ItemFilters` method to return `PASS`.
+    --- Every filter returns `PASS`.
     ItemFiltersSpy = ItemFiltersSpy,
 
-    --- Stubs the `Items` methods that check the item.
+    --- Every item is in the bags, is unlocked, is sellable and destroyable, and is not refundable.
     ItemsSpy = ItemsSpy
   }
 
