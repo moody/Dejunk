@@ -3,7 +3,7 @@ local Addon = select(2, ...) ---@type Addon
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 
@@ -13,8 +13,8 @@ hooksecurefunc(GameTooltip, "SetBagItem", function(self, bag, slot)
   local item = BagItemsCache:GetItem(bag, slot)
   if not item then return end
 
-  local isSellJunk, sellReason = JunkFilter:IsSellableJunkItem(item)
-  local isDestroyJunk, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
+  local isSellJunk, sellReason = JunkItemsCache:IsSellableJunkItem(item)
+  local isDestroyJunk, destroyReason = JunkItemsCache:IsDestroyableJunkItem(item)
 
   -- Add lines.
   self:AddLine(" ")

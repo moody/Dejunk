@@ -13,7 +13,7 @@ local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 --- @type number
 JunkItemsCache.COUNT_INTERVAL_SECONDS = 0.25
 
---- Format of the text from `GetNumJunkItemsText()`, with the sellable and destroyable counts.
+--- Format of the text from `GetNumJunkItemsText()`.
 local COUNTS_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colors.Red("%s"))
 
 --- The text from `GetNumJunkItemsText()` until the bag items have been scanned.
@@ -42,6 +42,14 @@ local isSellJunk = {}
 --- The items in `junkItems` by whether they are junk for destroying.
 --- @type table<BagItem, boolean>
 local isDestroyJunk = {}
+
+--- The reason each bag item is or is not junk for selling.
+--- @type table<BagItem, string>
+local sellReasons = {}
+
+--- The reason each bag item is or is not junk for destroying.
+--- @type table<BagItem, string>
+local destroyReasons = {}
 
 --- The bag items that are checked for junk.
 --- @type BagItem[]
@@ -91,10 +99,14 @@ local function updateJunkItems()
   clear(destroyJunkItems)
   clear(isSellJunk)
   clear(isDestroyJunk)
+  clear(sellReasons)
+  clear(destroyReasons)
 
   for _, item in ipairs(BagItemsCache:GetItems(bagItems)) do
-    local isSell = JunkFilter:IsJunkItem(item, "SELL")
-    local isDestroy = JunkFilter:IsJunkItem(item, "DESTROY")
+    local isSell, sellReason = JunkFilter:IsJunkItem(item, "SELL")
+    local isDestroy, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
+    sellReasons[item] = sellReason
+    destroyReasons[item] = destroyReason
 
     if isSell or isDestroy then
       junkItems[#junkItems + 1] = item
@@ -196,9 +208,11 @@ do -- Convenience methods.
   --- @type string
   local countsText = NO_COUNTS_TEXT
 
+  --- The sellable count that `countsText` shows.
   --- @type integer?
   local textSellable
 
+  --- The destroyable count that `countsText` shows.
   --- @type integer?
   local textDestroyable
 
@@ -247,6 +261,30 @@ do -- Convenience methods.
     self:GetDestroyableJunkItems(items, 1)
     return items[1]
   end
+end
+
+--- Returns `true` if the given `item` is junk and can be sold, and the reason for the result. A junk item that
+--- `JunkFilter:GetSellBlockReason()` blocks returns `false` and that reason.
+--- @param item BagItem An item from `BagItemsCache`.
+--- @return boolean isSellableJunk, string? reason
+function JunkItemsCache:IsSellableJunkItem(item)
+  updateJunkItems()
+
+  if isSellJunk[item] then
+    local blockReason = JunkFilter:GetSellBlockReason(item)
+    if blockReason then return false, blockReason end
+    return true, sellReasons[item]
+  end
+
+  return false, sellReasons[item]
+end
+
+--- Returns `true` if the given `item` is junk and can be destroyed, and the reason for the result.
+--- @param item BagItem An item from `BagItemsCache`.
+--- @return boolean isDestroyableJunk, string? reason
+function JunkItemsCache:IsDestroyableJunkItem(item)
+  updateJunkItems()
+  return isDestroyJunk[item] == true, destroyReasons[item]
 end
 
 --- Returns the number of junk items for selling that cannot be sold right now.

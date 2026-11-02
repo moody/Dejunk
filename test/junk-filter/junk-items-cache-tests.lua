@@ -99,6 +99,13 @@ local function stubIsJunkItem(junkFilterSpy, sellItems, destroyItems)
   end)
 end
 
+--- Stubs `JunkFilter:IsJunkItem()` to return `isJunk` and `"<filterType> reason"`, such as `"SELL reason"`.
+--- @param junkFilterSpy MockSpy
+--- @param isJunk boolean
+local function stubIsJunkItemReason(junkFilterSpy, isJunk)
+  junkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, _, filterType) return isJunk, filterType .. " reason" end)
+end
+
 -- ============================================================================
 -- Tests - JunkItemsCache:GetVersion()
 -- ============================================================================
@@ -335,12 +342,15 @@ end
 -- Test: runs the filters once for each item, selling and destroying, however many times the items are read.
 do
   local JunkItemsCache, spies = setupContext()
-  stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
   local IsJunkItemStub = spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   JunkItemsCache:GetJunkItems()
   JunkItemsCache:GetSellableJunkItems()
   JunkItemsCache:GetDestroyableJunkItems()
+  JunkItemsCache:IsSellableJunkItem(item)
+  JunkItemsCache:IsDestroyableJunkItem(item)
 
   assert(#IsJunkItemStub.calls == 2)
   assert(IsJunkItemStub.calls[1][2] == "SELL")
@@ -801,6 +811,141 @@ do
   JunkItemsCache:GetNextDestroyableJunkItem()
 
   assert(#IsItemLockedStub.calls == 1)
+end
+
+-- ============================================================================
+-- Tests - JunkItemsCache:IsSellableJunkItem()
+-- ============================================================================
+
+-- Test: returns true and the sell reason for a junk item.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+
+  local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
+
+  assert(isSellableJunk == true)
+  assert(reason == "SELL reason")
+end
+
+-- Test: returns false and the block reason for a junk item that cannot be sold right now.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
+
+  local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
+
+  assert(isSellableJunk == false)
+  assert(reason == "block reason")
+end
+
+-- Test: returns false and the sell reason for an item that is not junk, even if it cannot be sold right now.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, false)
+  spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
+
+  local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
+
+  assert(isSellableJunk == false)
+  assert(reason == "SELL reason")
+end
+
+-- Test: returns the reasons of the new items after the version changes.
+do
+  local JunkItemsCache, spies = setupContext()
+  local oldItem = { name = "a", price = 1, quantity = 1, quality = 1 }
+  local newItem = { name = "a", price = 2, quantity = 1, quality = 1 }
+  local bagItems = { oldItem }
+  local reason = "old reason"
+  stubGetItems(spies.BagItemsCacheSpy, bagItems)
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function() return true, reason end)
+  JunkItemsCache:IsSellableJunkItem(oldItem)
+
+  bagItems[1] = newItem
+  reason = "new reason"
+  spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
+  local isNewSellable, newReason = JunkItemsCache:IsSellableJunkItem(newItem)
+  local isOldSellable, oldReason = JunkItemsCache:IsSellableJunkItem(oldItem)
+
+  assert(isNewSellable == true)
+  assert(newReason == "new reason")
+  assert(isOldSellable == false)
+  assert(oldReason == nil)
+end
+
+-- ============================================================================
+-- Tests - JunkItemsCache:IsDestroyableJunkItem()
+-- ============================================================================
+
+-- Test: returns true and the destroy reason for a junk item.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+
+  local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
+
+  assert(isDestroyableJunk == true)
+  assert(reason == "DESTROY reason")
+end
+
+-- Test: returns false and the destroy reason for an item that is not junk.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, false)
+
+  local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
+
+  assert(isDestroyableJunk == false)
+  assert(reason == "DESTROY reason")
+end
+
+-- Test: returns true for a junk item that cannot be sold right now.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
+
+  local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
+
+  assert(isDestroyableJunk == true)
+  assert(reason == "DESTROY reason")
+end
+
+-- Test: returns the reasons of the new items after the version changes.
+do
+  local JunkItemsCache, spies = setupContext()
+  local oldItem = { name = "a", price = 1, quantity = 1, quality = 1 }
+  local newItem = { name = "a", price = 2, quantity = 1, quality = 1 }
+  local bagItems = { oldItem }
+  local reason = "old reason"
+  stubGetItems(spies.BagItemsCacheSpy, bagItems)
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function() return true, reason end)
+  JunkItemsCache:IsDestroyableJunkItem(oldItem)
+
+  bagItems[1] = newItem
+  reason = "new reason"
+  spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
+  local isNewDestroyable, newReason = JunkItemsCache:IsDestroyableJunkItem(newItem)
+  local isOldDestroyable, oldReason = JunkItemsCache:IsDestroyableJunkItem(oldItem)
+
+  assert(isNewDestroyable == true)
+  assert(newReason == "new reason")
+  assert(isOldDestroyable == false)
+  assert(oldReason == nil)
 end
 
 print("All assertions passed.")
