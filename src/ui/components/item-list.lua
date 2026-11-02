@@ -15,7 +15,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field displayPrice? boolean Shows the price of each stack. Defaults to `false`.
 --- @field iconSize? integer Defaults to the `ItemCard` default.
 --- @field fontObject? Font Defaults to the `ItemCard` default.
---- @field iconButton? ItemCardIconButtonOptions Adds a button to the right of each card.
+--- @field iconButtons? ItemCardIconButtonOptions[] Adds buttons to the right of each card.
 --- @field onUpdateItemTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Defaults to the item's tooltip.
 --- @field onItemClick? fun(item: BagItem | ListItem, button: string)
 --- @field isItemEnabled? fun(item: BagItem | ListItem): boolean Disabled items are dimmed and ignore the mouse.
@@ -48,7 +48,7 @@ function ComponentFactory:ItemList(options)
         displayPrice = options.displayPrice,
         iconSize = options.iconSize,
         fontObject = options.fontObject,
-        iconButton = options.iconButton,
+        iconButtons = options.iconButtons,
         onUpdateTooltip = options.onUpdateItemTooltip,
 
         onClick = function(item, button)

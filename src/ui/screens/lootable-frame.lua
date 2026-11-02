@@ -103,14 +103,16 @@ Components.ItemList = Components.LootablePanel:AttachComponent(ComponentFactory:
   end,
 
   -- Ignores every item sharing this item's ID for the remainder of the session.
-  iconButton = {
-    icon = Addon:GetAsset("eye-slash-icon"),
-    highlightColor = Colors.Yellow,
-    onClick = function(item) ignoredItemIds[item.id] = true end,
-    onUpdateTooltip = function(_, tooltip)
-      tooltip:SetText(L.IGNORE)
-      tooltip:AddLine(L.IGNORE_LOOTABLE_ITEM_TOOLTIP)
-    end
+  iconButtons = {
+    {
+      icon = Addon:GetAsset("eye-slash-icon"),
+      highlightColor = Colors.Yellow,
+      onClick = function(item) ignoredItemIds[item.id] = true end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.IGNORE)
+        tooltip:AddLine(L.IGNORE_LOOTABLE_ITEM_TOOLTIP)
+      end
+    }
   }
 }))
 

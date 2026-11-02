@@ -21,12 +21,13 @@ local DEFAULT_ICON_SIZE = 24
 --- @field highlightColor Color Fill color while hovered.
 --- @field onClick fun(item: BagItem | ListItem) Called when the button is clicked.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the button.
+--- @field isEnabled? fun(item: BagItem | ListItem): boolean Disabled buttons are dimmed and pass the mouse to the card. Defaults to always enabled.
 
 --- @class ItemCardComponentOptions
---- @field displayPrice? boolean Shows the price of the stack at the right edge. Defaults to `false`.
+--- @field displayPrice? boolean Shows the price of the stack under the link. Defaults to `false`.
 --- @field iconSize? integer Width and height of the icon. Defaults to `24`.
---- @field fontObject? Font Font of the link and price. Defaults to `B.FontObjects.Normal`.
---- @field iconButton? ItemCardIconButtonOptions Adds a button at the right edge, the full height of the card.
+--- @field fontObject? Font Font of the link. Defaults to `B.FontObjects.Normal`.
+--- @field iconButtons? ItemCardIconButtonOptions[] Adds a button at the right edge for each entry, the full height of the card.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the card. Defaults to the item's tooltip.
 --- @field onClick? fun(item: BagItem | ListItem, button: string) Called when the card is clicked with the left or right button.
 
@@ -34,8 +35,7 @@ local DEFAULT_ICON_SIZE = 24
 -- ComponentFactory - ItemCard
 -- =============================================================================
 
---- Creates a one-line card for an item, with a strip on the left edge in its quality color. Hidden until it has an
---- item.
+--- Creates a card for an item, with a strip on the left edge in its quality color. Hidden until it has an item.
 --- @param options ItemCardComponentOptions
 --- @return ItemCardComponent root
 function ComponentFactory:ItemCard(options)
@@ -49,6 +49,10 @@ function ComponentFactory:ItemCard(options)
 
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
+
+  --- The component of each entry of `options.iconButtons`, and whether it last showed as enabled.
+  --- @type { component: IconButtonComponent, isEnabled: boolean }[]
+  local iconButtons = {}
 
   --- Brightens the card while hovered, if it has an item and is enabled.
   local function refreshBackdrop()
@@ -137,40 +141,71 @@ function ComponentFactory:ItemCard(options)
     end
   })
 
-  -- Item link and quantity.
-  local title = content:AttachComponent(ComponentFactory:Text({
-    fontObject = options.fontObject,
-    wordWrap = false,
-    truncationTooltip = false
-  }))
+  -- With a price, the link and price are stacked in a column.
+  local linkParent = content
 
   --- Price of the stack.
   --- @type TextComponent?
   local priceText
   if options.displayPrice then
-    priceText = content:AttachComponent(ComponentFactory:Text({
-      fontObject = options.fontObject,
-      justifyH = "RIGHT",
+    local textColumn = content:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
+    linkParent = textColumn:AddRow({ height = "AUTO", align = "CENTER" })
+    priceText = textColumn:AddRow({ height = "AUTO", align = "CENTER" }):AttachComponent(ComponentFactory:Text({
+      fontObject = B.FontObjects.Small,
       wordWrap = false,
-      truncationTooltip = false,
-      width = "AUTO"
+      truncationTooltip = false
     }))
   end
 
-  -- Icon button, the full height of the card.
-  local iconButton = options.iconButton
-  if iconButton then
-    root:AttachComponent(ComponentFactory:IconButton({
-      icon = iconButton.icon,
-      highlightColor = iconButton.highlightColor,
+  -- Item link and quantity.
+  local title = linkParent:AttachComponent(ComponentFactory:Text({
+    fontObject = options.fontObject,
+    wordWrap = false,
+    truncationTooltip = false
+  }))
+
+  -- Icon buttons, the full height of the card.
+  for i, buttonOptions in ipairs(options.iconButtons or {}) do
+    local component = root:AttachComponent(ComponentFactory:IconButton({
+      icon = buttonOptions.icon,
+      highlightColor = buttonOptions.highlightColor,
       width = 32,
+      tooltipAnchor = "ANCHOR_RIGHT",
       onClick = function()
-        if item then iconButton.onClick(item) end
+        if item then buttonOptions.onClick(item) end
       end,
-      onUpdateTooltip = iconButton.onUpdateTooltip and function(_, tooltip)
-        if item then iconButton.onUpdateTooltip(item, tooltip) end
+      onUpdateTooltip = buttonOptions.onUpdateTooltip and function(self, tooltip)
+        if item and self:GetEventValue("ENABLED") then buttonOptions.onUpdateTooltip(item, tooltip) end
       end
     }))
+
+    component:WhenFrameReady(function(buttonFrame)
+      buttonFrame:PropagateWhenDisabled(true)
+      buttonFrame:OnEvent("ENABLED", function(isButtonEnabled)
+        buttonFrame:SetAlpha(isButtonEnabled and 1 or 0.3)
+      end)
+    end)
+
+    iconButtons[i] = { component = component, isEnabled = true }
+  end
+
+  --- Enables or disables each icon button for the given item, if its state changed.
+  --- @param newItem BagItem | ListItem
+  local function refreshIconButtons(newItem)
+    for i, button in ipairs(iconButtons) do
+      local isEnabledFunc = options.iconButtons[i].isEnabled
+      local isButtonEnabled = isEnabledFunc == nil or isEnabledFunc(newItem)
+
+      if isButtonEnabled ~= button.isEnabled then
+        button.isEnabled = isButtonEnabled
+        button.component:WhenFrameReady(function(buttonFrame)
+          buttonFrame:FireEvent("ENABLED", isButtonEnabled)
+
+          -- A button under the mouse gets no new enter event, so refresh its tooltip.
+          if buttonFrame:GetEventValue("HOVERED") then buttonFrame:UpdateTooltip() end
+        end)
+      end
+    end
   end
 
   --- Dims the card and turns off its mouse input while disabled. Cards start enabled.
@@ -198,6 +233,7 @@ function ComponentFactory:ItemCard(options)
 
     root:SetVisibility("VISIBLE")
     refreshBackdrop()
+    refreshIconButtons(newItem)
 
     local quantity = newItem.quantity or 1
     --- @type number?
@@ -219,7 +255,7 @@ function ComponentFactory:ItemCard(options)
     shown.texture = newItem.texture
     shown.quality = newItem.quality
 
-    title:SetText(newItem.link .. (quantity > 1 and " " .. Colors.White("x" .. quantity) or ""))
+    title:SetText(newItem.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
     if priceText then priceText:SetText(stackPrice and Colors.White(B.Money:GetCoinText(stackPrice)) or "") end
 
     -- Icon.

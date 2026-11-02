@@ -122,10 +122,36 @@ Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:Titl
 }))
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
-  cardCount = 7,
+  cardCount = 6,
   displayPrice = true,
   getItems = function() return junkItems end,
   isItemEnabled = function(item) return not Items:IsItemLocked(item) end,
+
+  -- Sells or destroys the item. Each button is disabled unless the item is junk for its action and nothing blocks it.
+  iconButtons = {
+    {
+      icon = Addon:GetAsset("coins-icon"),
+      highlightColor = Colors.Yellow,
+      isEnabled = function(item) return Addon:IsAtMerchant() and JunkItemsCache:IsSellableJunkItem(item) end,
+      onClick = function(item) Seller:HandleItem(item) end,
+      onUpdateTooltip = function(item, tooltip)
+        local _, reason = JunkItemsCache:IsSellableJunkItem(item)
+        tooltip:SetText(Colors.Yellow(L.SELL))
+        tooltip:AddLine(Colors.Grey("- ") .. Colors.White(reason))
+      end
+    },
+    {
+      icon = Addon:GetAsset("trash-icon"),
+      highlightColor = Colors.Red,
+      isEnabled = function(item) return JunkItemsCache:IsDestroyableJunkItem(item) end,
+      onClick = function(item) Destroyer:HandleItem(item) end,
+      onUpdateTooltip = function(item, tooltip)
+        local _, reason = JunkItemsCache:IsDestroyableJunkItem(item)
+        tooltip:SetText(Colors.Red(L.DESTROY))
+        tooltip:AddLine(Colors.Grey("- ") .. Colors.White(reason))
+      end
+    }
+  },
 
   onUpdateItemTooltip = function(item, tooltip)
     tooltip:SetBagItem(item.bag, item.slot)
