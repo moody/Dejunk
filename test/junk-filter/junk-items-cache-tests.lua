@@ -8,12 +8,10 @@ local Mocks = require("test/mocks")
 -- Setup
 -- ============================================================================
 
---- Returns `JunkItemsCache` from a new context where its collaborators are mocks, the `JunkFilter` mock, and the
---- spies of the `Items` and `BagItemsCache` mocks. No item is locked.
+--- Returns `JunkItemsCache` and the spies of its mocks, from a new context where its collaborators are mocks. No item
+--- is locked.
 --- @return JunkItemsCache JunkItemsCache
---- @return table JunkFilter
---- @return MockSpy ItemsSpy
---- @return MockSpy BagItemsCacheSpy
+--- @return JunkItemsCacheTestSpies spies
 local function setupContext()
   local Context = Harness:NewContext()
 
@@ -25,13 +23,26 @@ local function setupContext()
   ItemsSpy:Stub("IsItemLocked"):Returns(false)
 
   local JunkFilter = {}
+  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
 
   Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("Items", Items)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:Load("src/junk-filter/junk-items-cache.lua")
 
-  return Context:GetModule("JunkItemsCache"), JunkFilter, ItemsSpy, BagItemsCacheSpy
+  --- @class JunkItemsCacheTestSpies
+  local spies = {
+    --- Records the `BagItemsCache:GetItems()` calls. A test stubs it with `stubGetItems()`.
+    BagItemsCacheSpy = BagItemsCacheSpy,
+
+    --- Stubs `Items:IsItemLocked()`, which is false for every item.
+    ItemsSpy = ItemsSpy,
+
+    --- Stubs the `JunkFilter` methods that the tests need.
+    JunkFilterSpy = JunkFilterSpy
+  }
+
+  return Context:GetModule("JunkItemsCache"), spies
 end
 
 --- Stubs `BagItemsCache:GetItems()` like the real method: it empties the given array, or a new one, and fills it
@@ -53,17 +64,16 @@ end
 
 -- Test: counts the junk items for selling that cannot be sold right now.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {
     { isJunk = true, isBlocked = true },
     { isJunk = true, isBlocked = true },
     { isJunk = true },
     { isBlocked = true },
     {}
   })
-  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.isJunk == true end)
-  JunkFilterSpy:Stub("GetSellBlockReason"):Invokes(function(_, item) return item.isBlocked and "reason" or nil end)
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.isJunk == true end)
+  spies.JunkFilterSpy:Stub("GetSellBlockReason"):Invokes(function(_, item) return item.isBlocked and "reason" or nil end)
 
   assert(JunkItemsCache:GetNumSellBlockedJunkItems() == 2)
 end
@@ -74,8 +84,8 @@ end
 
 -- Test: returns the array it is given.
 do
-  local JunkItemsCache, _, _, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {})
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {})
   local given = {}
 
   assert(JunkItemsCache:GetJunkItems(given) == given)
@@ -83,10 +93,10 @@ end
 
 -- Test: keeps the items that IsJunkItem finds junk, with its reason, and removes the rest.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA, itemB, itemC, itemD = { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Invokes(function(_, item, filterType)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item, filterType)
     assert(filterType == nil, "GetJunkItems must ask IsJunkItem without a filter type")
     return item == itemC, "junk reason"
   end)
@@ -98,12 +108,12 @@ end
 
 -- Test: sorts by the price of the whole stack, lowest first.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 4, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -112,11 +122,11 @@ end
 
 -- Test: sorts items of the same price by quality, lowest first.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 3 }
   local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -125,11 +135,11 @@ end
 
 -- Test: sorts items of the same price and quality by name.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "b", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -138,11 +148,11 @@ end
 
 -- Test: sorts items of the same price, quality, and name by quantity, lowest first.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 2, quantity = 2, quality = 1 }
   local itemB = { name = "a", price = 4, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -151,13 +161,13 @@ end
 
 -- Test: keeps only the first `limit` items in sort order.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
   local itemD = { name = "a", price = 1, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems(nil, 2)
 
@@ -166,11 +176,11 @@ end
 
 -- Test: keeps every item when `limit` is more than the number of junk items.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems(nil, 10)
 
@@ -179,12 +189,12 @@ end
 
 -- Test: keeps locked items, without checking them.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsJunkItem"):Returns(true, "reason")
-  local IsItemLockedStub = ItemsSpy:GetStub("IsItemLocked"):Returns(true)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -198,11 +208,11 @@ end
 
 -- Test: keeps only the first `limit` items in sort order.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetSellableJunkItems(nil, 1)
 
@@ -211,14 +221,14 @@ end
 
 -- Test: leaves out locked items.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1, isLocked = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1, isLocked = true }
   local itemD = { name = "a", price = 4, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetSellableJunkItems()
 
@@ -227,13 +237,13 @@ end
 
 -- Test: skips locked items without counting them toward `limit`.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1, isLocked = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetSellableJunkItems(nil, 1)
 
@@ -246,11 +256,11 @@ end
 
 -- Test: keeps only the first `limit` items in sort order.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetDestroyableJunkItems(nil, 1)
 
@@ -259,12 +269,12 @@ end
 
 -- Test: leaves out locked items.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1, isLocked = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetDestroyableJunkItems()
 
@@ -277,19 +287,18 @@ end
 
 -- Test: returns how many items are sellable junk and how many are destroyable junk.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true },
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true },
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true, canDestroy = true },
     { name = "a", price = 1, quantity = 1, quality = 1, canDestroy = true },
     { name = "a", price = 1, quantity = 1, quality = 1 }
   })
-  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
     return item.canSell == true, "reason"
   end)
-  JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
     return item.canDestroy == true, "reason"
   end)
 
@@ -301,21 +310,20 @@ end
 
 -- Test: does not count locked items.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {
     { name = "a", price = 1, quantity = 1, quality = 1, canSell = true, isLocked = true },
     { name = "a", price = 2, quantity = 1, quality = 1, canSell = true },
     { name = "a", price = 3, quantity = 1, quality = 1, canDestroy = true, isLocked = true },
     { name = "a", price = 4, quantity = 1, quality = 1, canDestroy = true }
   })
-  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
     return item.canSell == true, "reason"
   end)
-  JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
     return item.canDestroy == true, "reason"
   end)
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
 
@@ -329,13 +337,12 @@ end
 
 -- Test: returns the first sellable junk item in sort order.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1, canSell = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canSell = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canSell = false }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
-  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Invokes(function(_, item)
     return item.canSell, "reason"
   end)
 
@@ -344,45 +351,45 @@ end
 
 -- Test: returns nil when no item is sellable junk.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, { {} })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(false)
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { {} })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(false)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == nil)
 end
 
 -- Test: skips a locked item.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, isLocked = true }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == itemA)
 end
 
 -- Test: returns nil when every sellable junk item is locked.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Returns(true)
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == nil)
 end
 
 -- Test: stops checking locks at the first item that is not locked.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {
     { name = "a", price = 1, quantity = 1, quality = 1 },
     { name = "a", price = 2, quantity = 1, quality = 1 },
     { name = "a", price = 3, quantity = 1, quality = 1 }
   })
-  Mocks:CreateSpy(JunkFilter):Stub("IsSellableJunkItem"):Returns(true, "reason")
-  local IsItemLockedStub = ItemsSpy:GetStub("IsItemLocked"):Returns(false)
+  spies.JunkFilterSpy:Stub("IsSellableJunkItem"):Returns(true, "reason")
+  local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(false)
 
   JunkItemsCache:GetNextSellableJunkItem()
 
@@ -395,13 +402,12 @@ end
 
 -- Test: returns the first destroyable junk item in sort order.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1, canDestroy = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canDestroy = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canDestroy = false }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB, itemC })
-  local JunkFilterSpy = Mocks:CreateSpy(JunkFilter)
-  JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Invokes(function(_, item)
     return item.canDestroy, "reason"
   end)
 
@@ -410,45 +416,45 @@ end
 
 -- Test: returns nil when no item is destroyable junk.
 do
-  local JunkItemsCache, JunkFilter, _, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, { {} })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(false)
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { {} })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(false)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == nil)
 end
 
 -- Test: skips a locked item.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
+  local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, isLocked = true }
-  stubGetItems(BagItemsCacheSpy, { itemA, itemB })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == itemA)
 end
 
 -- Test: returns nil when every destroyable junk item is locked.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
-  ItemsSpy:GetStub("IsItemLocked"):Returns(true)
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == nil)
 end
 
 -- Test: stops checking locks at the first item that is not locked.
 do
-  local JunkItemsCache, JunkFilter, ItemsSpy, BagItemsCacheSpy = setupContext()
-  stubGetItems(BagItemsCacheSpy, {
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, {
     { name = "a", price = 1, quantity = 1, quality = 1 },
     { name = "a", price = 2, quantity = 1, quality = 1 },
     { name = "a", price = 3, quantity = 1, quality = 1 }
   })
-  Mocks:CreateSpy(JunkFilter):Stub("IsDestroyableJunkItem"):Returns(true, "reason")
-  local IsItemLockedStub = ItemsSpy:GetStub("IsItemLocked"):Returns(false)
+  spies.JunkFilterSpy:Stub("IsDestroyableJunkItem"):Returns(true, "reason")
+  local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(false)
 
   JunkItemsCache:GetNextDestroyableJunkItem()
 

@@ -40,13 +40,12 @@ local LAST_FILTER_NAME = ORDERED_FILTER_NAMES[#ORDERED_FILTER_NAMES]
 --- @class TestJunkFilterOptions
 --- @field addon? table Fields set on the addon, such as `IS_RETAIL`. The game version flags are `false` otherwise.
 
---- Returns `JunkFilter` from a new context where its collaborators are mocks, and the spies of the `ItemFilters` and
---- `Items` mocks. Every `ItemFilters` method is stubbed to return `PASS`, and the item is in the bags, is not locked,
---- and can be sold and destroyed. A test changes what a method returns with `GetStub()`.
+--- Returns `JunkFilter` and the spies of its mocks, from a new context where its collaborators are mocks. Every
+--- `ItemFilters` method is stubbed to return `PASS`, and the item is in the bags, is not locked, and can be sold and
+--- destroyed. A test changes what a method returns with `GetStub()`.
 --- @param options? TestJunkFilterOptions
 --- @return JunkFilter JunkFilter
---- @return MockSpy ItemFiltersSpy
---- @return MockSpy ItemsSpy
+--- @return JunkFilterTestSpies spies
 local function setupContext(options)
   options = options or {}
 
@@ -101,7 +100,16 @@ local function setupContext(options)
   Context:SetModule("StateManager", StateManager)
   Context:Load("src/junk-filter/junk-filter.lua")
 
-  return Context:GetModule("JunkFilter"), ItemFiltersSpy, ItemsSpy
+  --- @class JunkFilterTestSpies
+  local spies = {
+    --- Stubs every `ItemFilters` method to return `PASS`.
+    ItemFiltersSpy = ItemFiltersSpy,
+
+    --- Stubs the `Items` methods that check the item.
+    ItemsSpy = ItemsSpy
+  }
+
+  return Context:GetModule("JunkFilter"), spies
 end
 
 -- ============================================================================
@@ -110,12 +118,12 @@ end
 
 -- Test: calls the filters in order with the item and the state of each option.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
 
   local item = { id = 1 }
   JunkFilter:IsJunkItem(item, "SELL")
 
-  assert(Matchers:IsDeepEqual(ItemFiltersSpy.calls, {
+  assert(Matchers:IsDeepEqual(spies.ItemFiltersSpy.calls, {
     { "ExcludeAboveItemLevel", item, "excludeAboveItemLevel", "SELL" },
     { "ExcludeAbovePrice", item, "excludeAbovePrice", "SELL" },
     { "ByLists", item },
@@ -133,18 +141,18 @@ end
 
 -- Test: passes the destroy filter type to the scoped filters.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
-  local ExcludeAboveItemLevel = ItemFiltersSpy:GetStub("ExcludeAboveItemLevel")
-  local ExcludeAbovePrice = ItemFiltersSpy:GetStub("ExcludeAbovePrice")
-  local ExcludeByEquipmentType = ItemFiltersSpy:GetStub("ExcludeByEquipmentType")
-  local ExcludeEquipmentSets = ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
-  local ExcludeUnboundEquipment = ItemFiltersSpy:GetStub("ExcludeUnboundEquipment")
-  local ExcludeWarbandEquipment = ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
-  local IncludeArtifactRelics = ItemFiltersSpy:GetStub("IncludeArtifactRelics")
-  local IncludeByEquipmentType = ItemFiltersSpy:GetStub("IncludeByEquipmentType")
-  local IncludeByQuality = ItemFiltersSpy:GetStub("IncludeByQuality")
-  local IncludeBelowItemLevel = ItemFiltersSpy:GetStub("IncludeBelowItemLevel")
-  local IncludeBelowPrice = ItemFiltersSpy:GetStub("IncludeBelowPrice")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  local ExcludeAboveItemLevel = spies.ItemFiltersSpy:GetStub("ExcludeAboveItemLevel")
+  local ExcludeAbovePrice = spies.ItemFiltersSpy:GetStub("ExcludeAbovePrice")
+  local ExcludeByEquipmentType = spies.ItemFiltersSpy:GetStub("ExcludeByEquipmentType")
+  local ExcludeEquipmentSets = spies.ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
+  local ExcludeUnboundEquipment = spies.ItemFiltersSpy:GetStub("ExcludeUnboundEquipment")
+  local ExcludeWarbandEquipment = spies.ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
+  local IncludeArtifactRelics = spies.ItemFiltersSpy:GetStub("IncludeArtifactRelics")
+  local IncludeByEquipmentType = spies.ItemFiltersSpy:GetStub("IncludeByEquipmentType")
+  local IncludeByQuality = spies.ItemFiltersSpy:GetStub("IncludeByQuality")
+  local IncludeBelowItemLevel = spies.ItemFiltersSpy:GetStub("IncludeBelowItemLevel")
+  local IncludeBelowPrice = spies.ItemFiltersSpy:GetStub("IncludeBelowPrice")
   local item = { id = 1 }
 
   JunkFilter:IsJunkItem(item, "DESTROY")
@@ -164,8 +172,8 @@ end
 
 -- Test: skips the equipment sets filter on Classic Era.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_VANILLA = true } })
-  local ExcludeEquipmentSets = ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
+  local JunkFilter, spies = setupContext({ addon = { IS_VANILLA = true } })
+  local ExcludeEquipmentSets = spies.ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
 
   JunkFilter:IsJunkItem({})
 
@@ -174,8 +182,8 @@ end
 
 -- Test: skips the equipment sets filter on TBC Classic.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_TBC = true } })
-  local ExcludeEquipmentSets = ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
+  local JunkFilter, spies = setupContext({ addon = { IS_TBC = true } })
+  local ExcludeEquipmentSets = spies.ItemFiltersSpy:GetStub("ExcludeEquipmentSets")
 
   JunkFilter:IsJunkItem({})
 
@@ -184,9 +192,9 @@ end
 
 -- Test: skips the warband equipment and artifact relics filters when the client is not Retail.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = false } })
-  local ExcludeWarbandEquipment = ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
-  local IncludeArtifactRelics = ItemFiltersSpy:GetStub("IncludeArtifactRelics")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = false } })
+  local ExcludeWarbandEquipment = spies.ItemFiltersSpy:GetStub("ExcludeWarbandEquipment")
+  local IncludeArtifactRelics = spies.ItemFiltersSpy:GetStub("IncludeArtifactRelics")
 
   JunkFilter:IsJunkItem({})
 
@@ -210,8 +218,8 @@ end
 
 -- Test: each filter's JUNK result is returned as junk with its reason, without calling the filters after it.
 for index, name in ipairs(ORDERED_FILTER_NAMES) do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemFiltersSpy:GetStub(name):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemFiltersSpy:GetStub(name):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsJunkItem({})
 
@@ -219,14 +227,14 @@ for index, name in ipairs(ORDERED_FILTER_NAMES) do
   assert(reason == "junk reason", name)
   for laterIndex = index + 1, #ORDERED_FILTER_NAMES do
     local laterName = ORDERED_FILTER_NAMES[laterIndex]
-    assert(#ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
+    assert(#spies.ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
   end
 end
 
 -- Test: each filter's NOT_JUNK result is returned as not junk with its reason, without calling the filters after it.
 for index, name in ipairs(ORDERED_FILTER_NAMES) do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemFiltersSpy:GetStub(name):Returns(NOT_JUNK, "not junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemFiltersSpy:GetStub(name):Returns(NOT_JUNK, "not junk reason")
 
   local isJunk, reason = JunkFilter:IsJunkItem({})
 
@@ -234,7 +242,7 @@ for index, name in ipairs(ORDERED_FILTER_NAMES) do
   assert(reason == "not junk reason", name)
   for laterIndex = index + 1, #ORDERED_FILTER_NAMES do
     local laterName = ORDERED_FILTER_NAMES[laterIndex]
-    assert(#ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
+    assert(#spies.ItemFiltersSpy:GetStub(laterName).calls == 0, name .. " then " .. laterName)
   end
 end
 
@@ -244,40 +252,40 @@ end
 
 -- Test: returns false without calling any filter when the item is no longer in the bags.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemStillInBags"):Returns(false)
+  local JunkFilter, spies = setupContext()
+  spies.ItemsSpy:GetStub("IsItemStillInBags"):Returns(false)
 
   local isJunk, reason = JunkFilter:IsJunkItem({}, "SELL")
 
   assert(isJunk == false)
   assert(reason == nil)
-  assert(#ItemFiltersSpy.calls == 0)
+  assert(#spies.ItemFiltersSpy.calls == 0)
 end
 
 -- Test: for selling, returns false with the cannot be sold reason, without calling any filter, when the item cannot be
 -- sold.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  local JunkFilter, spies = setupContext()
+  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
 
   local isJunk, reason = JunkFilter:IsJunkItem({}, "SELL")
 
   assert(isJunk == false)
   assert(reason == "ITEM_CANNOT_BE_SOLD")
-  assert(#ItemFiltersSpy.calls == 0)
+  assert(#spies.ItemFiltersSpy.calls == 0)
 end
 
 -- Test: for destroying, returns false with the cannot be destroyed reason, without calling any filter, when the item
 -- cannot be destroyed.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  local JunkFilter, spies = setupContext()
+  spies.ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
 
   local isJunk, reason = JunkFilter:IsJunkItem({}, "DESTROY")
 
   assert(isJunk == false)
   assert(reason == "ITEM_CANNOT_BE_DESTROYED")
-  assert(#ItemFiltersSpy.calls == 0)
+  assert(#spies.ItemFiltersSpy.calls == 0)
 end
 
 -- ============================================================================
@@ -286,30 +294,30 @@ end
 
 -- Test: with no filter type, calls every filter twice, once for selling and once for destroying.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
 
   JunkFilter:IsJunkItem({})
 
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
-    assert(#ItemFiltersSpy:GetStub(name).calls == 2, name)
+    assert(#spies.ItemFiltersSpy:GetStub(name).calls == 2, name)
   end
 end
 
 -- Test: for destroying, calls every filter once.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext({ addon = { IS_RETAIL = true } })
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
 
   JunkFilter:IsJunkItem({}, "DESTROY")
 
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
-    assert(#ItemFiltersSpy:GetStub(name).calls == 1, name)
+    assert(#spies.ItemFiltersSpy:GetStub(name).calls == 1, name)
   end
 end
 
 -- Test: with no filter type, a filter that returns JUNK is called once, so the destroying pass is skipped.
 do
-  local JunkFilter, ItemFiltersSpy = setupContext()
-  local FirstFilter = ItemFiltersSpy:GetStub(FIRST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext()
+  local FirstFilter = spies.ItemFiltersSpy:GetStub(FIRST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsJunkItem({})
 
@@ -320,31 +328,31 @@ end
 
 -- Test: with no filter type, only the destroying pass runs when the item cannot be sold.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsJunkItem({})
 
   assert(isJunk == true)
   assert(reason == "junk reason")
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
-    assert(#ItemFiltersSpy:GetStub(name).calls == 1, name)
+    assert(#spies.ItemFiltersSpy:GetStub(name).calls == 1, name)
   end
 end
 
 -- Test: with no filter type, only the selling pass runs when the item cannot be destroyed.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(NOT_JUNK, "not junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(NOT_JUNK, "not junk reason")
 
   local isJunk, reason = JunkFilter:IsJunkItem({})
 
   assert(isJunk == false)
   assert(reason == "not junk reason")
   for _, name in ipairs(ORDERED_FILTER_NAMES) do
-    assert(#ItemFiltersSpy:GetStub(name).calls == 1, name)
+    assert(#spies.ItemFiltersSpy:GetStub(name).calls == 1, name)
   end
 end
 
@@ -354,9 +362,9 @@ end
 
 -- Test: IsSellableJunkItem returns junk for an item that can be sold.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsSellableJunkItem({})
 
@@ -366,9 +374,9 @@ end
 
 -- Test: IsSellableJunkItem returns false for an item that cannot be sold, even if it can be destroyed.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsSellableJunkItem({})
 
@@ -378,9 +386,9 @@ end
 
 -- Test: IsSellableJunkItem returns false with the block reason for a blocked junk item.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
-  ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  spies.ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
 
   local isJunk, reason = JunkFilter:IsSellableJunkItem({})
 
@@ -390,9 +398,9 @@ end
 
 -- Test: IsSellableJunkItem does not look for a block unless the item is junk.
 do
-  local JunkFilter, _, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
   JunkFilter:IsSellableJunkItem({})
-  assert(#ItemsSpy:GetStub("IsItemRefundable").calls == 0)
+  assert(#spies.ItemsSpy:GetStub("IsItemRefundable").calls == 0)
 end
 
 -- ============================================================================
@@ -401,8 +409,8 @@ end
 
 -- Test: returns the refundable reason for a refundable item.
 do
-  local JunkFilter, _, ItemsSpy = setupContext()
-  ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
+  local JunkFilter, spies = setupContext()
+  spies.ItemsSpy:GetStub("IsItemRefundable"):Returns(true)
   assert(JunkFilter:GetSellBlockReason({}) == "ITEM_IS_REFUNDABLE")
 end
 
@@ -418,9 +426,9 @@ end
 
 -- Test: IsDestroyableJunkItem returns junk for an item that can be destroyed.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
 
@@ -430,9 +438,9 @@ end
 
 -- Test: IsDestroyableJunkItem returns false for an item that cannot be destroyed, even if it can be sold.
 do
-  local JunkFilter, ItemFiltersSpy, ItemsSpy = setupContext({ addon = { IS_RETAIL = true } })
-  ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-  ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
 
   local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
 
