@@ -54,16 +54,8 @@ local function refreshComponents()
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", false)
   else
-    local isAtMerchant = Addon:IsAtMerchant()
-    local canSell, canDestroy = false, false
-    for _, item in ipairs(junkItems) do
-      if (not isAtMerchant or canSell) and canDestroy then break end
-
-      if not Items:IsItemLocked(item) then
-        canSell = canSell or (isAtMerchant and JunkFilter:IsSellableJunkItem(item))
-        canDestroy = canDestroy or JunkFilter:IsDestroyableJunkItem(item)
-      end
-    end
+    local canSell = Addon:IsAtMerchant() and JunkItemsCache:GetNextSellableJunkItem() ~= nil
+    local canDestroy = JunkItemsCache:GetNextDestroyableJunkItem() ~= nil
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", canDestroy)
   end
