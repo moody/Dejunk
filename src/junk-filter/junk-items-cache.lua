@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local B = Addon:GetModule("Blizzard")
 local BagItemsCache = Addon:GetModule("BagItemsCache")
+local Colors = Addon:GetModule("Colors")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager")
@@ -11,6 +12,12 @@ local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 --- Seconds that `GetNumJunkItems()` keeps its counts.
 --- @type number
 JunkItemsCache.COUNT_INTERVAL_SECONDS = 0.25
+
+--- Format of the text from `GetNumJunkItemsText()`, with the sellable and destroyable counts.
+local COUNTS_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colors.Red("%s"))
+
+--- The text from `GetNumJunkItemsText()` until the bag items have been scanned.
+local NO_COUNTS_TEXT = COUNTS_TEXT_FORMAT:format("-", "-")
 
 -- ============================================================================
 -- State
@@ -186,6 +193,15 @@ do -- Convenience methods.
   --- @type number
   local countTime = 0
 
+  --- @type string
+  local countsText = NO_COUNTS_TEXT
+
+  --- @type integer?
+  local textSellable
+
+  --- @type integer?
+  local textDestroyable
+
   --- Returns the number of sellable and destroyable junk items that are not locked. Counts again at most once per
   --- `COUNT_INTERVAL_SECONDS`, unless the version changed.
   --- @return integer numSellable, integer numDestroyable
@@ -201,6 +217,21 @@ do -- Convenience methods.
     end
 
     return numSellable, numDestroyable
+  end
+
+  --- Returns the counts from `GetNumJunkItems()` as colored text: `(sellable/destroyable)`. Returns `(-/-)` until the
+  --- bag items have been scanned.
+  --- @return string
+  function JunkItemsCache:GetNumJunkItemsText()
+    if BagItemsCache:GetVersion() == 0 then return NO_COUNTS_TEXT end
+
+    local sellable, destroyable = self:GetNumJunkItems()
+    if sellable ~= textSellable or destroyable ~= textDestroyable then
+      textSellable, textDestroyable = sellable, destroyable
+      countsText = COUNTS_TEXT_FORMAT:format(sellable, destroyable)
+    end
+
+    return countsText
   end
 
   --- Returns the next sellable junk item that is not locked, if one exists.

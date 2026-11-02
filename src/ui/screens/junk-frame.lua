@@ -29,6 +29,9 @@ local wasAutoShown = false
 
 local junkItems = {}
 
+-- The counts text that the title currently shows.
+local titleCountsText
+
 -- Refresh components based on junk item data.
 local function refreshComponents()
   JunkItemsCache:GetJunkItems(junkItems)
@@ -40,9 +43,11 @@ local function refreshComponents()
     return
   end
 
-  Components.Root.TitleText:GetFrame():SetText(
-    Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#junkItems)))
-  )
+  local countsText = JunkItemsCache:GetNumJunkItemsText()
+  if countsText ~= titleCountsText then
+    titleCountsText = countsText
+    Components.Root.TitleText:GetFrame():SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
+  end
 
   local totalJunkValue = 0
   for _, item in pairs(junkItems) do

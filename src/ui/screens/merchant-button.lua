@@ -11,8 +11,6 @@ local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
-local LABEL_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colors.Red("%s"))
-
 -- ============================================================================
 -- Initialize
 -- ============================================================================
@@ -31,7 +29,7 @@ local rootComponent = Addon.Waffle:Flex({
     local frame = Widgets:Button({
       name = ADDON_NAME .. "_MerchantButton",
       parent = _G.MerchantFrame,
-      labelText = LABEL_TEXT_FORMAT:format(0, 0),
+      labelText = JunkItemsCache:GetNumJunkItemsText(),
       labelColor = Colors.Blue,
       enableClickHandling = true,
       enableDragging = true,
@@ -144,8 +142,7 @@ TickerManager:NewTicker(1 / 30, function()
   if show then
     --- @type FontString
     local label = labelComponent:GetFrame()
-    local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
-    local text = LABEL_TEXT_FORMAT:format(numSellable, numDestroyable)
+    local text = JunkItemsCache:GetNumJunkItemsText()
 
     -- Update label text and icon size, only when the text actually changes.
     if text ~= label:GetText() then

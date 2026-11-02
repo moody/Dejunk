@@ -19,6 +19,12 @@ local function setupContext()
   local BlizzardUtilsSpy = Mocks:CreateSpy(Blizzard.Utils)
   BlizzardUtilsSpy:Stub("GetTime"):Returns(0)
 
+  -- Each color wraps its text in `name[...]`.
+  local Colors = {}
+  for _, name in ipairs({ "Grey", "Red", "White" }) do
+    Colors[name] = function(text) return name:lower() .. "[" .. text .. "]" end
+  end
+
   local BagItemsCache = {}
   local BagItemsCacheSpy = Mocks:CreateSpy(BagItemsCache)
   BagItemsCacheSpy:Stub("GetVersion"):Returns(0)
@@ -39,6 +45,7 @@ local function setupContext()
 
   Context:SetModule("Blizzard", Blizzard)
   Context:SetModule("BagItemsCache", BagItemsCache)
+  Context:SetModule("Colors", Colors)
   Context:SetModule("Items", Items)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("StateManager", StateManager)
@@ -609,6 +616,43 @@ do
 
   assert(numSellable == 0)
   assert(numDestroyable == 0)
+end
+
+-- ============================================================================
+-- Tests - JunkItemsCache:GetNumJunkItemsText()
+-- ============================================================================
+
+-- Test: returns `(-/-)` before the bag items have been scanned.
+do
+  local JunkItemsCache = setupContext()
+  assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[-]/red[-])]")
+end
+
+-- Test: returns the sellable and destroyable counts once the bag items have been scanned.
+do
+  local JunkItemsCache, spies = setupContext()
+  local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
+  stubIsJunkItem(spies.JunkFilterSpy, { itemA, itemB }, { itemB })
+  spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
+
+  assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[2]/red[1])]")
+end
+
+-- Test: returns the new counts when they change.
+do
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
+  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
+
+  assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[1]/red[1])]")
+
+  spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
+  spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(2)
+
+  assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[0]/red[0])]")
 end
 
 -- ============================================================================
