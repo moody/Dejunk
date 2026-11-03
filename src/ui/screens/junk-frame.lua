@@ -13,6 +13,7 @@ local JunkFilter = Addon:GetModule("JunkFilter")
 local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
+local MainWindow = Addon:GetModule("MainWindow")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -89,6 +90,15 @@ Components.Root = ComponentFactory:Window({
   onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.junkFrame.reset()) end,
   refresh = refreshComponents
 })
+
+-- Settings button, between the title and the close button. Toggles the main window.
+Components.SettingsButton = Components.Root.TitleRow:AttachComponent(ComponentFactory:IconButton({
+  icon = Addon:GetAsset("gear-icon"),
+  highlightColor = Colors.Blue,
+  onClick = function() MainWindow:Toggle() end,
+  onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.TOGGLE_MAIN_WINDOW) end
+}))
+Components.Root.CloseButton:SetOrder(1)
 
 -- ============================================================================
 -- Content Components
