@@ -21,7 +21,7 @@ local Widgets = Addon:GetModule("Widgets")
 --- @field clipChildren? boolean Defaults to `true`.
 --- @field backdrop? boolean Defaults to `true`. Without one, the frame has no backdrop methods.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shows a tooltip while the frame is hovered.
---- @field tooltipAnchor? string Where the tooltip is anchored to the frame. Defaults to `ANCHOR_TOP`.
+--- @field tooltipAnchor? TooltipAnchor Where the tooltip is anchored to the frame. Defaults to `ANCHOR_TOP`.
 --- @field enableClickHandling? boolean Adds a `SetClickHandler()` method.
 --- @field enableDragging? boolean Lets the frame be dragged, and raises it above other frames when shown or clicked.
 --- @field propagateWhenDisabled? boolean Passes the mouse through while disabled. Defaults to `false`.

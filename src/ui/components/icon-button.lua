@@ -16,7 +16,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field highlightColor? Color Fill color while hovered. Without it the button has no fill.
 --- @field onClick fun() Called when the button is clicked.
 --- @field onUpdateTooltip? fun(self: IconButtonWidget, tooltip: Tooltip) Shown while hovering the button.
---- @field tooltipAnchor? string Where the tooltip is anchored to the button. Defaults to `ANCHOR_TOP`.
+--- @field tooltipAnchor? TooltipAnchor Where the tooltip is anchored to the button. Defaults to `ANCHOR_TOP`.
 
 -- =============================================================================
 -- ComponentFactory - IconButton
