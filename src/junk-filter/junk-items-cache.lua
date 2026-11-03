@@ -25,41 +25,70 @@ local NO_COUNTS_TEXT = COUNTS_TEXT_FORMAT:format("-", "-")
 -- State
 -- ============================================================================
 
---- The bag items that are junk for selling or destroying, in sort order.
---- @type BagItem[]
-local junkItems = {}
-
---- The items in `junkItems` that are junk for selling, in sort order.
---- @type BagItem[]
-local sellJunkItems = {}
-
---- The items in `junkItems` that are junk for destroying, in sort order.
---- @type BagItem[]
-local destroyJunkItems = {}
-
---- The items in `junkItems` by whether they are junk for selling.
---- @type table<BagItem, boolean>
-local isSellJunk = {}
-
---- The items in `junkItems` by whether they are junk for destroying.
---- @type table<BagItem, boolean>
-local isDestroyJunk = {}
-
---- The reason each bag item is or is not junk for selling.
---- @type table<BagItem, string>
-local sellReasons = {}
-
---- The reason each bag item is or is not junk for destroying.
---- @type table<BagItem, string>
-local destroyReasons = {}
+-- --------------------------------------
+-- Junk items
+-- --------------------------------------
 
 --- The bag items that are checked for junk.
 --- @type BagItem[]
 local bagItems = {}
 
+--- The bag items that are junk for selling or destroying, in sort order.
+--- @type BagItem[]
+local junkItems = {}
+
+--- @class JunkResults
+--- @field items BagItem[] The items in `junkItems` that are junk for the action, in sort order.
+--- @field isJunk table<BagItem, boolean> Whether each item in `junkItems` is junk for the action.
+--- @field reasons table<BagItem, string> The reason each bag item is or is not junk for the action.
+
+--- Junk results for selling.
+--- @type JunkResults
+local SellResults = { items = {}, isJunk = {}, reasons = {} }
+
+--- Junk results for destroying.
+--- @type JunkResults
+local DestroyResults = { items = {}, isJunk = {}, reasons = {} }
+
 --- The version that the junk items were found for.
 --- @type integer?
 local junkItemsVersion
+
+-- --------------------------------------
+-- Counts
+-- --------------------------------------
+
+--- The junk item counts, and the text built from them.
+local Counts = {
+  numSellable = 0,
+  numDestroyable = 0,
+
+  --- The version that the counts were found for.
+  --- @type integer?
+  version = nil,
+
+  --- The time of the last count.
+  time = 0,
+
+  --- The text from `GetNumJunkItemsText()`.
+  text = NO_COUNTS_TEXT,
+
+  --- The sellable count that `text` shows.
+  --- @type integer?
+  textSellable = nil,
+
+  --- The destroyable count that `text` shows.
+  --- @type integer?
+  textDestroyable = nil
+}
+
+-- --------------------------------------
+-- Buffer
+-- --------------------------------------
+
+--- The reusable list that the count and next item methods fill.
+--- @type BagItem[]
+local itemsBuffer = {}
 
 -- ============================================================================
 -- Local Functions
@@ -69,6 +98,14 @@ local junkItemsVersion
 --- @param t table
 local function clear(t)
   for key in pairs(t) do t[key] = nil end
+end
+
+--- Empties the tables of the given junk results.
+--- @param results JunkResults
+local function clearResults(results)
+  clear(results.items)
+  clear(results.isJunk)
+  clear(results.reasons)
 end
 
 --- Comparison function for sorting items by price, quality, and name.
@@ -97,31 +134,27 @@ local function updateJunkItems()
   junkItemsVersion = version
 
   clear(junkItems)
-  clear(sellJunkItems)
-  clear(destroyJunkItems)
-  clear(isSellJunk)
-  clear(isDestroyJunk)
-  clear(sellReasons)
-  clear(destroyReasons)
+  clearResults(SellResults)
+  clearResults(DestroyResults)
 
   for _, item in ipairs(BagItemsCache:GetItems(bagItems)) do
     local isSell, sellReason = JunkFilter:IsJunkItem(item, "SELL")
     local isDestroy, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
-    sellReasons[item] = sellReason
-    destroyReasons[item] = destroyReason
+    SellResults.reasons[item] = sellReason
+    DestroyResults.reasons[item] = destroyReason
 
     if isSell or isDestroy then
       junkItems[#junkItems + 1] = item
-      isSellJunk[item] = isSell
-      isDestroyJunk[item] = isDestroy
+      SellResults.isJunk[item] = isSell
+      DestroyResults.isJunk[item] = isDestroy
     end
   end
 
   table.sort(junkItems, itemSortFunc)
 
   for _, item in ipairs(junkItems) do
-    if isSellJunk[item] then sellJunkItems[#sellJunkItems + 1] = item end
-    if isDestroyJunk[item] then destroyJunkItems[#destroyJunkItems + 1] = item end
+    if SellResults.isJunk[item] then SellResults.items[#SellResults.items + 1] = item end
+    if DestroyResults.isJunk[item] then DestroyResults.items[#DestroyResults.items + 1] = item end
   end
 end
 
@@ -178,8 +211,8 @@ do -- JunkItemsCache:GetVersion()
   -- Some items may change with the player's level, without a bag event.
   EventManager:On(E.Wow.PlayerLevelUp, function() numLevelUps = numLevelUps + 1 end)
 
-  --- Returns a number that increases when a junk result may have changed: when the bag items changed, the active
-  --- profile's settings or a global list did, or the player leveled up.
+  --- Returns a number that increases when a junk result may have changed: bag items, profile settings, global lists,
+  --- or player level.
   --- @return integer
   function JunkItemsCache:GetVersion()
     local cacheVersion = BagItemsCache:GetVersion()
@@ -205,72 +238,50 @@ do -- JunkItemsCache:GetVersion()
   end
 end
 
-do -- Convenience methods.
-  local items = {}
-  local numSellable, numDestroyable = 0, 0
+--- Returns the number of sellable and destroyable junk items that are not locked. Counts again at most once per
+--- `COUNT_INTERVAL_SECONDS`, unless the version changed.
+--- @return integer numSellable, integer numDestroyable
+function JunkItemsCache:GetNumJunkItems()
+  local now = B.Utils:GetTime()
+  local version = self:GetVersion()
 
-  --- @type integer?
-  local countedVersion
-
-  --- @type number
-  local countTime = 0
-
-  --- @type string
-  local countsText = NO_COUNTS_TEXT
-
-  --- The sellable count that `countsText` shows.
-  --- @type integer?
-  local textSellable
-
-  --- The destroyable count that `countsText` shows.
-  --- @type integer?
-  local textDestroyable
-
-  --- Returns the number of sellable and destroyable junk items that are not locked. Counts again at most once per
-  --- `COUNT_INTERVAL_SECONDS`, unless the version changed.
-  --- @return integer numSellable, integer numDestroyable
-  function JunkItemsCache:GetNumJunkItems()
-    local now = B.Utils:GetTime()
-    local version = self:GetVersion()
-
-    if version ~= countedVersion or now - countTime >= self.COUNT_INTERVAL_SECONDS then
-      countedVersion = version
-      countTime = now
-      numSellable = #self:GetSellableJunkItems(items)
-      numDestroyable = #self:GetDestroyableJunkItems(items)
-    end
-
-    return numSellable, numDestroyable
+  if version ~= Counts.version or now - Counts.time >= self.COUNT_INTERVAL_SECONDS then
+    Counts.version = version
+    Counts.time = now
+    Counts.numSellable = #self:GetSellableJunkItems(itemsBuffer)
+    Counts.numDestroyable = #self:GetDestroyableJunkItems(itemsBuffer)
   end
 
-  --- Returns the counts from `GetNumJunkItems()` as colored text: `(sellable/destroyable)`. Returns `(-/-)` until the
-  --- bag items have been scanned.
-  --- @return string
-  function JunkItemsCache:GetNumJunkItemsText()
-    if BagItemsCache:GetVersion() == 0 then return NO_COUNTS_TEXT end
+  return Counts.numSellable, Counts.numDestroyable
+end
 
-    local sellable, destroyable = self:GetNumJunkItems()
-    if sellable ~= textSellable or destroyable ~= textDestroyable then
-      textSellable, textDestroyable = sellable, destroyable
-      countsText = COUNTS_TEXT_FORMAT:format(sellable, destroyable)
-    end
+--- Returns the counts from `GetNumJunkItems()` as colored text: `(sellable/destroyable)`. Returns `(-/-)` until the
+--- bag items have been scanned.
+--- @return string
+function JunkItemsCache:GetNumJunkItemsText()
+  if BagItemsCache:GetVersion() == 0 then return NO_COUNTS_TEXT end
 
-    return countsText
+  local sellable, destroyable = self:GetNumJunkItems()
+  if sellable ~= Counts.textSellable or destroyable ~= Counts.textDestroyable then
+    Counts.textSellable, Counts.textDestroyable = sellable, destroyable
+    Counts.text = COUNTS_TEXT_FORMAT:format(sellable, destroyable)
   end
 
-  --- Returns the next sellable junk item that is not locked, if one exists.
-  --- @return BagItem|nil
-  function JunkItemsCache:GetNextSellableJunkItem()
-    self:GetSellableJunkItems(items, 1)
-    return items[1]
-  end
+  return Counts.text
+end
 
-  --- Returns the next destroyable junk item that is not locked, if one exists.
-  --- @return BagItem|nil
-  function JunkItemsCache:GetNextDestroyableJunkItem()
-    self:GetDestroyableJunkItems(items, 1)
-    return items[1]
-  end
+--- Returns the next sellable junk item that is not locked, if one exists.
+--- @return BagItem|nil
+function JunkItemsCache:GetNextSellableJunkItem()
+  self:GetSellableJunkItems(itemsBuffer, 1)
+  return itemsBuffer[1]
+end
+
+--- Returns the next destroyable junk item that is not locked, if one exists.
+--- @return BagItem|nil
+function JunkItemsCache:GetNextDestroyableJunkItem()
+  self:GetDestroyableJunkItems(itemsBuffer, 1)
+  return itemsBuffer[1]
 end
 
 --- Returns `true` if the given `item` is junk and can be sold, and the reason for the result. A junk item that
@@ -280,13 +291,13 @@ end
 function JunkItemsCache:IsSellableJunkItem(item)
   updateJunkItems()
 
-  if isSellJunk[item] then
+  if SellResults.isJunk[item] then
     local blockReason = JunkFilter:GetSellBlockReason(item)
     if blockReason then return false, blockReason end
-    return true, sellReasons[item]
+    return true, SellResults.reasons[item]
   end
 
-  return false, sellReasons[item]
+  return false, SellResults.reasons[item]
 end
 
 --- Returns `true` if the given `item` is junk and can be destroyed, and the reason for the result.
@@ -294,7 +305,7 @@ end
 --- @return boolean isDestroyableJunk, string? reason
 function JunkItemsCache:IsDestroyableJunkItem(item)
   updateJunkItems()
-  return isDestroyJunk[item] == true, destroyReasons[item]
+  return DestroyResults.isJunk[item] == true, DestroyResults.reasons[item]
 end
 
 --- Returns the number of junk items for selling that cannot be sold right now.
@@ -303,7 +314,7 @@ function JunkItemsCache:GetNumSellBlockedJunkItems()
   updateJunkItems()
 
   local numBlocked = 0
-  for _, item in ipairs(sellJunkItems) do
+  for _, item in ipairs(SellResults.items) do
     if Items:IsItemStillInBags(item) and JunkFilter:GetSellBlockReason(item) then
       numBlocked = numBlocked + 1
     end
@@ -317,7 +328,7 @@ end
 --- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] sellableItems
 function JunkItemsCache:GetSellableJunkItems(items, limit)
-  return getItems(sellJunkItems, isSellable, items, limit)
+  return getItems(SellResults.items, isSellable, items, limit)
 end
 
 --- Creates or updates an array of destroyable junk items that are not locked.
@@ -325,7 +336,7 @@ end
 --- @param limit? integer Keeps only the first `limit` items in sort order.
 --- @return BagItem[] destroyableItems
 function JunkItemsCache:GetDestroyableJunkItems(items, limit)
-  return getItems(destroyJunkItems, isDestroyable, items, limit)
+  return getItems(DestroyResults.items, isDestroyable, items, limit)
 end
 
 --- Creates or updates an array of junk items, including locked ones.
