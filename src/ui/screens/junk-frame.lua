@@ -91,13 +91,13 @@ Components.Root = ComponentFactory:Window({
   refresh = refreshComponents
 })
 
--- Settings button, between the title and the close button. Toggles the main window.
+-- Settings button, left of the close button. Toggles the main window on the profile options.
 Components.SettingsButton = Components.Root.TitleRow:AttachComponent(ComponentFactory:IconButton({
   icon = Addon:GetAsset("gear-icon"),
   highlightColor = Colors.Blue,
-  onClick = function() MainWindow:Toggle() end,
-  onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.TOGGLE_MAIN_WINDOW) end
+  onClick = function() MainWindow:Toggle("PROFILE_OPTIONS") end
 }))
+-- Moves the close button after the settings button.
 Components.Root.CloseButton:SetOrder(1)
 
 -- ============================================================================

@@ -221,7 +221,7 @@ Controller:AddSidebarRow({
       end
     })
 
-    -- Clear button: clears the search and the focus. It shows only while the box has text.
+    -- Clear button.
     Components.ClearButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
       icon = Addon:GetAsset("x-icon"),
       iconSize = 10,
@@ -234,7 +234,7 @@ Controller:AddSidebarRow({
 
     -- The clear icon is grey, and white while the button is hovered.
     Components.ClearButton:WhenFrameReady(function(button)
-      --- Colors the icon for the hover state.
+      --- Colors the icon grey, or white while hovered.
       local function refreshIcon()
         button.icon:SetVertexColor((button:GetEventValue("HOVERED") and Colors.White or Colors.Grey):GetRGB())
       end
@@ -253,10 +253,10 @@ Controller:AddSidebarRow({
       refreshClearButton()
     end)
 
-    -- The search icon is grey like the placeholder, and white while the box is highlighted.
+    -- The search icon follows the highlight of the box.
     Components.SearchBox:WhenFrameReady(function(box)
       Components.SearchIcon:WhenFrameReady(function(icon)
-        --- Colors the icon for the highlight state.
+        --- Colors the icon grey like the placeholder, or white while the box is highlighted.
         local function refreshIcon()
           icon:SetVertexColor((Components.SearchBox:IsHighlighted() and Colors.White or Colors.Grey):GetRGB())
         end
@@ -464,11 +464,14 @@ function MainWindow:Hide()
   Components.Root:Layout()
 end
 
-function MainWindow:Toggle()
-  if Components.Root:IsVisible() then
+--- Shows or hides the window. With a `key`, shows it on that screen or switches to it, and hides it only if it is
+--- already on that screen.
+--- @param key? SidebarRowKey
+function MainWindow:Toggle(key)
+  if Components.Root:IsVisible() and (key == nil or key == Controller.selectedRowKey) then
     self:Hide()
   else
-    self:Show()
+    self:Show(key)
   end
 end
 
