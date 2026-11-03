@@ -211,6 +211,19 @@ function MainWindowOptions:CreateProfileOptionsPanel()
     box:AddAppliesToLine(getState, mergeAction)
   end
 
+  -- Exclude quest items.
+  do
+    local function getState() return StateManager:GetProfileState().settings.excludeQuestItems end
+    local mergeAction = ActionCreators.Profile.mergeExcludeQuestItems
+
+    exclude:AddOptionCard({
+      labelText = L.EXCLUDE_QUEST_ITEMS_TEXT,
+      descriptionText = L.EXCLUDE_QUEST_ITEMS_DESCRIPTION,
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end
+    })
+  end
+
   -- Exclude unbound equipment.
   do
     local function getState() return StateManager:GetProfileState().settings.excludeUnboundEquipment end
