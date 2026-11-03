@@ -13,7 +13,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field icon string Texture of the icon.
 --- @field iconSize? number Defaults to `14`.
 --- @field width? number Defaults to `46`.
---- @field highlightColor Color Fill color while hovered.
+--- @field highlightColor? Color Fill color while hovered. Without it the button has no fill.
 --- @field onClick fun() Called when the button is clicked.
 --- @field onUpdateTooltip? fun(self: IconButtonWidget, tooltip: Tooltip) Shown while hovering the button.
 --- @field tooltipAnchor? string Where the tooltip is anchored to the button. Defaults to `ANCHOR_TOP`.
@@ -52,7 +52,7 @@ function ComponentFactory:IconButton(options)
 
       --- Highlights the backdrop while hovered. A disabled button is not highlighted.
       local function refresh()
-        if frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED") then
+        if options.highlightColor and frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED") then
           frame:SetBackdropColor(options.highlightColor:GetRGBA(0.75))
         else
           frame:SetBackdropColor(0, 0, 0, 0)
@@ -64,14 +64,6 @@ function ComponentFactory:IconButton(options)
       return frame
     end
   })
-
-  --- Sets the icon's texture.
-  --- @param icon string
-  function root:SetIcon(icon)
-    self:WhenFrameReady(function(frame)
-      frame.icon:SetTexture(icon)
-    end)
-  end
 
   return root
 end

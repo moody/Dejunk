@@ -189,46 +189,66 @@ Controller:AddSidebarRow({
       end)
     end)
 
-    -- Search button: clears the search and the focus.
-    Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
-      icon = Addon:GetAsset("search-icon"),
-      highlightColor = Colors.Blue,
+    -- Search icon at the left. It ignores the mouse.
+    Components.SearchIcon = Components.SearchBox:AddChild({
+      order = -1,
+      width = 14,
+      height = 14,
+      alignSelf = "CENTER",
+      marginLeft = Widgets:Padding(),
+
+      --- @param parent Frame
+      frameFactory = function(parent)
+        local icon = parent:CreateTexture("$parent_SearchIcon", "ARTWORK")
+        icon:SetTexture(Addon:GetAsset("search-icon"))
+        return icon
+      end
+    })
+
+    -- Clear button: clears the search and the focus. It shows only while the box has text.
+    Components.ClearButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
+      icon = Addon:GetAsset("x-icon"),
+      iconSize = 10,
       onClick = function()
         Components.SearchBox:SetText("")
         Components.SearchBox.Input:GetFrame():ClearFocus()
-      end,
-      onUpdateTooltip = function(self, tooltip)
-        if not self:GetEventValue("ENABLED") then return end
-        tooltip:SetText(L.CLEAR_SEARCH)
       end
     }))
+    Components.ClearButton:SetVisibility("GONE")
 
-    -- The button follows the box. While the box is empty, the button is disabled and dimmed unless the box has
-    -- focus, and the mouse passes through it to the box.
-    Components.SearchButton:WhenFrameReady(function(button)
-      button:PropagateWhenDisabled(true)
+    -- The clear icon is grey, and white while the button is hovered.
+    Components.ClearButton:WhenFrameReady(function(button)
+      --- Colors the icon for the hover state.
+      local function refreshIcon()
+        button.icon:SetVertexColor((button:GetEventValue("HOVERED") and Colors.White or Colors.Grey):GetRGB())
+      end
 
-      Components.SearchBox.Input:WhenFrameReady(function(editBox)
-        local box = Components.SearchBox:GetFrame() --- @type FrameWidget
+      button:OnEvent("HOVERED", refreshIcon)
+      refreshIcon()
+    end)
 
-        --- Shows the clear icon and enables the button while the box has text.
-        local function refreshText()
-          local hasText = editBox:GetText() ~= ""
-          Components.SearchButton:SetIcon(Addon:GetAsset(hasText and "ban-icon" or "search-icon"))
-          button:FireEvent("ENABLED", hasText)
+    Components.SearchBox.Input:WhenFrameReady(function(editBox)
+      --- Shows the clear button while the box has text.
+      local function refreshClearButton()
+        Components.ClearButton:SetVisibility(editBox:GetText() ~= "" and "VISIBLE" or "GONE")
+      end
+
+      editBox:HookScript("OnTextChanged", refreshClearButton)
+      refreshClearButton()
+    end)
+
+    -- The search icon is grey like the placeholder, and white while the box is highlighted.
+    Components.SearchBox:WhenFrameReady(function(box)
+      Components.SearchIcon:WhenFrameReady(function(icon)
+        --- Colors the icon for the highlight state.
+        local function refreshIcon()
+          icon:SetVertexColor((Components.SearchBox:IsHighlighted() and Colors.White or Colors.Grey):GetRGB())
         end
 
-        --- Dims the button while it is disabled, unless the box has focus.
-        local function refreshAlpha()
-          local isEnabled = button:GetEventValue("ENABLED")
-          button:SetAlpha((isEnabled or box:GetEventValue("FOCUSED")) and 1 or 0.4)
-        end
-
-        editBox:HookScript("OnTextChanged", refreshText)
-        button:OnEvent("ENABLED", refreshAlpha)
-        box:OnEvent("FOCUSED", refreshAlpha)
-
-        refreshText()
+        box:OnEvent("HOVERED", refreshIcon)
+        box:OnEvent("FOCUSED", refreshIcon)
+        box:OnEvent("ENABLED", refreshIcon)
+        refreshIcon()
       end)
     end)
 
