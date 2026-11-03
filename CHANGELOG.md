@@ -4,14 +4,14 @@
 
 ### Added
 
-- Added a `Profiles` page to the main window for creating, duplicating, activating, renaming, resetting, and deleting profiles.
-- Added the junk item counts and the lootable item count to the footer of the main window. Clicking either toggles its frame, and clicking the active profile opens the `Profiles` page.
+- Added a `Profiles` screen to the main window for creating, duplicating, activating, renaming, resetting, and deleting profiles.
+- Added the junk item counts and the lootable item count to the footer of the main window. Clicking either toggles its frame, and clicking the active profile opens the `Profiles` screen.
 - Added a gear button to the title bar of the Junk Items frame that toggles the main window.
 - Added sell, destroy, and exclude buttons to each item in the Junk Items frame. Exclude adds the item to an Exclusions list, or the global one while holding Shift. Sell and destroy work on any listed item, even one that is junk only for the other action, and are dimmed while the item cannot be sold or destroyed. Their tooltips show whether the item is being sold or destroyed, and why.
 
 ### Changed
 
-- `/dejunk profiles` and the profiles button in the game's Dejunk settings now toggle the `Profiles` page: they open the main window on it, switch to it if the window is on another page, and close the window if it is already on it.
+- `/dejunk profiles` and the profiles button in the game's Dejunk settings now toggle the `Profiles` screen: they open the main window on it, switch to it if the window is on another screen, and close the window if it is already on it.
 - The Junk Items frame, the Lootable Items frame, and the lists now show items as cards with a strip in the item's quality color.
 - An item that is locked, such as one on the cursor or in a trade, now stays in the Junk Items frame, dimmed, with `Item is locked` in place of its price, and keeps its bag icon and tooltip reason, instead of dropping out until it unlocks.
 - Each list now has a single keybinding that adds or removes the item shown in the game tooltip, replacing its separate add and remove keybindings. Your saved key is kept: the `Add to` key if you set one, otherwise the `Remove from` key.
