@@ -37,10 +37,11 @@ The `Profile Options` screen has three groups. `General` holds `Auto Repair` and
 - **Exclude Above Price** — Exclude items with a stack price above a set value, even if it is on an Inclusions list
 - **Exclude By Equipment Type** — Exclude equipment of the selected armor and weapon types (cloaks never match)
 - **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
+- **Exclude Quest Items** — Exclude items that the game classifies as quest items
 - **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
 - **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
 
-Each `Include` and `Exclude` option applies to selling, destroying, or both. They start on both, except `Include Below Price` on selling and `Exclude Above Price` on destroying. `Include By Quality` and `Exclude Equipment Sets` are on by default, and every other option is off.
+Each `Include` and `Exclude` option applies to selling, destroying, or both, except `Exclude Quest Items`, which always applies to both. They start on both, except `Include Below Price` on selling and `Exclude Above Price` on destroying. `Include By Quality`, `Exclude Equipment Sets`, and `Exclude Quest Items` are on by default, and every other option is off.
 
 The price options compare the price of the whole stack and never affect items with no vendor price.
 
@@ -83,7 +84,7 @@ An item is checked in this order, and the first match decides:
 
 An item that matches nothing is not junk, and an item with no vendor price is never junk for selling.
 
-Items can be added to lists by dropping them into the list frame or the Junk Items frame, or with the list keybindings.
+Items can be added to lists by dropping them into the list frame or the Junk Items frame, or with the list keybindings. The search box at the top of the `Lists` screen filters all four lists by item name.
 
 ### Import/Export
 
@@ -93,15 +94,16 @@ Each list has its own Import/Export frame, opened from a button on the list fram
 
 ### Junk Items
 
-The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value. The gear button in its title bar toggles the main window.
+The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value. The gear button in its title bar toggles the main window on `Profile Options`.
 
 - Each item has three buttons:
-  - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold right now, such as away from a merchant
+  - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold, such as away from a merchant or when the item has no vendor price
   - **Destroy** (trash can icon) — Destroys the item. Dimmed while it cannot be destroyed
   - **Exclude** (ban icon, a circle with a slash) — Adds the item to an Exclusions list, or the global one while holding Shift
 - Sell and destroy work on any listed item, even one that is junk only for the other action. Their tooltips show whether the item is being sold or destroyed, and why. While dimmed, they ignore clicks
 - Drop an item into the frame to add it to an Inclusions list, or the global one while holding Shift
 - Ctrl+Alt+right-click the bar that shows the total value to add every listed item to an Exclusions list, or the global one while holding Shift
+- An item with no vendor price shows `No sell price` in place of its price
 - A locked item, such as one on the cursor or in a trade, stays listed but dimmed, shows `Item is locked` in place of its price, and cannot be clicked until it unlocks
 - An item you can still refund is listed, but selling skips it; its tooltip says why, and destroying it works
 - `Start Selling`, available at a merchant, and `Destroy Next Item` act on the listed items that are junk for selling and destroying, respectively
@@ -112,7 +114,7 @@ The `Auto Junk Frame` option shows the frame automatically at a merchant when yo
 
 ### Profiles
 
-Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
+Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own `Auto Repair`, `Auto Sell`, `Include`, and `Exclude` options. Multiple characters can share the same profile.
 
 Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` screen of the main window, which `/dejunk profiles` also toggles. Each profile card shows whether `Auto Sell` is on and the size of its `Inclusions` and `Exclusions` lists; hover it for the characters that use the profile. The footer shows the active profile; click it to open the `Profiles` screen. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
 
@@ -120,9 +122,9 @@ Every character starts on the `Default` profile. Profiles are created, duplicate
 
 ### Lootable Items
 
-Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot`, its keybind, or a click on the lootable item count in the footer of the main window. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootable Frame` option shows the frame automatically whenever you have lootable items, and closes it once you have none; opening it manually with nothing to loot prints a message instead.
+Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items frame, opened via `/dejunk loot`, its keybind, or a click on the lootable item count in the footer of the main window. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootable Frame` option shows the frame automatically whenever you have lootable items, and closes it once you have none; opening it manually with nothing to loot prints a message instead.
 
-![Lootable Items Frame](/.github/images/LootablesFrame.png?raw=true)
+![Lootable Items frame](/.github/images/LootablesFrame.png?raw=true)
 
 ### Keybindings
 
@@ -140,10 +142,10 @@ The `Keybindings` screen of the main window sets keys for the Main Window, Junk 
 # Toggle the main window.
 /dejunk
 
-# Start selling items.
+# Start selling junk items.
 /dejunk sell
 
-# Destroy next item.
+# Destroy the next junk item.
 /dejunk destroy
 
 # Toggle the junk frame.
