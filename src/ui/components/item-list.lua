@@ -12,7 +12,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field getItems fun(): (BagItem | ListItem)[] Returns the items to list, in order.
 --- @field cardCount integer Number of items shown at once. The rest are reached by scrolling.
 --- @field addItem? fun(itemId: number) Called with the ID of an item dropped on the list. Drops do nothing without it.
---- @field displayPrice? boolean Shows the price of each stack. Defaults to `false`.
+--- @field getItemSubtext? fun(item: BagItem | ListItem): string? Adds a line of small text under each link, with the text it returns.
 --- @field iconSize? integer Defaults to the `ItemCard` default.
 --- @field fontObject? Font Defaults to the `ItemCard` default.
 --- @field iconButtons? ItemCardIconButtonOptions[] Adds buttons to the right of each card.
@@ -45,7 +45,7 @@ function ComponentFactory:ItemList(options)
 
     createCard = function()
       return ComponentFactory:ItemCard({
-        displayPrice = options.displayPrice,
+        getSubtext = options.getItemSubtext,
         iconSize = options.iconSize,
         fontObject = options.fontObject,
         iconButtons = options.iconButtons,

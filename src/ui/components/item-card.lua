@@ -21,7 +21,7 @@ local DEFAULT_ICON_SIZE = 24
 --- @field isActive? fun(item: BagItem | ListItem): boolean Inactive buttons are dimmed and ignore clicks, but still take the mouse. Defaults to always active.
 
 --- @class ItemCardComponentOptions
---- @field displayPrice? boolean Shows the price of the stack under the link. Defaults to `false`.
+--- @field getSubtext? fun(item: BagItem | ListItem): string? Adds a line of small text under the link, with the text it returns. Called on every `SetItem()`.
 --- @field iconSize? integer Width and height of the icon. Defaults to `24`.
 --- @field fontObject? Font Font of the link. Defaults to `B.FontObjects.Normal`.
 --- @field iconButtons? ItemCardIconButtonOptions[] Adds a button at the right edge for each entry, the full height of the card.
@@ -139,16 +139,16 @@ function ComponentFactory:ItemCard(options)
     end
   })
 
-  -- With a price, the link and price are stacked in a column.
+  -- With subtext, the link and subtext are stacked in a column.
   local linkParent = content
 
-  --- Price of the stack.
+  --- Small text under the link.
   --- @type TextComponent?
-  local priceText
-  if options.displayPrice then
+  local subtextLabel
+  if options.getSubtext then
     local textColumn = content:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
     linkParent = textColumn:AddRow({ height = "AUTO", align = "CENTER" })
-    priceText = textColumn:AddRow({ height = "AUTO", align = "CENTER" }):AttachComponent(ComponentFactory:Text({
+    subtextLabel = textColumn:AddRow({ height = "AUTO", align = "CENTER" }):AttachComponent(ComponentFactory:Text({
       fontObject = B.FontObjects.Small,
       wordWrap = false,
       truncationTooltip = false
@@ -232,14 +232,12 @@ function ComponentFactory:ItemCard(options)
     refreshIconButtons(newItem)
 
     local quantity = newItem.quantity or 1
-    --- @type number?
-    local stackPrice
-    if priceText and not newItem.noValue then stackPrice = newItem.price * quantity end
+    local subtext = options.getSubtext and options.getSubtext(newItem) or ""
 
     local isChanged = (
       newItem.link ~= shown.link or
       quantity ~= shown.quantity or
-      stackPrice ~= shown.price or
+      subtext ~= shown.subtext or
       newItem.texture ~= shown.texture or
       newItem.quality ~= shown.quality
     )
@@ -247,12 +245,12 @@ function ComponentFactory:ItemCard(options)
 
     shown.link = newItem.link
     shown.quantity = quantity
-    shown.price = stackPrice
+    shown.subtext = subtext
     shown.texture = newItem.texture
     shown.quality = newItem.quality
 
     title:SetText(newItem.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
-    if priceText then priceText:SetText(stackPrice and Colors.White(B.Money:GetCoinText(stackPrice)) or "") end
+    if subtextLabel then subtextLabel:SetText(subtext) end
 
     -- Icon.
     iconTexture = newItem.texture

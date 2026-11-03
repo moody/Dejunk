@@ -132,8 +132,15 @@ Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:Titl
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
   cardCount = 7,
-  displayPrice = true,
   getItems = function() return junkItems end,
+
+  -- The stack price, or why there is none.
+  getItemSubtext = function(item)
+    if Items:IsItemLocked(item) then return Colors.Grey(L.ITEM_IS_LOCKED) end
+    if item.noValue then return Colors.Grey(B.Strings.NO_SELL_PRICE_TEXT) end
+    return Colors.White(B.Money:GetCoinText(item.price * item.quantity))
+  end,
+
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
   iconButtons = {
     -- Sell button.

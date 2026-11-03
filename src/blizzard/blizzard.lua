@@ -99,6 +99,10 @@ B.Strings = {
   --- @type string
   EPIC_TEXT = ITEM_QUALITY4_DESC or throw("ITEM_QUALITY4_DESC"),
 
+  --- Text for an item that has no sell price.
+  --- @type string
+  NO_SELL_PRICE_TEXT = ITEM_UNSELLABLE or throw("ITEM_UNSELLABLE"),
+
   --- Label of the Accept button.
   --- @type string
   ACCEPT_TEXT = ACCEPT or throw("ACCEPT"),
