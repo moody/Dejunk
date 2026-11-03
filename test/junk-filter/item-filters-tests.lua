@@ -803,6 +803,83 @@ do
 end
 
 -- ============================================================================
+-- Tests - ItemFilters:ExcludeQuestItems()
+-- ============================================================================
+
+-- Test: a quest item is not junk, with a reason naming the option.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(true)
+  local ItemFilters = setupContext({ Items = Items })
+
+  local result, reason = ItemFilters:ExcludeQuestItems({}, { enabled = true, scope = "BOTH" }, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+  assert(reason == "Profile Options > Exclude Quest Items")
+end
+
+-- Test: passes when the option is disabled.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(true)
+  local ItemFilters = setupContext({ Items = Items })
+
+  local result, reason = ItemFilters:ExcludeQuestItems({}, { enabled = false, scope = "BOTH" }, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: passes when the item is not a quest item.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(false)
+  local ItemFilters = setupContext({ Items = Items })
+
+  local result, reason = ItemFilters:ExcludeQuestItems({}, { enabled = true, scope = "BOTH" }, "SELL")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: applies when the filter type is the option's scope.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(true)
+  local ItemFilters = setupContext({ Items = Items })
+
+  local result = ItemFilters:ExcludeQuestItems({}, { enabled = true, scope = "SELL" }, "SELL")
+
+  assert(result == ItemFilters.NOT_JUNK)
+end
+
+-- Test: passes when the filter type is not in the option's scope.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(true)
+  local ItemFilters = setupContext({ Items = Items })
+
+  local result, reason = ItemFilters:ExcludeQuestItems({}, { enabled = true, scope = "SELL" }, "DESTROY")
+
+  assert(result == ItemFilters.PASS)
+  assert(reason == nil)
+end
+
+-- Test: a scope of both applies to each filter type.
+do
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("IsItemQuestItem"):Returns(true)
+  local ItemFilters = setupContext({ Items = Items })
+  local state = { enabled = true, scope = "BOTH" }
+
+  local sell = ItemFilters:ExcludeQuestItems({}, state, "SELL")
+  local destroy = ItemFilters:ExcludeQuestItems({}, state, "DESTROY")
+
+  assert(sell == ItemFilters.NOT_JUNK)
+  assert(destroy == ItemFilters.NOT_JUNK)
+end
+
+-- ============================================================================
 -- Tests - ItemFilters:IncludeByQuality()
 -- ============================================================================
 

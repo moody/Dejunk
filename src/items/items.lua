@@ -163,6 +163,13 @@ function Items:IsItemWarbandEquipment(item)
   return (success and isWarband) or false
 end
 
+--- Returns `true` if the game marks the given `item` as a quest item.
+--- @param item BagItem
+--- @return boolean
+function Items:IsItemQuestItem(item)
+  return item.classId == Enum.ItemClass.Questitem
+end
+
 --- Returns `true` if the given `item` is an artifact relic.
 --- @param item BagItem
 --- @return boolean

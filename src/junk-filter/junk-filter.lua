@@ -117,6 +117,12 @@ function JunkFilter:IsJunkItem(item, filterType)
     return result == ItemFilters.JUNK, reason
   end
 
+  -- Exclude quest items.
+  result, reason = ItemFilters:ExcludeQuestItems(item, profileSettings.excludeQuestItems, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
   -- Include by quality.
   result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality, filterType)
   if result ~= ItemFilters.PASS then

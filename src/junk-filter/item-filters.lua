@@ -195,6 +195,19 @@ function ItemFilters:ExcludeByEquipmentType(item, state, filterType)
   return self.PASS
 end
 
+--- Items that the game marks as quest items are not junk, for the option's scope.
+--- @param item BagItem
+--- @param state FilterOptionState
+--- @param filterType ItemFilterType
+--- @return ItemFilterResult result, string? reason
+function ItemFilters:ExcludeQuestItems(item, state, filterType)
+  if state.enabled and scopeIncludes(state.scope, filterType) and Items:IsItemQuestItem(item) then
+    return self.NOT_JUNK, concat(L.PROFILE_OPTIONS_TEXT, L.EXCLUDE_QUEST_ITEMS_TEXT)
+  end
+
+  return self.PASS
+end
+
 --- Items of a selected quality are junk, for the option's scope.
 --- @param item BagItem
 --- @param state QualitiesOptionState
