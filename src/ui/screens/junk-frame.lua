@@ -152,7 +152,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         if not Addon:IsAtMerchant() then
           tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_WITHOUT_MERCHANT))
         elseif cannotSellReason then
-          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM))
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM_NOW))
         else
           tooltip:AddLine(Colors.Gold(L.CLICK_TO_SELL_MANUALLY))
         end
