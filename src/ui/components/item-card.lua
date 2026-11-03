@@ -18,7 +18,7 @@ local DEFAULT_ICON_SIZE = 24
 --- @field highlightColor Color Fill color while hovered.
 --- @field onClick fun(item: BagItem | ListItem) Called when the button is clicked.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the button.
---- @field isEnabled? fun(item: BagItem | ListItem): boolean Disabled buttons are dimmed and pass the mouse to the card. Defaults to always enabled.
+--- @field isActive? fun(item: BagItem | ListItem): boolean Inactive buttons are dimmed and ignore clicks, but still take the mouse. Defaults to always active.
 
 --- @class ItemCardComponentOptions
 --- @field displayPrice? boolean Shows the price of the stack under the link. Defaults to `false`.
@@ -47,8 +47,8 @@ function ComponentFactory:ItemCard(options)
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
 
-  --- The component of each entry of `options.iconButtons`, and whether it last showed as enabled.
-  --- @type { component: IconButtonComponent, isEnabled: boolean }[]
+  --- The component of each entry of `options.iconButtons`, and whether it last showed as active.
+  --- @type { component: IconButtonComponent, isActive: boolean }[]
   local iconButtons = {}
 
   --- Brightens the card while hovered, if it has an item and is enabled.
@@ -170,34 +170,32 @@ function ComponentFactory:ItemCard(options)
       width = ComponentFactory.CARD_BUTTON_WIDTH,
       tooltipAnchor = "ANCHOR_RIGHT",
       onClick = function()
-        if item then buttonOptions.onClick(item) end
+        if item and iconButtons[i].isActive then buttonOptions.onClick(item) end
       end,
       onUpdateTooltip = buttonOptions.onUpdateTooltip and function(self, tooltip)
         if item and self:GetEventValue("ENABLED") then buttonOptions.onUpdateTooltip(item, tooltip) end
       end
     }))
 
+    -- The button passes the mouse through while the card is disabled.
     component:WhenFrameReady(function(buttonFrame)
       buttonFrame:PropagateWhenDisabled(true)
-      buttonFrame:OnEvent("ENABLED", function(isButtonEnabled)
-        buttonFrame:SetAlpha(isButtonEnabled and 1 or 0.3)
-      end)
     end)
 
-    iconButtons[i] = { component = component, isEnabled = true }
+    iconButtons[i] = { component = component, isActive = true }
   end
 
-  --- Enables or disables each icon button for the given item, if its state changed.
+  --- Dims or restores each icon button for the given item, if its state changed.
   --- @param newItem BagItem | ListItem
   local function refreshIconButtons(newItem)
     for i, button in ipairs(iconButtons) do
-      local isEnabledFunc = options.iconButtons[i].isEnabled
-      local isButtonEnabled = isEnabledFunc == nil or isEnabledFunc(newItem)
+      local isActiveFunc = options.iconButtons[i].isActive
+      local isButtonActive = isActiveFunc == nil or isActiveFunc(newItem)
 
-      if isButtonEnabled ~= button.isEnabled then
-        button.isEnabled = isButtonEnabled
+      if isButtonActive ~= button.isActive then
+        button.isActive = isButtonActive
         button.component:WhenFrameReady(function(buttonFrame)
-          buttonFrame:FireEvent("ENABLED", isButtonEnabled)
+          buttonFrame:SetAlpha(isButtonActive and 1 or 0.3)
 
           -- A button under the mouse gets no new enter event, so refresh its tooltip.
           if buttonFrame:GetEventValue("HOVERED") then buttonFrame:UpdateTooltip() end

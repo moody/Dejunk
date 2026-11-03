@@ -8,6 +8,7 @@ local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
+local ItemTooltip = Addon:GetModule("ItemTooltip")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
@@ -64,6 +65,14 @@ local function refreshComponents()
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", canDestroy)
   end
+end
+
+--- Returns the reason the item cannot be sold, junk or not, or `nil` if it can be.
+--- @param item BagItem
+--- @return string? reason
+local function getCannotSellReason(item)
+  if not Items:IsItemSellable(item) then return L.ITEM_CANNOT_BE_SOLD end
+  return JunkFilter:GetSellBlockReason(item)
 end
 
 -- ============================================================================
@@ -127,28 +136,48 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   getItems = function() return junkItems end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
-  -- Sells or destroys the item. Each button is disabled unless the item is junk for its action and nothing blocks it.
+  -- Sells or destroys the item even if no filter calls it junk. A button is dimmed while that is not possible.
   iconButtons = {
     {
       icon = Addon:GetAsset("coins-icon"),
       highlightColor = Colors.Yellow,
-      isEnabled = function(item) return Addon:IsAtMerchant() and JunkItemsCache:IsSellableJunkItem(item) end,
+      isActive = function(item) return Addon:IsAtMerchant() and getCannotSellReason(item) == nil end,
       onClick = function(item) Seller:HandleItem(item) end,
       onUpdateTooltip = function(item, tooltip)
-        local _, reason = JunkItemsCache:IsSellableJunkItem(item)
-        tooltip:SetText(Colors.Yellow(L.SELL))
-        tooltip:AddLine(Colors.Grey("- ") .. Colors.White(reason))
+        local cannotSellReason = getCannotSellReason(item)
+        local isJunk, reason = false, cannotSellReason
+        if not cannotSellReason then isJunk, reason = JunkItemsCache:IsSellableJunkItem(item) end
+
+        tooltip:SetText(L.SELL)
+        if not Addon:IsAtMerchant() then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_WITHOUT_MERCHANT))
+        elseif not cannotSellReason then
+          tooltip:AddLine(Colors.Gold(L.CLICK_TO_SELL_MANUALLY))
+        end
+
+        local heading, reasonLine = ItemTooltip:GetSellLines(isJunk, reason)
+        tooltip:AddLine(" ")
+        tooltip:AddLine(heading)
+        tooltip:AddLine(reasonLine)
       end
     },
     {
       icon = Addon:GetAsset("trash-icon"),
       highlightColor = Colors.Red,
-      isEnabled = function(item) return JunkItemsCache:IsDestroyableJunkItem(item) end,
+      isActive = function(item) return Items:IsItemDestroyable(item) end,
       onClick = function(item) Destroyer:HandleItem(item) end,
       onUpdateTooltip = function(item, tooltip)
-        local _, reason = JunkItemsCache:IsDestroyableJunkItem(item)
-        tooltip:SetText(Colors.Red(L.DESTROY))
-        tooltip:AddLine(Colors.Grey("- ") .. Colors.White(reason))
+        local isDestroyable = Items:IsItemDestroyable(item)
+        local isJunk, reason = false, L.ITEM_CANNOT_BE_DESTROYED
+        if isDestroyable then isJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item) end
+
+        tooltip:SetText(L.DESTROY)
+        if isDestroyable then tooltip:AddLine(Colors.Gold(L.CLICK_TO_DESTROY_MANUALLY)) end
+
+        local heading, reasonLine = ItemTooltip:GetDestroyLines(isJunk, reason)
+        tooltip:AddLine(" ")
+        tooltip:AddLine(heading)
+        tooltip:AddLine(reasonLine)
       end
     }
   },
