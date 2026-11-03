@@ -23,10 +23,10 @@ do -- Widget:Padding()
   --- @return number padding
   function Widgets:Padding(multiplier)
     if type(multiplier) ~= "number" then return PADDING end
-    local value = cache[tostring(multiplier)]
+    local value = cache[multiplier]
     if not value then
       value = PADDING * multiplier
-      cache[tostring(multiplier)] = value
+      cache[multiplier] = value
     end
     return value
   end
