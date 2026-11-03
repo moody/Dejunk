@@ -11,7 +11,7 @@
 
 ### Changed
 
-- `/dejunk profiles` and the profiles button in the game's Dejunk settings now open the `Profiles` page.
+- `/dejunk profiles` and the profiles button in the game's Dejunk settings now toggle the `Profiles` page: they open the main window on it, switch to it if the window is on another page, and close the window if it is already on it.
 - The Junk Items frame, the Lootable Items frame, and the lists now show items as cards with a strip in the item's quality color.
 - An item that is locked, such as one on the cursor or in a trade, now stays in the Junk Items frame, dimmed, with `Item is locked` in place of its price, and keeps its bag icon and tooltip reason, instead of dropping out until it unlocks.
 - Each list now has a single keybinding that adds or removes the item shown in the game tooltip, replacing its separate add and remove keybindings. Your saved key is kept: the `Add to` key if you set one, otherwise the `Remove from` key.
