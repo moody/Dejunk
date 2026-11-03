@@ -21,7 +21,7 @@ Out of the box, only poor-quality items are junk, and nothing is sold automatica
 
 ### Profile Options
 
-The `Profile Options` page has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what is considered junk, and most of their options have per-quality checkboxes that limit them to specific quality tiers.
+The `Profile Options` screen has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what is considered junk, and most of their options have per-quality checkboxes that limit them to specific quality tiers.
 
 #### Include
 
@@ -46,7 +46,7 @@ The price options compare the price of the whole stack and never affect items wi
 
 ### Global Options
 
-The `Global Options` page applies to every character, regardless of profile.
+The `Global Options` screen applies to every character, regardless of profile.
 
 - **Safe Destroy** — Require confirmation before destroying an item
 - **Safe Sell** — Only sell up to 12 items at a time
@@ -114,7 +114,7 @@ The `Auto Junk Frame` option shows the frame automatically at a merchant when yo
 
 Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
 
-Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` page of the main window, which `/dejunk profiles` also opens. The footer shows the active profile; click it to open the `Profiles` page. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
+Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` screen of the main window, which `/dejunk profiles` also toggles. The footer shows the active profile; click it to open the `Profiles` screen. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
 
 ![Profiles](/.github/images/Profiles.png?raw=true)
 
@@ -126,7 +126,7 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 
 ### Keybindings
 
-The `Keybindings` page of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
+The `Keybindings` screen of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
 
 - A key set here takes priority over the game's own binding for it, and a note names the binding it covers.
 - Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
@@ -152,7 +152,7 @@ The `Keybindings` page of the main window sets keys for the Main Window, Junk It
 # Toggle the lootable items frame.
 /dejunk loot
 
-# Open the profiles page.
+# Toggle the profiles screen.
 /dejunk profiles
 
 # Display a list of commands.
