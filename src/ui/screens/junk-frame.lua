@@ -165,7 +165,9 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         if not cannotSellReason then isJunk, reason = JunkItemsCache:IsSellableJunkItem(item) end
 
         tooltip:SetText(L.SELL)
-        if not Addon:IsAtMerchant() then
+        if not Items:IsItemSellable(item) then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM))
+        elseif not Addon:IsAtMerchant() then
           tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_WITHOUT_MERCHANT))
         elseif cannotSellReason then
           tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM_NOW))
