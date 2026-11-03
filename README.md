@@ -61,9 +61,11 @@ Each list has its own Import/Export frame, opened from a button on the list fram
 
 The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
 
-- Left-click an item to sell it
-- Right-click an item to add it to an Exclusions list
-- Each item has a coins button that sells it and a trash can button that destroys it. Hovering one shows whether the item is being sold or destroyed, and why. A button works on any listed item, even when no filter calls it junk for that action. It is dimmed and ignores clicks while the item cannot be sold or destroyed right now, such as the coins button away from a merchant
+- Each item has three buttons:
+  - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold right now, such as away from a merchant
+  - **Destroy** (trash can icon) — Destroys the item. Dimmed while it cannot be destroyed
+  - **Exclude** (ban icon, a circle with a slash) — Adds the item to an Exclusions list, or the global one while holding Shift
+- Sell and destroy work on any listed item, even one that is junk only for the other action. Their tooltips show whether the item is being sold or destroyed, and why. While dimmed, they ignore clicks
 - Drop an item into the frame to add it to an Inclusions list
 - A locked item, such as one on the cursor or in a trade, stays listed but dimmed, and cannot be clicked until it unlocks
 - An item you can still refund is listed, but selling skips it; its tooltip says why, and destroying it works
