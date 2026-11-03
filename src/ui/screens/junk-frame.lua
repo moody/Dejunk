@@ -135,9 +135,8 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   displayPrice = true,
   getItems = function() return junkItems end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
-
-  -- Sells or destroys the item even if no filter calls it junk. A button is dimmed while that is not possible.
   iconButtons = {
+    -- Sell button.
     {
       icon = Addon:GetAsset("coins-icon"),
       highlightColor = Colors.Yellow,
@@ -163,6 +162,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         tooltip:AddLine(reasonLine)
       end
     },
+    -- Destroy button.
     {
       icon = Addon:GetAsset("trash-icon"),
       highlightColor = Colors.Red,
@@ -185,43 +185,28 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         tooltip:AddLine(heading)
         tooltip:AddLine(reasonLine)
       end
+    },
+    -- Exclude button.
+    {
+      icon = Addon:GetAsset("ban-icon"),
+      highlightColor = Colors.Green,
+      onClick = function(item)
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+        list:Add(item.id)
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.EXCLUDE)
+        tooltip:AddDoubleLine(L.LEFT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
+        tooltip:AddDoubleLine(
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.LEFT_CLICK),
+          L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+        )
+      end
     }
   },
 
   onUpdateItemTooltip = function(item, tooltip)
     tooltip:SetBagItem(item.bag, item.slot)
-    tooltip:AddLine(" ")
-    if Addon:IsAtMerchant() and Items:IsItemSellable(item) then
-      tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
-    end
-    tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
-    tooltip:AddDoubleLine(
-      Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
-      L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
-    )
-    tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
-  end,
-
-  onItemClick = function(item, button)
-    if button == "LeftButton" then
-      if Addon:IsAtMerchant() and Items:IsItemSellable(item) then
-        local blockReason = JunkFilter:GetSellBlockReason(item)
-        if blockReason then
-          Addon:Print(L.CANNOT_SELL_ITEM_NOW:format(item.link, blockReason))
-        else
-          Seller:HandleItem(item)
-        end
-      end
-    end
-
-    if button == "RightButton" then
-      if IsAltKeyDown() then
-        Destroyer:HandleItem(item)
-      else
-        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-        list:Add(item.id)
-      end
-    end
   end,
 
   addItem = function(itemId)
