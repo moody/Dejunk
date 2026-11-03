@@ -5,6 +5,7 @@
 ### Added
 
 - Added a `Profiles` page to the main window for creating, duplicating, activating, renaming, resetting, and deleting profiles.
+- Added the junk item counts and the lootable item count to the footer of the main window. Clicking either toggles its frame, and clicking the active profile opens the `Profiles` page.
 - Added sell, destroy, and exclude buttons to each item in the Junk Items frame. Exclude adds the item to an Exclusions list, or the global one while holding Shift. Sell and destroy work on any listed item, even one that is junk only for the other action, and are dimmed while the item cannot be sold or destroyed. Their tooltips show whether the item is being sold or destroyed, and why.
 
 ### Changed
