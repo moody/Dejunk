@@ -5,7 +5,7 @@
 ### Added
 
 - Added a `Profiles` page to the main window for creating, activating, renaming, resetting, and deleting profiles.
-- Added a sell button and a destroy button to each item in the Junk Items frame. Hovering one shows why the item is junk for that action, and it is disabled while the item cannot be sold or destroyed.
+- Added a sell button and a destroy button to each item in the Junk Items frame. Hovering one shows whether the item is being sold or destroyed, and why. A button works on any listed item, even when no filter calls it junk for that action. It is dimmed and ignores clicks while the item cannot be sold or destroyed.
 
 ### Changed
 
