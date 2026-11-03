@@ -67,6 +67,7 @@ ActionTypes.Profile = {
   MERGE_EXCLUDE_ABOVE_PRICE = "profile/excludeAbovePrice/merge",
   MERGE_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/merge",
   MERGE_EXCLUDE_BY_EQUIPMENT_TYPE = "profile/excludeByEquipmentType/merge",
+  MERGE_EXCLUDE_QUEST_ITEMS = "profile/excludeQuestItems/merge",
   MERGE_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/merge",
   MERGE_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/merge",
 

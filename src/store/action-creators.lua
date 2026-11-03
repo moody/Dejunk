@@ -197,6 +197,10 @@ ActionCreators.Profile = {
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS),
 
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_QUEST_ITEMS`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeQuestItems = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_QUEST_ITEMS),
+
   --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT`.
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeUnboundEquipment = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT),

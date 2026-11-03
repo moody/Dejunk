@@ -155,6 +155,8 @@ DefaultStates.Profile = {
     },
     --- @type FilterOptionState
     excludeEquipmentSets = { enabled = true, scope = "BOTH" },
+    --- @type FilterOptionState
+    excludeQuestItems = { enabled = true, scope = "BOTH" },
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,
