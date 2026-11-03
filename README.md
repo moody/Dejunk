@@ -93,7 +93,7 @@ Each list has its own Import/Export frame, opened from a button on the list fram
 
 ### Junk Items
 
-The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
+The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value. The gear button in its title bar toggles the main window.
 
 - Each item has three buttons:
   - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold right now, such as away from a merchant
