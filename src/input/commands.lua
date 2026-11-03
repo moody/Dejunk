@@ -76,9 +76,9 @@ function Commands.loot()
   LootableFrame:Toggle()
 end
 
---- Shows the `MainWindow` on the profiles screen.
+--- Toggles the `MainWindow` on the profiles screen.
 function Commands.profiles()
-  MainWindow:Show("PROFILES")
+  MainWindow:Toggle("PROFILES")
 end
 
 --- Starts the `Seller`.
