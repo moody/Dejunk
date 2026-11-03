@@ -151,7 +151,9 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         tooltip:SetText(L.SELL)
         if not Addon:IsAtMerchant() then
           tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_WITHOUT_MERCHANT))
-        elseif not cannotSellReason then
+        elseif cannotSellReason then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM))
+        else
           tooltip:AddLine(Colors.Gold(L.CLICK_TO_SELL_MANUALLY))
         end
 
@@ -172,7 +174,11 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         if isDestroyable then isJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item) end
 
         tooltip:SetText(L.DESTROY)
-        if isDestroyable then tooltip:AddLine(Colors.Gold(L.CLICK_TO_DESTROY_MANUALLY)) end
+        if isDestroyable then
+          tooltip:AddLine(Colors.Gold(L.CLICK_TO_DESTROY_MANUALLY))
+        else
+          tooltip:AddLine(Colors.Grey(L.CANNOT_DESTROY_THIS_ITEM))
+        end
 
         local heading, reasonLine = ItemTooltip:GetDestroyLines(isJunk, reason)
         tooltip:AddLine(" ")
