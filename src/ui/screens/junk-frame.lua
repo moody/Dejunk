@@ -131,7 +131,7 @@ Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:Titl
 }))
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
-  cardCount = 6,
+  cardCount = 7,
   displayPrice = true,
   getItems = function() return junkItems end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
