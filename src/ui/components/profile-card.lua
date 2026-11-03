@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local Widgets = Addon:GetModule("Widgets")
@@ -13,6 +14,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @class ProfileCardComponentOptions
 --- @field isActive fun(profile: ProfileState): boolean Whether the profile is the active one.
 --- @field isProtected fun(profile: ProfileState): boolean Whether the profile cannot be renamed or deleted.
+--- @field getSubtext fun(profile: ProfileState): string Returns the small text under the name. Called every refresh.
 --- @field onActivate fun(profile: ProfileState) Called when the card is clicked.
 --- @field onRename fun(profile: ProfileState)
 --- @field onDuplicate fun(profile: ProfileState)
@@ -24,8 +26,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - ProfileCard
 -- =============================================================================
 
---- Creates a card for a profile, with rename, duplicate, reset, and delete buttons and a strip on the left edge while
---- it is active. Hidden until it has a profile.
+--- Creates a card for a profile, with its name, a line of small text, rename, duplicate, reset, and delete buttons, and
+--- a strip on the left edge while it is active. Hidden until it has a profile.
 --- @param options ProfileCardComponentOptions
 --- @return ProfileCardComponent root
 function ComponentFactory:ProfileCard(options)
@@ -61,7 +63,7 @@ function ComponentFactory:ProfileCard(options)
       frame = Widgets:Frame({
         parent = parent,
         frameType = "Button",
-        tooltipAnchor = "ANCHOR_RIGHT",
+        tooltipAnchor = "ANCHOR_LEFT",
 
         --- @param tooltip Tooltip
         onUpdateTooltip = function(_, tooltip)
@@ -99,8 +101,17 @@ function ComponentFactory:ProfileCard(options)
     paddingRight = Widgets:Padding()
   })
 
-  -- Name.
-  local nameText = content:AttachComponent(ComponentFactory:Text({
+  -- Name and subtext, stacked.
+  local textColumn = content:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
+
+  local nameText = textColumn:AddRow({ height = "AUTO", align = "CENTER" }):AttachComponent(ComponentFactory:Text({
+    wordWrap = false,
+    truncationTooltip = false
+  }))
+
+  local subtextLabel = textColumn:AddRow({ height = "AUTO", align = "CENTER" }):AttachComponent(ComponentFactory:Text({
+    fontObject = B.FontObjects.Small,
+    color = Colors.Grey,
     wordWrap = false,
     truncationTooltip = false
   }))
@@ -164,10 +175,12 @@ function ComponentFactory:ProfileCard(options)
 
     local newIsActive = options.isActive(newProfile)
     local isProtected = options.isProtected(newProfile)
+    local subtext = options.getSubtext(newProfile)
 
     local isChanged = (
       newProfile.id ~= shown.id or
       newProfile.name ~= shown.name or
+      subtext ~= shown.subtext or
       newIsActive ~= shown.isActive or
       isProtected ~= shown.isProtected
     )
@@ -175,13 +188,15 @@ function ComponentFactory:ProfileCard(options)
 
     shown.id = newProfile.id
     shown.name = newProfile.name
+    shown.subtext = subtext
     shown.isActive = newIsActive
     shown.isProtected = isProtected
 
     isActive = newIsActive
     refreshAccent()
 
-    nameText:SetText((isActive and Colors.White or Colors.Grey)(newProfile.name))
+    nameText:SetText((isActive and Colors.Blue or Colors.White)(newProfile.name))
+    subtextLabel:SetText(subtext)
 
     for _, button in ipairs({ renameButton, deleteButton }) do
       button:WhenFrameReady(function(buttonFrame)

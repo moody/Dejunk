@@ -8,6 +8,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Popup = Addon:GetModule("Popup")
+local ProfileSummaries = Addon:GetModule("ProfileSummaries")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
@@ -17,9 +18,67 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Number of profiles shown at once.
 local PROFILE_CARD_COUNT = 9
 
+--- Most characters listed in the tooltip of a profile. The rest are counted as hidden.
+local MAX_LISTED_CHARACTERS = 10
+
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
+
+--- The tooltip lines and one-line text of each summary. They are built again whenever the summary is.
+--- @type table<ProfileSummary, { lines: string[], text: string }>
+local formattedSummaries = setmetatable({}, { __mode = "k" })
+
+--- Returns the tooltip lines for the summary, which end with the characters that use the profile, and the details as
+--- one line.
+--- @param summary ProfileSummary
+--- @return string[] lines, string text
+local function formatSummary(summary)
+  local details = {}
+  if summary.autoSell then details[#details + 1] = Colors.Yellow(L.AUTO_SELL_TEXT) end
+  details[#details + 1] = L.INCLUSIONS_TEXT .. ": " .. Colors.White(summary.numInclusions)
+  details[#details + 1] = L.EXCLUSIONS_TEXT .. ": " .. Colors.White(summary.numExclusions)
+
+  local lines = {}
+  for _, detail in ipairs(details) do lines[#lines + 1] = detail end
+
+  local characterKeys = summary.characterKeys
+  if #characterKeys > 0 then
+    lines[#lines + 1] = L.USED_BY
+
+    local currentCharacterKey = Addon:GetCharacterKey()
+    for index, characterKey in ipairs(characterKeys) do
+      if index > MAX_LISTED_CHARACTERS then
+        lines[#lines + 1] = Colors.Grey(L.COUNT_HIDDEN:format(#characterKeys - MAX_LISTED_CHARACTERS))
+        break
+      end
+
+      -- The current character is blue.
+      local color = characterKey == currentCharacterKey and Colors.Blue or Colors.White
+      lines[#lines + 1] = Colors.Grey("- ") .. color(characterKey)
+    end
+  end
+
+  return lines, table.concat(details, " · ")
+end
+
+--- Returns the tooltip lines that describe the profile, and the details joined in one line. Both are built again only
+--- when the profile or the characters assigned to profiles change.
+--- @param profile ProfileState
+--- @return string[] lines, string text
+local function getProfileDetails(profile)
+  local characterMap = StateManager:GetStore():GetState().profiles.characterMap
+  local summary = ProfileSummaries:Get(profile, characterMap)
+  local formatted = formattedSummaries[summary]
+
+  if not formatted then
+    local lines, text = formatSummary(summary)
+    formatted = { lines = lines, text = text }
+    formattedSummaries[summary] = formatted
+  end
+
+  return formatted.lines, formatted.text
+end
 
 --- Returns `true` if the profile is the active one.
 --- @param profile ProfileState
@@ -147,6 +206,10 @@ function MainWindowOptions:CreateProfilesPanel()
       return ComponentFactory:ProfileCard({
         isActive = isActiveProfile,
         isProtected = isDefaultProfile,
+        getSubtext = function(profile)
+          local _, text = getProfileDetails(profile)
+          return text
+        end,
         onActivate = activateProfile,
         onRename = renameProfile,
         onDuplicate = duplicateProfile,
@@ -154,7 +217,12 @@ function MainWindowOptions:CreateProfilesPanel()
         onDelete = deleteProfile,
         onUpdateTooltip = function(profile, tooltip)
           tooltip:SetText(profile.name)
+
+          local lines = getProfileDetails(profile)
+          for _, line in ipairs(lines) do tooltip:AddLine(line) end
+
           if not isActiveProfile(profile) then
+            tooltip:AddLine(" ")
             tooltip:AddDoubleLine(L.LEFT_CLICK, L.ACTIVATE)
           end
         end
