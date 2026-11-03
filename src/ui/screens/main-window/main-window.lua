@@ -5,8 +5,11 @@ local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local JunkFrame = Addon:GetModule("JunkFrame")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
+local LootableFrame = Addon:GetModule("LootableFrame")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
@@ -305,36 +308,107 @@ local footerRow = Components.Root:AddRow({
   end
 })
 
--- Active profile label.
-footerRow:AddRow({ paddingLeft = Widgets:Padding() }):AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_ActiveProfileLabel", "ARTWORK", "GameFontNormal")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Grey(L.ACTIVE_PROFILE))
-    return fontString
+--- @class FooterSegmentOptions
+--- @field justify "LEFT" | "CENTER" | "RIGHT" Horizontal alignment of the text.
+--- @field getValue fun(): any Returns what the text shows. Called every tick; the text is rebuilt when it changes.
+--- @field formatText fun(value: any): string Returns the text for the value. It is grey unless it sets its own colors.
+--- @field onClick fun() Called when the segment is clicked. The segment highlights while hovered.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the segment.
+
+--- Adds a segment to the footer with one line of text, which is cut short when it does not fit.
+--- @param options FooterSegmentOptions
+local function addFooterSegment(options)
+  local segment = footerRow:AddRow({
+    alignSelf = "STRETCH",
+    paddingLeft = Widgets:Padding(),
+    paddingRight = Widgets:Padding(),
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local frame = Widgets:Frame({
+        parent = parent,
+        frameType = "Button",
+        onUpdateTooltip = options.onUpdateTooltip
+      })
+      frame:SetBackdropColor(0, 0, 0, 0)
+      frame:SetBackdropBorderColor(0, 0, 0, 0)
+
+      frame:SetScript("OnClick", options.onClick)
+
+      -- Highlight the segment while it is hovered.
+      frame:OnEvent("HOVERED", function()
+        frame:SetBackdropColor(Colors.White:GetRGBA(frame:GetEventValue("HOVERED") and 0.08 or 0))
+      end)
+
+      return frame
+    end
+  })
+
+  segment:AddChild({
+    width = "100%",
+    alignSelf = "STRETCH",
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local fontString = parent:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+      fontString:SetJustifyH(options.justify)
+      fontString:SetJustifyV("MIDDLE")
+      fontString:SetWordWrap(false)
+      fontString:SetTextColor(Colors.Grey:GetRGB())
+
+      -- The value the text currently shows.
+      local shownValue
+
+      TickerManager:NewTicker(1 / 30, function()
+        local value = options.getValue()
+        if value == shownValue then return end
+
+        shownValue = value
+        fontString:SetText(options.formatText(value))
+      end):BindFrame(fontString)
+
+      return fontString
+    end
+  })
+end
+
+-- Active profile. Clicking shows the Profiles screen.
+addFooterSegment({
+  justify = "LEFT",
+  getValue = function() return StateManager:GetProfileState().name end,
+  formatText = function(name) return Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White(name) end,
+  onClick = function() Controller:SelectSidebarRow("PROFILES") end
+})
+
+-- Junk item counts. Clicking toggles the Junk Items frame.
+addFooterSegment({
+  justify = "CENTER",
+  getValue = function() return JunkItemsCache:GetNumJunkItemsText() end,
+  formatText = function(countsText) return Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText end,
+  onClick = function() JunkFrame:Toggle() end,
+
+  --- Spells out the two counts.
+  --- @param tooltip Tooltip
+  onUpdateTooltip = function(_, tooltip)
+    local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
+    tooltip:AddLine(L.JUNK_ITEMS_COUNTS:format(Colors.White(numSellable), Colors.Red(numDestroyable)))
   end
 })
 
--- Active profile name, kept in sync with state.
-footerRow:AddRow({ justify = "CENTER" }):AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_ActiveProfileName", "ARTWORK", "GameFontNormal")
-    fontString:SetJustifyH("CENTER")
-    fontString:SetText(L.DEFAULT_PROFILE_NAME)
-    fontString:SetTextColor(Colors.Yellow:GetRGB())
+-- Lootable item count. Clicking toggles the Lootable Items frame.
+addFooterSegment({
+  justify = "RIGHT",
+  getValue = function() return LootableFrame:GetNumLootableItems() end,
 
-    TickerManager:NewTicker(1 / 30, function()
-      fontString:SetText(StateManager:GetProfileState().name)
-    end):BindFrame(fontString)
+  formatText = function(numLootable)
+    return (
+      Colors.Yellow(L.LOOTABLE_ITEMS) ..
+      Colors.Grey(" (") .. Colors.White(numLootable) .. Colors.Grey(")")
+    )
+  end,
 
-    return fontString
-  end
+  onClick = function() LootableFrame:Toggle() end
 })
-
--- Empty, so the active profile name stays centered.
-footerRow:AddRow()
 
 -- ============================================================================
 -- MainWindow

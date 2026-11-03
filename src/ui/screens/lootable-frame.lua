@@ -143,6 +143,13 @@ function LootableFrame:Toggle()
   end
 end
 
+--- Returns the number of lootable items that are not ignored.
+--- @return integer
+function LootableFrame:GetNumLootableItems()
+  updateLootableItems()
+  return #lootableItems
+end
+
 -- ============================================================================
 -- Events
 -- ============================================================================
