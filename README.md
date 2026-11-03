@@ -93,7 +93,7 @@ Each list has its own Import/Export frame, opened from a button on the list fram
 
 ### Junk Items
 
-The Junk Items frame, opened via `/dejunk junk`, its keybind, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
+The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value.
 
 - Each item has three buttons:
   - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold right now, such as away from a merchant
@@ -114,13 +114,13 @@ The `Auto Junk Frame` option shows the frame automatically at a merchant when yo
 
 Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own copy of the auto-sell, auto-repair, and junk-detection options. Multiple characters can share the same profile.
 
-Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` page of the main window, which `/dejunk profiles` also opens. The footer shows the active profile. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
+Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` page of the main window, which `/dejunk profiles` also opens. The footer shows the active profile; click it to open the `Profiles` page. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
 
 ![Profiles](/.github/images/Profiles.png?raw=true)
 
 ### Lootable Items
 
-Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot` or its keybind. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootable Frame` option shows the frame automatically whenever you have lootable items, and closes it once you have none; opening it manually with nothing to loot prints a message instead.
+Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot`, its keybind, or a click on the lootable item count in the footer of the main window. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootable Frame` option shows the frame automatically whenever you have lootable items, and closes it once you have none; opening it manually with nothing to loot prints a message instead.
 
 ![Lootable Items Frame](/.github/images/LootablesFrame.png?raw=true)
 
