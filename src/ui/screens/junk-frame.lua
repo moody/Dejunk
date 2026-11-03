@@ -81,8 +81,8 @@ end
 
 Components.Root = ComponentFactory:Window({
   name = "JunkFrame",
-  width = 325,
-  height = 375,
+  width = 350,
+  height = 400,
   titleText = Colors.Yellow(L.JUNK_ITEMS),
   getPoint = function() return StateManager:GetGlobalState().points.junkFrame end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end,
@@ -162,6 +162,23 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         tooltip:AddLine(reasonLine)
       end
     },
+    -- Exclude button.
+    {
+      icon = Addon:GetAsset("ban-icon"),
+      highlightColor = Colors.Green,
+      onClick = function(item)
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+        list:Add(item.id)
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.EXCLUDE)
+        tooltip:AddDoubleLine(L.LEFT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
+        tooltip:AddDoubleLine(
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.LEFT_CLICK),
+          L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+        )
+      end
+    },
     -- Destroy button.
     {
       icon = Addon:GetAsset("trash-icon"),
@@ -184,23 +201,6 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
         tooltip:AddLine(" ")
         tooltip:AddLine(heading)
         tooltip:AddLine(reasonLine)
-      end
-    },
-    -- Exclude button.
-    {
-      icon = Addon:GetAsset("ban-icon"),
-      highlightColor = Colors.Green,
-      onClick = function(item)
-        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-        list:Add(item.id)
-      end,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(L.EXCLUDE)
-        tooltip:AddDoubleLine(L.LEFT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.LEFT_CLICK),
-          L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
-        )
       end
     }
   },
