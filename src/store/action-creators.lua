@@ -12,6 +12,7 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 --- @class CreateProfilePayload
 --- @field profileId string
 --- @field profileName string
+--- @field sourceProfileId? string Profile to copy, lists included. Starts from the default settings if omitted.
 
 --- @class AssignProfilePayload
 --- @field characterKey string

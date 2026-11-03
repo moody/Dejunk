@@ -177,6 +177,43 @@ do
   assert(nextState.profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID)
 end
 
+-- Test: `CREATE_PROFILE` with a source profile copies its settings under the new id and name.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+  state.profiles.profileMap[PROFILE_ID].settings.autoSell = true
+  state.profiles.profileMap[PROFILE_ID].settings.inclusions[123] = true
+
+  local nextState = reducer(state, ActionCreators.Profiles.createProfile({
+    profileId = "copy",
+    profileName = "Copy",
+    sourceProfileId = PROFILE_ID
+  }))
+
+  local copy = nextState.profiles.profileMap.copy
+  assert(copy.id == "copy")
+  assert(copy.name == "Copy")
+  assert(Matchers:IsDeepEqual(copy.settings, state.profiles.profileMap[PROFILE_ID].settings))
+end
+
+-- Test: `CREATE_PROFILE` with a source profile shares no tables with it.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+
+  local nextState = reducer(state, ActionCreators.Profiles.createProfile({
+    profileId = "copy",
+    profileName = "Copy",
+    sourceProfileId = PROFILE_ID
+  }))
+
+  local source = nextState.profiles.profileMap[PROFILE_ID]
+  local copy = nextState.profiles.profileMap.copy
+  assert(copy.settings ~= source.settings)
+  assert(copy.settings.inclusions ~= source.settings.inclusions)
+  assert(copy.settings.includeByQuality ~= source.settings.includeByQuality)
+end
+
 -- Test: `CREATE_PROFILE` does not mutate the shared `DefaultStates` templates.
 do
   local state = reducer(nil, TEST_ACTION)

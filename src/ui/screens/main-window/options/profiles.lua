@@ -63,6 +63,18 @@ local function renameProfile(profile)
   })
 end
 
+--- Asks for a name, then creates a copy of the profile and activates it.
+--- @param profile ProfileState
+local function duplicateProfile(profile)
+  Popup:GetString({
+    initialValue = profile.name,
+    text = L.DUPLICATE_PROFILE_POPUP_HELP:format(Colors.Yellow(profile.name)),
+    onAccept = function(_, value)
+      StateManager:CreateNewProfile(value, profile.id)
+    end
+  })
+end
+
 --- Asks before resetting the profile to the default settings.
 --- @param profile ProfileState
 local function resetProfile(profile)
@@ -137,6 +149,7 @@ function MainWindowOptions:CreateProfilesPanel()
         isProtected = isDefaultProfile,
         onActivate = activateProfile,
         onRename = renameProfile,
+        onDuplicate = duplicateProfile,
         onReset = resetProfile,
         onDelete = deleteProfile,
         onUpdateTooltip = function(profile, tooltip)

@@ -143,7 +143,8 @@ function RootReducer:Build()
       if action.type == ActionTypes.Profiles.CREATE_PROFILE then
         --- @cast action WuxPayloadAction<CreateProfilePayload>
         state = Wux:ShallowCopy(state)
-        local profile = Wux:DeepCopy(DefaultStates.Profile)
+        local source = action.payload.sourceProfileId and state.profileMap[action.payload.sourceProfileId]
+        local profile = Wux:DeepCopy(source or DefaultStates.Profile)
         profile.id = action.payload.profileId
         profile.name = action.payload.profileName
         state.profileMap = Wux:ShallowCopy(state.profileMap)

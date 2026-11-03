@@ -129,16 +129,21 @@ do
   end
 end
 
---- Creates a new profile and immediately activates it.
+--- Creates a new profile, copied from `sourceProfileId` if given, and immediately activates it.
 ---@param profileName? string
-function StateManager:CreateNewProfile(profileName)
+---@param sourceProfileId? string
+function StateManager:CreateNewProfile(profileName, sourceProfileId)
   local profileId = Addon:GetShortUID()
   local characterKey = Addon:GetCharacterKey()
   profileName = profileName or characterKey
   _Store:Dispatch({
     type = Wux.ActionTypes.Batch,
     payload = {
-      ActionCreators.Profiles.createProfile({ profileId = profileId, profileName = profileName }),
+      ActionCreators.Profiles.createProfile({
+        profileId = profileId,
+        profileName = profileName,
+        sourceProfileId = sourceProfileId
+      }),
       ActionCreators.Profiles.assignProfile({ profileId = profileId, characterKey = characterKey })
     }
   })

@@ -15,6 +15,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field isProtected fun(profile: ProfileState): boolean Whether the profile cannot be renamed or deleted.
 --- @field onActivate fun(profile: ProfileState) Called when the card is clicked.
 --- @field onRename fun(profile: ProfileState)
+--- @field onDuplicate fun(profile: ProfileState)
 --- @field onReset fun(profile: ProfileState)
 --- @field onDelete fun(profile: ProfileState)
 --- @field onUpdateTooltip? fun(profile: ProfileState, tooltip: Tooltip) Shown while hovering the card.
@@ -23,8 +24,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - ProfileCard
 -- =============================================================================
 
---- Creates a card for a profile, with rename, reset, and delete buttons and a strip on the left edge while it is
---- active. Hidden until it has a profile.
+--- Creates a card for a profile, with rename, duplicate, reset, and delete buttons and a strip on the left edge while
+--- it is active. Hidden until it has a profile.
 --- @param options ProfileCardComponentOptions
 --- @return ProfileCardComponent root
 function ComponentFactory:ProfileCard(options)
@@ -111,6 +112,14 @@ function ComponentFactory:ProfileCard(options)
     width = ComponentFactory.CARD_BUTTON_WIDTH,
     onClick = function() if profile then options.onRename(profile) end end,
     onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.RENAME) end
+  }))
+
+  root:AttachComponent(ComponentFactory:IconButton({
+    icon = Addon:GetAsset("copy-icon"),
+    highlightColor = Colors.Green,
+    width = ComponentFactory.CARD_BUTTON_WIDTH,
+    onClick = function() if profile then options.onDuplicate(profile) end end,
+    onUpdateTooltip = function(_, tooltip) tooltip:SetText(L.DUPLICATE) end
   }))
 
   root:AttachComponent(ComponentFactory:IconButton({
