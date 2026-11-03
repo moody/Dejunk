@@ -195,7 +195,7 @@ function ItemFilters:ExcludeByEquipmentType(item, state, filterType)
   return self.PASS
 end
 
---- Items that the game marks as quest items are not junk, for the option's scope.
+--- Items that the game classifies as quest items are not junk, for the option's scope.
 --- @param item BagItem
 --- @param state FilterOptionState
 --- @param filterType ItemFilterType

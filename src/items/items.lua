@@ -163,7 +163,7 @@ function Items:IsItemWarbandEquipment(item)
   return (success and isWarband) or false
 end
 
---- Returns `true` if the game marks the given `item` as a quest item.
+--- Returns `true` if the game classifies the given `item` as a quest item.
 --- @param item BagItem
 --- @return boolean
 function Items:IsItemQuestItem(item)
