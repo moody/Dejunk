@@ -81,6 +81,8 @@ Each character is assigned a profile, which holds its own `Inclusions (Profile)`
 
 Every character starts on the `Default` profile. Profiles are created, activated, renamed, reset, and deleted on the `Profiles` page of the main window, which `/dejunk profiles` also opens. The footer shows the active profile. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
 
+![Profiles](/.github/images/Profiles.png?raw=true)
+
 ### Lootable Items
 
 Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items Frame, opened via `/dejunk loot` or its keybind. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootables Frame` option shows the frame automatically whenever you have lootable items, and closes it once you don't; opening it manually with nothing to loot prints a message instead.
