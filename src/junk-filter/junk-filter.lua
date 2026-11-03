@@ -36,13 +36,6 @@ function JunkFilter:IsSellableJunkItem(item)
   return isJunk, reason
 end
 
---- Returns `true` and a reason string if the given `item` is junk and can be destroyed.
---- @param item BagItem
---- @return boolean isDestroyableJunk, string? reason
-function JunkFilter:IsDestroyableJunkItem(item)
-  return self:IsJunkItem(item, "DESTROY")
-end
-
 --- Returns `true` and a reason string if the given `item` is junk for the given `filterType`, or for
 --- either type if none is given.
 --- @param item BagItem

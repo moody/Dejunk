@@ -287,6 +287,18 @@ do
   assert(#spies.ItemFiltersSpy.calls == 0)
 end
 
+-- Test: for destroying, returns junk with the filter's reason for an item that cannot be sold.
+do
+  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
+  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
+  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
+
+  local isJunk, reason = JunkFilter:IsJunkItem({}, "DESTROY")
+
+  assert(isJunk == true)
+  assert(reason == "junk reason")
+end
+
 -- ============================================================================
 -- Tests - JunkFilter:IsJunkItem() filter type
 -- ============================================================================
@@ -417,32 +429,4 @@ end
 do
   local JunkFilter = setupContext()
   assert(JunkFilter:GetSellBlockReason({}) == nil)
-end
-
--- ============================================================================
--- Tests - JunkFilter:IsDestroyableJunkItem()
--- ============================================================================
-
--- Test: IsDestroyableJunkItem returns junk for an item that can be destroyed.
-do
-  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
-  spies.ItemsSpy:GetStub("IsItemSellable"):Returns(false)
-  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
-
-  local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
-
-  assert(isJunk == true)
-  assert(reason == "junk reason")
-end
-
--- Test: IsDestroyableJunkItem returns false for an item that cannot be destroyed, even if it can be sold.
-do
-  local JunkFilter, spies = setupContext({ addon = { IS_RETAIL = true } })
-  spies.ItemsSpy:GetStub("IsItemDestroyable"):Returns(false)
-  spies.ItemFiltersSpy:GetStub(LAST_FILTER_NAME):Returns(JUNK, "junk reason")
-
-  local isJunk, reason = JunkFilter:IsDestroyableJunkItem({})
-
-  assert(isJunk == false)
-  assert(reason == "ITEM_CANNOT_BE_DESTROYED")
 end
