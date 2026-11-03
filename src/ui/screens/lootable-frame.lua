@@ -57,8 +57,8 @@ end
 
 Components.Root = ComponentFactory:Window({
   name = "LootableFrame",
-  width = 300,
-  height = 240,
+  width = 250,
+  height = 250,
   frameStrata = "LOW",
   isSpecialFrame = false,
   titleText = Colors.Yellow(L.LOOTABLE_ITEMS),
