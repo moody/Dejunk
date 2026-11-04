@@ -31,6 +31,15 @@ function ComponentFactory:Text(options)
   --- @type FontString?
   local fontString
   local text = options.text or ""
+  local fontObject = options.fontObject or B.FontObjects.Normal
+
+  --- Applies the justification and color, which a font object can override.
+  local function refreshFontString()
+    if not fontString then return end
+    fontString:SetJustifyH(options.justifyH or "LEFT")
+    fontString:SetJustifyV(options.justifyV or "MIDDLE")
+    fontString:SetTextColor((options.color or Colors.White):GetRGB())
+  end
 
   --- @class TextComponent : WaffleFlexComponent<FontString>
   local root = Addon.Waffle:Flex({
@@ -39,14 +48,10 @@ function ComponentFactory:Text(options)
 
     --- @param parent Frame
     frameFactory = function(parent)
-      local fontObject = options.fontObject or B.FontObjects.Normal
       local fontName = type(fontObject) == "string" and fontObject or fontObject:GetName()
 
       fontString = parent:CreateFontString(nil, "ARTWORK", fontName)
-      fontString:SetJustifyH(options.justifyH or "LEFT")
-      fontString:SetJustifyV(options.justifyV or "MIDDLE")
       fontString:SetWordWrap(Addon:IfNil(options.wordWrap, true))
-      fontString:SetTextColor((options.color or Colors.White):GetRGB())
       fontString:SetText(text)
 
       fontString:SetPropagateMouseClicks(true)
@@ -64,6 +69,8 @@ function ComponentFactory:Text(options)
         end)
       end
 
+      refreshFontString()
+
       return fontString
     end,
 
@@ -79,6 +86,19 @@ function ComponentFactory:Text(options)
       return width, fontString:GetStringHeight()
     end
   })
+
+  --- Sets the font. Does nothing if it is unchanged.
+  --- @param newFontObject Font | string
+  function root:SetFontObject(newFontObject)
+    if newFontObject == fontObject then return end
+    fontObject = newFontObject
+
+    if fontString then
+      fontString:SetFontObject(fontObject)
+      refreshFontString()
+      self:MarkDirty()
+    end
+  end
 
   --- Sets the text. Does nothing if it is unchanged.
   --- @param newText string

@@ -25,22 +25,52 @@ local MAX_LISTED_CHARACTERS = 10
 -- Local Functions
 -- ============================================================================
 
---- The tooltip lines and one-line text of each summary. They are built again whenever the summary is.
---- @type table<ProfileSummary, { lines: string[], text: string }>
-local formattedSummaries = setmetatable({}, { __mode = "k" })
+--- Returns a label and its count, such as `Inclusions: 9`, with the count in white.
+--- @param labelText string
+--- @param count integer
+--- @return string
+local function getCountText(labelText, count)
+  return labelText .. ": " .. Colors.White(count)
+end
 
---- Returns the tooltip lines for the summary, which end with the characters that use the profile, and the details as
---- one line.
+--- Returns the summary of the profile.
+--- @param profile ProfileState
+--- @return ProfileSummary
+local function getSummary(profile)
+  local characterMap = StateManager:GetStore():GetState().profiles.characterMap
+  return ProfileSummaries:Get(profile, characterMap)
+end
+
+--- Returns the summary as one line of text. On the active profile's card, `Auto Sell` is yellow and the inclusions and
+--- exclusions labels have the colors of their lists.
 --- @param summary ProfileSummary
---- @return string[] lines, string text
-local function formatSummary(summary)
+--- @param isActive boolean
+--- @return string
+local function formatSummary(summary, isActive)
   local details = {}
-  if summary.autoSell then details[#details + 1] = Colors.Yellow(L.AUTO_SELL_TEXT) end
-  details[#details + 1] = L.INCLUSIONS_TEXT .. ": " .. Colors.White(summary.numInclusions)
-  details[#details + 1] = L.EXCLUSIONS_TEXT .. ": " .. Colors.White(summary.numExclusions)
+
+  if summary.autoSell then
+    details[#details + 1] = (isActive and Colors.Yellow or Colors.Grey)(L.AUTO_SELL_TEXT)
+  end
+
+  local inclusionsText = getCountText(L.INCLUSIONS_TEXT, summary.numInclusions)
+  local exclusionsText = getCountText(L.EXCLUSIONS_TEXT, summary.numExclusions)
+  details[#details + 1] = (isActive and Colors.Red or Colors.Grey)(inclusionsText)
+  details[#details + 1] = (isActive and Colors.Green or Colors.Grey)(exclusionsText)
+
+  return table.concat(details, " · ")
+end
+
+--- Returns the tooltip lines for the profile: its details, then the characters that use it.
+--- @param profile ProfileState
+--- @return string[]
+local function getTooltipLines(profile)
+  local summary = getSummary(profile)
 
   local lines = {}
-  for _, detail in ipairs(details) do lines[#lines + 1] = detail end
+  if summary.autoSell then lines[#lines + 1] = L.AUTO_SELL_TEXT end
+  lines[#lines + 1] = getCountText(L.INCLUSIONS_TEXT, summary.numInclusions)
+  lines[#lines + 1] = getCountText(L.EXCLUSIONS_TEXT, summary.numExclusions)
 
   local characterKeys = summary.characterKeys
   if #characterKeys > 0 then
@@ -59,25 +89,7 @@ local function formatSummary(summary)
     end
   end
 
-  return lines, table.concat(details, " · ")
-end
-
---- Returns the tooltip lines that describe the profile, and the details joined in one line. Both are built again only
---- when the profile or the characters assigned to profiles change.
---- @param profile ProfileState
---- @return string[] lines, string text
-local function getProfileDetails(profile)
-  local characterMap = StateManager:GetStore():GetState().profiles.characterMap
-  local summary = ProfileSummaries:Get(profile, characterMap)
-  local formatted = formattedSummaries[summary]
-
-  if not formatted then
-    local lines, text = formatSummary(summary)
-    formatted = { lines = lines, text = text }
-    formattedSummaries[summary] = formatted
-  end
-
-  return formatted.lines, formatted.text
+  return lines
 end
 
 --- Returns `true` if the profile is the active one.
@@ -206,10 +218,7 @@ function MainWindowOptions:CreateProfilesPanel()
       return ComponentFactory:ProfileCard({
         isActive = isActiveProfile,
         isProtected = isDefaultProfile,
-        getSubtext = function(profile)
-          local _, text = getProfileDetails(profile)
-          return text
-        end,
+        getSubtext = function(profile) return formatSummary(getSummary(profile), isActiveProfile(profile)) end,
         onActivate = activateProfile,
         onRename = renameProfile,
         onDuplicate = duplicateProfile,
@@ -218,8 +227,7 @@ function MainWindowOptions:CreateProfilesPanel()
         onUpdateTooltip = function(profile, tooltip)
           tooltip:SetText(profile.name)
 
-          local lines = getProfileDetails(profile)
-          for _, line in ipairs(lines) do tooltip:AddLine(line) end
+          for _, line in ipairs(getTooltipLines(profile)) do tooltip:AddLine(line) end
 
           if not isActiveProfile(profile) then
             tooltip:AddLine(" ")

@@ -14,7 +14,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @class ProfileCardComponentOptions
 --- @field isActive fun(profile: ProfileState): boolean Whether the profile is the active one.
 --- @field isProtected fun(profile: ProfileState): boolean Whether the profile cannot be renamed or deleted.
---- @field getSubtext fun(profile: ProfileState): string Returns the small text under the name. Called every refresh.
+--- @field getSubtext fun(profile: ProfileState): string Returns the text under the name. Called when the card updates.
 --- @field onActivate fun(profile: ProfileState) Called when the card is clicked.
 --- @field onRename fun(profile: ProfileState)
 --- @field onDuplicate fun(profile: ProfileState)
@@ -36,8 +36,16 @@ function ComponentFactory:ProfileCard(options)
   local profile ---@type ProfileState?
   local isActive = false
 
-  --- Values last shown, to skip a profile that has not changed.
-  local shown = {}
+  --- What the card last showed. A changed profile is a new table, so the same table and active state need no update.
+  local shown = {
+    --- The profile, or `nil` while the card has none.
+    --- @type ProfileState?
+    profile = nil,
+
+    --- Whether the card showed it as active.
+    --- @type boolean?
+    isActive = nil
+  }
 
   --- Brightens the card while hovered, if it has a profile.
   local function refreshBackdrop()
@@ -165,7 +173,7 @@ function ComponentFactory:ProfileCard(options)
     profile = newProfile
 
     if not newProfile then
-      shown.id = nil
+      shown.profile = nil
       root:SetVisibility("INVISIBLE")
       return
     end
@@ -174,29 +182,19 @@ function ComponentFactory:ProfileCard(options)
     if not hadProfile then refreshBackdrop() end
 
     local newIsActive = options.isActive(newProfile)
-    local isProtected = options.isProtected(newProfile)
-    local subtext = options.getSubtext(newProfile)
+    if newProfile == shown.profile and newIsActive == shown.isActive then return end
 
-    local isChanged = (
-      newProfile.id ~= shown.id or
-      newProfile.name ~= shown.name or
-      subtext ~= shown.subtext or
-      newIsActive ~= shown.isActive or
-      isProtected ~= shown.isProtected
-    )
-    if not isChanged then return end
-
-    shown.id = newProfile.id
-    shown.name = newProfile.name
-    shown.subtext = subtext
+    shown.profile = newProfile
     shown.isActive = newIsActive
-    shown.isProtected = isProtected
 
     isActive = newIsActive
     refreshAccent()
 
+    nameText:SetFontObject(isActive and B.FontObjects.Medium or B.FontObjects.Normal)
     nameText:SetText((isActive and Colors.Blue or Colors.White)(newProfile.name))
-    subtextLabel:SetText(subtext)
+    subtextLabel:SetText(options.getSubtext(newProfile))
+
+    local isProtected = options.isProtected(newProfile)
 
     for _, button in ipairs({ renameButton, deleteButton }) do
       button:WhenFrameReady(function(buttonFrame)
