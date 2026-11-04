@@ -4,7 +4,7 @@ local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Popup = Addon:GetModule("Popup")
 local StateManager = Addon:GetModule("StateManager")
@@ -56,7 +56,7 @@ function Destroyer:Start()
   if Addon:IsBusy() then return end
 
   -- Get item.
-  local item = JunkFilter:GetNextDestroyableJunkItem()
+  local item = JunkItemsCache:GetNextDestroyableJunkItem()
   if not item then return Addon:Print(L.NO_JUNK_ITEMS_TO_DESTROY) end
 
   -- Handle item.

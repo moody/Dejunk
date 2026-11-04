@@ -10,7 +10,7 @@ local ActionTypes = Addon:GetModule("ActionTypes")
 ActionTypes.Global = {
   SET_AUTO_JUNK_FRAME = "global/autoJunkFrame/set",
   SET_AUTO_LOOTABLE_FRAME = "global/autoLootableFrame/set",
-  SET_CHAT_MESSAGES = "global/chatMessages/set",
+  MERGE_CHAT_MESSAGES = "global/chatMessages/merge",
   SET_ITEM_ICONS = "global/itemIcons/set",
   SET_ITEM_ICON_STYLE = "global/itemIconStyle/set",
   SET_ITEM_TOOLTIPS = "global/itemTooltips/set",
@@ -27,13 +27,11 @@ ActionTypes.Global = {
   RESET_LOOTABLE_FRAME_POINT = "global/points/lootableFrame/reset",
   RESET_MAIN_WINDOW_POINT = "global/points/mainWindow/reset",
   RESET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/reset",
-  RESET_PROFILES_FRAME_POINT = "global/points/profilesFrame/reset",
   RESET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/reset",
   SET_JUNK_FRAME_POINT = "global/points/junkFrame/set",
   SET_LOOTABLE_FRAME_POINT = "global/points/lootableFrame/set",
   SET_MAIN_WINDOW_POINT = "global/points/mainWindow/set",
   SET_MERCHANT_BUTTON_POINT = "global/points/merchantButton/set",
-  SET_PROFILES_FRAME_POINT = "global/points/profilesFrame/set",
   SET_TRANSPORT_FRAME_POINT = "global/points/transportFrame/set",
 }
 
@@ -69,6 +67,7 @@ ActionTypes.Profile = {
   MERGE_EXCLUDE_ABOVE_PRICE = "profile/excludeAbovePrice/merge",
   MERGE_EXCLUDE_EQUIPMENT_SETS = "profile/excludeEquipmentSets/merge",
   MERGE_EXCLUDE_BY_EQUIPMENT_TYPE = "profile/excludeByEquipmentType/merge",
+  MERGE_EXCLUDE_QUEST_ITEMS = "profile/excludeQuestItems/merge",
   MERGE_EXCLUDE_UNBOUND_EQUIPMENT = "profile/excludeUnboundEquipment/merge",
   MERGE_EXCLUDE_WARBAND_EQUIPMENT = "profile/excludeWarbandEquipment/merge",
 

@@ -5,10 +5,12 @@ local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local JunkFrame = Addon:GetModule("JunkFrame")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
+local LootableFrame = Addon:GetModule("LootableFrame")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
-local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -16,7 +18,8 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindow
 local MainWindow = Addon:GetModule("MainWindow")
 
-local NUM_LIST_FRAME_BUTTONS = 7
+local LIST_PANEL_CARD_COUNT = 7
+local LIST_PANEL_ICON_SIZE = 18
 
 local Components = {}
 
@@ -24,7 +27,7 @@ local Components = {}
 -- Controller
 -- ============================================================================
 
---- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILE_OPTIONS" | "KEYBINDINGS"
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS"
 
 --- @class SidebarRowOptions
 --- @field key SidebarRowKey
@@ -56,7 +59,7 @@ function Controller:AddSidebarRow(options)
     row = Components.Sidebar:AttachComponent(ComponentFactory:SelectableRow({
       labelText = options.labelText,
       onClick = function() self:SelectSidebarRow(options.key) end
-    })) --[[@as SelectableRowComponent]]
+    }))
   }
 end
 
@@ -114,7 +117,23 @@ Components.Root.TitleText = nil
 -- Title Bar Components
 -- ============================================================================
 
-Components.TitleBarNameText = Components.Root.TitleRow:AddRow()
+Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ gap = Widgets:Padding(0.5) })
+
+-- Addon icon, to the left of the name.
+Components.TitleBarNameText:AddChild({
+  width = 20,
+  height = 20,
+  shrink = 0,
+  alignSelf = "CENTER",
+
+  --- @param parent Frame
+  frameFactory = function(parent)
+    local icon = parent:CreateTexture("$parent_TitleIcon", "ARTWORK")
+    icon:SetTexture(Addon:GetAsset("dejunk-icon"))
+    return icon
+  end
+})
+
 Components.TitleBarNameText:AddChild({
   --- @param parent Frame
   frameFactory = function(parent)
@@ -186,110 +205,104 @@ Controller:AddSidebarRow({
       end)
     end)
 
-    -- Search button: clears the search and the focus.
-    Components.SearchButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
-      icon = Addon:GetAsset("search-icon"),
-      highlightColor = Colors.Blue,
+    -- Search icon at the left. It ignores the mouse.
+    Components.SearchIcon = Components.SearchBox:AddChild({
+      order = -1,
+      width = 14,
+      height = 14,
+      alignSelf = "CENTER",
+      marginLeft = Widgets:Padding(),
+
+      --- @param parent Frame
+      frameFactory = function(parent)
+        local icon = parent:CreateTexture("$parent_SearchIcon", "ARTWORK")
+        icon:SetTexture(Addon:GetAsset("search-icon"))
+        return icon
+      end
+    })
+
+    -- Clear button.
+    Components.ClearButton = Components.SearchBox:AttachComponent(ComponentFactory:IconButton({
+      icon = Addon:GetAsset("x-icon"),
+      iconSize = 10,
       onClick = function()
         Components.SearchBox:SetText("")
         Components.SearchBox.Input:GetFrame():ClearFocus()
-      end,
-      onUpdateTooltip = function(self, tooltip)
-        if not self:GetEventValue("ENABLED") then return end
-        tooltip:SetText(L.CLEAR_SEARCH)
       end
     }))
+    Components.ClearButton:SetVisibility("GONE")
 
-    -- The button follows the box. While the box is empty, the button is disabled and dimmed unless the box has
-    -- focus, and the mouse passes through it to the box.
-    Components.SearchButton:WhenFrameReady(function(button)
-      --- @cast button IconButtonWidget
-      button:PropagateWhenDisabled(true)
+    -- The clear icon is grey, and white while the button is hovered.
+    Components.ClearButton:WhenFrameReady(function(button)
+      --- Colors the icon grey, or white while hovered.
+      local function refreshIcon()
+        button.icon:SetVertexColor((button:GetEventValue("HOVERED") and Colors.White or Colors.Grey):GetRGB())
+      end
 
-      Components.SearchBox.Input:WhenFrameReady(function(editBox)
-        local box = Components.SearchBox:GetFrame() --- @type FrameWidget
+      button:OnEvent("HOVERED", refreshIcon)
+      refreshIcon()
+    end)
 
-        --- Shows the clear icon and enables the button while the box has text.
-        local function refreshText()
-          local hasText = editBox:GetText() ~= ""
-          Components.SearchButton:SetIcon(Addon:GetAsset(hasText and "ban-icon" or "search-icon"))
-          button:FireEvent("ENABLED", hasText)
+    Components.SearchBox.Input:WhenFrameReady(function(editBox)
+      --- Shows the clear button while the box has text.
+      local function refreshClearButton()
+        Components.ClearButton:SetVisibility(editBox:GetText() ~= "" and "VISIBLE" or "GONE")
+      end
+
+      editBox:HookScript("OnTextChanged", refreshClearButton)
+      refreshClearButton()
+    end)
+
+    -- The search icon follows the highlight of the box.
+    Components.SearchBox:WhenFrameReady(function(box)
+      Components.SearchIcon:WhenFrameReady(function(icon)
+        --- Colors the icon grey like the placeholder, or white while the box is highlighted.
+        local function refreshIcon()
+          icon:SetVertexColor((Components.SearchBox:IsHighlighted() and Colors.White or Colors.Grey):GetRGB())
         end
 
-        --- Dims the button while it is disabled, unless the box has focus.
-        local function refreshAlpha()
-          local isEnabled = button:GetEventValue("ENABLED")
-          button:SetAlpha((isEnabled or box:GetEventValue("FOCUSED")) and 1 or 0.4)
-        end
-
-        editBox:HookScript("OnTextChanged", refreshText)
-        button:OnEvent("ENABLED", refreshAlpha)
-        box:OnEvent("FOCUSED", refreshAlpha)
-
-        refreshText()
+        box:OnEvent("HOVERED", refreshIcon)
+        box:OnEvent("FOCUSED", refreshIcon)
+        box:OnEvent("ENABLED", refreshIcon)
+        refreshIcon()
       end)
     end)
 
     -- Divider below the search box.
     screen:AttachComponent(ComponentFactory:Divider()):SetMarginTop(Widgets:Padding(0.25))
 
+    --- Returns the text the lists are filtered by.
+    local function getSearchText() return Controller.searchText end
+
     -- Global lists row.
-    screen:AddRow({
-      gap = Widgets:Padding(0.5),
-      children = {
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_GlobalInclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.GlobalInclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        },
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_GlobalExclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.GlobalExclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        }
-      }
-    })
+    local globalRow = screen:AddRow({ gap = Widgets:Padding(0.5) })
+    globalRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.GlobalInclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
+    globalRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.GlobalExclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
 
     -- Profile lists row.
-    screen:AddRow({
-      gap = Widgets:Padding(0.5),
-      children = {
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_ProfileInclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.ProfileInclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        },
-        {
-          frameFactory = function(parent)
-            return Widgets:ListFrame({
-              parent = parent,
-              name = "$parent_ProfileExclusionsFrame",
-              numButtons = NUM_LIST_FRAME_BUTTONS,
-              list = Lists.ProfileExclusions,
-              getSearchText = function() return Controller.searchText end
-            })
-          end
-        }
-      }
-    })
+    local profileRow = screen:AddRow({ gap = Widgets:Padding(0.5) })
+    profileRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.ProfileInclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
+    profileRow:AttachComponent(ComponentFactory:ListPanel({
+      list = Lists.ProfileExclusions,
+      iconSize = LIST_PANEL_ICON_SIZE,
+      cardCount = LIST_PANEL_CARD_COUNT,
+      getSearchText = getSearchText
+    }))
   end
 })
 
@@ -303,6 +316,12 @@ Controller:AddSidebarRow({
   key = "PROFILE_OPTIONS",
   labelText = L.PROFILE_OPTIONS_TEXT,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfileOptionsPanel()) end
+})
+
+Controller:AddSidebarRow({
+  key = "PROFILES",
+  labelText = L.PROFILES,
+  createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateProfilesPanel()) end
 })
 
 Controller:AddSidebarRow({
@@ -325,56 +344,117 @@ local footerRow = Components.Root:AddRow({
   end
 })
 
--- Active profile label.
-footerRow:AddRow({ paddingLeft = Widgets:Padding() }):AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_ActiveProfileLabel", "ARTWORK", "GameFontNormal")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Grey(L.ACTIVE_PROFILE))
-    return fontString
+--- @class FooterSegmentOptions
+--- @field justify "LEFT" | "CENTER" | "RIGHT" Horizontal alignment of the text.
+--- @field getValue fun(): any Returns what the text shows. Called every tick; the text is rebuilt when it changes.
+--- @field formatText fun(value: any): string Returns the text for the value. It is grey unless it sets its own colors.
+--- @field onClick fun() Called when the segment is clicked. The segment highlights while hovered.
+--- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the segment.
+
+--- Adds a segment to the footer with one line of text, which is cut short when it does not fit.
+--- @param options FooterSegmentOptions
+local function addFooterSegment(options)
+  local segment = footerRow:AddRow({
+    alignSelf = "STRETCH",
+    paddingLeft = Widgets:Padding(),
+    paddingRight = Widgets:Padding(),
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local frame = Widgets:Frame({
+        parent = parent,
+        frameType = "Button",
+        onUpdateTooltip = options.onUpdateTooltip
+      })
+      frame:SetBackdropColor(0, 0, 0, 0)
+      frame:SetBackdropBorderColor(0, 0, 0, 0)
+
+      frame:SetScript("OnClick", options.onClick)
+
+      -- Highlight the segment while it is hovered.
+      frame:OnEvent("HOVERED", function()
+        frame:SetBackdropColor(Colors.White:GetRGBA(frame:GetEventValue("HOVERED") and 0.08 or 0))
+      end)
+
+      return frame
+    end
+  })
+
+  segment:AddChild({
+    width = "100%",
+    alignSelf = "STRETCH",
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local fontString = parent:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+      fontString:SetJustifyH(options.justify)
+      fontString:SetJustifyV("MIDDLE")
+      fontString:SetWordWrap(false)
+      fontString:SetTextColor(Colors.Grey:GetRGB())
+
+      -- The value the text currently shows.
+      local shownValue
+
+      TickerManager:NewTicker(1 / 30, function()
+        local value = options.getValue()
+        if value == shownValue then return end
+
+        shownValue = value
+        fontString:SetText(options.formatText(value))
+      end):BindFrame(fontString)
+
+      return fontString
+    end
+  })
+end
+
+-- Active profile. Clicking shows the Profiles screen.
+addFooterSegment({
+  justify = "LEFT",
+  getValue = function() return StateManager:GetProfileState().name end,
+  formatText = function(name) return Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White(name) end,
+  onClick = function() Controller:SelectSidebarRow("PROFILES") end
+})
+
+-- Junk item counts. Clicking toggles the Junk Items frame.
+addFooterSegment({
+  justify = "CENTER",
+  getValue = function() return JunkItemsCache:GetNumJunkItemsText() end,
+  formatText = function(countsText) return Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText end,
+  onClick = function() JunkFrame:Toggle() end,
+
+  --- Spells out the two counts.
+  --- @param tooltip Tooltip
+  onUpdateTooltip = function(_, tooltip)
+    local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
+    tooltip:AddLine(L.JUNK_ITEMS_COUNTS:format(Colors.White(numSellable), Colors.Red(numDestroyable)))
   end
 })
 
--- Active profile name, kept in sync with state.
-footerRow:AddRow({ justify = "CENTER" }):AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_ActiveProfileName", "ARTWORK", "GameFontNormal")
-    fontString:SetJustifyH("CENTER")
-    fontString:SetText(L.DEFAULT_PROFILE_NAME)
-    fontString:SetTextColor(Colors.Yellow:GetRGB())
+-- Lootable item count. Clicking toggles the Lootable Items frame.
+addFooterSegment({
+  justify = "RIGHT",
+  getValue = function() return LootableFrame:GetNumLootableItems() end,
 
-    TickerManager:NewTicker(1 / 30, function()
-      fontString:SetText(StateManager:GetProfileState().name)
-    end):BindFrame(fontString)
+  formatText = function(numLootable)
+    return (
+      Colors.Yellow(L.LOOTABLE_ITEMS) ..
+      Colors.Grey(" (") .. Colors.White(numLootable) .. Colors.Grey(")")
+    )
+  end,
 
-    return fontString
-  end
-})
-
--- Edit profiles button.
-footerRow:AddRow({ justify = "END" }):AddChild({
-  width = 46,
-  frameFactory = function(parent)
-    return Widgets:TitleFrameIconButton({
-      name = "$parent_EditProfilesButton",
-      texture = Addon:GetAsset("gear-icon"),
-      textureSize = 14,
-      highlightColor = Colors.Yellow,
-      onClick = function() ProfilesFrame:Toggle() end,
-      onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(L.PROFILES)
-      end
-    })
-  end
+  onClick = function() LootableFrame:Toggle() end
 })
 
 -- ============================================================================
 -- MainWindow
 -- ============================================================================
 
-function MainWindow:Show()
+--- Shows the window, on the screen of the sidebar row `key` if one is given.
+--- @param key? SidebarRowKey
+function MainWindow:Show(key)
+  if key then Controller:SelectSidebarRow(key) end
+
   Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
@@ -384,11 +464,14 @@ function MainWindow:Hide()
   Components.Root:Layout()
 end
 
-function MainWindow:Toggle()
-  if Components.Root:IsVisible() then
+--- Shows or hides the window. With a `key`, shows it on that screen or switches to it, and hides it only if it is
+--- already on that screen.
+--- @param key? SidebarRowKey
+function MainWindow:Toggle(key)
+  if Components.Root:IsVisible() and (key == nil or key == Controller.selectedRowKey) then
     self:Hide()
   else
-    self:Show()
+    self:Show(key)
   end
 end
 

@@ -34,7 +34,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   -- character's mapped profile no longer exists (e.g. a corrupted entry
   -- `StateReconciler` had to drop from `profileMap`), fall back to the
   -- default profile and fix the character's own mapping too, so this
-  -- doesn't recur next login.
+  -- does not recur next login.
   local characterKey = Addon:GetCharacterKey()
   local activeProfileId = initialState.profiles.characterMap[characterKey]
   if activeProfileId ~= nil
@@ -129,16 +129,21 @@ do
   end
 end
 
---- Creates a new profile and immediately activates it.
+--- Creates a new profile, copied from `sourceProfileId` if given, and immediately activates it.
 ---@param profileName? string
-function StateManager:CreateNewProfile(profileName)
+---@param sourceProfileId? string
+function StateManager:CreateNewProfile(profileName, sourceProfileId)
   local profileId = Addon:GetShortUID()
   local characterKey = Addon:GetCharacterKey()
   profileName = profileName or characterKey
   _Store:Dispatch({
     type = Wux.ActionTypes.Batch,
     payload = {
-      ActionCreators.Profiles.createProfile({ profileId = profileId, profileName = profileName }),
+      ActionCreators.Profiles.createProfile({
+        profileId = profileId,
+        profileName = profileName,
+        sourceProfileId = sourceProfileId
+      }),
       ActionCreators.Profiles.assignProfile({ profileId = profileId, characterKey = characterKey })
     }
   })
@@ -149,7 +154,7 @@ end
 -- ============================================================================
 
 local function onActiveProfileChanged()
-  Addon:Print(L.ACTIVE_PROFILE, Colors.Yellow(StateManager:GetProfileState().name))
+  Addon:Print(Colors.Yellow(L.ACTIVE_PROFILE), Colors.White(StateManager:GetProfileState().name))
 end
 
 EventManager:Once(E.StoreCreated, onActiveProfileChanged)

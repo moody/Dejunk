@@ -7,7 +7,6 @@ local JunkFrame = Addon:GetModule("JunkFrame")
 local L = Addon:GetModule("Locale")
 local LootableFrame = Addon:GetModule("LootableFrame")
 local MainWindow = Addon:GetModule("MainWindow")
-local ProfilesFrame = Addon:GetModule("ProfilesFrame")
 local Seller = Addon:GetModule("Seller")
 
 --- @class Commands
@@ -77,9 +76,9 @@ function Commands.loot()
   LootableFrame:Toggle()
 end
 
---- Toggles the `ProfilesFrame`.
+--- Toggles the `MainWindow` on the profiles screen.
 function Commands.profiles()
-  ProfilesFrame:Toggle()
+  MainWindow:Toggle("PROFILES")
 end
 
 --- Starts the `Seller`.

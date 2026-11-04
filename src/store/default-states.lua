@@ -5,7 +5,7 @@ local L = Addon:GetModule("Locale")
 local DefaultStates = Addon:GetModule("DefaultStates")
 
 --- Bump whenever a state change requires a migration.
-DefaultStates.CURRENT_VERSION = 2
+DefaultStates.CURRENT_VERSION = 3
 
 DefaultStates.DEFAULT_PROFILE_ID = "DEFAULT_PROFILE"
 
@@ -28,6 +28,14 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field uncommon boolean
 --- @field rare boolean
 --- @field epic boolean
+
+--- How much the addon prints to chat. `REDUCED` prints only the main messages, and `VERBOSE` also prints details.
+--- @alias ChatMessageDetail "REDUCED" | "VERBOSE"
+
+--- The addon's chat messages. They can be turned on or off, and have a level of detail.
+--- @class ChatMessagesState
+--- @field enabled boolean
+--- @field detail ChatMessageDetail
 
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
@@ -60,7 +68,8 @@ DefaultStates.UNBOUND_KEY = ""
 DefaultStates.Global = {
   autoJunkFrame = false,
   autoLootableFrame = false,
-  chatMessages = true,
+  --- @type ChatMessagesState
+  chatMessages = { enabled = true, detail = "REDUCED" },
   itemIcons = false,
   --- @type ItemIconStyle
   itemIconStyle = "SMALL",
@@ -84,14 +93,10 @@ DefaultStates.Global = {
     toggleLootableFrame = DefaultStates.UNBOUND_KEY,
     startSelling = DefaultStates.UNBOUND_KEY,
     destroyNextItem = DefaultStates.UNBOUND_KEY,
-    addToProfileInclusions = DefaultStates.UNBOUND_KEY,
-    removeFromProfileInclusions = DefaultStates.UNBOUND_KEY,
-    addToProfileExclusions = DefaultStates.UNBOUND_KEY,
-    removeFromProfileExclusions = DefaultStates.UNBOUND_KEY,
-    addToGlobalInclusions = DefaultStates.UNBOUND_KEY,
-    removeFromGlobalInclusions = DefaultStates.UNBOUND_KEY,
-    addToGlobalExclusions = DefaultStates.UNBOUND_KEY,
-    removeFromGlobalExclusions = DefaultStates.UNBOUND_KEY
+    addOrRemoveProfileInclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveProfileExclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveGlobalInclusions = DefaultStates.UNBOUND_KEY,
+    addOrRemoveGlobalExclusions = DefaultStates.UNBOUND_KEY
   },
 
   points = {
@@ -99,7 +104,6 @@ DefaultStates.Global = {
     junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     lootableFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-    profilesFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
   }
 }
@@ -160,6 +164,8 @@ DefaultStates.Profile = {
     },
     --- @type FilterOptionState
     excludeEquipmentSets = { enabled = true, scope = "BOTH" },
+    --- @type FilterOptionState
+    excludeQuestItems = { enabled = true, scope = "BOTH" },
     --- @type QualitiesOptionState
     excludeUnboundEquipment = {
       enabled = false,

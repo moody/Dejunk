@@ -18,7 +18,7 @@ local QUALITIES = {
 -- =============================================================================
 
 --- @class QualityTogglesComponentOptions
---- @field get fun(quality: ItemQualityKey): boolean Returns whether `quality` is selected.
+--- @field get fun(quality: ItemQualityKey): boolean Returns `true` if `quality` is selected.
 --- @field set fun(quality: ItemQualityKey, value: boolean) Called with the new value when a quality is clicked.
 
 -- =============================================================================

@@ -69,12 +69,11 @@ end
 --- Attaches a number input to the line, passing the mouse through while disabled.
 --- @param line WaffleFlexComponent
 --- @param options NumberInputComponentOptions
---- @return WaffleFlexComponent input
+--- @return NumberInputComponent input
 local function attachNumberInput(line, options)
   local input = line:AttachComponent(ComponentFactory:NumberInput(options))
 
   input:WhenFrameReady(function(frame)
-    --- @cast frame NumberInputWidget
     frame:PropagateWhenDisabled(true)
   end)
 
@@ -122,7 +121,6 @@ local function addPriceLine(self, getState, mergeAction)
 
     -- Tab and Shift+Tab move between the inputs.
     input:WhenFrameReady(function(frame)
-      --- @cast frame NumberInputWidget
       editBoxes[index] = frame
       frame:SetScript("OnTabPressed", function()
         local step = IsShiftKeyDown() and -1 or 1
@@ -293,8 +291,9 @@ local groupedContainers = setmetatable({}, { __mode = "k" })
 --- unless it is the first group.
 --- @param container WaffleFlexComponent
 --- @param headingText string
+--- @param descriptionText? string Small grey text below the heading.
 --- @return OptionsBuilderGroup group
-function OptionsBuilder:AddGroup(container, headingText)
+function OptionsBuilder:AddGroup(container, headingText, descriptionText)
   if groupedContainers[container] then
     local divider = container:AttachComponent(ComponentFactory:Divider())
     divider:SetMarginTop(Widgets:Padding())
@@ -310,6 +309,14 @@ function OptionsBuilder:AddGroup(container, headingText)
   }))
 
   group:AttachComponent(ComponentFactory:Text({ text = headingText, fontObject = "GameFontNormalLarge" }))
+
+  if descriptionText then
+    group:AttachComponent(ComponentFactory:Text({
+      text = descriptionText,
+      fontObject = "GameFontNormalSmall",
+      color = Colors.Grey
+    }))
+  end
 
   --- Adds an option card to the group.
   --- @param options OptionsBuilderCardOptions

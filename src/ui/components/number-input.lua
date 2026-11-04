@@ -25,9 +25,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- Creates an edit box for a whole number. Escape, or leaving it empty,
 --- restores the current value.
 --- @param options NumberInputComponentOptions
---- @return WaffleFlexComponent root
+--- @return NumberInputComponent root
 function ComponentFactory:NumberInput(options)
-  return Addon.Waffle:Flex({
+  --- @class NumberInputComponent : WaffleFlexComponent<NumberInputWidget>
+  local root = Addon.Waffle:Flex({
     width = options.width or 80,
     height = "AUTO",
 
@@ -59,14 +60,14 @@ function ComponentFactory:NumberInput(options)
       editBox:SetScript("OnEnterPressed", editBox.ClearFocus)
       editBox:SetScript("OnHide", editBox.ClearFocus)
       editBox:SetScript("OnEscapePressed", function(self)
-        self:SetText(tostring(options.get()))
+        self:SetText(options.get())
         self:ClearFocus()
       end)
 
       --- Shows the current value, unless the box has focus.
       local function refreshText()
         if editBox:GetEventValue("FOCUSED") then return end
-        editBox:SetText(tostring(options.get()))
+        editBox:SetText(options.get())
       end
 
       --- Brightens the border while hovered or focused. Hover is ignored while disabled.
@@ -101,4 +102,6 @@ function ComponentFactory:NumberInput(options)
       return width, fontHeight + Widgets.CONTROL_PADDING * 2
     end
   })
+
+  return root
 end

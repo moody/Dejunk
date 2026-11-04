@@ -37,18 +37,18 @@ BindingFrame:SetPoint("CENTER")
 -- Local Functions
 -- ============================================================================
 
---- Adds the item shown in the game tooltip to a list.
+--- Adds the item shown in the game tooltip to a list, or removes it if it is already on the list.
 --- @param listKey ListKey
-local function addToList(listKey)
+local function addOrRemoveTooltipItem(listKey)
   local itemId = B.Tooltip:GetItemId()
-  if itemId then Lists[listKey]:Add(itemId) end
-end
+  if not itemId then return end
 
---- Removes the item shown in the game tooltip from a list.
---- @param listKey ListKey
-local function removeFromList(listKey)
-  local itemId = B.Tooltip:GetItemId()
-  if itemId then Lists[listKey]:Remove(itemId) end
+  local list = Lists[listKey]
+  if list:Contains(itemId) then
+    list:Remove(itemId)
+  else
+    list:Add(itemId)
+  end
 end
 
 --- Runs each binding's command. Mirrors the keys of `DefaultStates.Global.keybindings`.
@@ -59,14 +59,10 @@ local handlers = {
   toggleLootableFrame = Commands.loot,
   startSelling = Commands.sell,
   destroyNextItem = Commands.destroy,
-  addToProfileInclusions = function() addToList("ProfileInclusions") end,
-  removeFromProfileInclusions = function() removeFromList("ProfileInclusions") end,
-  addToProfileExclusions = function() addToList("ProfileExclusions") end,
-  removeFromProfileExclusions = function() removeFromList("ProfileExclusions") end,
-  addToGlobalInclusions = function() addToList("GlobalInclusions") end,
-  removeFromGlobalInclusions = function() removeFromList("GlobalInclusions") end,
-  addToGlobalExclusions = function() addToList("GlobalExclusions") end,
-  removeFromGlobalExclusions = function() removeFromList("GlobalExclusions") end
+  addOrRemoveProfileInclusions = function() addOrRemoveTooltipItem("ProfileInclusions") end,
+  addOrRemoveProfileExclusions = function() addOrRemoveTooltipItem("ProfileExclusions") end,
+  addOrRemoveGlobalInclusions = function() addOrRemoveTooltipItem("GlobalInclusions") end,
+  addOrRemoveGlobalExclusions = function() addOrRemoveTooltipItem("GlobalExclusions") end
 }
 
 --- Returns the hidden button for a binding, creating it if needed.

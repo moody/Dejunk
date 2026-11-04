@@ -7,11 +7,13 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
 local Items = Addon:GetModule("Items")
+local ItemTooltip = Addon:GetModule("ItemTooltip")
 local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
+local MainWindow = Addon:GetModule("MainWindow")
 local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -29,9 +31,12 @@ local wasAutoShown = false
 
 local junkItems = {}
 
+-- The counts text that the title currently shows.
+local titleCountsText
+
 -- Refresh components based on junk item data.
 local function refreshComponents()
-  JunkFilter:GetJunkItems(junkItems)
+  JunkItemsCache:GetJunkItems(junkItems)
 
   -- Auto Junk Frame.
   if wasAutoShown and StateManager:GetGlobalState().autoJunkFrame and #junkItems == 0 then
@@ -40,30 +45,35 @@ local function refreshComponents()
     return
   end
 
-  Components.Root.TitleText:GetFrame():SetText(
-    Colors.Yellow(("%s (%s)"):format(L.JUNK_ITEMS, Colors.White(#junkItems)))
-  )
+  local countsText = JunkItemsCache:GetNumJunkItemsText()
+  if countsText ~= titleCountsText then
+    titleCountsText = countsText
+    Components.Root.TitleText:GetFrame():SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
+  end
 
   local totalJunkValue = 0
   for _, item in pairs(junkItems) do
     totalJunkValue = totalJunkValue + (item.noValue and 0 or (item.price * item.quantity))
   end
-  Components.ItemsFrame:GetFrame().title:SetText(Colors.White(GetCoinTextureString(totalJunkValue)))
+  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(totalJunkValue)))
 
   if Addon:IsBusy() then
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", false)
   else
-    local isAtMerchant = Addon:IsAtMerchant()
-    local canSell, canDestroy = false, false
-    for _, item in ipairs(junkItems) do
-      if (not isAtMerchant or canSell) and canDestroy then break end
-      canSell = canSell or (isAtMerchant and JunkFilter:IsSellableJunkItem(item))
-      canDestroy = canDestroy or JunkFilter:IsDestroyableJunkItem(item)
-    end
+    local canSell = Addon:IsAtMerchant() and JunkItemsCache:GetNextSellableJunkItem() ~= nil
+    local canDestroy = JunkItemsCache:GetNextDestroyableJunkItem() ~= nil
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", canSell)
     Components.DestroyNextItemButton:GetFrame():FireEvent("ENABLED", canDestroy)
   end
+end
+
+--- Returns the reason the item cannot be sold, junk or not, or `nil` if it can be.
+--- @param item BagItem
+--- @return string? reason
+local function getCannotSellReason(item)
+  if not Items:IsItemSellable(item) then return L.ITEM_CANNOT_BE_SOLD end
+  return JunkFilter:GetSellBlockReason(item)
 end
 
 -- ============================================================================
@@ -72,14 +82,23 @@ end
 
 Components.Root = ComponentFactory:Window({
   name = "JunkFrame",
-  width = 325,
-  height = 375,
+  width = 350,
+  height = 400,
   titleText = Colors.Yellow(L.JUNK_ITEMS),
   getPoint = function() return StateManager:GetGlobalState().points.junkFrame end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.junkFrame.set(point)) end,
   onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.junkFrame.reset()) end,
   refresh = refreshComponents
 })
+
+-- Settings button, left of the close button. Toggles the main window on the profile options.
+Components.SettingsButton = Components.Root.TitleRow:AttachComponent(ComponentFactory:IconButton({
+  icon = Addon:GetAsset("gear-icon"),
+  highlightColor = Colors.Blue,
+  onClick = function() MainWindow:Toggle("PROFILE_OPTIONS") end
+}))
+-- Moves the close button after the settings button.
+Components.Root.CloseButton:SetOrder(1)
 
 -- ============================================================================
 -- Content Components
@@ -91,73 +110,129 @@ Components.Content = Components.Root:AddChild({
   gap = Widgets:Padding(0.5),
 })
 
-Components.ItemsFrame = Components.Content:AddChild({
-  frameFactory = function()
-    local itemsFrame = Widgets:ItemsFrame({
-      name = "$parent_ItemsFrame",
-      displayPrice = true,
-      titleText = Colors.White(L.JUNK_ITEMS),
-      onUpdateTooltip = function(self, tooltip)
-        tooltip:SetText(L.JUNK_ITEMS)
-        tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
-          Lists.ProfileInclusions.name,
-          Lists.GlobalInclusions.name,
-          Colors.White(B.Strings.SHIFT_KEY_TEXT)
-        ))
-        tooltip:AddLine(" ")
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
-          L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
-        )
-        tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
-          L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
-        )
-      end,
-      itemButtonOnUpdateTooltip = function(self, tooltip)
-        tooltip:SetOwner(self, "ANCHOR_RIGHT")
-        tooltip:SetBagItem(self.item.bag, self.item.slot)
-        tooltip:AddLine(" ")
-        if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
-          tooltip:AddDoubleLine(L.LEFT_CLICK, L.SELL)
+-- Title bar shows the total value. Ctrl+Alt+Right-click on it adds every junk item to an Exclusions list.
+Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:TitledPanel({
+  titleText = Colors.White(L.JUNK_ITEMS),
+
+  onUpdateTooltip = function(_, tooltip)
+    tooltip:SetText(L.JUNK_ITEMS)
+    tooltip:AddLine(L.JUNK_FRAME_TOOLTIP:format(
+      Lists.ProfileInclusions.name,
+      Lists.GlobalInclusions.name,
+      Colors.White(B.Strings.SHIFT_KEY_TEXT)
+    ))
+    tooltip:AddLine(" ")
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK),
+      L.ADD_ALL_TO_LIST:format(Lists.ProfileExclusions.name)
+    )
+    tooltip:AddDoubleLine(
+      Addon:Concat("+", B.Strings.CTRL_KEY_TEXT, B.Strings.ALT_KEY_TEXT, B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+      L.ADD_ALL_TO_LIST:format(Lists.GlobalExclusions.name)
+    )
+  end,
+
+  onClick = function(button)
+    if button == "RightButton" and IsControlKeyDown() and IsAltKeyDown() then
+      local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+      for _, item in pairs(junkItems) do list:Add(item.id) end
+    end
+  end
+}))
+
+Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
+  cardCount = 7,
+  getItems = function() return junkItems end,
+
+  -- The stack price, or why there is none.
+  getItemSubtext = function(item)
+    if Items:IsItemLocked(item) then return Colors.Grey(L.ITEM_IS_LOCKED) end
+    if item.noValue then return Colors.Grey(B.Strings.NO_SELL_PRICE_TEXT) end
+    return Colors.White(B.Money:GetCoinText(item.price * item.quantity))
+  end,
+
+  isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
+  iconButtons = {
+    -- Sell button.
+    {
+      icon = Addon:GetAsset("coins-icon"),
+      highlightColor = Colors.Yellow,
+      isActive = function(item) return Addon:IsAtMerchant() and getCannotSellReason(item) == nil end,
+      onClick = function(item) Seller:HandleItem(item) end,
+      onUpdateTooltip = function(item, tooltip)
+        local cannotSellReason = getCannotSellReason(item)
+        local isJunk, reason = false, cannotSellReason
+        if not cannotSellReason then isJunk, reason = JunkItemsCache:IsSellableJunkItem(item) end
+
+        tooltip:SetText(L.SELL)
+        if not Items:IsItemSellable(item) then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM))
+        elseif not Addon:IsAtMerchant() then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_WITHOUT_MERCHANT))
+        elseif cannotSellReason then
+          tooltip:AddLine(Colors.Grey(L.CANNOT_SELL_THIS_ITEM_NOW))
+        else
+          tooltip:AddLine(Colors.Gold(L.CLICK_TO_SELL_MANUALLY))
         end
-        tooltip:AddDoubleLine(L.RIGHT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
+
+        local heading, reasonLine = ItemTooltip:GetSellLines(isJunk, reason)
+        tooltip:AddLine(" ")
+        tooltip:AddLine(heading)
+        tooltip:AddLine(reasonLine)
+      end
+    },
+    -- Exclude button.
+    {
+      icon = Addon:GetAsset("ban-icon"),
+      highlightColor = Colors.Green,
+      onClick = function(item)
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+        list:Add(item.id)
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.EXCLUDE)
+        tooltip:AddDoubleLine(L.LEFT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
         tooltip:AddDoubleLine(
-          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.RIGHT_CLICK),
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.LEFT_CLICK),
           L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
         )
-        tooltip:AddDoubleLine(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY))
-      end,
-      itemButtonOnClick = function(self, button)
-        if button == "LeftButton" then
-          if Addon:IsAtMerchant() and Items:IsItemSellable(self.item) then
-            Seller:HandleItem(self.item)
-          end
-        end
-
-        if button == "RightButton" then
-          if IsAltKeyDown() then
-            Destroyer:HandleItem(self.item)
-          else
-            local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-            list:Add(self.item.id)
-          end
-        end
-      end,
-      getItems = function() return junkItems end,
-      addItem = function(itemId)
-        local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.ProfileInclusions
-        list:Add(itemId)
-      end,
-      removeAllItems = function()
-        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
-        for _, item in pairs(junkItems) do list:Add(item.id) end
       end
-    })
+    },
+    -- Destroy button.
+    {
+      icon = Addon:GetAsset("trash-icon"),
+      highlightColor = Colors.Red,
+      isActive = function(item) return Items:IsItemDestroyable(item) end,
+      onClick = function(item) Destroyer:HandleItem(item) end,
+      onUpdateTooltip = function(item, tooltip)
+        local isDestroyable = Items:IsItemDestroyable(item)
+        local isJunk, reason = false, L.ITEM_CANNOT_BE_DESTROYED
+        if isDestroyable then isJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item) end
 
-    return itemsFrame
+        tooltip:SetText(L.DESTROY)
+        if isDestroyable then
+          tooltip:AddLine(Colors.Gold(L.CLICK_TO_DESTROY_MANUALLY))
+        else
+          tooltip:AddLine(Colors.Grey(L.CANNOT_DESTROY_THIS_ITEM))
+        end
+
+        local heading, reasonLine = ItemTooltip:GetDestroyLines(isJunk, reason)
+        tooltip:AddLine(" ")
+        tooltip:AddLine(heading)
+        tooltip:AddLine(reasonLine)
+      end
+    }
+  },
+
+  onUpdateItemTooltip = function(item, tooltip)
+    tooltip:SetBagItem(item.bag, item.slot)
+  end,
+
+  addItem = function(itemId)
+    local list = IsShiftKeyDown() and Lists.GlobalInclusions or Lists.ProfileInclusions
+    list:Add(itemId)
   end
-})
+}))
 
 Components.ButtonRow = Components.Content:AddRow({
   maxHeight = 30,
@@ -184,7 +259,7 @@ Components.DestroyNextItemButton = Components.ButtonRow:AddChild({
       onClick = Commands.destroy,
       onUpdateTooltip = function(self, tooltip)
         tooltip:SetOwner(self, "ANCHOR_RIGHT")
-        local item = JunkFilter:GetNextDestroyableJunkItem()
+        local item = JunkItemsCache:GetNextDestroyableJunkItem()
         if item then
           tooltip:SetBagItem(item.bag, item.slot)
         end
@@ -226,7 +301,7 @@ Addon:GetModule("TickerManager"):NewTicker(1 / 30, function()
   end
 
   if not (wasAutoShown or Components.Root:IsVisible()) then
-    JunkFilter:GetJunkItems(junkItems)
+    JunkItemsCache:GetJunkItems(junkItems)
     if #junkItems > 0 then
       wasAutoShown = true
       JunkFrame:Show()

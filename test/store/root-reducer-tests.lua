@@ -86,7 +86,7 @@ do
   local afterProfileAction = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
   assert(afterProfileAction.global == state.global)
 
-  local afterGlobalAction = reducer(state, ActionCreators.Global.setChatMessages(false))
+  local afterGlobalAction = reducer(state, ActionCreators.Global.mergeChatMessages({ enabled = false }))
   assert(afterGlobalAction.profiles == state.profiles)
 end
 
@@ -100,7 +100,8 @@ local POINT = { point = "point", relativePoint = "relativePoint", offsetX = 1, o
 local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoJunkFrame(true), path = "global.autoJunkFrame", expected = true },
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
-  { action = ActionCreators.Global.setChatMessages(false), path = "global.chatMessages", expected = false },
+  { action = ActionCreators.Global.mergeChatMessages({ enabled = false }), path = "global.chatMessages.enabled", expected = false },
+  { action = ActionCreators.Global.mergeChatMessages({ detail = "VERBOSE" }), path = "global.chatMessages.detail", expected = "VERBOSE" },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
   { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },
@@ -116,7 +117,6 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.points.lootableFrame.set(POINT), path = "global.points.lootableFrame", expected = POINT },
   { action = ActionCreators.Global.points.transportFrame.set(POINT), path = "global.points.transportFrame", expected = POINT },
   { action = ActionCreators.Global.points.merchantButton.set(POINT), path = "global.points.merchantButton", expected = POINT },
-  { action = ActionCreators.Global.points.profilesFrame.set(POINT), path = "global.points.profilesFrame", expected = POINT },
 }
 
 -- Test: each `global` action changes only its own field.
@@ -176,6 +176,43 @@ do
   assert(profile.name == PROFILE_NAME)
   assert(Matchers:IsDeepEqual(profile.settings, DefaultStates.Profile.settings))
   assert(nextState.profiles.activeProfileId == DefaultStates.DEFAULT_PROFILE_ID)
+end
+
+-- Test: `CREATE_PROFILE` with a source profile copies its settings under the new id and name.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+  state.profiles.profileMap[PROFILE_ID].settings.autoSell = true
+  state.profiles.profileMap[PROFILE_ID].settings.inclusions[123] = true
+
+  local nextState = reducer(state, ActionCreators.Profiles.createProfile({
+    profileId = "copy",
+    profileName = "Copy",
+    sourceProfileId = PROFILE_ID
+  }))
+
+  local copy = nextState.profiles.profileMap.copy
+  assert(copy.id == "copy")
+  assert(copy.name == "Copy")
+  assert(Matchers:IsDeepEqual(copy.settings, state.profiles.profileMap[PROFILE_ID].settings))
+end
+
+-- Test: `CREATE_PROFILE` with a source profile shares no tables with it.
+do
+  local state = reducer(nil, TEST_ACTION)
+  state = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
+
+  local nextState = reducer(state, ActionCreators.Profiles.createProfile({
+    profileId = "copy",
+    profileName = "Copy",
+    sourceProfileId = PROFILE_ID
+  }))
+
+  local source = nextState.profiles.profileMap[PROFILE_ID]
+  local copy = nextState.profiles.profileMap.copy
+  assert(copy.settings ~= source.settings)
+  assert(copy.settings.inclusions ~= source.settings.inclusions)
+  assert(copy.settings.includeByQuality ~= source.settings.includeByQuality)
 end
 
 -- Test: `CREATE_PROFILE` does not mutate the shared `DefaultStates` templates.
@@ -325,6 +362,8 @@ local PROFILE_ROWS = {
   { action = ActionCreators.Profile.mergeExcludeEquipmentSets({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeEquipmentSets.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.enabled", expected = true },
   { action = ActionCreators.Profile.mergeExcludeByEquipmentType({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeByEquipmentType.scope", expected = "SELL" },
+  { action = ActionCreators.Profile.mergeExcludeQuestItems({ enabled = false }), path = PROFILE_PATH .. ".settings.excludeQuestItems.enabled", expected = false },
+  { action = ActionCreators.Profile.mergeExcludeQuestItems({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeQuestItems.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.enabled", expected = true },
   { action = ActionCreators.Profile.mergeExcludeUnboundEquipment({ scope = "SELL" }), path = PROFILE_PATH .. ".settings.excludeUnboundEquipment.scope", expected = "SELL" },
   { action = ActionCreators.Profile.mergeExcludeWarbandEquipment({ enabled = true }), path = PROFILE_PATH .. ".settings.excludeWarbandEquipment.enabled", expected = true },

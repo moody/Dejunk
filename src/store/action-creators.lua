@@ -12,6 +12,7 @@ local ActionCreators = Addon:GetModule("ActionCreators")
 --- @class CreateProfilePayload
 --- @field profileId string
 --- @field profileName string
+--- @field sourceProfileId? string Profile to copy, lists included. Starts from the default settings if omitted.
 
 --- @class AssignProfilePayload
 --- @field characterKey string
@@ -40,9 +41,9 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setAutoLootableFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME),
 
-  --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
-  --- @type WuxActionCreator<boolean>
-  setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES),
+  --- Action creator for `ActionTypes.Global.MERGE_CHAT_MESSAGES`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeChatMessages = Wux:CreateActionCreator(ActionTypes.Global.MERGE_CHAT_MESSAGES),
 
   --- Action creator for `ActionTypes.Global.SET_ITEM_ICONS`.
   --- @type WuxActionCreator<boolean>
@@ -133,16 +134,6 @@ ActionCreators.Global = {
       --- Action creator for `ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT`.
       --- @type fun(): WuxAction
       reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT)
-    },
-
-    profilesFrame = {
-      --- Action creator for `ActionTypes.Global.SET_PROFILES_FRAME_POINT`.
-      --- @type WuxActionCreator<table>
-      set = Wux:CreateActionCreator(ActionTypes.Global.SET_PROFILES_FRAME_POINT),
-
-      --- Action creator for `ActionTypes.Global.RESET_PROFILES_FRAME_POINT`.
-      --- @type fun(): WuxAction
-      reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_PROFILES_FRAME_POINT)
     }
   }
 }
@@ -205,6 +196,10 @@ ActionCreators.Profile = {
   --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS`.
   --- @type WuxActionCreator<table<string, any>>
   mergeExcludeEquipmentSets = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS),
+
+  --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_QUEST_ITEMS`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeExcludeQuestItems = Wux:CreateActionCreator(ActionTypes.Profile.MERGE_EXCLUDE_QUEST_ITEMS),
 
   --- Action creator for `ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT`.
   --- @type WuxActionCreator<table<string, any>>

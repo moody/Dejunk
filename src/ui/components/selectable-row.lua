@@ -39,7 +39,7 @@ function ComponentFactory:SelectableRow(options)
     end
   end
 
-  --- @class SelectableRowComponent : WaffleFlexComponent
+  --- @class SelectableRowComponent : WaffleFlexComponent<SelectableRowWidget>
   root = Addon.Waffle:Flex({
     height = "AUTO",
 

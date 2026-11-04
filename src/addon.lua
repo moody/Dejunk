@@ -149,7 +149,7 @@ function Addon:IsAtMerchant()
   return (MerchantFrame and MerchantFrame:IsShown()) or false
 end
 
--- Addon:ForcePrint(), Addon:Print(), Addon:Debug()
+-- Addon:ForcePrint(), Addon:Print(), Addon:PrintVerbose(), Addon:Debug()
 do
   local Colors = Addon:GetModule("Colors")
   local StateManager = Addon:GetModule("StateManager")
@@ -163,9 +163,15 @@ do
   --- Prints the given arguments if chat messages are enabled.
   --- @param ... any
   function Addon:Print(...)
-    if StateManager:GetGlobalState().chatMessages then
+    if StateManager:GetGlobalState().chatMessages.enabled then
       print(Colors.Blue("[" .. ADDON_NAME .. "]"), ...)
     end
+  end
+
+  --- Prints the given arguments if chat messages are enabled and their detail is `VERBOSE`.
+  --- @param ... any
+  function Addon:PrintVerbose(...)
+    if StateManager:GetGlobalState().chatMessages.detail == "VERBOSE" then self:Print(...) end
   end
 
   --- Prints the given arguments with debug formatting.

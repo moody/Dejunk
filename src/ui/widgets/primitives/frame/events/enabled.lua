@@ -37,14 +37,14 @@ end
 -- Local Functions
 -- =============================================================================
 
---- Returns whether the frame's type has a `SetEnabled`.
+--- Returns `true` if the frame's type has a `SetEnabled`.
 --- @param frame FrameWidget
 --- @return boolean
 local function hasNativeEnabled(frame)
   return frame.SetEnabled ~= nil
 end
 
---- Returns whether the frame and all of its ancestors are enabled.
+--- Returns `true` if the frame and all of its ancestors are enabled.
 --- @param frame FrameWidget
 --- @return boolean
 local function isEffectivelyEnabled(frame)

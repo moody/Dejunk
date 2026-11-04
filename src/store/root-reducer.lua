@@ -49,6 +49,7 @@ local profileReducer = Wux:CombineReducers({
     excludeAbovePrice = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_ABOVE_PRICE, DefaultStates.Profile.settings.excludeAbovePrice),
     excludeEquipmentSets = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_EQUIPMENT_SETS, DefaultStates.Profile.settings.excludeEquipmentSets),
     excludeByEquipmentType = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_BY_EQUIPMENT_TYPE, DefaultStates.Profile.settings.excludeByEquipmentType),
+    excludeQuestItems = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_QUEST_ITEMS, DefaultStates.Profile.settings.excludeQuestItems),
     excludeUnboundEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_UNBOUND_EQUIPMENT, DefaultStates.Profile.settings.excludeUnboundEquipment),
     excludeWarbandEquipment = Wux:CreateMergeReducer(ActionTypes.Profile.MERGE_EXCLUDE_WARBAND_EQUIPMENT, DefaultStates.Profile.settings.excludeWarbandEquipment),
 
@@ -80,7 +81,7 @@ function RootReducer:Build()
     global = Wux:CombineReducers({
       autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_JUNK_FRAME, DefaultStates.Global.autoJunkFrame),
       autoLootableFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME, DefaultStates.Global.autoLootableFrame),
-      chatMessages = Wux:CreatePayloadReducer(ActionTypes.Global.SET_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
+      chatMessages = Wux:CreateMergeReducer(ActionTypes.Global.MERGE_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
       itemIcons = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICONS, DefaultStates.Global.itemIcons),
       itemIconStyle = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICON_STYLE, DefaultStates.Global.itemIconStyle),
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
@@ -123,12 +124,6 @@ function RootReducer:Build()
           ActionTypes.Global.SET_MERCHANT_BUTTON_POINT,
           ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT,
           DefaultStates.Global.points.merchantButton
-        ),
-
-        profilesFrame = createPointsReducer(
-          ActionTypes.Global.SET_PROFILES_FRAME_POINT,
-          ActionTypes.Global.RESET_PROFILES_FRAME_POINT,
-          DefaultStates.Global.points.profilesFrame
         )
       })
     }),
@@ -149,7 +144,8 @@ function RootReducer:Build()
       if action.type == ActionTypes.Profiles.CREATE_PROFILE then
         --- @cast action WuxPayloadAction<CreateProfilePayload>
         state = Wux:ShallowCopy(state)
-        local profile = Wux:DeepCopy(DefaultStates.Profile)
+        local source = action.payload.sourceProfileId and state.profileMap[action.payload.sourceProfileId]
+        local profile = Wux:DeepCopy(source or DefaultStates.Profile)
         profile.id = action.payload.profileId
         profile.name = action.payload.profileName
         state.profileMap = Wux:ShallowCopy(state.profileMap)
@@ -190,8 +186,8 @@ function RootReducer:Build()
       end
 
       -- Reset profile action: replaces its settings with a deep copy of the
-      -- defaults, keeping its own id/name. A no-op if the profile isn't
-      -- persisted yet, since it's already at the defaults.
+      -- defaults, keeping its own id/name. A no-op if the profile is not
+      -- persisted yet, since it is already at the defaults.
       if action.type == ActionTypes.Profiles.RESET_PROFILE then
         --- @cast action WuxPayloadAction<ResetProfilePayload>
         local existing = state.profileMap[action.payload.profileId]
@@ -218,7 +214,7 @@ function RootReducer:Build()
       -- result back into `profileMap` only if something changed. The
       -- default profile is created eagerly by `StateReconciler` before this
       -- ever runs, so it needs no special-casing here; a missing active
-      -- profile id (e.g. a stale reference `state-manager.lua` hasn't
+      -- profile id (e.g. a stale reference `state-manager.lua` has not
       -- redirected yet) just stays a no-op instead of materializing a
       -- phantom profile under it.
       local profileState = state.profileMap[state.activeProfileId]

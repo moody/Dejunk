@@ -8,114 +8,32 @@ local StateManager = Addon:GetModule("StateManager")
 local JunkFilter = Addon:GetModule("JunkFilter")
 
 -- ============================================================================
--- Local Functions
--- ============================================================================
-
---- Comparison function for sorting items by price, quality, and name.
---- @param a BagItem
---- @param b BagItem
---- @return boolean
-local function itemSortFunc(a, b)
-  local aTotalPrice = a.price * a.quantity
-  local bTotalPrice = b.price * b.quantity
-  if aTotalPrice == bTotalPrice then
-    if a.quality == b.quality then
-      if a.name == b.name then
-        return a.quantity < b.quantity
-      end
-      return a.name < b.name
-    end
-    return a.quality < b.quality
-  end
-  return aTotalPrice < bTotalPrice
-end
-
---- Returns junk items as determined by the given `filterFunc`.
---- @param filterFunc fun(self: JunkFilter, item: BagItem): boolean, string?
---- @param items? BagItem[]
---- @return BagItem[] junkItems
-local function getJunkItems(filterFunc, items)
-  items = Items:GetItems(items)
-
-  for i = #items, 1, -1 do
-    local item = items[i]
-    local isJunk, reason = filterFunc(JunkFilter, item)
-
-    if isJunk then
-      item.reason = reason
-    else
-      table.remove(items, i)
-    end
-  end
-
-  table.sort(items, itemSortFunc)
-
-  return items
-end
-
--- ============================================================================
 -- JunkFilter
 -- ============================================================================
 
-do -- Convenience methods.
-  local items = {}
-
-  --- Returns the number of sellable and destroyable junk items.
-  --- @return integer numSellable, integer numDestroyable
-  function JunkFilter:GetNumJunkItems()
-    local numSellable = #self:GetSellableJunkItems(items)
-    local numDestroyable = #self:GetDestroyableJunkItems(items)
-    return numSellable, numDestroyable
-  end
-
-  --- Returns the next sellable junk item if one exists.
-  --- @return BagItem|nil
-  function JunkFilter:GetNextSellableJunkItem()
-    self:GetSellableJunkItems(items)
-    return items[1]
-  end
-
-  --- Returns the next destroyable junk item if one exists.
-  --- @return BagItem|nil
-  function JunkFilter:GetNextDestroyableJunkItem()
-    self:GetDestroyableJunkItems(items)
-    return items[1]
+--- Returns why the given `item` cannot be sold right now, or `nil` if nothing stops the sale. Does not check whether
+--- the item is junk.
+--- @param item BagItem
+--- @return string? reason
+function JunkFilter:GetSellBlockReason(item)
+  if Items:IsItemRefundable(item) then
+    return L.ITEM_IS_REFUNDABLE
   end
 end
 
---- Creates or updates an array of sellable junk items.
---- @param items? BagItem[]
---- @return BagItem[] sellableItems
-function JunkFilter:GetSellableJunkItems(items)
-  return getJunkItems(self.IsSellableJunkItem, items)
-end
-
---- Creates or updates an array of destroyable junk items.
---- @param items? BagItem[]
---- @return BagItem[] destroyableItems
-function JunkFilter:GetDestroyableJunkItems(items)
-  return getJunkItems(self.IsDestroyableJunkItem, items)
-end
-
---- Creates or updates an array of junk items.
---- @param items? BagItem[]
---- @return BagItem[] junkItems
-function JunkFilter:GetJunkItems(items)
-  return getJunkItems(self.IsJunkItem, items)
-end
-
---- Returns `true` and a reason string if the given `item` is junk and can be sold.
+--- Returns `true` and a reason string if the given `item` is junk and can be sold. A junk item that
+--- `GetSellBlockReason()` blocks returns `false` and that reason.
 --- @param item BagItem
 --- @return boolean isSellableJunk, string? reason
 function JunkFilter:IsSellableJunkItem(item)
-  return self:IsJunkItem(item, "SELL")
-end
+  local isJunk, reason = self:IsJunkItem(item, "SELL")
 
---- Returns `true` and a reason string if the given `item` is junk and can be destroyed.
---- @param item BagItem
---- @return boolean isDestroyableJunk, string? reason
-function JunkFilter:IsDestroyableJunkItem(item)
-  return self:IsJunkItem(item, "DESTROY")
+  if isJunk then
+    local blockReason = self:GetSellBlockReason(item)
+    if blockReason then return false, blockReason end
+  end
+
+  return isJunk, reason
 end
 
 --- Returns `true` and a reason string if the given `item` is junk for the given `filterType`, or for
@@ -149,18 +67,6 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   --- @type ItemFilterResult, string?
   local result, reason
-
-  -- Refundable.
-  result, reason = ItemFilters:Refundable(item)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Locked.
-  result, reason = ItemFilters:Locked(item)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
 
   local profileSettings = StateManager:GetProfileState().settings
 
@@ -207,6 +113,12 @@ function JunkFilter:IsJunkItem(item, filterType)
 
   -- Exclude by equipment type.
   result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType, filterType)
+  if result ~= ItemFilters.PASS then
+    return result == ItemFilters.JUNK, reason
+  end
+
+  -- Exclude quest items.
+  result, reason = ItemFilters:ExcludeQuestItems(item, profileSettings.excludeQuestItems, filterType)
   if result ~= ItemFilters.PASS then
     return result == ItemFilters.JUNK, reason
   end

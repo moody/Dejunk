@@ -5,13 +5,11 @@ local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local DefaultStates = Addon:GetModule("DefaultStates")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
-
-local LABEL_TEXT_FORMAT = Colors.Grey("(%s/%s)"):format(Colors.White("%s"), Colors.Red("%s"))
 
 -- ============================================================================
 -- Initialize
@@ -31,7 +29,7 @@ local rootComponent = Addon.Waffle:Flex({
     local frame = Widgets:Button({
       name = ADDON_NAME .. "_MerchantButton",
       parent = _G.MerchantFrame,
-      labelText = LABEL_TEXT_FORMAT:format(0, 0),
+      labelText = JunkItemsCache:GetNumJunkItemsText(),
       labelColor = Colors.Blue,
       enableClickHandling = true,
       enableDragging = true,
@@ -40,7 +38,7 @@ local rootComponent = Addon.Waffle:Flex({
         tooltip:SetOwner(this, "ANCHOR_RIGHT")
 
         if IsAltKeyDown() then
-          local item = JunkFilter:GetNextDestroyableJunkItem()
+          local item = JunkItemsCache:GetNextDestroyableJunkItem()
           if item then
             tooltip:SetBagItem(item.bag, item.slot)
             tooltip:AddLine(" ")
@@ -48,9 +46,14 @@ local rootComponent = Addon.Waffle:Flex({
             tooltip:Show()
             return
           end
+
+          tooltip:AddLine(Colors.White(L.NO_JUNK_ITEMS_TO_DESTROY))
+          tooltip:Show()
+          return
         end
 
-        tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+        local title = Colors.Blue(ADDON_NAME) .. " " .. JunkItemsCache:GetNumJunkItemsText()
+        tooltip:AddDoubleLine(title, Colors.Grey(Addon.VERSION))
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
         tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
@@ -144,8 +147,7 @@ TickerManager:NewTicker(1 / 30, function()
   if show then
     --- @type FontString
     local label = labelComponent:GetFrame()
-    local numSellable, numDestroyable = JunkFilter:GetNumJunkItems()
-    local text = LABEL_TEXT_FORMAT:format(numSellable, numDestroyable)
+    local text = JunkItemsCache:GetNumJunkItemsText()
 
     -- Update label text and icon size, only when the text actually changes.
     if text ~= label:GetText() then

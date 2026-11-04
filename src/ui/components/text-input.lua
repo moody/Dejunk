@@ -27,7 +27,8 @@ function ComponentFactory:TextInput(options)
   local fontObject = options.fontObject or Widgets.CONTROL_FONT
   local _, fontHeight = _G[fontObject]:GetFont()
 
-  --- @class TextInputComponent : WaffleFlexComponent
+  --- @class TextInputComponent : WaffleFlexComponent<FrameWidget>
+  --- @field Input WaffleFlexComponent<TextInputWidget>
   local root = Addon.Waffle:Flex({
     direction = "ROW",
     height = fontHeight + Widgets:Padding(2),
@@ -35,8 +36,8 @@ function ComponentFactory:TextInput(options)
     --- @param parent Frame
     frameFactory = function(parent)
       local frame = Widgets:Frame({ parent = parent })
-      frame:SetBackdropColor(Colors.Black:GetRGBA(0.4))
-      frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.15))
+      frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
+      frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
       frame:EnableMouse(true)
       return frame
     end
@@ -89,13 +90,12 @@ function ComponentFactory:TextInput(options)
     --- @type FrameWidget
     local frame = root:GetFrame()
 
-    --- Colors the border blue while focused, and brightens it while hovered. Hover is ignored while disabled.
+    --- Colors the border black, or grey while the box is highlighted.
     local function refreshBorder()
-      if frame:GetEventValue("FOCUSED") then
-        frame:SetBackdropBorderColor(Colors.Blue:GetRGBA(0.75))
+      if root:IsHighlighted() then
+        frame:SetBackdropBorderColor(Colors.White:GetRGBA(0.4))
       else
-        local isHovered = frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED")
-        frame:SetBackdropBorderColor(Colors.White:GetRGBA(isHovered and 0.4 or 0.15))
+        frame:SetBackdropBorderColor(Colors.Black:GetRGBA(1))
       end
     end
 
@@ -105,6 +105,21 @@ function ComponentFactory:TextInput(options)
     frame:OnEvent("HOVERED", refreshBorder)
     frame:OnEvent("ENABLED", refreshBorder)
   end)
+
+  --- Returns `true` while the box has focus, or while it is hovered and enabled.
+  --- @return boolean
+  function root:IsHighlighted()
+    local frame = self:GetFrame()
+
+    if frame then
+      return (
+        frame:GetEventValue("FOCUSED") or
+        (frame:GetEventValue("HOVERED") and frame:GetEventValue("ENABLED"))
+      )
+    end
+
+    return false
+  end
 
   --- Returns the current text, or an empty string before the frame exists.
   --- @return string

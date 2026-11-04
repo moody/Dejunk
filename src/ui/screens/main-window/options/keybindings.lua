@@ -138,50 +138,16 @@ function MainWindowOptions:CreateKeybindingsPanel()
   addKeybindingCard(actions, footer, "destroyNextItem", L.DESTROY_NEXT_ITEM)
 
   -- Lists.
-  local profileLists = OptionsBuilder:AddGroup(container, L.PROFILE_LISTS)
-  local globalLists = OptionsBuilder:AddGroup(container, L.GLOBAL_LISTS)
+  local profileLists = OptionsBuilder:AddGroup(container, L.PROFILE_LISTS, L.LIST_KEYBINDINGS_DESCRIPTION)
+  local globalLists = OptionsBuilder:AddGroup(container, L.GLOBAL_LISTS, L.LIST_KEYBINDINGS_DESCRIPTION)
 
   for _, entry in ipairs({
-    {
-      group = globalLists,
-      list = Lists.GlobalInclusions,
-      addBindingName = "addToGlobalInclusions",
-      removeBindingName = "removeFromGlobalInclusions"
-    },
-    {
-      group = globalLists,
-      list = Lists.GlobalExclusions,
-      addBindingName = "addToGlobalExclusions",
-      removeBindingName = "removeFromGlobalExclusions"
-    },
-    {
-      group = profileLists,
-      list = Lists.ProfileInclusions,
-      addBindingName = "addToProfileInclusions",
-      removeBindingName = "removeFromProfileInclusions"
-    },
-    {
-      group = profileLists,
-      list = Lists.ProfileExclusions,
-      addBindingName = "addToProfileExclusions",
-      removeBindingName = "removeFromProfileExclusions"
-    }
+    { group = globalLists, list = Lists.GlobalInclusions, bindingName = "addOrRemoveGlobalInclusions" },
+    { group = globalLists, list = Lists.GlobalExclusions, bindingName = "addOrRemoveGlobalExclusions" },
+    { group = profileLists, list = Lists.ProfileInclusions, bindingName = "addOrRemoveProfileInclusions" },
+    { group = profileLists, list = Lists.ProfileExclusions, bindingName = "addOrRemoveProfileExclusions" }
   }) do
-    addKeybindingCard(
-      entry.group,
-      footer,
-      entry.addBindingName,
-      L.ADD_TO_LIST:format(entry.list.name),
-      L.KEYBIND_DESCRIPTION_ADD_TO_LIST
-    )
-
-    addKeybindingCard(
-      entry.group,
-      footer,
-      entry.removeBindingName,
-      L.REMOVE_FROM_LIST:format(entry.list.name),
-      L.KEYBIND_DESCRIPTION_REMOVE_FROM_LIST
-    )
+    addKeybindingCard(entry.group, footer, entry.bindingName, L.ADD_OR_REMOVE_LIST:format(entry.list.name))
   end
 
   return panel

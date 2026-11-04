@@ -111,7 +111,7 @@ local function newTextInputPopup(popupKey, parse)
 
     popup.OnShow = function(self)
       local editBox = getEditBox(self)
-      editBox:SetText(tostring(options.initialValue or ""))
+      editBox:SetText(options.initialValue or "")
       editBox:HighlightText()
       editBox:SetCursorPosition(editBox:GetNumLetters())
       getButton1(self):SetEnabled(parse(editBox:GetText()) ~= nil)

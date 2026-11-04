@@ -4,6 +4,7 @@ local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
 local OptionsBuilder = Addon:GetModule("OptionsBuilder")
+local Seller = Addon:GetModule("Seller")
 local StateManager = Addon:GetModule("StateManager")
 
 --- @class MainWindowOptions
@@ -35,7 +36,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   -- Safe sell.
   safety:AddOptionCard({
     labelText = L.SAFE_SELL_TEXT,
-    descriptionText = L.SAFE_SELL_DESCRIPTION,
+    descriptionText = L.SAFE_SELL_DESCRIPTION:format(Seller.SAFE_SELL_LIMIT),
     get = function() return StateManager:GetGlobalState().safeSell end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setSafeSell(value)) end
   })
@@ -85,9 +86,17 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   interface:AddOptionCard({
     labelText = L.CHAT_MESSAGES_TEXT,
     descriptionText = L.CHAT_MESSAGES_DESCRIPTION,
-    get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
-  })
+    get = function() return StateManager:GetGlobalState().chatMessages.enabled end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.mergeChatMessages({ enabled = value })) end
+  }):AddSettingsBox():AddChoiceLine(
+    L.DETAIL,
+    {
+      { value = "REDUCED", text = L.REDUCED, tooltipText = L.CHAT_MESSAGES_REDUCED_TOOLTIP },
+      { value = "VERBOSE", text = L.VERBOSE, tooltipText = L.CHAT_MESSAGES_VERBOSE_TOOLTIP }
+    },
+    function() return StateManager:GetGlobalState().chatMessages.detail end,
+    function(value) StateManager:Dispatch(ActionCreators.Global.mergeChatMessages({ detail = value })) end
+  )
 
   local bags = OptionsBuilder:AddGroup(container, L.BAGS)
 

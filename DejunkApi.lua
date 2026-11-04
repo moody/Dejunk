@@ -1,7 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
+local BagItemsCache = Addon:GetModule("BagItemsCache")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager")
 
@@ -15,7 +15,7 @@ local function notifyListeners(event)
   end
 end
 
---- Results of `DejunkApi:IsJunk()` by `Items:GetSlotKey()`.
+--- Results of `DejunkApi:IsJunk()` by `BagItemsCache:GetSlotKey()`.
 --- @type table<integer, boolean>
 local cachedResults = {}
 
@@ -85,12 +85,12 @@ function DejunkApi:IsJunk(bagId, slotId)
   if GetTime() - cacheClearedTime >= 1 then clearCache() end
 
   -- Use the cached result while the slot still holds the same item.
-  local key = Items:GetSlotKey(bagId, slotId)
+  local key = BagItemsCache:GetSlotKey(bagId, slotId)
   local itemId = C_Container.GetContainerItemID(bagId, slotId)
   if itemId and cachedItemIds[key] == itemId then return cachedResults[key] end
   cachedItemIds[key] = itemId
 
-  local item = Items:GetFreshItem(bagId, slotId)
+  local item = BagItemsCache:GetFreshItem(bagId, slotId)
   local isJunk = item and JunkFilter:IsJunkItem(item) or false
   cachedResults[key] = isJunk
 

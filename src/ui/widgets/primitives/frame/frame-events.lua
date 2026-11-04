@@ -12,7 +12,9 @@ local events = {}
 --- @param name FrameWidgetEventName
 --- @return FrameWidgetEvent
 local function getEvent(name)
-  return assert(events[name], "unknown frame event: " .. tostring(name))
+  local event = events[name]
+  if not event then error("unknown frame event: " .. tostring(name), 2) end
+  return event
 end
 
 -- =============================================================================
@@ -68,7 +70,7 @@ end
 --- @param bubbles? boolean Defaults to `false`.
 --- @return FrameWidgetEvent
 function FrameWidgetEvents:Register(name, bubbles)
-  assert(not events[name], "frame event already registered: " .. tostring(name))
+  if events[name] then error("frame event already registered: " .. tostring(name), 2) end
 
   local frameEvent = setmetatable({ name = name, bubbles = bubbles or false }, FrameWidgetEvent)
   events[name] = frameEvent

@@ -6,7 +6,7 @@ local Colors = Addon:GetModule("Colors")
 local Commands = Addon:GetModule("Commands")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
-local JunkFilter = Addon:GetModule("JunkFilter")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local LDB = Addon:GetLibrary("LDB") ---@type LibDataBroker-1.1
 local LDBIcon = Addon:GetLibrary("LDBIcon") ---@type LibDBIcon-1.0
@@ -35,7 +35,7 @@ local function onUpdateTooltip(frame)
   Tooltip:ClearLines()
 
   if IsAltKeyDown() then
-    local item = JunkFilter:GetNextDestroyableJunkItem()
+    local item = JunkItemsCache:GetNextDestroyableJunkItem()
     if item then
       Tooltip:SetBagItem(item.bag, item.slot)
       Tooltip:AddLine(" ")
@@ -43,9 +43,14 @@ local function onUpdateTooltip(frame)
       Tooltip:Show()
       return
     end
+
+    Tooltip:AddLine(Colors.White(L.NO_JUNK_ITEMS_TO_DESTROY))
+    Tooltip:Show()
+    return
   end
 
-  Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+  local title = Colors.Blue(ADDON_NAME) .. " " .. JunkItemsCache:GetNumJunkItemsText()
+  Tooltip:AddDoubleLine(title, Colors.Grey(Addon.VERSION))
   Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_MAIN_WINDOW))
   Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
@@ -63,7 +68,7 @@ EventManager:Once(E.StoreCreated, function()
     icon = Addon:GetAsset("dejunk-icon"),
 
     OnClick = function(_, button)
-      if button == "LeftButton" then
+      if button == "LeftButton" and not IsAltKeyDown() then
         Commands.options()
       end
 
@@ -121,7 +126,7 @@ EventManager:Once(E.StoreCreated, function()
     LDBIcon:Refresh(ADDON_NAME, db)
   end)
 
-  --- Returns true if the minimap icon is visible.
+  --- Returns `true` if the minimap icon is visible.
   --- @return boolean
   function MinimapIcon:IsEnabled()
     return not StateManager:GetGlobalState().minimapIcon.hide

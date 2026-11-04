@@ -16,7 +16,7 @@ local function createColor(hex)
   local color = CreateColorFromHexString(hex)
 
   --- @class Color
-  --- @overload fun(text: string): string
+  --- @overload fun(text: string | number): string
   local wrapper = setmetatable({}, {
     __call = function(self, text, alpha)
       alpha = (alpha or 1) * 255

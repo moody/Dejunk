@@ -31,7 +31,7 @@ end
 
 --- Returns `state` in the current shape, without mutating the input. Missing values are backfilled from
 --- `DefaultStates`, values of the wrong type are replaced with copies of their defaults, profiles that are not
---- tables are removed, and the default profile is created if it doesn't already exist. Run after migrations, which
+--- tables are removed, and the default profile is created if it does not already exist. Run after migrations, which
 --- move old data first.
 --- @param state DejunkRootState
 --- @return DejunkRootState

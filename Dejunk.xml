@@ -41,6 +41,7 @@
   <Script file="src\store\default-states.lua"/>
   <Script file="src\store\migrations.lua"/>
   <Script file="src\store\state-reconciler.lua"/>
+  <Script file="src\store\profile-summaries.lua"/>
   <Script file="src\store\middlewares.lua"/>
   <Script file="src\store\root-reducer.lua"/>
   <Script file="src\store\state-manager.lua"/>
@@ -52,8 +53,10 @@
   <!-- Junk Filter -->
   <Script file="src\junk-filter\item-filters.lua"/>
   <Script file="src\junk-filter\junk-filter.lua"/>
+  <Script file="src\junk-filter\junk-items-cache.lua"/>
 
   <!-- Items -->
+  <Script file="src\items\bag-items-cache.lua"/>
   <Script file="src\items\equipment-sets-cache.lua"/>
   <Script file="src\items\equipment-types.lua"/>
   <Script file="src\items\items.lua"/>
@@ -89,21 +92,24 @@
   <Script file="src\ui\widgets\primitives\slider.lua"/>
 
   <!-- UI Widgets - Composites -->
-  <Script file="src\ui\widgets\composites\items-frame.lua"/>
-  <Script file="src\ui\widgets\composites\list-frame.lua"/>
-  <Script file="src\ui\widgets\composites\options\option-button.lua"/>
   <Script file="src\ui\widgets\composites\scrollable-title-frame.lua"/>
   <Script file="src\ui\widgets\composites\text-frame.lua"/>
   <Script file="src\ui\widgets\composites\title-frame.lua"/>
 
   <!-- UI Components -->
+  <Script file="src\ui\components\card-list.lua"/>
   <Script file="src\ui\components\check-chip-group.lua"/>
   <Script file="src\ui\components\check-chip.lua"/>
+  <Script file="src\ui\components\component-factory.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\item-card.lua"/>
+  <Script file="src\ui\components\item-list.lua"/>
   <Script file="src\ui\components\keybinding-card.lua"/>
+  <Script file="src\ui\components\list-panel.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\profile-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
   <Script file="src\ui\components\selectable-row.lua"/>
@@ -119,10 +125,10 @@
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
   <Script file="src\ui\screens\main-window\options\global-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
+  <Script file="src\ui\screens\main-window\options\profiles.lua"/>
   <Script file="src\ui\screens\main-window\options\keybindings.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
-  <Script file="src\ui\screens\profiles-frame.lua"/>
   <Script file="src\ui\screens\transport-frame.lua"/>
 
   <!-- UI Blizzard -->
