@@ -55,11 +55,13 @@ The `Global Options` screen applies to every character, regardless of profile.
 - **Minimap Icon** — Add an icon to the minimap
 - **Auto Junk Frame** — Show the Junk Items frame automatically at a merchant
 - **Auto Lootable Frame** — Show the Lootable Items frame automatically
-- **Chat Messages** — Print messages to chat
+- **Chat Messages** — Print messages to chat, with reduced or verbose detail
 - **Bag Item Tooltips** — Add Dejunk information to the tooltips of items in your bags
 - **Bag Item Icons** — Overlay a small or large icon on junk items in your bags
 
 Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`.
+
+`Chat Messages` has a `Detail` choice, `Reduced` by default. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. An item sold on its own, without `Start Selling`, prints with either detail.
 
 The merchant button sells on left-click, toggles the Junk Items frame on right-click, destroys the next item on Alt+right-click, and resets its position on Shift+right-click. The minimap icon toggles the main window on left-click, toggles the Junk Items frame on right-click, and destroys the next item on Alt+right-click.
 
