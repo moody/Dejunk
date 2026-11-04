@@ -46,9 +46,14 @@ local rootComponent = Addon.Waffle:Flex({
             tooltip:Show()
             return
           end
+
+          tooltip:AddLine(Colors.White(L.NO_JUNK_ITEMS_TO_DESTROY))
+          tooltip:Show()
+          return
         end
 
-        tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+        local title = Colors.Blue(ADDON_NAME) .. " " .. JunkItemsCache:GetNumJunkItemsText()
+        tooltip:AddDoubleLine(title, Colors.Grey(Addon.VERSION))
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.START_SELLING))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
         tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))

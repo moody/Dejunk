@@ -43,9 +43,14 @@ local function onUpdateTooltip(frame)
       Tooltip:Show()
       return
     end
+
+    Tooltip:AddLine(Colors.White(L.NO_JUNK_ITEMS_TO_DESTROY))
+    Tooltip:Show()
+    return
   end
 
-  Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+  local title = Colors.Blue(ADDON_NAME) .. " " .. JunkItemsCache:GetNumJunkItemsText()
+  Tooltip:AddDoubleLine(title, Colors.Grey(Addon.VERSION))
   Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_MAIN_WINDOW))
   Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
   Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
@@ -63,7 +68,7 @@ EventManager:Once(E.StoreCreated, function()
     icon = Addon:GetAsset("dejunk-icon"),
 
     OnClick = function(_, button)
-      if button == "LeftButton" then
+      if button == "LeftButton" and not IsAltKeyDown() then
         Commands.options()
       end
 
