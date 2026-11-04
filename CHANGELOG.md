@@ -6,6 +6,7 @@
 
 - Added a `Profiles` screen to the main window for creating, duplicating, activating, renaming, resetting, and deleting profiles. Each profile shows whether `Auto Sell` is on and the size of its `Inclusions` and `Exclusions` lists, and its tooltip lists the characters that use it.
 - Added the junk item counts and the lootable item count to the footer of the main window. Clicking either toggles its frame, and clicking the active profile opens the `Profiles` screen.
+- Added the number of sellable and destroyable junk items to the minimap icon tooltip.
 - Added a gear button to the title bar of the Junk Items frame that toggles the main window on `Profile Options`.
 - Added a `Detail` choice to `Chat Messages` in `Global Options`. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. New installs start on `Reduced`, and an existing setting is kept as `Verbose`.
 - Added `Exclude Quest Items` to `Profile Options`, on by default. Items that the game classifies as quest items are never considered junk, unless they are on an Inclusions list.
@@ -20,6 +21,7 @@
 - The profit message after selling now also shows the number of items sold, on one line: `Items sold: 7 | Profit: 96g 98s 5c`.
 - Poor-quality quest items are no longer junk by default, since `Exclude Quest Items` is on in every profile. Turn it off to treat them like other items.
 - The search box on the `Lists` screen now has the search icon at its left, and a clear button that shows only while it has text.
+- While Alt is held, the tooltips of the merchant button and the minimap icon now say when there is no junk item to destroy, and a left-click on the minimap icon no longer opens the main window.
 - Clicking an item in the Junk Items frame no longer sells, excludes, or destroys it. Use the buttons on the item instead.
 - The Junk Items frame title now shows how many junk items can be sold and destroyed, like the merchant button, in place of the total.
 - An item you can still refund now shows as junk like any other. Selling skips it, since the game does not let an addon sell it; its tooltip says why. Destroying it works.
