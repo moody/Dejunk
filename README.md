@@ -63,7 +63,7 @@ Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item T
 
 `Chat Messages` has a `Detail` choice, `Reduced` by default. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. An item sold on its own, without `Start Selling`, prints with either detail.
 
-The merchant button sells on left-click, toggles the Junk Items frame on right-click, destroys the next item on Alt+right-click, and resets its position on Shift+right-click. The minimap icon toggles the main window on left-click, toggles the Junk Items frame on right-click, and destroys the next item on Alt+right-click.
+The merchant button sells on left-click, toggles the Junk Items frame on right-click, destroys the next item on Alt+right-click, and resets its position on Shift+right-click. The minimap icon toggles the main window on left-click, toggles the Junk Items frame on right-click, and destroys the next item on Alt+right-click. Its tooltip shows how many junk items can be sold and destroyed. Holding Alt over the merchant button or the minimap icon shows the item that Alt+right-click would destroy, or says there is none.
 
 ### Lists
 
