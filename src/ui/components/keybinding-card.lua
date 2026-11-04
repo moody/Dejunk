@@ -17,7 +17,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field labelText string Label of the binding.
 --- @field descriptionText? string Shown in grey below the label.
 --- @field get fun(): string? Returns the text of the bound key, or `nil` while there is none.
---- @field isListening fun(): boolean Returns whether the card's binding is waiting for a key.
+--- @field isListening fun(): boolean Returns `true` if the card's binding is waiting for a key.
 --- @field onClick fun(mouseButton: string) Called when the card is clicked with any mouse button.
 
 -- =============================================================================

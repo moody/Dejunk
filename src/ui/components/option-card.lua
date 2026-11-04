@@ -12,7 +12,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class OptionCardOptions
---- @field get fun(): boolean Returns whether the option is on.
+--- @field get fun(): boolean Returns `true` if the option is on.
 --- @field set fun(value: boolean) Called with the new value when the card is clicked.
 --- @field onRightClick? fun() Called when the card is right-clicked.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the card.
@@ -85,7 +85,7 @@ function ComponentFactory:OptionCard(options)
 
   root.Content = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
 
-  --- Returns whether the option is on.
+  --- Returns `true` if the option is on.
   --- @return boolean
   function root:IsChecked()
     return options.get()

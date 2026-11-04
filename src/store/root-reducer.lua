@@ -186,8 +186,8 @@ function RootReducer:Build()
       end
 
       -- Reset profile action: replaces its settings with a deep copy of the
-      -- defaults, keeping its own id/name. A no-op if the profile isn't
-      -- persisted yet, since it's already at the defaults.
+      -- defaults, keeping its own id/name. A no-op if the profile is not
+      -- persisted yet, since it is already at the defaults.
       if action.type == ActionTypes.Profiles.RESET_PROFILE then
         --- @cast action WuxPayloadAction<ResetProfilePayload>
         local existing = state.profileMap[action.payload.profileId]
@@ -214,7 +214,7 @@ function RootReducer:Build()
       -- result back into `profileMap` only if something changed. The
       -- default profile is created eagerly by `StateReconciler` before this
       -- ever runs, so it needs no special-casing here; a missing active
-      -- profile id (e.g. a stale reference `state-manager.lua` hasn't
+      -- profile id (e.g. a stale reference `state-manager.lua` has not
       -- redirected yet) just stays a no-op instead of materializing a
       -- phantom profile under it.
       local profileState = state.profileMap[state.activeProfileId]

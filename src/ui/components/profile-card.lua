@@ -12,8 +12,8 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- =============================================================================
 
 --- @class ProfileCardComponentOptions
---- @field isActive fun(profile: ProfileState): boolean Whether the profile is the active one.
---- @field isProtected fun(profile: ProfileState): boolean Whether the profile cannot be renamed or deleted.
+--- @field isActive fun(profile: ProfileState): boolean Returns `true` if the profile is the active one.
+--- @field isProtected fun(profile: ProfileState): boolean Returns `true` if the profile cannot be renamed or deleted.
 --- @field getSubtext fun(profile: ProfileState): string Returns the text under the name. Called when the card updates.
 --- @field onActivate fun(profile: ProfileState) Called when the card is clicked.
 --- @field onRename fun(profile: ProfileState)

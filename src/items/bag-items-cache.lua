@@ -77,7 +77,7 @@ local function markDirty()
   isDirty = true
 end
 
---- Returns whether a burst of `BAG_UPDATE` events is holding back updates. A burst ends after `BURST_MAX_SECONDS`
+--- Returns `true` if a burst of `BAG_UPDATE` events is holding back updates. A burst ends after `BURST_MAX_SECONDS`
 --- even if `BAG_UPDATE_DELAYED` does not arrive.
 --- @return boolean
 local function isBurstActive()
@@ -241,7 +241,7 @@ function BagItemsCache:GetVersion()
   return version
 end
 
---- Returns whether the cache is up to date and no slot is waiting for item data.
+--- Returns `true` if the cache is up to date and no slot is waiting for item data.
 --- @return boolean
 function BagItemsCache:IsSettled()
   return not isDirty and next(pending) == nil

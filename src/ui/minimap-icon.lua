@@ -126,7 +126,7 @@ EventManager:Once(E.StoreCreated, function()
     LDBIcon:Refresh(ADDON_NAME, db)
   end)
 
-  --- Returns true if the minimap icon is visible.
+  --- Returns `true` if the minimap icon is visible.
   --- @return boolean
   function MinimapIcon:IsEnabled()
     return not StateManager:GetGlobalState().minimapIcon.hide

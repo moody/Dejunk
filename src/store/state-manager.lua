@@ -34,7 +34,7 @@ EventManager:Once(E.Wow.PlayerLogin, function()
   -- character's mapped profile no longer exists (e.g. a corrupted entry
   -- `StateReconciler` had to drop from `profileMap`), fall back to the
   -- default profile and fix the character's own mapping too, so this
-  -- doesn't recur next login.
+  -- does not recur next login.
   local characterKey = Addon:GetCharacterKey()
   local activeProfileId = initialState.profiles.characterMap[characterKey]
   if activeProfileId ~= nil
