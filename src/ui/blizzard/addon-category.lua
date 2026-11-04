@@ -18,7 +18,7 @@ local optionsButton = Widgets:Button({
 
 local profilesButton = Widgets:Button({
   parent = categoryFrame,
-  labelText = L.TOGGLE_PROFILES_FRAME,
+  labelText = L.TOGGLE_PROFILES_SCREEN,
   points = {
     { "TOPLEFT", optionsButton, "BOTTOMLEFT", 0, -Widgets:Padding() },
     { "TOPRIGHT", optionsButton, "BOTTOMRIGHT", 0, -Widgets:Padding() }
