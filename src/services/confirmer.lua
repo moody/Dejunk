@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local GetCoinTextureString = C_CurrencyInfo and C_CurrencyInfo.GetCoinTextureString or GetCoinTextureString
@@ -105,8 +106,11 @@ TickerManager:NewTicker(0, function()
   -- Print the summary.
   if profitReady and next(soldItems) == nil then
     profitReady = false
-    if numSold > 0 then Addon:Print(L.ITEMS_SOLD:format(numSold)) end
-    if profit > 0 then Addon:Print(L.PROFIT:format(GetCoinTextureString(profit))) end
+    if numSold > 0 then
+      local itemsSoldText = Colors.Yellow(L.ITEMS_SOLD:format(Colors.White(numSold)))
+      local profitText = Colors.Yellow(L.PROFIT:format(Colors.White(GetCoinTextureString(profit))))
+      Addon:Print(itemsSoldText .. Colors.Grey(" | ") .. profitText)
+    end
   end
 
   -- Confirm destroyed items.

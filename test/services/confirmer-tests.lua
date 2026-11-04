@@ -38,6 +38,13 @@ local function setupContext()
     removedItems[item] = true
   end
 
+  -- Each color returns its text unchanged.
+  local Colors = {}
+  for _, name in ipairs({ "Grey", "White", "Yellow" }) do
+    Colors[name] = function(text) return text end
+  end
+
+  Context:SetModule("Colors", Colors)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
     FAILED_TO_SELL_ITEM = "FAILED_TO_SELL_ITEM %s",
@@ -78,7 +85,7 @@ do
   assert(#AddonSpy:GetStub("Print").calls == 0)
 end
 
--- Test: the summary prints the number of items sold and the profit once the run has stopped.
+-- Test: the summary is one line with the number of items sold and the profit, printed once the run has stopped.
 do
   local Game, AddonSpy, removeFromBags = setupContext()
   local itemA = createItem("linkA", 10)
@@ -92,7 +99,7 @@ do
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "ITEMS_SOLD 2" }, { "PROFIT 30c" } }))
+  assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "ITEMS_SOLD 2 | PROFIT 30c" } }))
 end
 
 -- Test: the summary waits until every item sold in the run has left the bags.
@@ -113,7 +120,7 @@ do
   removeFromBags(itemB)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "ITEMS_SOLD 2" }, { "PROFIT 30c" } }))
+  assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "ITEMS_SOLD 2 | PROFIT 30c" } }))
 end
 
 -- Test: an item that failed to sell is reported and is not counted in the summary.
@@ -133,8 +140,7 @@ do
 
   assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, {
     { "FAILED_TO_SELL_ITEM failed" },
-    { "ITEMS_SOLD 1" },
-    { "PROFIT 10c" }
+    { "ITEMS_SOLD 1 | PROFIT 10c" }
   }))
 end
 
@@ -170,7 +176,7 @@ do
   Game:Advance(CONFIRM_SECONDS)
 
   local calls = AddonSpy:GetStub("Print").calls
-  assert(Matchers:IsDeepEqual({ calls[3], calls[4] }, { { "ITEMS_SOLD 1" }, { "PROFIT 20c" } }))
+  assert(Matchers:IsDeepEqual(calls[2], { "ITEMS_SOLD 1 | PROFIT 20c" }))
 end
 
 -- ============================================================================
