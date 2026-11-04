@@ -86,9 +86,17 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
   interface:AddOptionCard({
     labelText = L.CHAT_MESSAGES_TEXT,
     descriptionText = L.CHAT_MESSAGES_DESCRIPTION,
-    get = function() return StateManager:GetGlobalState().chatMessages end,
-    set = function(value) StateManager:Dispatch(ActionCreators.Global.setChatMessages(value)) end
-  })
+    get = function() return StateManager:GetGlobalState().chatMessages.enabled end,
+    set = function(value) StateManager:Dispatch(ActionCreators.Global.mergeChatMessages({ enabled = value })) end
+  }):AddSettingsBox():AddChoiceLine(
+    L.DETAIL,
+    {
+      { value = "REDUCED", text = L.REDUCED, tooltipText = L.CHAT_MESSAGES_REDUCED_TOOLTIP },
+      { value = "VERBOSE", text = L.VERBOSE, tooltipText = L.CHAT_MESSAGES_VERBOSE_TOOLTIP }
+    },
+    function() return StateManager:GetGlobalState().chatMessages.detail end,
+    function(value) StateManager:Dispatch(ActionCreators.Global.mergeChatMessages({ detail = value })) end
+  )
 
   local bags = OptionsBuilder:AddGroup(container, L.BAGS)
 
