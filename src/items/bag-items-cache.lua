@@ -15,7 +15,7 @@ local BagItemsCache = Addon:GetModule("BagItemsCache")
 --- @type number
 BagItemsCache.UPDATE_TICK_SECONDS = 0.1
 
---- Seconds that a burst of `BAG_UPDATE` events can hold back an update.
+--- Seconds that a burst of `E.Wow.BagUpdate` events can hold back an update.
 --- @type number
 BagItemsCache.BURST_MAX_SECONDS = 2
 
@@ -48,7 +48,7 @@ local version = 0
 --- Whether the next tick updates the cache. True until the first update.
 local isDirty = true
 
---- The time the current burst of `BAG_UPDATE` events started, or `nil` if there is none.
+--- The time the current burst of `E.Wow.BagUpdate` events started, or `nil` if there is none.
 --- @type number?
 local burstStartTime
 
@@ -77,8 +77,8 @@ local function markDirty()
   isDirty = true
 end
 
---- Returns `true` if a burst of `BAG_UPDATE` events is holding back updates. A burst ends after `BURST_MAX_SECONDS`
---- even if `BAG_UPDATE_DELAYED` does not arrive.
+--- Returns `true` if a burst of `E.Wow.BagUpdate` events is holding back updates. A burst ends after `BURST_MAX_SECONDS`
+--- even if `E.Wow.BagUpdateDelayed` does not arrive.
 --- @return boolean
 local function isBurstActive()
   return burstStartTime ~= nil and B.Utils:GetTime() - burstStartTime < BagItemsCache.BURST_MAX_SECONDS

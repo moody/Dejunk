@@ -8,7 +8,7 @@ local Matchers = require("test/matchers")
 -- Setup
 -- ============================================================================
 
---- The seconds between the `BAG_UPDATE` events of a burst.
+--- The seconds between the `E.Wow.BagUpdate` events of a burst.
 local BAG_UPDATE_GAP_SECONDS = 0.25
 
 --- Returns `BagItemsCache` and a test game, from a new context.
@@ -33,7 +33,7 @@ local function getSortedIds(items)
   return ids
 end
 
---- Fires `BAG_UPDATE` every `BAG_UPDATE_GAP_SECONDS` until `seconds` have passed.
+--- Fires `E.Wow.BagUpdate` every `BAG_UPDATE_GAP_SECONDS` until `seconds` have passed.
 --- @param game table
 --- @param seconds number
 local function fireBagUpdatesFor(game, seconds)
@@ -46,7 +46,7 @@ local function fireBagUpdatesFor(game, seconds)
   end
 end
 
---- Fires `BAG_UPDATE_DELAYED` and waits for the update it causes.
+--- Fires `E.Wow.BagUpdateDelayed` and waits for the update it causes.
 --- @param game TestGameInstance
 local function updateBags(game)
   game:Fire(game.E.Wow.BagUpdateDelayed)
@@ -293,7 +293,7 @@ end
 -- Tests - Bag events
 -- ============================================================================
 
--- Test: BAG_UPDATE makes the cache catch up with the bags, even if BAG_UPDATE_DELAYED does not arrive.
+-- Test: `E.Wow.BagUpdate` makes the cache catch up with the bags, even if `E.Wow.BagUpdateDelayed` does not arrive.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -309,7 +309,7 @@ do
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
 
--- Test: BAG_UPDATE_DELAYED makes the cache catch up with the bags.
+-- Test: `E.Wow.BagUpdateDelayed` makes the cache catch up with the bags.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -324,7 +324,7 @@ do
   assert(BagItemsCache:GetItem(0, 2).id == 200)
 end
 
--- Test: EQUIPMENT_SETS_CHANGED makes the cache catch up with the bags.
+-- Test: `E.Wow.EquipmentSetsChanged` makes the cache catch up with the bags.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -359,7 +359,7 @@ do
   assert(updates == 1)
 end
 
--- Test: holds back updates while BAG_UPDATE events keep arriving.
+-- Test: holds back updates while `E.Wow.BagUpdate` events keep arriving.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -375,7 +375,7 @@ do
   assert(updates == 0)
 end
 
--- Test: holds back retries of pending slots while BAG_UPDATE events keep arriving.
+-- Test: holds back retries of pending slots while `E.Wow.BagUpdate` events keep arriving.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -394,7 +394,7 @@ do
   assert(BagItemsCache:GetItem(0, 1).id == 100)
 end
 
--- Test: updates once after BAG_UPDATE_DELAYED ends a burst of BAG_UPDATE events.
+-- Test: updates once after `E.Wow.BagUpdateDelayed` ends a burst of `E.Wow.BagUpdate` events.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
@@ -412,7 +412,7 @@ do
   assert(updates == 1)
 end
 
--- Test: updates once a burst reaches its maximum age, however many BAG_UPDATE events keep arriving.
+-- Test: updates once a burst reaches its maximum age, however many `E.Wow.BagUpdate` events keep arriving.
 do
   local BagItemsCache, Game = setupContext()
   Game.slots = { { bag = 0, slot = 1, itemId = 100 } }
