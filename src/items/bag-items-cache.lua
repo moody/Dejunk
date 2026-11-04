@@ -279,7 +279,6 @@ end
 --- @return BagItem? item
 function BagItemsCache:CreateItem(bag, slot)
   --- @class BagItem : BagItemInfo
-  --- @field reason? string
   --- @field refundExpirationTime? number
   local item = B.Container:GetItemInfo(bag, slot)
   if item == nil then return nil end
