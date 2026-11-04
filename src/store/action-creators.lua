@@ -41,9 +41,9 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<boolean>
   setAutoLootableFrame = Wux:CreateActionCreator(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME),
 
-  --- Action creator for `ActionTypes.Global.SET_CHAT_MESSAGES`.
-  --- @type WuxActionCreator<boolean>
-  setChatMessages = Addon.Wux:CreateActionCreator(ActionTypes.Global.SET_CHAT_MESSAGES),
+  --- Action creator for `ActionTypes.Global.MERGE_CHAT_MESSAGES`.
+  --- @type WuxActionCreator<table<string, any>>
+  mergeChatMessages = Wux:CreateActionCreator(ActionTypes.Global.MERGE_CHAT_MESSAGES),
 
   --- Action creator for `ActionTypes.Global.SET_ITEM_ICONS`.
   --- @type WuxActionCreator<boolean>

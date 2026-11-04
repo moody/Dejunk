@@ -29,6 +29,14 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field rare boolean
 --- @field epic boolean
 
+--- How much the addon prints to chat. `REDUCED` prints only the main messages, and `VERBOSE` also prints details.
+--- @alias ChatMessageDetail "REDUCED" | "VERBOSE"
+
+--- The addon's chat messages. They can be turned on or off, and have a level of detail.
+--- @class ChatMessagesState
+--- @field enabled boolean
+--- @field detail ChatMessageDetail
+
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
 --- @field enabled boolean
@@ -60,7 +68,8 @@ DefaultStates.UNBOUND_KEY = ""
 DefaultStates.Global = {
   autoJunkFrame = false,
   autoLootableFrame = false,
-  chatMessages = true,
+  --- @type ChatMessagesState
+  chatMessages = { enabled = true, detail = "REDUCED" },
   itemIcons = false,
   --- @type ItemIconStyle
   itemIconStyle = "SMALL",

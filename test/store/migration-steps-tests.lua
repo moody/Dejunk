@@ -281,6 +281,28 @@ do
   assert(Matchers:IsDeepEqual(migrated.global.keybindings, keybindings))
 end
 
+-- Test: a boolean chat messages setting becomes a table that keeps the saved value, with the verbose detail.
+do
+  for _, isEnabled in ipairs({ true, false }) do
+    local state = { version = 2, global = { chatMessages = isEnabled } }
+    local chatMessages = runStep(state, 3).global.chatMessages
+    assert(Matchers:IsDeepEqual(chatMessages, { enabled = isEnabled, detail = "VERBOSE" }), tostring(isEnabled))
+  end
+end
+
+-- Test: chat messages that are already a table are left unchanged.
+do
+  local state = { version = 2, global = { chatMessages = { enabled = false, detail = "REDUCED" } } }
+  local chatMessages = runStep(state, 3).global.chatMessages
+  assert(Matchers:IsDeepEqual(chatMessages, { enabled = false, detail = "REDUCED" }))
+end
+
+-- Test: chat messages that are not a boolean are left as they are.
+do
+  local state = { version = 2, global = { chatMessages = "corrupt" } }
+  assert(runStep(state, 3).global.chatMessages == "corrupt")
+end
+
 -- Test: missing data is tolerated and stays missing.
 do
   local cases = {
@@ -301,13 +323,15 @@ do
   end
 end
 
--- Test: the version 2 fixture converts the keybindings and changes nothing else.
+-- Test: the version 2 fixture converts the keybindings and the chat messages, and changes nothing else.
 do
   local fixture = loadFixture(2)
 
-  -- The expected state is the fixture at version 3, with the keybindings below changed to what the step should produce.
+  -- The expected state is the fixture at version 3, with the keybindings and chat messages below changed to what the
+  -- step should produce.
   local expected = Wux:DeepCopy(fixture)
   expected.version = 3
+  expected.global.chatMessages = { enabled = true, detail = "VERBOSE" }
   expected.global.keybindings = {
     toggleMainWindow = "CTRL-O",
     toggleJunkFrame = "",
@@ -360,6 +384,8 @@ do
   assert(keybindings.addOrRemoveGlobalExclusions == nil)
   assert(keybindings.addToProfileInclusions == nil)
   assert(keybindings.removeFromProfileInclusions == nil)
+
+  assert(Matchers:IsDeepEqual(migrated.global.chatMessages, { enabled = true, detail = "VERBOSE" }))
 end
 
 print("All assertions passed.")

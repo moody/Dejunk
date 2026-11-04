@@ -86,7 +86,7 @@ do
   local afterProfileAction = reducer(state, ActionCreators.Profiles.createProfile({ profileId = PROFILE_ID, profileName = PROFILE_NAME }))
   assert(afterProfileAction.global == state.global)
 
-  local afterGlobalAction = reducer(state, ActionCreators.Global.setChatMessages(false))
+  local afterGlobalAction = reducer(state, ActionCreators.Global.mergeChatMessages({ enabled = false }))
   assert(afterGlobalAction.profiles == state.profiles)
 end
 
@@ -100,7 +100,8 @@ local POINT = { point = "point", relativePoint = "relativePoint", offsetX = 1, o
 local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoJunkFrame(true), path = "global.autoJunkFrame", expected = true },
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
-  { action = ActionCreators.Global.setChatMessages(false), path = "global.chatMessages", expected = false },
+  { action = ActionCreators.Global.mergeChatMessages({ enabled = false }), path = "global.chatMessages.enabled", expected = false },
+  { action = ActionCreators.Global.mergeChatMessages({ detail = "VERBOSE" }), path = "global.chatMessages.detail", expected = "VERBOSE" },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
   { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },

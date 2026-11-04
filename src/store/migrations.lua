@@ -50,11 +50,16 @@ do
   --- Version 3:
   --- - `global.keybindings`: for each list, `addTo<List>` and `removeFrom<List>` become one `addOrRemove<List>`. It
   ---   takes the `addTo` key, or the `removeFrom` key if `addTo` had none. Both old names are removed.
+  --- - `global.chatMessages`: a boolean becomes `{ enabled = <old value>, detail = "VERBOSE" }`, so a saved setting
+  ---   keeps printing each item.
   ---
-  --- An `addOrRemove<List>` that already has a key is kept.
+  --- An `addOrRemove<List>` that already has a key is kept, and a `chatMessages` that is not a boolean is left as
+  --- it is.
   Migrations.STEPS[3] = function(state)
-    local keybindings = type(state.global) == "table" and state.global.keybindings
+    local global = type(state.global) == "table" and state.global
 
+    -- Keybindings.
+    local keybindings = global and global.keybindings
     if type(keybindings) == "table" then
       for _, listName in ipairs(LIST_NAMES) do
         local addToName = "addTo" .. listName
@@ -72,6 +77,11 @@ do
         keybindings[addToName] = nil
         keybindings[removeFromName] = nil
       end
+    end
+
+    -- Chat messages.
+    if global and type(global.chatMessages) == "boolean" then
+      global.chatMessages = { enabled = global.chatMessages, detail = "VERBOSE" }
     end
 
     return state

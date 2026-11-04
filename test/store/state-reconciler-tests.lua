@@ -56,7 +56,7 @@ end
 -- Test: a value of the wrong type is replaced with its default.
 do
   local state = StateReconciler:Reconcile({ global = { chatMessages = "yes", minimapIcon = false } })
-  assert(state.global.chatMessages == DefaultStates.Global.chatMessages)
+  assert(Matchers:IsDeepEqual(state.global.chatMessages, DefaultStates.Global.chatMessages))
   assert(Matchers:IsDeepEqual(state.global.minimapIcon, DefaultStates.Global.minimapIcon))
 end
 
