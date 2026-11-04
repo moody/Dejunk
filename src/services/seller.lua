@@ -65,15 +65,16 @@ end)
 -- Local Functions
 -- ============================================================================
 
---- Sells the item and fires `AttemptedToSellItem`, unless it is gone from the bags, locked, or refundable. Returns
---- `true` if a sale was attempted.
+--- Sells the item and fires `AttemptedToSellItem` with the item and the attempt type, unless it is gone from the
+--- bags, locked, or refundable. Returns `true` if a sale was attempted.
 --- @param item BagItem
+--- @param attemptType SellAttemptType
 --- @return boolean wasAttempted
-local function handleItem(item)
+local function handleItem(item, attemptType)
   if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) and not Items:IsItemRefundable(item) then
     C_Container.UseContainerItem(item.bag, item.slot)
 
-    EventManager:Fire(E.AttemptedToSellItem, item)
+    EventManager:Fire(E.AttemptedToSellItem, item, attemptType)
     return true
   end
 
@@ -216,7 +217,7 @@ function RunState:Sell(onWaitEnded)
       end
 
       -- Skip an item that stopped being junk since the fetch.
-      if JunkFilter:IsSellableJunkItem(item) and handleItem(item) then
+      if JunkFilter:IsSellableJunkItem(item) and handleItem(item, "RUN") then
         self:AddAttempt(item)
       end
     end)
@@ -300,7 +301,7 @@ function Seller:HandleItem(item)
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
-  handleItem(item)
+  handleItem(item, "MANUAL")
 end
 
 --- Returns `true` if a run is waiting for the cache or selling.

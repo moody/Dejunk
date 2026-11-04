@@ -9,9 +9,17 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Confirmer
 local Confirmer = Addon:GetModule("Confirmer")
 
+--- How an attempt to sell started: as part of a run, or on a single item. `AttemptedToSellItem` carries it.
+--- @alias SellAttemptType "RUN" | "MANUAL"
+
 local profit = 0
 local profitReady = false
+local numSold = 0
+
+--- The items attempted to sell that are not confirmed yet, by how the attempt started.
+--- @type table<BagItem, SellAttemptType>
 local soldItems = {}
+
 local destroyedItems = {}
 
 -- ============================================================================
@@ -20,6 +28,7 @@ local destroyedItems = {}
 
 EventManager:On(E.SellerStarted, function()
   profit = 0
+  numSold = 0
   profitReady = false
 end)
 
@@ -27,8 +36,8 @@ EventManager:On(E.SellerStopped, function()
   profitReady = true
 end)
 
-EventManager:On(E.AttemptedToSellItem, function(item)
-  soldItems[item] = true
+EventManager:On(E.AttemptedToSellItem, function(item, attemptType)
+  soldItems[item] = attemptType
 
   -- If not confirmed after 5 seconds, item may not have been sold.
   TickerManager:After(5, function()
@@ -78,20 +87,26 @@ end
 
 TickerManager:NewTicker(0, function()
   -- Confirm sold items.
-  for item in pairs(soldItems) do
+  for item, attemptType in pairs(soldItems) do
     if not Items:IsItemStillInBags(item) then
       soldItems[item] = nil
       profit = profit + item.price * item.quantity
-      Addon:Print(L.SOLD_ITEM:format(getLink(item)))
+
+      -- Items sold in a run are summarized. Any other sale is always printed.
+      if attemptType == "RUN" then
+        numSold = numSold + 1
+        Addon:PrintVerbose(L.SOLD_ITEM:format(getLink(item)))
+      else
+        Addon:Print(L.SOLD_ITEM:format(getLink(item)))
+      end
     end
   end
 
-  -- Print profit.
+  -- Print the summary.
   if profitReady and next(soldItems) == nil then
     profitReady = false
-    if profit > 0 then
-      Addon:Print(L.PROFIT:format(GetCoinTextureString(profit)))
-    end
+    if numSold > 0 then Addon:Print(L.ITEMS_SOLD:format(numSold)) end
+    if profit > 0 then Addon:Print(L.PROFIT:format(GetCoinTextureString(profit))) end
   end
 
   -- Confirm destroyed items.

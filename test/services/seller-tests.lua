@@ -212,6 +212,22 @@ do
   assert(Matchers:IsDeepEqual(attempted, { second, first }))
 end
 
+-- Test: fires `AttemptedToSellItem` with the `RUN` attempt type for the items of a run.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 } })
+
+  local attemptTypes = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(_, attemptType)
+    attemptTypes[#attemptTypes + 1] = attemptType
+  end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  assert(Matchers:IsDeepEqual(attemptTypes, { "RUN" }))
+end
+
 -- Test: with Safe Sell on, asks for items up to the Safe Sell limit.
 do
   local Seller, _, spies = setupContext()
@@ -598,6 +614,20 @@ do
   assert(Matchers:IsDeepEqual(spies.ContainerSpy.calls, { { "UseContainerItem", 2, 5 } }))
   assert(Matchers:IsDeepEqual(attempted, { item }))
   assert(not Seller:IsBusy())
+end
+
+-- Test: fires `AttemptedToSellItem` with the `MANUAL` attempt type for a single item.
+do
+  local Seller, Game = setupContext()
+
+  local attemptTypes = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(_, attemptType)
+    attemptTypes[#attemptTypes + 1] = attemptType
+  end)
+
+  Seller:HandleItem({ bag = 2, slot = 5 })
+
+  assert(Matchers:IsDeepEqual(attemptTypes, { "MANUAL" }))
 end
 
 -- Test: prints a message instead of selling when the merchant window is not shown.
