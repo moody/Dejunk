@@ -88,6 +88,55 @@ do
   end
 end
 
+do
+  --- Returns the full name of a Forever key like `"Given Family-Realm"`, or `nil` for any other key. Only Forever
+  --- names have a space.
+  --- @param key any
+  --- @return string? fullName
+  local function getFullName(key)
+    if type(key) ~= "string" then return nil end
+    local fullName = key:match("^([^%-]+)%-")
+    if fullName and fullName:find(" ", 1, true) then return fullName end
+    return nil
+  end
+
+  --- Version 4:
+  --- - `profiles.characterMap`: a Forever key of the form `"Given Family-Realm"` becomes `"Given Family"`.
+  ---
+  --- When keys merge, a non-default profile is kept over the default one, and between two non-default profiles the
+  --- one under the first old key in alphabetical order is kept.
+  Migrations.STEPS[4] = function(state)
+    local profiles = state.profiles
+    if type(profiles) ~= "table" or type(profiles.characterMap) ~= "table" then return state end
+
+    local characterMap = {}
+    local renamedKeys = {}
+    local fullNames = {}
+    for key, profileId in pairs(profiles.characterMap) do
+      local fullName = getFullName(key)
+      if fullName then
+        renamedKeys[#renamedKeys + 1] = key
+        fullNames[key] = fullName
+      else
+        characterMap[key] = profileId
+      end
+    end
+
+    table.sort(renamedKeys)
+    for _, key in ipairs(renamedKeys) do
+      local fullName = fullNames[key]
+      local profileId = profiles.characterMap[key]
+      local current = characterMap[fullName]
+      if current == nil or (current == DefaultStates.DEFAULT_PROFILE_ID and profileId ~= current) then
+        characterMap[fullName] = profileId
+      end
+    end
+
+    profiles.characterMap = characterMap
+    return state
+  end
+end
+
 -- ============================================================================
 -- Migrations
 -- ============================================================================
