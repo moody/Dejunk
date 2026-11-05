@@ -363,9 +363,16 @@ local function stateWithCharacterMap(characterMap)
   return { version = 3, profiles = { characterMap = characterMap } }
 end
 
--- Test: a key with a full name and a shard becomes the full name, keeping its profile.
+-- Test: a key with a full name and a realm becomes the full name, keeping its profile.
 do
-  local state = stateWithCharacterMap({ ["Given Family-ShardName"] = "profile2" })
+  local state = stateWithCharacterMap({ ["Given Family-RealmName"] = "profile2" })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
+end
+
+-- Test: a realm with a dash is removed whole.
+do
+  local state = stateWithCharacterMap({ ["Given Family-Realm-Name"] = "profile2" })
   local characterMap = runStep(state, 4).profiles.characterMap
   assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
 end
@@ -377,19 +384,19 @@ do
   assert(Matchers:IsDeepEqual(characterMap, { ["Name-Realm"] = "profile2", ["Other-Some Realm"] = "profile3" }))
 end
 
--- Test: a full name that has no shard is left unchanged.
+-- Test: a full name that has no realm is left unchanged.
 do
   local state = stateWithCharacterMap({ ["Given Family"] = "profile2" })
   local characterMap = runStep(state, 4).profiles.characterMap
   assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
 end
 
--- Test: keys of one character on different shards become one key, keeping the non-default profile.
+-- Test: keys of one character on different realms become one key, keeping the non-default profile.
 do
   local state = stateWithCharacterMap({
-    ["Given Family-ShardA"] = DefaultStates.DEFAULT_PROFILE_ID,
-    ["Given Family-ShardB"] = "profile2",
-    ["Given Family-ShardC"] = DefaultStates.DEFAULT_PROFILE_ID
+    ["Given Family-RealmA"] = DefaultStates.DEFAULT_PROFILE_ID,
+    ["Given Family-RealmB"] = "profile2",
+    ["Given Family-RealmC"] = DefaultStates.DEFAULT_PROFILE_ID
   })
   local characterMap = runStep(state, 4).profiles.characterMap
   assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
@@ -398,18 +405,18 @@ end
 -- Test: between two non-default profiles, the first old key in alphabetical order wins.
 do
   local state = stateWithCharacterMap({
-    ["Given Family-ShardB"] = "profile3",
-    ["Given Family-ShardA"] = "profile2"
+    ["Given Family-RealmB"] = "profile3",
+    ["Given Family-RealmA"] = "profile2"
   })
   local characterMap = runStep(state, 4).profiles.characterMap
   assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
 end
 
--- Test: a key with no shard keeps its profile over a key with a shard.
+-- Test: a key with no realm keeps its profile over a key with a realm.
 do
   local state = stateWithCharacterMap({
     ["Given Family"] = "profile3",
-    ["Given Family-ShardA"] = "profile2"
+    ["Given Family-RealmA"] = "profile2"
   })
   local characterMap = runStep(state, 4).profiles.characterMap
   assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile3" }))
@@ -418,8 +425,8 @@ end
 -- Test: each character keeps its own profile.
 do
   local state = stateWithCharacterMap({
-    ["Given Family-ShardA"] = "profile2",
-    ["Other Person-ShardA"] = "profile3",
+    ["Given Family-RealmA"] = "profile2",
+    ["Other Person-RealmA"] = "profile3",
     ["Name-Realm"] = "profile4"
   })
   local characterMap = runStep(state, 4).profiles.characterMap
@@ -432,7 +439,7 @@ end
 
 -- Test: other state is left unchanged.
 do
-  local state = stateWithCharacterMap({ ["Given Family-ShardA"] = "profile2" })
+  local state = stateWithCharacterMap({ ["Given Family-RealmA"] = "profile2" })
   state.global = { safeSell = true }
   state.profiles.activeProfileId = "profile2"
   state.profiles.profileMap = { profile2 = { id = "profile2" } }
