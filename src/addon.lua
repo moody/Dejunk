@@ -26,11 +26,12 @@ Addon.IS_DEBUG = false
 -- Addon - Methods
 -- ============================================================================
 
---- Returns a string in the format: `"CharName-RealmName"`.
+--- Returns a string in the format: `"CharName-RealmName"`. On Forever it is the full name alone, since the realm
+--- there is not guaranteed to be unique.
 --- @return string
 function Addon:GetCharacterKey()
-  local name = Addon.IS_FOREVER and GetUnitName("player") or UnitName("player")
-  return ("%s-%s"):format(name, GetNormalizedRealmName())
+  if Addon.IS_FOREVER then return GetUnitName("player") end
+  return ("%s-%s"):format(UnitName("player"), GetNormalizedRealmName())
 end
 
 --- Returns a 64-bit unique identifier.

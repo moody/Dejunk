@@ -353,6 +353,118 @@ do
 end
 
 -- ============================================================================
+-- Tests - Migrations: Step 4
+-- ============================================================================
+
+--- Returns a version 3 state with the given character map.
+--- @param characterMap table
+--- @return table
+local function stateWithCharacterMap(characterMap)
+  return { version = 3, profiles = { characterMap = characterMap } }
+end
+
+-- Test: a key with a full name and a shard becomes the full name, keeping its profile.
+do
+  local state = stateWithCharacterMap({ ["Given Family-ShardName"] = "profile2" })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
+end
+
+-- Test: keys without a space in the name are left unchanged.
+do
+  local state = stateWithCharacterMap({ ["Name-Realm"] = "profile2", ["Other-Some Realm"] = "profile3" })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Name-Realm"] = "profile2", ["Other-Some Realm"] = "profile3" }))
+end
+
+-- Test: a full name that has no shard is left unchanged.
+do
+  local state = stateWithCharacterMap({ ["Given Family"] = "profile2" })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
+end
+
+-- Test: keys of one character on different shards become one key, keeping the non-default profile.
+do
+  local state = stateWithCharacterMap({
+    ["Given Family-ShardA"] = DefaultStates.DEFAULT_PROFILE_ID,
+    ["Given Family-ShardB"] = "profile2",
+    ["Given Family-ShardC"] = DefaultStates.DEFAULT_PROFILE_ID
+  })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
+end
+
+-- Test: between two non-default profiles, the first old key in alphabetical order wins.
+do
+  local state = stateWithCharacterMap({
+    ["Given Family-ShardB"] = "profile3",
+    ["Given Family-ShardA"] = "profile2"
+  })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile2" }))
+end
+
+-- Test: a key with no shard keeps its profile over a key with a shard.
+do
+  local state = stateWithCharacterMap({
+    ["Given Family"] = "profile3",
+    ["Given Family-ShardA"] = "profile2"
+  })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, { ["Given Family"] = "profile3" }))
+end
+
+-- Test: each character keeps its own profile.
+do
+  local state = stateWithCharacterMap({
+    ["Given Family-ShardA"] = "profile2",
+    ["Other Person-ShardA"] = "profile3",
+    ["Name-Realm"] = "profile4"
+  })
+  local characterMap = runStep(state, 4).profiles.characterMap
+  assert(Matchers:IsDeepEqual(characterMap, {
+    ["Given Family"] = "profile2",
+    ["Other Person"] = "profile3",
+    ["Name-Realm"] = "profile4"
+  }))
+end
+
+-- Test: other state is left unchanged.
+do
+  local state = stateWithCharacterMap({ ["Given Family-ShardA"] = "profile2" })
+  state.global = { safeSell = true }
+  state.profiles.activeProfileId = "profile2"
+  state.profiles.profileMap = { profile2 = { id = "profile2" } }
+
+  local expected = Wux:DeepCopy(state)
+  expected.version = 4
+  expected.profiles.characterMap = { ["Given Family"] = "profile2" }
+
+  assert(Matchers:IsDeepEqual(runStep(state, 4), expected))
+end
+
+-- Test: missing data is tolerated and stays missing.
+do
+  local cases = {
+    noProfiles = { version = 3, global = {} },
+    profilesNotATable = { version = 3, profiles = "corrupt" },
+    noCharacterMap = { version = 3, profiles = {} },
+    characterMapNotATable = { version = 3, profiles = { characterMap = "corrupt" } },
+    emptyCharacterMap = { version = 3, profiles = { characterMap = {} } }
+  }
+
+  for name, state in pairs(cases) do
+    local expected = Wux:DeepCopy(state)
+    expected.version = 4
+
+    local migrated = runStep(state, 4)
+
+    assert(Matchers:IsDeepEqual(migrated, expected), name)
+  end
+end
+
+-- ============================================================================
 -- Tests - Migrations fixtures
 -- ============================================================================
 
