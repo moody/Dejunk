@@ -204,7 +204,7 @@ do
   spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ first, second })
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempted[#attempted + 1] = attempt.item end)
 
   Seller:Start()
   advanceSales(Game, 2)
@@ -218,14 +218,29 @@ do
   spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 } })
 
   local attemptTypes = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(_, attemptType)
-    attemptTypes[#attemptTypes + 1] = attemptType
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt)
+    attemptTypes[#attemptTypes + 1] = attempt.type
   end)
 
   Seller:Start()
   advanceSales(Game, 1)
 
   assert(Matchers:IsDeepEqual(attemptTypes, { "RUN" }))
+end
+
+-- Test: fires `AttemptedToSellItem` with the reason the junk filter gave for the items of a run.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkItemsCacheSpy:GetStub("GetSellableJunkItems"):Returns({ { bag = 0, slot = 1 } })
+  spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Returns(true, "REASON")
+
+  local reasons = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) reasons[#reasons + 1] = attempt.reason end)
+
+  Seller:Start()
+  advanceSales(Game, 1)
+
+  assert(Matchers:IsDeepEqual(reasons, { "REASON" }))
 end
 
 -- Test: with Safe Sell on, asks for items up to the Safe Sell limit.
@@ -262,7 +277,7 @@ do
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= gone end)
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempted[#attempted + 1] = attempt.item end)
 
   Seller:Start()
   advanceSales(Game, 3)
@@ -284,7 +299,7 @@ do
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item == locked end)
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempted[#attempted + 1] = attempt.item end)
 
   Seller:Start()
   advanceSales(Game, 3)
@@ -306,7 +321,7 @@ do
   spies.ItemsSpy:GetStub("IsItemRefundable"):Invokes(function(_, item) return item == refundable end)
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempted[#attempted + 1] = attempt.item end)
 
   Seller:Start()
   advanceSales(Game, 3)
@@ -341,7 +356,7 @@ do
   spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Invokes(function(_, item) return item ~= stale end)
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(item) attempted[#attempted + 1] = item end)
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempted[#attempted + 1] = attempt.item end)
 
   Seller:Start()
   advanceSales(Game, 3)
@@ -605,8 +620,8 @@ do
   local item = { bag = 2, slot = 5 }
 
   local attempted = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attemptedItem)
-    attempted[#attempted + 1] = attemptedItem
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt)
+    attempted[#attempted + 1] = attempt.item
   end)
 
   Seller:HandleItem(item)
@@ -621,13 +636,40 @@ do
   local Seller, Game = setupContext()
 
   local attemptTypes = {}
-  Game.EventManager:On(Game.E.AttemptedToSellItem, function(_, attemptType)
-    attemptTypes[#attemptTypes + 1] = attemptType
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt)
+    attemptTypes[#attemptTypes + 1] = attempt.type
   end)
 
   Seller:HandleItem({ bag = 2, slot = 5 })
 
   assert(Matchers:IsDeepEqual(attemptTypes, { "MANUAL" }))
+end
+
+-- Test: fires `AttemptedToSellItem` with the reason the junk filter gave for a single item that is sellable junk.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Returns(true, "REASON")
+
+  local reasons = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) reasons[#reasons + 1] = attempt.reason end)
+
+  Seller:HandleItem({ bag = 2, slot = 5 })
+
+  assert(Matchers:IsDeepEqual(reasons, { "REASON" }))
+end
+
+-- Test: fires `AttemptedToSellItem` with no reason for a single item that the junk filter does not call sellable junk.
+do
+  local Seller, Game, spies = setupContext()
+  spies.JunkFilterSpy:GetStub("IsSellableJunkItem"):Returns(false, "REASON")
+
+  local attempts = {}
+  Game.EventManager:On(Game.E.AttemptedToSellItem, function(attempt) attempts[#attempts + 1] = attempt end)
+
+  Seller:HandleItem({ bag = 2, slot = 5 })
+
+  assert(#attempts == 1)
+  assert(attempts[1].reason == nil)
 end
 
 -- Test: prints a message instead of selling when the merchant window is not shown.

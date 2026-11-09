@@ -14,6 +14,15 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Seller
 local Seller = Addon:GetModule("Seller")
 
+--- How an attempt to sell started: as part of a run, or on a single item.
+--- @alias SellAttemptType "RUN" | "MANUAL"
+
+--- An attempt to sell an item. `AttemptedToSellItem` and the events that report its outcome carry it.
+--- @class SellAttempt
+--- @field item BagItem
+--- @field type SellAttemptType
+--- @field reason string? Why the junk filter called the item junk, or `nil` if it did not.
+
 --- The most items Safe Sell sells in one run.
 --- @type integer
 Seller.SAFE_SELL_LIMIT = 12
@@ -65,16 +74,19 @@ end)
 -- Local Functions
 -- ============================================================================
 
---- Sells the item and fires `AttemptedToSellItem` with the item and the attempt type, unless it is gone from the
---- bags, locked, or refundable. Returns `true` if a sale was attempted.
+--- Sells the item and fires `AttemptedToSellItem` with a `SellAttempt`, unless it is gone from the bags, locked, or
+--- refundable. Returns `true` if a sale was attempted.
 --- @param item BagItem
 --- @param attemptType SellAttemptType
+--- @param reason string? Why the item is being sold.
 --- @return boolean wasAttempted
-local function handleItem(item, attemptType)
+local function handleItem(item, attemptType, reason)
   if Items:IsItemStillInBags(item) and not Items:IsItemLocked(item) and not Items:IsItemRefundable(item) then
     C_Container.UseContainerItem(item.bag, item.slot)
 
-    EventManager:Fire(E.AttemptedToSellItem, item, attemptType)
+    --- @type SellAttempt
+    local attempt = { item = item, type = attemptType, reason = reason }
+    EventManager:Fire(E.AttemptedToSellItem, attempt)
     return true
   end
 
@@ -217,7 +229,8 @@ function RunState:Sell(onWaitEnded)
       end
 
       -- Skip an item that stopped being junk since the fetch.
-      if JunkFilter:IsSellableJunkItem(item) and handleItem(item, "RUN") then
+      local isSellable, reason = JunkFilter:IsSellableJunkItem(item)
+      if isSellable and handleItem(item, "RUN", reason) then
         self:AddAttempt(item)
       end
     end)
@@ -301,7 +314,8 @@ function Seller:HandleItem(item)
     return Addon:Print(L.CANNOT_SELL_WITHOUT_MERCHANT)
   end
 
-  handleItem(item, "MANUAL")
+  local isSellable, reason = JunkFilter:IsSellableJunkItem(item)
+  handleItem(item, "MANUAL", isSellable and reason or nil)
 end
 
 --- Returns `true` if a run is waiting for the cache or selling.

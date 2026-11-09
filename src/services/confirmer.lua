@@ -10,18 +10,17 @@ local TickerManager = Addon:GetModule("TickerManager")
 --- @class Confirmer
 local Confirmer = Addon:GetModule("Confirmer")
 
---- How an attempt to sell started: as part of a run, or on a single item. `AttemptedToSellItem` carries it.
---- @alias SellAttemptType "RUN" | "MANUAL"
-
 local profit = 0
 local profitReady = false
 local numSold = 0
 
---- The items attempted to sell that are not confirmed yet, by how the attempt started.
---- @type table<BagItem, SellAttemptType>
-local soldItems = {}
+--- The sell attempts that are not confirmed yet.
+--- @type table<SellAttempt, boolean>
+local sellAttempts = {}
 
-local destroyedItems = {}
+--- The destroy attempts that are not confirmed yet.
+--- @type table<DestroyAttempt, boolean>
+local destroyAttempts = {}
 
 -- ============================================================================
 -- Events
@@ -37,47 +36,49 @@ EventManager:On(E.SellerStopped, function()
   profitReady = true
 end)
 
-EventManager:On(E.AttemptedToSellItem, function(item, attemptType)
-  soldItems[item] = attemptType
+EventManager:On(E.AttemptedToSellItem, function(attempt)
+  sellAttempts[attempt] = true
 
   -- If not confirmed after 5 seconds, item may not have been sold.
   TickerManager:After(5, function()
-    if soldItems[item] then
-      soldItems[item] = nil
-      Addon:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item.link))
-      EventManager:Fire(E.MayNotHaveSoldItem, item)
+    if sellAttempts[attempt] then
+      sellAttempts[attempt] = nil
+      Addon:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(attempt.item.link))
+      EventManager:Fire(E.MayNotHaveSoldItem, attempt)
     end
   end)
 end)
 
-EventManager:On(E.AttemptedToDestroyItem, function(item)
-  destroyedItems[item] = true
+EventManager:On(E.AttemptedToDestroyItem, function(attempt)
+  destroyAttempts[attempt] = true
 
   -- If not confirmed after 5 seconds, item may not have been destroyed.
   TickerManager:After(5, function()
-    if destroyedItems[item] then
-      destroyedItems[item] = nil
-      Addon:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item.link))
-      EventManager:Fire(E.MayNotHaveDestroyedItem, item)
+    if destroyAttempts[attempt] then
+      destroyAttempts[attempt] = nil
+      Addon:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(attempt.item.link))
+      EventManager:Fire(E.MayNotHaveDestroyedItem, attempt)
     end
   end)
 end)
 
 -- If an item becomes unlocked after an attempt, then the operation failed.
 EventManager:On(E.Wow.ItemUnlocked, function(bag, slot)
-  for item in pairs(soldItems) do
+  for attempt in pairs(sellAttempts) do
+    local item = attempt.item
     if item.bag == bag and item.slot == slot then
-      soldItems[item] = nil
+      sellAttempts[attempt] = nil
       Addon:Print(L.FAILED_TO_SELL_ITEM:format(item.link))
-      EventManager:Fire(E.FailedToSellItem, item)
+      EventManager:Fire(E.FailedToSellItem, attempt)
     end
   end
 
-  for item in pairs(destroyedItems) do
+  for attempt in pairs(destroyAttempts) do
+    local item = attempt.item
     if item.bag == bag and item.slot == slot then
-      destroyedItems[item] = nil
+      destroyAttempts[attempt] = nil
       Addon:Print(L.FAILED_TO_DESTROY_ITEM:format(item.link))
-      EventManager:Fire(E.FailedToDestroyItem, item)
+      EventManager:Fire(E.FailedToDestroyItem, attempt)
     end
   end
 end)
@@ -92,25 +93,26 @@ end
 
 TickerManager:NewTicker(0, function()
   -- Confirm sold items.
-  for item, attemptType in pairs(soldItems) do
+  for attempt in pairs(sellAttempts) do
+    local item = attempt.item
     if not Items:IsItemStillInBags(item) then
-      soldItems[item] = nil
+      sellAttempts[attempt] = nil
       profit = profit + item.price * item.quantity
 
       -- Items sold in a run are summarized. Any other sale is always printed.
-      if attemptType == "RUN" then
+      if attempt.type == "RUN" then
         numSold = numSold + 1
         Addon:PrintVerbose(L.SOLD_ITEM:format(getLink(item)))
       else
         Addon:Print(L.SOLD_ITEM:format(getLink(item)))
       end
 
-      EventManager:Fire(E.ConfirmedItemSold, item)
+      EventManager:Fire(E.ConfirmedItemSold, attempt)
     end
   end
 
   -- Print the summary.
-  if profitReady and next(soldItems) == nil then
+  if profitReady and next(sellAttempts) == nil then
     profitReady = false
     if numSold > 0 then
       local itemsSoldText = Colors.Yellow(L.ITEMS_SOLD:format(Colors.White(numSold)))
@@ -120,15 +122,16 @@ TickerManager:NewTicker(0, function()
   end
 
   -- Confirm destroyed items.
-  for item in pairs(destroyedItems) do
+  for attempt in pairs(destroyAttempts) do
+    local item = attempt.item
     if not Items:IsItemStillInBags(item) then
-      destroyedItems[item] = nil
+      destroyAttempts[attempt] = nil
       Addon:Print(L.DESTROYED_ITEM:format(getLink(item)))
-      EventManager:Fire(E.ConfirmedItemDestroyed, item)
+      EventManager:Fire(E.ConfirmedItemDestroyed, attempt)
     end
   end
 end)
 
 function Confirmer:IsBusy()
-  return next(soldItems) ~= nil or next(destroyedItems) ~= nil
+  return next(sellAttempts) ~= nil or next(destroyAttempts) ~= nil
 end

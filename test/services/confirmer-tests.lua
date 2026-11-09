@@ -70,14 +70,29 @@ local function createItem(link, price)
   return { bag = 0, slot = 1, link = link, quantity = 1, price = price }
 end
 
---- Returns a list that receives the item of every `eventName` event fired in the game.
+--- Returns an attempt to sell the item.
+--- @param item BagItem
+--- @param attemptType SellAttemptType
+--- @return SellAttempt
+local function createSellAttempt(item, attemptType)
+  return { item = item, type = attemptType }
+end
+
+--- Returns an attempt to destroy the item.
+--- @param item BagItem
+--- @return DestroyAttempt
+local function createDestroyAttempt(item)
+  return { item = item }
+end
+
+--- Returns a list that receives the attempt of every `eventName` event fired in the game.
 --- @param Game TestGameInstance
 --- @param eventName string
---- @return BagItem[] items
-local function recordEventItems(Game, eventName)
-  local items = {}
-  Game.EventManager:On(eventName, function(item) items[#items + 1] = item end)
-  return items
+--- @return (SellAttempt | DestroyAttempt)[] attempts
+local function recordEventAttempts(Game, eventName)
+  local attempts = {}
+  Game.EventManager:On(eventName, function(attempt) attempts[#attempts + 1] = attempt end)
+  return attempts
 end
 
 -- ============================================================================
@@ -90,7 +105,7 @@ do
   local item = createItem("link", 10)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "RUN"))
   removeFromBags(item)
   Game:Advance(CONFIRM_SECONDS)
 
@@ -105,8 +120,8 @@ do
   local itemB = createItem("linkB", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemA, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemB, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemA, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemB, "RUN"))
   removeFromBags(itemA)
   removeFromBags(itemB)
   Game.EventManager:Fire(Game.E.SellerStopped)
@@ -122,8 +137,8 @@ do
   local itemB = createItem("linkB", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemA, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemB, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemA, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemB, "RUN"))
   removeFromBags(itemA)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
@@ -144,8 +159,8 @@ do
   failedItem.slot = 2
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, soldItem, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, failedItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(soldItem, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(failedItem, "RUN"))
   removeFromBags(soldItem)
   Game:Fire(Game.E.Wow.ItemUnlocked, failedItem.bag, failedItem.slot)
   Game.EventManager:Fire(Game.E.SellerStopped)
@@ -163,7 +178,7 @@ do
   local item = createItem("link", 10)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "RUN"))
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
 
@@ -177,13 +192,13 @@ do
   local secondItem = createItem("second", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, firstItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(firstItem, "RUN"))
   removeFromBags(firstItem)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, secondItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(secondItem, "RUN"))
   removeFromBags(secondItem)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
@@ -201,7 +216,7 @@ do
   local Game, AddonSpy, removeFromBags = setupContext()
   local item = createItem("link", 10)
 
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "MANUAL"))
   removeFromBags(item)
   Game:Advance(CONFIRM_SECONDS)
 
@@ -213,96 +228,96 @@ end
 -- Tests - Confirmer, outcome events
 -- ============================================================================
 
--- Test: `ConfirmedItemSold` fires with the item once it has left the bags.
+-- Test: `ConfirmedItemSold` fires with the sell attempt once its item has left the bags.
 do
   local Game, _, removeFromBags = setupContext()
-  local item = createItem("link", 10)
-  local items = recordEventItems(Game, Game.E.ConfirmedItemSold)
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local attempts = recordEventAttempts(Game, Game.E.ConfirmedItemSold)
 
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#items == 0)
+  assert(#attempts == 0)
 
-  removeFromBags(item)
+  removeFromBags(attempt.item)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#items == 1)
-  assert(items[1] == item)
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
 end
 
--- Test: `ConfirmedItemDestroyed` fires with the item once it has left the bags.
+-- Test: `ConfirmedItemDestroyed` fires with the destroy attempt once its item has left the bags.
 do
   local Game, _, removeFromBags = setupContext()
-  local item = createItem("link", 10)
-  local items = recordEventItems(Game, Game.E.ConfirmedItemDestroyed)
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local attempts = recordEventAttempts(Game, Game.E.ConfirmedItemDestroyed)
 
-  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#items == 0)
+  assert(#attempts == 0)
 
-  removeFromBags(item)
+  removeFromBags(attempt.item)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#items == 1)
-  assert(items[1] == item)
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
 end
 
--- Test: `FailedToSellItem` fires with the item when it unlocks, and `ConfirmedItemSold` does not.
+-- Test: `FailedToSellItem` fires with the sell attempt when its item unlocks, not `ConfirmedItemSold`.
 do
   local Game = setupContext()
-  local item = createItem("link", 10)
-  local failedItems = recordEventItems(Game, Game.E.FailedToSellItem)
-  local soldItems = recordEventItems(Game, Game.E.ConfirmedItemSold)
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local failedAttempts = recordEventAttempts(Game, Game.E.FailedToSellItem)
+  local soldAttempts = recordEventAttempts(Game, Game.E.ConfirmedItemSold)
 
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
-  Game:Fire(Game.E.Wow.ItemUnlocked, item.bag, item.slot)
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
+  Game:Fire(Game.E.Wow.ItemUnlocked, attempt.item.bag, attempt.item.slot)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#failedItems == 1)
-  assert(failedItems[1] == item)
-  assert(#soldItems == 0)
+  assert(#failedAttempts == 1)
+  assert(failedAttempts[1] == attempt)
+  assert(#soldAttempts == 0)
 end
 
--- Test: `FailedToDestroyItem` fires with the item when it unlocks, and `ConfirmedItemDestroyed` does not.
+-- Test: `FailedToDestroyItem` fires with the destroy attempt when its item unlocks, not `ConfirmedItemDestroyed`.
 do
   local Game = setupContext()
-  local item = createItem("link", 10)
-  local failedItems = recordEventItems(Game, Game.E.FailedToDestroyItem)
-  local destroyedItems = recordEventItems(Game, Game.E.ConfirmedItemDestroyed)
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local failedAttempts = recordEventAttempts(Game, Game.E.FailedToDestroyItem)
+  local destroyedAttempts = recordEventAttempts(Game, Game.E.ConfirmedItemDestroyed)
 
-  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
-  Game:Fire(Game.E.Wow.ItemUnlocked, item.bag, item.slot)
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
+  Game:Fire(Game.E.Wow.ItemUnlocked, attempt.item.bag, attempt.item.slot)
   Game:Advance(CONFIRM_SECONDS)
 
-  assert(#failedItems == 1)
-  assert(failedItems[1] == item)
-  assert(#destroyedItems == 0)
+  assert(#failedAttempts == 1)
+  assert(failedAttempts[1] == attempt)
+  assert(#destroyedAttempts == 0)
 end
 
--- Test: `MayNotHaveSoldItem` fires with the item when it is not confirmed in time.
+-- Test: `MayNotHaveSoldItem` fires with the sell attempt when it is not confirmed in time.
 do
   local Game = setupContext()
-  local item = createItem("link", 10)
-  local items = recordEventItems(Game, Game.E.MayNotHaveSoldItem)
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local attempts = recordEventAttempts(Game, Game.E.MayNotHaveSoldItem)
 
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
   Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
 
-  assert(#items == 1)
-  assert(items[1] == item)
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
 end
 
--- Test: `MayNotHaveDestroyedItem` fires with the item when it is not confirmed in time.
+-- Test: `MayNotHaveDestroyedItem` fires with the destroy attempt when it is not confirmed in time.
 do
   local Game = setupContext()
-  local item = createItem("link", 10)
-  local items = recordEventItems(Game, Game.E.MayNotHaveDestroyedItem)
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local attempts = recordEventAttempts(Game, Game.E.MayNotHaveDestroyedItem)
 
-  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
   Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
 
-  assert(#items == 1)
-  assert(items[1] == item)
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
 end
