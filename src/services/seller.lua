@@ -179,7 +179,7 @@ end
 
 --- Records that a sale of `item` was attempted. Later fetches leave out its slot while it holds the same item.
 --- @param item BagItem
-function RunState:AddAttempt(item)
+function RunState:MarkAttempted(item)
   self.attempted[BagItemsCache:GetSlotKey(item.bag, item.slot)] = item.id
   self.numAttempted = self.numAttempted + 1
   self.numBatchAttempts = self.numBatchAttempts + 1
@@ -231,7 +231,7 @@ function RunState:Sell(onWaitEnded)
       -- Skip an item that stopped being junk since the fetch.
       local isSellable, reason = JunkFilter:IsSellableJunkItem(item)
       if isSellable and handleItem(item, "RUN", reason) then
-        self:AddAttempt(item)
+        self:MarkAttempted(item)
       end
     end)
     return true
