@@ -47,8 +47,11 @@ local function setupContext()
   Context:SetModule("Colors", Colors)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
+    DESTROYED_ITEM = "DESTROYED_ITEM %s",
+    FAILED_TO_DESTROY_ITEM = "FAILED_TO_DESTROY_ITEM %s",
     FAILED_TO_SELL_ITEM = "FAILED_TO_SELL_ITEM %s",
     ITEMS_SOLD = "ITEMS_SOLD %s",
+    MAY_NOT_HAVE_DESTROYED_ITEM = "MAY_NOT_HAVE_DESTROYED_ITEM %s",
     MAY_NOT_HAVE_SOLD_ITEM = "MAY_NOT_HAVE_SOLD_ITEM %s",
     PROFIT = "PROFIT %s",
     SOLD_ITEM = "SOLD_ITEM %s"
@@ -65,6 +68,16 @@ end
 --- @return BagItem
 local function createItem(link, price)
   return { bag = 0, slot = 1, link = link, quantity = 1, price = price }
+end
+
+--- Returns a list that receives the item of every `eventName` event fired in the game.
+--- @param Game TestGameInstance
+--- @param eventName string
+--- @return BagItem[] items
+local function recordEventItems(Game, eventName)
+  local items = {}
+  Game.EventManager:On(eventName, function(item) items[#items + 1] = item end)
+  return items
 end
 
 -- ============================================================================
@@ -194,4 +207,102 @@ do
 
   assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "SOLD_ITEM link" } }))
   assert(#AddonSpy:GetStub("PrintVerbose").calls == 0)
+end
+
+-- ============================================================================
+-- Tests - Confirmer, outcome events
+-- ============================================================================
+
+-- Test: `ConfirmedItemSold` fires with the item once it has left the bags.
+do
+  local Game, _, removeFromBags = setupContext()
+  local item = createItem("link", 10)
+  local items = recordEventItems(Game, Game.E.ConfirmedItemSold)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#items == 0)
+
+  removeFromBags(item)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#items == 1)
+  assert(items[1] == item)
+end
+
+-- Test: `ConfirmedItemDestroyed` fires with the item once it has left the bags.
+do
+  local Game, _, removeFromBags = setupContext()
+  local item = createItem("link", 10)
+  local items = recordEventItems(Game, Game.E.ConfirmedItemDestroyed)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#items == 0)
+
+  removeFromBags(item)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#items == 1)
+  assert(items[1] == item)
+end
+
+-- Test: `FailedToSellItem` fires with the item when it unlocks, and `ConfirmedItemSold` does not.
+do
+  local Game = setupContext()
+  local item = createItem("link", 10)
+  local failedItems = recordEventItems(Game, Game.E.FailedToSellItem)
+  local soldItems = recordEventItems(Game, Game.E.ConfirmedItemSold)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game:Fire(Game.E.Wow.ItemUnlocked, item.bag, item.slot)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#failedItems == 1)
+  assert(failedItems[1] == item)
+  assert(#soldItems == 0)
+end
+
+-- Test: `FailedToDestroyItem` fires with the item when it unlocks, and `ConfirmedItemDestroyed` does not.
+do
+  local Game = setupContext()
+  local item = createItem("link", 10)
+  local failedItems = recordEventItems(Game, Game.E.FailedToDestroyItem)
+  local destroyedItems = recordEventItems(Game, Game.E.ConfirmedItemDestroyed)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
+  Game:Fire(Game.E.Wow.ItemUnlocked, item.bag, item.slot)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#failedItems == 1)
+  assert(failedItems[1] == item)
+  assert(#destroyedItems == 0)
+end
+
+-- Test: `MayNotHaveSoldItem` fires with the item when it is not confirmed in time.
+do
+  local Game = setupContext()
+  local item = createItem("link", 10)
+  local items = recordEventItems(Game, Game.E.MayNotHaveSoldItem)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
+
+  assert(#items == 1)
+  assert(items[1] == item)
+end
+
+-- Test: `MayNotHaveDestroyedItem` fires with the item when it is not confirmed in time.
+do
+  local Game = setupContext()
+  local item = createItem("link", 10)
+  local items = recordEventItems(Game, Game.E.MayNotHaveDestroyedItem)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, item)
+  Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
+
+  assert(#items == 1)
+  assert(items[1] == item)
 end

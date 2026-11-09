@@ -45,6 +45,7 @@ EventManager:On(E.AttemptedToSellItem, function(item, attemptType)
     if soldItems[item] then
       soldItems[item] = nil
       Addon:Print(L.MAY_NOT_HAVE_SOLD_ITEM:format(item.link))
+      EventManager:Fire(E.MayNotHaveSoldItem, item)
     end
   end)
 end)
@@ -57,6 +58,7 @@ EventManager:On(E.AttemptedToDestroyItem, function(item)
     if destroyedItems[item] then
       destroyedItems[item] = nil
       Addon:Print(L.MAY_NOT_HAVE_DESTROYED_ITEM:format(item.link))
+      EventManager:Fire(E.MayNotHaveDestroyedItem, item)
     end
   end)
 end)
@@ -67,6 +69,7 @@ EventManager:On(E.Wow.ItemUnlocked, function(bag, slot)
     if item.bag == bag and item.slot == slot then
       soldItems[item] = nil
       Addon:Print(L.FAILED_TO_SELL_ITEM:format(item.link))
+      EventManager:Fire(E.FailedToSellItem, item)
     end
   end
 
@@ -74,6 +77,7 @@ EventManager:On(E.Wow.ItemUnlocked, function(bag, slot)
     if item.bag == bag and item.slot == slot then
       destroyedItems[item] = nil
       Addon:Print(L.FAILED_TO_DESTROY_ITEM:format(item.link))
+      EventManager:Fire(E.FailedToDestroyItem, item)
     end
   end
 end)
@@ -100,6 +104,8 @@ TickerManager:NewTicker(0, function()
       else
         Addon:Print(L.SOLD_ITEM:format(getLink(item)))
       end
+
+      EventManager:Fire(E.ConfirmedItemSold, item)
     end
   end
 
@@ -118,6 +124,7 @@ TickerManager:NewTicker(0, function()
     if not Items:IsItemStillInBags(item) then
       destroyedItems[item] = nil
       Addon:Print(L.DESTROYED_ITEM:format(getLink(item)))
+      EventManager:Fire(E.ConfirmedItemDestroyed, item)
     end
   end
 end)
