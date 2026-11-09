@@ -227,7 +227,7 @@ addPlugin({
     return _G.ElvUI_ContainerFrameEditBox and _G.ElvUI_ContainerFrameEditBox:GetText() or ""
   end,
   getBagSlotFrame = function(bag, slot)
-    bag = Addon.IS_RETAIL and bag or (bag - 1)
+    bag = (Addon.IS_RETAIL or Addon.IS_FOREVER) and bag or (bag - 1)
     return _G[("ElvUI_ContainerFrameBag%sSlot%s"):format(bag, slot)]
   end
 })
