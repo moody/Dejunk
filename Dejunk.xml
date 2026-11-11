@@ -69,6 +69,7 @@
   <Script file="src\services\seller.lua"/>
   <Script file="src\services\destroyer.lua"/>
   <Script file="src\services\confirmer.lua"/>
+  <Script file="src\services\logger.lua"/>
 
   <!-- UI -->
   <Script file="src\ui\item-icons.lua"/>
