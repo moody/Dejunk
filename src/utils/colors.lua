@@ -67,6 +67,13 @@ Colors.Red = createColor("FFE34F4F")
 Colors.White = createColor("FFFFFFFF")
 Colors.Yellow = createColor("FFE3E34F")
 
+--- Returns `text` with color codes removed.
+--- @param text? any
+--- @return string
+function Colors:Strip(text)
+  return (tostring(text or ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""))
+end
+
 -- =============================================================================
 -- Colors - Item Quality
 -- =============================================================================
