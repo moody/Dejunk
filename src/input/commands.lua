@@ -57,6 +57,7 @@ function Commands.help()
   printCommand("destroy", L.COMMAND_DESCRIPTION_DESTROY)
   printCommand("junk", L.COMMAND_DESCRIPTION_JUNK)
   printCommand("loot", L.COMMAND_DESCRIPTION_LOOT)
+  printCommand("log", L.COMMAND_DESCRIPTION_LOG)
   printCommand("profiles", L.COMMAND_DESCRIPTION_PROFILES)
   printCommand("help", L.COMMAND_DESCRIPTION_HELP)
 end
@@ -74,6 +75,11 @@ end
 --- Toggles the `LootableFrame`.
 function Commands.loot()
   LootableFrame:Toggle()
+end
+
+--- Toggles the `MainWindow` on the log screen.
+function Commands.log()
+  MainWindow:Toggle("LOG")
 end
 
 --- Toggles the `MainWindow` on the profiles screen.
