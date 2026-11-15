@@ -10,6 +10,7 @@ local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local LootableFrame = Addon:GetModule("LootableFrame")
+local MainWindowLog = Addon:GetModule("MainWindowLog")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
@@ -27,7 +28,7 @@ local Components = {}
 -- Controller
 -- ============================================================================
 
---- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS"
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS" | "LOG"
 
 --- @class SidebarRowOptions
 --- @field key SidebarRowKey
@@ -328,6 +329,12 @@ Controller:AddSidebarRow({
   key = "KEYBINDINGS",
   labelText = L.KEYBINDINGS,
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateKeybindingsPanel()) end
+})
+
+Controller:AddSidebarRow({
+  key = "LOG",
+  labelText = L.LOG,
+  createScreen = function(screen) screen:AttachComponent(MainWindowLog:CreateLogPanel()) end
 })
 
 -- ============================================================================

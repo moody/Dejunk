@@ -108,6 +108,7 @@
   <Script file="src\ui\components\item-list.lua"/>
   <Script file="src\ui\components\keybinding-card.lua"/>
   <Script file="src\ui\components\list-panel.lua"/>
+  <Script file="src\ui\components\log-card.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
   <Script file="src\ui\components\profile-card.lua"/>
@@ -128,6 +129,7 @@
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profiles.lua"/>
   <Script file="src\ui\screens\main-window\options\keybindings.lua"/>
+  <Script file="src\ui\screens\main-window\log.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
   <Script file="src\ui\screens\transport-frame.lua"/>

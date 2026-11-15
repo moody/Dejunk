@@ -142,6 +142,18 @@ B.Strings = {
   --- Error message shown when a vendor does not buy an item.
   --- @type string
   VENDOR_DOESNT_BUY_ERROR_TEXT = ERR_VENDOR_DOESNT_BUY or throw("ERR_VENDOR_DOESNT_BUY"),
+
+  --- Format of a number of hours, abbreviated. Takes the number.
+  --- @type string
+  HOURS_ABBREVIATED_TEXT = HOUR_ONELETTER_ABBR or throw("HOUR_ONELETTER_ABBR"),
+
+  --- Format of a number of minutes, abbreviated. Takes the number.
+  --- @type string
+  MINUTES_ABBREVIATED_TEXT = MINUTE_ONELETTER_ABBR or throw("MINUTE_ONELETTER_ABBR"),
+
+  --- Format of a number of seconds, abbreviated. Takes the number.
+  --- @type string
+  SECONDS_ABBREVIATED_TEXT = SECOND_ONELETTER_ABBR or throw("SECOND_ONELETTER_ABBR"),
 }
 
 -- =============================================================================
