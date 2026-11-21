@@ -168,6 +168,19 @@ local function getEmptyText()
   return L.NO_LOG_ENTRIES
 end
 
+--- Returns the totals of this session.
+--- @return string
+local function getTotalsText()
+  local totals = Logger:GetTotals()
+
+  return Addon:Concat(
+    " · ",
+    Colors.Grey(L.ITEMS_SOLD:format(Colors.White(totals.numSold))),
+    Colors.Grey(L.PROFIT:format(Colors.White(B.Money:GetCoinText(totals.profit)))),
+    Colors.Grey(L.ITEMS_DESTROYED:format(Colors.White(totals.numDestroyed)))
+  )
+end
+
 --- Fills the tooltip with the item.
 --- @param entry LogEntry
 --- @param tooltip Tooltip
@@ -226,6 +239,14 @@ function MainWindowLog:CreateLogPanel()
       card:SetEntry(entry)
     end
   }))
+
+  local totalsLabel = panel.Content:AttachComponent(ComponentFactory:Text({
+    text = getTotalsText(),
+    fontObject = B.FontObjects.Small,
+    justifyH = "CENTER"
+  }))
+
+  EventManager:On(E.ItemLogged, function() totalsLabel:SetText(getTotalsText()) end)
 
   return panel
 end
