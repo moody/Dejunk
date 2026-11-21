@@ -17,7 +17,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field getEntries fun(): Entry[] Returns what to list, in order.
 --- @field createCard fun(): Card Creates one card.
 --- @field setCard fun(card: Card, entry: Entry?) Shows an entry on a card. `entry` is `nil` for a card with nothing to show.
---- @field emptyText? string Shown while there are no entries. Defaults to `L.NO_ITEMS`.
+--- @field emptyText? string | fun(): string Shown while there are no entries. A function is called on each refresh. Defaults to `L.NO_ITEMS`.
 --- @field onMouseDown? fun() Called when the list is clicked outside of a card.
 
 -- =============================================================================
@@ -56,7 +56,7 @@ function ComponentFactory:CardList(options)
       emptyText = frame:CreateFontString("$parent_EmptyText", "ARTWORK", B.FontObjects.Normal:GetName())
       emptyText:SetPoint("CENTER")
       emptyText:SetTextColor(Colors.Grey:GetRGB())
-      emptyText:SetText(options.emptyText or L.NO_ITEMS)
+      emptyText:SetText(type(options.emptyText) == "string" and options.emptyText or L.NO_ITEMS)
 
       return frame
     end
@@ -76,6 +76,7 @@ function ComponentFactory:CardList(options)
     local entries = options.getEntries()
     local count = #entries
     emptyText:SetShown(count == 0)
+    if count == 0 and type(options.emptyText) == "function" then emptyText:SetText(options.emptyText()) end
 
     local maxOffset = math.max(count - options.cardCount, 0)
     local _, sliderMax = slider:GetMinMaxValues()

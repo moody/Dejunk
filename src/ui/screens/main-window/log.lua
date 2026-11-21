@@ -2,6 +2,8 @@ local Addon = select(2, ...) ---@type Addon
 local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local L = Addon:GetModule("Locale")
 local Logger = Addon:GetModule("Logger")
 local StateManager = Addon:GetModule("StateManager")
@@ -20,6 +22,51 @@ local OutcomeStyles = {
   [Logger.Outcomes.MAY_NOT_HAVE_SOLD] = { text = L.MAY_NOT_HAVE_SOLD, color = Colors.Grey },
   [Logger.Outcomes.MAY_NOT_HAVE_DESTROYED] = { text = L.MAY_NOT_HAVE_DESTROYED, color = Colors.Grey }
 }
+
+--- @class LogFilter
+--- @field text string
+--- @field outcomes? table<LogOutcome, boolean> The outcomes shown. Every outcome if `nil`.
+
+--- The filters, in the order they are shown. The first shows every outcome.
+--- @type LogFilter[]
+local Filters = {
+  { text = L.ALL },
+  {
+    text = L.SELLING,
+    outcomes = {
+      [Logger.Outcomes.SOLD] = true,
+      [Logger.Outcomes.FAILED_TO_SELL] = true,
+      [Logger.Outcomes.MAY_NOT_HAVE_SOLD] = true
+    }
+  },
+  {
+    text = L.DESTROYING,
+    outcomes = {
+      [Logger.Outcomes.DESTROYED] = true,
+      [Logger.Outcomes.FAILED_TO_DESTROY] = true,
+      [Logger.Outcomes.MAY_NOT_HAVE_DESTROYED] = true
+    }
+  }
+}
+
+--- The filter the list shows.
+--- @type LogFilter
+local selectedFilter = Filters[1]
+
+--- The entries that match `selectedFilter`, newest first. Not used while it shows every outcome.
+--- @type LogEntry[]
+local filteredEntries = {}
+
+--- Whether `filteredEntries` is out of date.
+local isFilteredStale = true
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+EventManager:On(E.ItemLogged, function()
+  isFilteredStale = true
+end)
 
 -- ============================================================================
 -- Local Functions
@@ -87,6 +134,40 @@ local function getValueText(entry)
   return ""
 end
 
+--- Returns the entries that match the selected filter.
+--- @return LogEntry[]
+local function getEntries()
+  if selectedFilter.outcomes then
+    if isFilteredStale then
+      isFilteredStale = false
+
+      local count = 0
+      for _, entry in ipairs(Logger:GetEntries()) do
+        if selectedFilter.outcomes[entry.outcome] then
+          count = count + 1
+          filteredEntries[count] = entry
+        end
+      end
+
+      for i = #filteredEntries, count + 1, -1 do filteredEntries[i] = nil end
+    end
+
+    return filteredEntries
+  end
+
+  return Logger:GetEntries()
+end
+
+--- Returns the text shown while the list is empty.
+--- @return string
+local function getEmptyText()
+  if selectedFilter.outcomes then
+    return L.NO_MATCHING_LOG_ENTRIES
+  end
+
+  return L.NO_LOG_ENTRIES
+end
+
 --- Fills the tooltip with the item.
 --- @param entry LogEntry
 --- @param tooltip Tooltip
@@ -107,18 +188,30 @@ function MainWindowLog:CreateLogPanel()
   })
   panel.Content:SetGap(Widgets:Padding())
 
-  panel.Content:AttachComponent(ComponentFactory:Text({
-    text = L.LOG_DESCRIPTION,
-    fontObject = B.FontObjects.Small,
-    color = Colors.Grey,
-    justifyH = "CENTER"
-  }))
-  panel.Content:AttachComponent(ComponentFactory:Divider())
+  -- Filter tabs, with no gap so their underlines form one line.
+  local filterRow = panel.Content:AddRow({ height = "AUTO" })
+
+  --- @type table<LogFilter, TabComponent>
+  local filterTabs = {}
+
+  for _, filter in ipairs(Filters) do
+    filterTabs[filter] = filterRow:AttachComponent(ComponentFactory:Tab({
+      labelText = filter.text,
+      onClick = function()
+        filterTabs[selectedFilter]:SetSelected(false)
+        selectedFilter = filter
+        isFilteredStale = true
+        filterTabs[filter]:SetSelected(true)
+      end
+    }))
+  end
+
+  filterTabs[selectedFilter]:SetSelected(true)
 
   panel.Content:AttachComponent(ComponentFactory:CardList({
     cardCount = 10,
-    emptyText = L.NO_LOG_ENTRIES,
-    getEntries = function() return Logger:GetEntries() end,
+    emptyText = getEmptyText,
+    getEntries = getEntries,
     createCard = function()
       return ComponentFactory:LogCard({
         getOutcomeText = getOutcomeText,
