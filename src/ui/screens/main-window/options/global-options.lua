@@ -82,6 +82,28 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
   })
 
+  -- Cheapest items frame.
+  do
+    local function getState() return StateManager:GetGlobalState().cheapestItemsFrame end
+    local mergeAction = ActionCreators.Global.mergeCheapestItemsFrame
+
+    local box = interface:AddOptionCard({
+      labelText = L.CHEAPEST_ITEMS_FRAME_TEXT,
+      descriptionText = L.CHEAPEST_ITEMS_FRAME_DESCRIPTION,
+      get = function() return getState().enabled end,
+      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end,
+      onRightClick = function()
+        StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset())
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.CHEAPEST_ITEMS_FRAME_TEXT)
+        tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.RESET_POSITION))
+      end
+    }):AddSettingsBox()
+
+    box:AddQualitiesLine(getState, mergeAction)
+  end
+
   -- Chat messages.
   interface:AddOptionCard({
     labelText = L.CHAT_MESSAGES_TEXT,

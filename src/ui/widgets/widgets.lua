@@ -55,6 +55,7 @@ end
 --- @field frame ScriptRegion
 --- @field getPoint fun(): table Returns the point to apply.
 --- @field setPoint fun(point: table) Called with the point to save after dragging.
+--- @field getRelativeFrame? fun(): ScriptRegion? Returns the frame the saved point is measured from. Defaults to the frame's parent.
 
 --- Configures a draggable frame to refresh or save its point based on certain events.
 --- @param options ConfigureForPointSyncOptions
@@ -69,13 +70,13 @@ function Widgets:ConfigureForPointSync(options)
   end
 
   local function save()
-    local parent = frame:GetParent() or UIParent
+    local relativeFrame = (options.getRelativeFrame and options.getRelativeFrame()) or frame:GetParent() or UIParent
     options.setPoint({
       point = "TOPLEFT",
-      relativeTo = parent:GetName(),
+      relativeTo = relativeFrame:GetName(),
       relativePoint = "TOPLEFT",
-      offsetX = frame:GetLeft() - parent:GetLeft(),
-      offsetY = frame:GetTop() - parent:GetTop()
+      offsetX = frame:GetLeft() - relativeFrame:GetLeft(),
+      offsetY = frame:GetTop() - relativeFrame:GetTop()
     })
   end
 
