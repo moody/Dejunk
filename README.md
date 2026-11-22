@@ -10,6 +10,7 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 - Destroy junk one at a time, with optional confirmation
 - Separate settings and lists per profile, shareable across characters
 - Tooltips explain why an item is considered junk
+- Log what was sold or destroyed, and why, for the current session
 - Auto-repair equipment at merchants
 - Overlay icons on junk in your bags
 - Open lootable items one at a time from a dedicated frame
@@ -138,6 +139,10 @@ The `Keybindings` screen of the main window sets keys for the Main Window, Junk 
 
 ![Keybindings](/.github/images/Keybindings.png?raw=true)
 
+### Log
+
+The `Log` screen of the main window, which `/dejunk log` also toggles, lists what Dejunk sold or destroyed this session, newest first. Each entry shows the outcome, the item, its value, the reason it was junk, and how long ago it happened. A sale is yellow and a destroyed item is red. An item that failed to sell or destroy, or that may not have, is grey, since the game did not confirm it. An item you chose yourself is marked `Manual`, and the profile is named if it is not the active one. The tabs show all entries, only selling, or only destroying. The line under the list totals the items sold, the profit, and the items destroyed this session. The log is not saved, so a reload clears it, and it keeps only the most recent entries.
+
 ## Chat Commands
 
 ```bash
@@ -155,6 +160,9 @@ The `Keybindings` screen of the main window sets keys for the Main Window, Junk 
 
 # Toggle the lootable items frame.
 /dejunk loot
+
+# Toggle the log screen.
+/dejunk log
 
 # Toggle the profiles screen.
 /dejunk profiles
