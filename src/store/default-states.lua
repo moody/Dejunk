@@ -37,6 +37,11 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
+--- The Cheapest Items frame beside the loot window.
+--- @class CheapestItemsFrameState
+--- @field enabled boolean
+--- @field qualities ItemQualitiesState
+
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
 --- @field enabled boolean
@@ -70,6 +75,11 @@ DefaultStates.Global = {
   autoLootableFrame = false,
   --- @type ChatMessagesState
   chatMessages = { enabled = true, detail = "REDUCED" },
+  --- @type CheapestItemsFrameState
+  cheapestItemsFrame = {
+    enabled = false,
+    qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false }
+  },
   itemIcons = false,
   --- @type ItemIconStyle
   itemIconStyle = "SMALL",
@@ -104,7 +114,8 @@ DefaultStates.Global = {
     junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     lootableFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-    merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
+    merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 },
+    cheapestItemsFrame = { point = "TOPLEFT", relativeTo = "LootFrame", relativePoint = "TOPRIGHT", offsetX = 4, offsetY = 0 }
   }
 }
 
