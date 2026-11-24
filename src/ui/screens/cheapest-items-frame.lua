@@ -272,7 +272,7 @@ end
 -- ============================================================================
 
 EventManager:On(E.Wow.LootOpened, function()
-  if StateManager:GetGlobalState().cheapestItemsFrame.enabled then
+  if StateManager:GetGlobalState().cheapestItemsFrame.autoShow == "ALWAYS" then
     CheapestItemsFrame:Show()
   end
 end)

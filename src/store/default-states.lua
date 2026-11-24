@@ -37,9 +37,13 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
---- The Cheapest Items frame beside the loot window.
+--- When the Cheapest Items frame shows by itself. `NEVER` leaves it to the player, and `ALWAYS` shows it whenever the
+--- loot window opens.
+--- @alias CheapestItemsAutoShow "NEVER" | "ALWAYS"
+
+--- The Cheapest Items frame shown while looting.
 --- @class CheapestItemsFrameState
---- @field enabled boolean
+--- @field autoShow CheapestItemsAutoShow
 --- @field qualities ItemQualitiesState
 
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
@@ -77,7 +81,7 @@ DefaultStates.Global = {
   chatMessages = { enabled = true, detail = "REDUCED" },
   --- @type CheapestItemsFrameState
   cheapestItemsFrame = {
-    enabled = false,
+    autoShow = "NEVER",
     qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false }
   },
   itemIcons = false,

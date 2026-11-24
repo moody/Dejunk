@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local CheapestItemsFrame = Addon:GetModule("CheapestItemsFrame")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
@@ -90,16 +91,26 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     local box = interface:AddOptionCard({
       labelText = L.CHEAPEST_ITEMS_FRAME_TEXT,
       descriptionText = L.CHEAPEST_ITEMS_FRAME_DESCRIPTION,
-      get = function() return getState().enabled end,
-      set = function(value) StateManager:Dispatch(mergeAction({ enabled = value })) end,
+      onLeftClick = function() CheapestItemsFrame:Toggle() end,
       onRightClick = function()
         StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset())
       end,
       onUpdateTooltip = function(_, tooltip)
         tooltip:SetText(L.CHEAPEST_ITEMS_FRAME_TEXT)
+        tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.RESET_POSITION))
       end
     }):AddSettingsBox()
+
+    box:AddChoiceLine(
+      L.AUTO_SHOW,
+      {
+        { value = "NEVER", text = L.NEVER },
+        { value = "ALWAYS", text = L.ALWAYS }
+      },
+      function() return getState().autoShow end,
+      function(value) StateManager:Dispatch(mergeAction({ autoShow = value })) end
+    )
 
     box:AddQualitiesLine(getState, mergeAction)
   end
