@@ -24,27 +24,6 @@ local Components = {}
 -- Local Functions
 -- ============================================================================
 
---- Returns the price of the item's whole stack, or `0` if it has no sell price.
---- @param item BagItem
---- @return integer
-local function getStackPrice(item)
-  return item.noValue and 0 or (item.price * item.quantity)
-end
-
---- Item comparison function for sorting by stack price, quality, name, quantity, then bag and slot.
---- @param a BagItem
---- @param b BagItem
---- @return boolean
-local function compareByStackPrice(a, b)
-  local aPrice, bPrice = getStackPrice(a), getStackPrice(b)
-  if aPrice ~= bPrice then return aPrice < bPrice end
-  if a.quality ~= b.quality then return a.quality < b.quality end
-  if a.name ~= b.name then return a.name < b.name end
-  if a.quantity ~= b.quantity then return a.quantity < b.quantity end
-  if a.bag ~= b.bag then return a.bag < b.bag end
-  return a.slot < b.slot
-end
-
 --- Removes the items after the first `count` of `items`.
 --- @param items BagItem[]
 --- @param count integer
@@ -117,7 +96,7 @@ function CheapestItems:Update(qualities)
   end
   trimItems(buffer, numBuffered)
 
-  table.sort(buffer, compareByStackPrice)
+  table.sort(buffer, Items.compareByStackPrice)
 
   local numJunk, numAll = 0, 0
   for i = 1, numBuffered do
@@ -253,7 +232,7 @@ Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemLi
   getItemSubtext = function(item)
     if Items:IsItemLocked(item) then return Colors.Grey(L.ITEM_IS_LOCKED) end
     if item.noValue then return Colors.Grey(B.Strings.NO_SELL_PRICE_TEXT) end
-    return Colors.White(B.Money:GetCoinText(getStackPrice(item)))
+    return Colors.White(B.Money:GetCoinText(Items:GetStackPrice(item)))
   end,
 
   onUpdateItemTooltip = function(item, tooltip)

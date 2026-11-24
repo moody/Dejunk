@@ -46,6 +46,27 @@ function Items:GetItemSubclassName(item)
   return (GetItemSubClassInfo(item.classId, item.subclassId))
 end
 
+--- Returns the price of the given `item`'s whole stack, or `0` if it has no sell price.
+--- @param item BagItem
+--- @return integer
+function Items:GetStackPrice(item)
+  return item.noValue and 0 or (item.price * item.quantity)
+end
+
+--- Item comparison function for sorting by stack price, quality, name, quantity, then bag and slot.
+--- @param a BagItem
+--- @param b BagItem
+--- @return boolean
+function Items.compareByStackPrice(a, b)
+  local aPrice, bPrice = Items:GetStackPrice(a), Items:GetStackPrice(b)
+  if aPrice ~= bPrice then return aPrice < bPrice end
+  if a.quality ~= b.quality then return a.quality < b.quality end
+  if a.name ~= b.name then return a.name < b.name end
+  if a.quantity ~= b.quantity then return a.quantity < b.quantity end
+  if a.bag ~= b.bag then return a.bag < b.bag end
+  return a.slot < b.slot
+end
+
 --- Returns `true` if the given `item` is locked.
 --- @param item BagItem
 --- @return boolean

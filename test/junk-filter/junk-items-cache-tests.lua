@@ -29,7 +29,8 @@ local function setupContext()
   local BagItemsCacheSpy = Mocks:CreateSpy(BagItemsCache)
   BagItemsCacheSpy:Stub("GetVersion"):Returns(0)
 
-  local Items = {}
+  -- Orders items by `price`, in place of the real comparison.
+  local Items = { compareByStackPrice = function(a, b) return a.price < b.price end }
   local ItemsSpy = Mocks:CreateSpy(Items)
   ItemsSpy:Stub("IsItemLocked"):Returns(false)
   ItemsSpy:Stub("IsItemStillInBags"):Returns(true)
@@ -249,57 +250,18 @@ do
   assert(Matchers:IsDeepEqual(result, { destroyOnly, both }))
 end
 
--- Test: sorts by the price of the whole stack, lowest first.
+-- Test: sorts the items with `Items.compareByStackPrice()`.
 do
   local JunkItemsCache, spies = setupContext()
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
-  local itemB = { name = "a", price = 2, quantity = 4, quality = 1 }
+  local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
   spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
-  assert(Matchers:IsDeepEqual(result, { itemC, itemA, itemB }))
-end
-
--- Test: sorts items of the same price by quality, lowest first.
-do
-  local JunkItemsCache, spies = setupContext()
-  local itemA = { name = "a", price = 5, quantity = 1, quality = 3 }
-  local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
-
-  local result = JunkItemsCache:GetJunkItems()
-
-  assert(Matchers:IsDeepEqual(result, { itemB, itemA }))
-end
-
--- Test: sorts items of the same price and quality by name.
-do
-  local JunkItemsCache, spies = setupContext()
-  local itemA = { name = "b", price = 5, quantity = 1, quality = 1 }
-  local itemB = { name = "a", price = 5, quantity = 1, quality = 1 }
-  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
-
-  local result = JunkItemsCache:GetJunkItems()
-
-  assert(Matchers:IsDeepEqual(result, { itemB, itemA }))
-end
-
--- Test: sorts items of the same price, quality, and name by quantity, lowest first.
-do
-  local JunkItemsCache, spies = setupContext()
-  local itemA = { name = "a", price = 2, quantity = 2, quality = 1 }
-  local itemB = { name = "a", price = 4, quantity = 1, quality = 1 }
-  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
-
-  local result = JunkItemsCache:GetJunkItems()
-
-  assert(Matchers:IsDeepEqual(result, { itemB, itemA }))
+  assert(Matchers:IsDeepEqual(result, { itemB, itemC, itemA }))
 end
 
 -- Test: keeps only the first `limit` items in sort order.

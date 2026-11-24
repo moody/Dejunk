@@ -108,25 +108,6 @@ local function clearResults(results)
   clear(results.reasons)
 end
 
---- Comparison function for sorting items by price, quality, and name.
---- @param a BagItem
---- @param b BagItem
---- @return boolean
-local function itemSortFunc(a, b)
-  local aTotalPrice = a.price * a.quantity
-  local bTotalPrice = b.price * b.quantity
-  if aTotalPrice == bTotalPrice then
-    if a.quality == b.quality then
-      if a.name == b.name then
-        return a.quantity < b.quantity
-      end
-      return a.name < b.name
-    end
-    return a.quality < b.quality
-  end
-  return aTotalPrice < bTotalPrice
-end
-
 --- Finds the junk items again if the version changed since they were found.
 local function updateJunkItems()
   local version = JunkItemsCache:GetVersion()
@@ -150,7 +131,7 @@ local function updateJunkItems()
     end
   end
 
-  table.sort(junkItems, itemSortFunc)
+  table.sort(junkItems, Items.compareByStackPrice)
 
   for _, item in ipairs(junkItems) do
     if SellResults.isJunk[item] then SellResults.items[#SellResults.items + 1] = item end
