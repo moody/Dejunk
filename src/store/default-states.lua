@@ -115,7 +115,7 @@ DefaultStates.Global = {
     lootableFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 },
-    cheapestItemsFrame = { point = "TOPLEFT", relativeTo = "LootFrame", relativePoint = "TOPRIGHT", offsetX = 4, offsetY = 0 }
+    cheapestItemsFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 300, offsetY = 50 }
   }
 }
 

@@ -5,7 +5,8 @@ local B = Addon:GetModule("Blizzard")
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
-local DefaultStates = Addon:GetModule("DefaultStates")
+local E = Addon:GetModule("Events")
+local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
@@ -15,6 +16,12 @@ local Widgets = Addon:GetModule("Widgets")
 local CHEAPEST_CARD_COUNT = 5
 
 local Components = {}
+
+--- `true` from the loot opened event to the loot closed event.
+local isLooting = false
+
+EventManager:On(E.Wow.LootOpened, function() isLooting = true end)
+EventManager:On(E.Wow.LootClosed, function() isLooting = false end)
 
 -- ============================================================================
 -- Local Functions
@@ -79,8 +86,6 @@ end
 -- Root Component
 -- ============================================================================
 
--- Sits at the loot window's top-right corner. It is anchored to the loot window but not parented to it, since a child
--- of that protected frame cannot update its mouse propagation in combat.
 Components.Root = Addon.Waffle:Flex({
   width = 250,
   height = 230,
@@ -98,13 +103,7 @@ Components.Root = Addon.Waffle:Flex({
 
     Widgets:ConfigureForPointSync({
       frame = frame,
-      getRelativeFrame = function() return _G.LootFrame end,
-      getPoint = function()
-        local point = StateManager:GetGlobalState().points.cheapestItemsFrame
-        return (point.relativeTo ~= DefaultStates.Global.points.cheapestItemsFrame.relativeTo) and
-            DefaultStates.Global.points.cheapestItemsFrame or
-            point
-      end,
+      getPoint = function() return StateManager:GetGlobalState().points.cheapestItemsFrame end,
       setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.set(point)) end
     })
 
@@ -147,10 +146,9 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
 -- Ticker
 -- ============================================================================
 
--- Shows the frame while the option is on and the loot window is shown.
+-- Shows the frame while the option is on and the player is looting.
 TickerManager:NewTicker(1 / 30, function()
   local isEnabled = StateManager:GetGlobalState().cheapestItemsFrame.enabled
-  local isLootFrameShown = _G.LootFrame ~= nil and _G.LootFrame:IsShown()
-  Components.Root:SetVisibility((isEnabled and isLootFrameShown) and "VISIBLE" or "GONE")
+  Components.Root:SetVisibility((isEnabled and isLooting) and "VISIBLE" or "GONE")
   Components.Root:Layout()
 end)
