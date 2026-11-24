@@ -77,6 +77,12 @@ function ComponentFactory:Tab(options)
     end
   })
 
+  --- Sets the label text.
+  --- @param text string
+  function root:SetLabelText(text)
+    self:WhenFrameReady(function(frame) frame.label:SetText(text) end)
+  end
+
   --- Sets whether the tab is selected.
   --- @param selected boolean
   function root:SetSelected(selected)

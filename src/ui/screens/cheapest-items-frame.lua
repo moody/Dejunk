@@ -1,4 +1,3 @@
-local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
 local B = Addon:GetModule("Blizzard")
@@ -9,28 +8,21 @@ local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
+local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local StateManager = Addon:GetModule("StateManager")
-local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
 
-local CHEAPEST_CARD_COUNT = 5
+--- @class CheapestItemsFrame
+local CheapestItemsFrame = Addon:GetModule("CheapestItemsFrame")
 
 local Components = {}
 
---- `true` from the loot opened event to the loot closed event.
-local isLooting = false
-
-EventManager:On(E.Wow.LootOpened, function() isLooting = true end)
-EventManager:On(E.Wow.LootClosed, function() isLooting = false end)
+--- @alias CheapestItemsTab "JUNK" | "ALL"
 
 -- ============================================================================
 -- Local Functions
 -- ============================================================================
-
---- The items the frame lists, cheapest stack first.
---- @type BagItem[]
-local cheapestItems = {}
 
 --- Returns the price of the item's whole stack, or `0` if it has no sell price.
 --- @param item BagItem
@@ -39,22 +31,39 @@ local function getStackPrice(item)
   return item.noValue and 0 or (item.price * item.quantity)
 end
 
---- Returns `true` if the item is cheaper than `other`, or is in an earlier slot when the prices match.
---- @param item BagItem
---- @param other BagItem
+--- Item comparison function for sorting by stack price, quality, name, quantity, then bag and slot.
+--- @param a BagItem
+--- @param b BagItem
 --- @return boolean
-local function isCheaperThan(item, other)
-  local price, otherPrice = getStackPrice(item), getStackPrice(other)
-  if price ~= otherPrice then return price < otherPrice end
-  if item.bag ~= other.bag then return item.bag < other.bag end
-  return item.slot < other.slot
+local function compareByStackPrice(a, b)
+  local aPrice, bPrice = getStackPrice(a), getStackPrice(b)
+  if aPrice ~= bPrice then return aPrice < bPrice end
+  if a.quality ~= b.quality then return a.quality < b.quality end
+  if a.name ~= b.name then return a.name < b.name end
+  if a.quantity ~= b.quantity then return a.quantity < b.quantity end
+  if a.bag ~= b.bag then return a.bag < b.bag end
+  return a.slot < b.slot
 end
+
+--- Removes the items after the first `count` of `items`.
+--- @param items BagItem[]
+--- @param count integer
+local function trimItems(items, count)
+  for i = #items, count + 1, -1 do items[i] = nil end
+end
+
+-- ============================================================================
+-- Filters
+-- ============================================================================
+
+--- The rules for which items the All tab shows besides the junk items.
+local Filters = {}
 
 --- Returns `true` if the item's quality is selected in `qualities`.
 --- @param item BagItem
 --- @param qualities ItemQualitiesState
 --- @return boolean
-local function isQualitySelected(item, qualities)
+function Filters:IsQualitySelected(item, qualities)
   return (
     (qualities.poor and item.quality == Enum.ItemQuality.Poor) or
     (qualities.common and item.quality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
@@ -64,71 +73,167 @@ local function isQualitySelected(item, qualities)
   )
 end
 
---- Repopulates `cheapestItems` with the destroyable bag items of a selected quality that are not quest items.
-local function updateCheapestItems()
-  local qualities = StateManager:GetGlobalState().cheapestItemsFrame.qualities
+--- Returns `true` if the item passes the filters. Quest items never do.
+--- @param item BagItem
+--- @param qualities ItemQualitiesState
+--- @return boolean
+function Filters:IsItemAllowed(item, qualities)
+  return self:IsQualitySelected(item, qualities) and not Items:IsItemQuestItem(item)
+end
 
-  BagItemsCache:GetItems(cheapestItems)
+-- ============================================================================
+-- CheapestItems
+-- ============================================================================
 
-  local numKept = 0
-  for i = 1, #cheapestItems do
-    local item = cheapestItems[i]
-    if Items:IsItemDestroyable(item) and not Items:IsItemQuestItem(item) and isQualitySelected(item, qualities) then
-      numKept = numKept + 1
-      cheapestItems[numKept] = item
+--- The destroyable bag items, and the lists of them that the tabs show.
+local CheapestItems = {
+  --- The reusable list that `Update()` fills with the destroyable items, cheapest stack first.
+  --- @type BagItem[]
+  buffer = {},
+
+  --- The items the junk filter calls junk for destroying, cheapest stack first.
+  --- @type BagItem[]
+  junk = {},
+
+  --- The junk items and the items of a selected quality that are not quest items, cheapest stack first.
+  --- @type BagItem[]
+  all = {}
+}
+
+--- Repopulates the lists from the bags.
+--- @param qualities ItemQualitiesState
+function CheapestItems:Update(qualities)
+  local buffer, junk, all = self.buffer, self.junk, self.all
+
+  BagItemsCache:GetItems(buffer)
+
+  local numBuffered = 0
+  for i = 1, #buffer do
+    local item = buffer[i]
+    if Items:IsItemDestroyable(item) then
+      numBuffered = numBuffered + 1
+      buffer[numBuffered] = item
     end
   end
-  for i = #cheapestItems, numKept + 1, -1 do cheapestItems[i] = nil end
+  trimItems(buffer, numBuffered)
 
-  table.sort(cheapestItems, isCheaperThan)
+  table.sort(buffer, compareByStackPrice)
+
+  local numJunk, numAll = 0, 0
+  for i = 1, numBuffered do
+    local item = buffer[i]
+    local isJunk = JunkItemsCache:IsDestroyableJunkItem(item)
+
+    if isJunk then
+      numJunk = numJunk + 1
+      junk[numJunk] = item
+    end
+
+    if isJunk or Filters:IsItemAllowed(item, qualities) then
+      numAll = numAll + 1
+      all[numAll] = item
+    end
+  end
+  trimItems(junk, numJunk)
+  trimItems(all, numAll)
+end
+
+-- ============================================================================
+-- Tabs
+-- ============================================================================
+
+--- The Junk and All tabs, and the one the list shows.
+local Tabs = {
+  --- Format of a tab's text: its name, then the number of items it lists.
+  TEXT_FORMAT = "%s (%d)",
+
+  --- The tab the list shows.
+  --- @type CheapestItemsTab
+  selected = "JUNK",
+
+  --- The count last shown on the Junk tab.
+  --- @type integer?
+  shownJunk = nil,
+
+  --- The count last shown on the All tab.
+  --- @type integer?
+  shownAll = nil
+}
+
+--- Selects the given tab.
+--- @param tab CheapestItemsTab
+function Tabs:Select(tab)
+  self.selected = tab
+  Components.JunkTab:SetSelected(tab == "JUNK")
+  Components.AllTab:SetSelected(tab == "ALL")
+end
+
+--- Shows the number of items each tab lists. A label changes only when its count does.
+--- @param numJunk integer
+--- @param numAll integer
+function Tabs:SetCounts(numJunk, numAll)
+  if numJunk ~= self.shownJunk then
+    self.shownJunk = numJunk
+    Components.JunkTab:SetLabelText(self.TEXT_FORMAT:format(L.JUNK, numJunk))
+  end
+
+  if numAll ~= self.shownAll then
+    self.shownAll = numAll
+    Components.AllTab:SetLabelText(self.TEXT_FORMAT:format(L.ALL, numAll))
+  end
 end
 
 -- ============================================================================
 -- Root Component
 -- ============================================================================
 
-Components.Root = Addon.Waffle:Flex({
+--- Updates the cheapest items, and shows their counts on the tabs.
+local function refreshComponents()
+  CheapestItems:Update(StateManager:GetGlobalState().cheapestItemsFrame.qualities)
+  Tabs:SetCounts(#CheapestItems.junk, #CheapestItems.all)
+end
+
+Components.Root = ComponentFactory:Window({
+  name = "CheapestItemsFrame",
   width = 250,
   height = 230,
-  direction = "COLUMN",
-  padding = Widgets:Padding(),
-  visibility = "GONE",
-
-  frameFactory = function()
-    local frame = Widgets:Frame({
-      name = ADDON_NAME .. "_CheapestItemsFrame",
-      enableClickHandling = true,
-      enableDragging = true,
-      frameStrata = "HIGH"
-    })
-
-    Widgets:ConfigureForPointSync({
-      frame = frame,
-      getPoint = function() return StateManager:GetGlobalState().points.cheapestItemsFrame end,
-      setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.set(point)) end
-    })
-
-    frame:SetClickHandler("RightButton", "SHIFT", function()
-      StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset())
-    end)
-
-    TickerManager:NewTicker(1 / 30, updateCheapestItems):BindFrame(frame)
-
-    return frame
-  end
+  isSpecialFrame = false,
+  titleText = Colors.Yellow(L.CHEAPEST_ITEMS),
+  getPoint = function() return StateManager:GetGlobalState().points.cheapestItemsFrame end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset()) end,
+  refresh = refreshComponents
 })
 
 -- ============================================================================
 -- Content Components
 -- ============================================================================
 
-Components.ItemsPanel = Components.Root:AttachComponent(ComponentFactory:TitledPanel({
-  titleText = Colors.Yellow(L.CHEAPEST_ITEMS)
+Components.Content = Components.Root:AddChild({
+  direction = "COLUMN",
+  padding = Widgets:Padding(),
+  gap = Widgets:Padding(0.5)
+})
+
+-- Tabs, with no gap so their underlines form one line.
+Components.TabRow = Components.Content:AddRow({ height = "AUTO" })
+
+Components.JunkTab = Components.TabRow:AttachComponent(ComponentFactory:Tab({
+  labelText = L.JUNK,
+  onClick = function() Tabs:Select("JUNK") end
 }))
 
-Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
-  cardCount = CHEAPEST_CARD_COUNT,
-  getItems = function() return cheapestItems end,
+Components.AllTab = Components.TabRow:AttachComponent(ComponentFactory:Tab({
+  labelText = L.ALL,
+  onClick = function() Tabs:Select("ALL") end
+}))
+
+Tabs:Select(Tabs.selected)
+
+Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemList({
+  cardCount = 4,
+  getItems = function() return Tabs.selected == "JUNK" and CheapestItems.junk or CheapestItems.all end,
+  emptyText = function() return Tabs.selected == "JUNK" and L.NO_JUNK_ITEMS or L.NO_ITEMS end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
   iconButtons = {
@@ -157,12 +262,40 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
 }))
 
 -- ============================================================================
--- Ticker
+-- CheapestItemsFrame
 -- ============================================================================
 
--- Shows the frame while the option is on and the player is looting.
-TickerManager:NewTicker(1 / 30, function()
-  local isEnabled = StateManager:GetGlobalState().cheapestItemsFrame.enabled
-  Components.Root:SetVisibility((isEnabled and isLooting) and "VISIBLE" or "GONE")
+--- Shows the frame on the Junk tab if it has items, otherwise on All.
+function CheapestItemsFrame:Show()
+  refreshComponents()
+  Tabs:Select(#CheapestItems.junk > 0 and "JUNK" or "ALL")
+  Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
+end
+
+--- Hides the frame.
+function CheapestItemsFrame:Hide()
+  Components.Root:SetVisibility("GONE")
+  Components.Root:Layout()
+end
+
+--- Hides the frame if it is showing, otherwise shows it.
+function CheapestItemsFrame:Toggle()
+  if Components.Root:IsVisible() then
+    self:Hide()
+  else
+    self:Show()
+  end
+end
+
+-- ============================================================================
+-- Events
+-- ============================================================================
+
+EventManager:On(E.Wow.LootOpened, function()
+  if StateManager:GetGlobalState().cheapestItemsFrame.enabled then
+    CheapestItemsFrame:Show()
+  end
 end)
+
+EventManager:On(E.Wow.LootClosed, function() CheapestItemsFrame:Hide() end)
