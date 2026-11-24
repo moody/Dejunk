@@ -5,6 +5,7 @@ local B = Addon:GetModule("Blizzard")
 local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
+local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
@@ -128,7 +129,20 @@ Components.ItemsPanel = Components.Root:AttachComponent(ComponentFactory:TitledP
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
   cardCount = CHEAPEST_CARD_COUNT,
   getItems = function() return cheapestItems end,
-  isItemEnabled = function(item) return not Items:IsItemLocked(item) end,
+  isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
+
+  iconButtons = {
+    -- Destroy button.
+    {
+      icon = Addon:GetAsset("trash-icon"),
+      highlightColor = Colors.Red,
+      onClick = function(item) Destroyer:HandleItem(item) end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.DESTROY)
+        tooltip:AddLine(Colors.Gold(L.CLICK_TO_DESTROY_MANUALLY))
+      end
+    }
+  },
 
   -- The stack price, or why there is none.
   getItemSubtext = function(item)
