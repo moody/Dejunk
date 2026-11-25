@@ -104,6 +104,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.mergeChatMessages({ detail = "VERBOSE" }), path = "global.chatMessages.detail", expected = "VERBOSE" },
   { action = ActionCreators.Global.mergeCheapestItemsFrame({ autoShow = "ALWAYS" }), path = "global.cheapestItemsFrame.autoShow", expected = "ALWAYS" },
   { action = ActionCreators.Global.mergeCheapestItemsFrame({ qualities = { uncommon = true } }), path = "global.cheapestItemsFrame.qualities.uncommon", expected = true },
+  { action = ActionCreators.Global.mergeCheapestItemsFrame({ types = { consumables = true } }), path = "global.cheapestItemsFrame.types.consumables", expected = true },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
   { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },

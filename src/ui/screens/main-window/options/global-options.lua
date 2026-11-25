@@ -90,7 +90,11 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
 
     local box = interface:AddOptionCard({
       labelText = L.CHEAPEST_ITEMS_FRAME_TEXT,
-      descriptionText = L.CHEAPEST_ITEMS_FRAME_DESCRIPTION,
+      descriptionText = L.CHEAPEST_ITEMS_FRAME_DESCRIPTION:format(
+        Colors.White(L.TYPES),
+        Colors.White(L.QUALITIES),
+        Colors.White(L.ALL)
+      ),
       onLeftClick = function() CheapestItemsFrame:Toggle() end,
       onRightClick = function()
         StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset())
@@ -113,6 +117,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
       function(value) StateManager:Dispatch(mergeAction({ autoShow = value })) end
     )
 
+    box:AddTypesLine(getState, mergeAction)
     box:AddQualitiesLine(getState, mergeAction)
   end
 

@@ -10,6 +10,7 @@ local EventManager = Addon:GetModule("EventManager")
 local Items = Addon:GetModule("Items")
 local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
+local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
@@ -52,12 +53,36 @@ function Filters:IsQualitySelected(item, qualities)
   )
 end
 
---- Returns `true` if the item passes the filters. Quest items never do.
+--- Returns `true` if the item's type is selected in `types`.
 --- @param item BagItem
---- @param qualities ItemQualitiesState
+--- @param types CheapestItemsTypesState
 --- @return boolean
-function Filters:IsItemAllowed(item, qualities)
-  return self:IsQualitySelected(item, qualities) and not Items:IsItemQuestItem(item)
+function Filters:IsTypeSelected(item, types)
+  local classId = item.classId
+  if classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor then return types.equipment end
+  if classId == Enum.ItemClass.Tradegoods then return types.tradeGoods end
+  if classId == Enum.ItemClass.Consumable then return types.consumables end
+  return types.other
+end
+
+--- Returns `true` if the item is on an Exclusions list.
+--- @param item BagItem
+--- @return boolean
+function Filters:IsItemExcluded(item)
+  return Lists.ProfileExclusions:Contains(item.id) or Lists.GlobalExclusions:Contains(item.id)
+end
+
+--- Returns `true` if the item passes the filters. Quest items and excluded items never do.
+--- @param item BagItem
+--- @param state CheapestItemsFrameState
+--- @return boolean
+function Filters:IsItemAllowed(item, state)
+  return (
+    self:IsQualitySelected(item, state.qualities) and
+    self:IsTypeSelected(item, state.types) and
+    not Items:IsItemQuestItem(item) and
+    not self:IsItemExcluded(item)
+  )
 end
 
 -- ============================================================================
@@ -80,8 +105,8 @@ local CheapestItems = {
 }
 
 --- Repopulates the lists from the bags.
---- @param qualities ItemQualitiesState
-function CheapestItems:Update(qualities)
+--- @param state CheapestItemsFrameState
+function CheapestItems:Update(state)
   local buffer, junk, all = self.buffer, self.junk, self.all
 
   BagItemsCache:GetItems(buffer)
@@ -108,7 +133,7 @@ function CheapestItems:Update(qualities)
       junk[numJunk] = item
     end
 
-    if isJunk or Filters:IsItemAllowed(item, qualities) then
+    if isJunk or Filters:IsItemAllowed(item, state) then
       numAll = numAll + 1
       all[numAll] = item
     end
@@ -168,7 +193,7 @@ end
 
 --- Updates the cheapest items, and shows their counts on the tabs.
 local function refreshComponents()
-  CheapestItems:Update(StateManager:GetGlobalState().cheapestItemsFrame.qualities)
+  CheapestItems:Update(StateManager:GetGlobalState().cheapestItemsFrame)
   Tabs:SetCounts(#CheapestItems.junk, #CheapestItems.all)
 end
 

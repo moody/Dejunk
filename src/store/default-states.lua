@@ -41,10 +41,18 @@ DefaultStates.UNBOUND_KEY = ""
 --- are full while looting, and `ALWAYS` shows it whenever the loot window opens.
 --- @alias CheapestItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
 
+--- The item types that the Cheapest Items frame's All tab shows.
+--- @class CheapestItemsTypesState
+--- @field equipment boolean Weapons and armor.
+--- @field tradeGoods boolean
+--- @field consumables boolean
+--- @field other boolean Every item class that is not in the other three.
+
 --- The Cheapest Items frame shown while looting.
 --- @class CheapestItemsFrameState
 --- @field autoShow CheapestItemsAutoShow
 --- @field qualities ItemQualitiesState
+--- @field types CheapestItemsTypesState
 
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
@@ -82,7 +90,8 @@ DefaultStates.Global = {
   --- @type CheapestItemsFrameState
   cheapestItemsFrame = {
     autoShow = "BAGS_FULL",
-    qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false }
+    qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false },
+    types = { equipment = true, tradeGoods = true, consumables = true, other = false }
   },
   itemIcons = false,
   --- @type ItemIconStyle

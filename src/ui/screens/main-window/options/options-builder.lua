@@ -160,6 +160,36 @@ local function addQualitiesLine(self, getState, mergeAction)
   }))
 end
 
+--- Adds a line of a chip per item type to the box for the Cheapest Items frame's `types` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): CheapestItemsFrameState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addTypesLine(self, getState, mergeAction)
+  local itemTypes = {
+    { key = "equipment", text = L.EQUIPMENT, tooltipText = L.EQUIPMENT_TOOLTIP },
+    { key = "tradeGoods", text = L.TRADE_GOODS, tooltipText = L.TRADE_GOODS_TOOLTIP },
+    { key = "consumables", text = L.CONSUMABLES, tooltipText = L.CONSUMABLES_TOOLTIP },
+    { key = "other", text = L.OTHER, tooltipText = L.OTHER_TOOLTIP }
+  }
+
+  local chips = {}
+
+  for _, itemType in ipairs(itemTypes) do
+    chips[#chips + 1] = {
+      text = itemType.text,
+      get = function() return getState().types[itemType.key] end,
+      set = function(value) StateManager:Dispatch(mergeAction({ types = { [itemType.key] = value } })) end,
+      onUpdateTooltip = function(chip, tooltip)
+        tooltip:SetOwner(chip, "ANCHOR_RIGHT")
+        tooltip:SetText(itemType.text)
+        tooltip:AddLine(itemType.tooltipText)
+      end
+    }
+  end
+
+  self:AddLine(L.TYPES):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
+end
+
 --- Adds a line of a chip per equipment type to `box`, for a setting's selected
 --- subclasses in `field`.
 --- @param box OptionsBuilderSettingsBox
@@ -220,6 +250,7 @@ local function addSettingsBox(self)
   box.AddItemLevelLine = addItemLevelLine
   box.AddPriceLine = addPriceLine
   box.AddQualitiesLine = addQualitiesLine
+  box.AddTypesLine = addTypesLine
   box.AddWeaponsLine = addWeaponsLine
 
   return box
