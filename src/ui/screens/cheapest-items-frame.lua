@@ -7,6 +7,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 local Destroyer = Addon:GetModule("Destroyer")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
@@ -36,7 +37,7 @@ end
 -- Filters
 -- ============================================================================
 
---- The rules for which items the All tab shows besides the junk items.
+--- The rules that the Qualities and Types options set for the All tab.
 local Filters = {}
 
 --- Returns `true` if the item's quality is selected in `qualities`.
@@ -59,31 +60,17 @@ end
 --- @return boolean
 function Filters:IsTypeSelected(item, types)
   if Items:IsItemEquipment(item) then return types.equipment end
-
-  local classId = item.classId
-  if classId == Enum.ItemClass.Tradegoods then return types.tradeGoods end
-  if classId == Enum.ItemClass.Consumable then return types.consumables end
+  if item.classId == Enum.ItemClass.Tradegoods then return types.tradeGoods end
+  if item.classId == Enum.ItemClass.Consumable then return types.consumables end
   return types.other
 end
 
---- Returns `true` if the item is on an Exclusions list.
---- @param item BagItem
---- @return boolean
-function Filters:IsItemExcluded(item)
-  return Lists.ProfileExclusions:Contains(item.id) or Lists.GlobalExclusions:Contains(item.id)
-end
-
---- Returns `true` if the item passes the filters. Quest items and excluded items never do.
+--- Returns `true` if the item's quality and type are selected.
 --- @param item BagItem
 --- @param state CheapestItemsFrameState
 --- @return boolean
 function Filters:IsItemAllowed(item, state)
-  return (
-    self:IsQualitySelected(item, state.qualities) and
-    self:IsTypeSelected(item, state.types) and
-    not Items:IsItemQuestItem(item) and
-    not self:IsItemExcluded(item)
-  )
+  return self:IsQualitySelected(item, state.qualities) and self:IsTypeSelected(item, state.types)
 end
 
 -- ============================================================================
@@ -100,7 +87,7 @@ local CheapestItems = {
   --- @type BagItem[]
   junk = {},
 
-  --- The junk items and the other items that pass `Filters`, cheapest stack first.
+  --- The junk items and the items that no filter matched and that pass `Filters`, cheapest stack first.
   --- @type BagItem[]
   all = {}
 }
@@ -127,14 +114,15 @@ function CheapestItems:Update(state)
   local numJunk, numAll = 0, 0
   for i = 1, numBuffered do
     local item = buffer[i]
-    local isJunk = JunkItemsCache:IsDestroyableJunkItem(item)
+    local result = JunkItemsCache:GetResult(item, "DESTROY")
+    local isJunk = result == ItemFilters.JUNK
 
     if isJunk then
       numJunk = numJunk + 1
       junk[numJunk] = item
     end
 
-    if isJunk or Filters:IsItemAllowed(item, state) then
+    if isJunk or (result == ItemFilters.PASS and Filters:IsItemAllowed(item, state)) then
       numAll = numAll + 1
       all[numAll] = item
     end
