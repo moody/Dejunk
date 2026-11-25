@@ -4,6 +4,7 @@ local BagItemsCache = Addon:GetModule("BagItemsCache")
 local Colors = Addon:GetModule("Colors")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local ItemFilters = Addon:GetModule("ItemFilters")
 local Items = Addon:GetModule("Items")
 local JunkFilter = Addon:GetModule("JunkFilter")
 local StateManager = Addon:GetModule("StateManager")
@@ -39,16 +40,16 @@ local junkItems = {}
 
 --- @class JunkResults
 --- @field items BagItem[] The items in `junkItems` that are junk for the action, in sort order.
---- @field isJunk table<BagItem, boolean> Whether each item in `junkItems` is junk for the action.
+--- @field filterResults table<BagItem, ItemFilterResult> The filter result of each bag item for the action.
 --- @field reasons table<BagItem, string> The reason each bag item is or is not junk for the action.
 
 --- Junk results for selling.
 --- @type JunkResults
-local SellResults = { items = {}, isJunk = {}, reasons = {} }
+local SellResults = { items = {}, filterResults = {}, reasons = {} }
 
 --- Junk results for destroying.
 --- @type JunkResults
-local DestroyResults = { items = {}, isJunk = {}, reasons = {} }
+local DestroyResults = { items = {}, filterResults = {}, reasons = {} }
 
 --- The version that the junk items were found for.
 --- @type integer?
@@ -104,7 +105,7 @@ end
 --- @param results JunkResults
 local function clearResults(results)
   clear(results.items)
-  clear(results.isJunk)
+  clear(results.filterResults)
   clear(results.reasons)
 end
 
@@ -119,23 +120,28 @@ local function updateJunkItems()
   clearResults(DestroyResults)
 
   for _, item in ipairs(BagItemsCache:GetItems(bagItems)) do
-    local isSell, sellReason = JunkFilter:IsJunkItem(item, "SELL")
-    local isDestroy, destroyReason = JunkFilter:IsJunkItem(item, "DESTROY")
+    local sellResult, sellReason = JunkFilter:GetResult(item, "SELL")
+    local destroyResult, destroyReason = JunkFilter:GetResult(item, "DESTROY")
+    SellResults.filterResults[item] = sellResult
     SellResults.reasons[item] = sellReason
+    DestroyResults.filterResults[item] = destroyResult
     DestroyResults.reasons[item] = destroyReason
 
-    if isSell or isDestroy then
+    if sellResult == ItemFilters.JUNK or destroyResult == ItemFilters.JUNK then
       junkItems[#junkItems + 1] = item
-      SellResults.isJunk[item] = isSell
-      DestroyResults.isJunk[item] = isDestroy
     end
   end
 
   table.sort(junkItems, Items.compareByStackPrice)
 
   for _, item in ipairs(junkItems) do
-    if SellResults.isJunk[item] then SellResults.items[#SellResults.items + 1] = item end
-    if DestroyResults.isJunk[item] then DestroyResults.items[#DestroyResults.items + 1] = item end
+    if SellResults.filterResults[item] == ItemFilters.JUNK then
+      SellResults.items[#SellResults.items + 1] = item
+    end
+
+    if DestroyResults.filterResults[item] == ItemFilters.JUNK then
+      DestroyResults.items[#DestroyResults.items + 1] = item
+    end
   end
 end
 
@@ -265,6 +271,18 @@ function JunkItemsCache:GetNextDestroyableJunkItem()
   return itemsBuffer[1]
 end
 
+--- Returns the result of the filters for the given `item` and `filterType`, and the reason. The result is `nil` for an
+--- item that is not one of the bag items.
+--- @param item BagItem An item from `BagItemsCache`.
+--- @param filterType ItemFilterType
+--- @return ItemFilterResult? result, string? reason
+function JunkItemsCache:GetResult(item, filterType)
+  updateJunkItems()
+
+  local results = filterType == "SELL" and SellResults or DestroyResults
+  return results.filterResults[item], results.reasons[item]
+end
+
 --- Returns `true` if the given `item` is junk and can be sold, and the reason for the result. A junk item that
 --- `JunkFilter:GetSellBlockReason()` blocks returns `false` and that reason.
 --- @param item BagItem An item from `BagItemsCache`.
@@ -272,7 +290,7 @@ end
 function JunkItemsCache:IsSellableJunkItem(item)
   updateJunkItems()
 
-  if SellResults.isJunk[item] then
+  if SellResults.filterResults[item] == ItemFilters.JUNK then
     local blockReason = JunkFilter:GetSellBlockReason(item)
     if blockReason then return false, blockReason end
     return true, SellResults.reasons[item]
@@ -286,7 +304,7 @@ end
 --- @return boolean isDestroyableJunk, string? reason
 function JunkItemsCache:IsDestroyableJunkItem(item)
   updateJunkItems()
-  return DestroyResults.isJunk[item] == true, DestroyResults.reasons[item]
+  return DestroyResults.filterResults[item] == ItemFilters.JUNK, DestroyResults.reasons[item]
 end
 
 --- Returns the number of junk items for selling that cannot be sold right now.

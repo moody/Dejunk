@@ -8,6 +8,13 @@ local Mocks = require("test/mocks")
 -- Setup
 -- ============================================================================
 
+--- @type ItemFilterResult
+local JUNK = "JUNK"
+--- @type ItemFilterResult
+local NOT_JUNK = "NOT_JUNK"
+--- @type ItemFilterResult
+local PASS = "PASS"
+
 --- Returns `JunkItemsCache` and the spies of its mocks, from a new context where the modules it uses are mocks.
 --- A test changes what a method returns with `GetStub()`.
 --- @return JunkItemsCache JunkItemsCache
@@ -55,6 +62,7 @@ local function setupContext()
   Context:SetModule("BagItemsCache", BagItemsCache)
   Context:SetModule("Colors", Colors)
   Context:SetModule("EventManager", EventManager)
+  Context:SetModule("ItemFilters", { JUNK = JUNK, NOT_JUNK = NOT_JUNK, PASS = PASS })
   Context:SetModule("Items", Items)
   Context:SetModule("JunkFilter", JunkFilter)
   Context:SetModule("StateManager", StateManager)
@@ -71,7 +79,7 @@ local function setupContext()
     --- Every item is in the bags and is not locked.
     ItemsSpy = ItemsSpy,
 
-    --- No item is blocked from being sold. A test stubs `IsJunkItem()`.
+    --- No item is blocked from being sold. A test stubs `GetResult()`.
     JunkFilterSpy = JunkFilterSpy,
 
     --- The settings and the global lists never change.
@@ -101,25 +109,28 @@ local function stubGetItems(bagItemsCacheSpy, bagItems)
   end)
 end
 
---- Stubs `JunkFilter:IsJunkItem()` so that an item is junk for selling if it is in `sellItems`, and junk for
---- destroying if it is in `destroyItems`.
+--- Stubs `JunkFilter:GetResult()` to return `JUNK` for an item in `sellItems` when selling and in `destroyItems` when
+--- destroying, and `PASS` for any other.
 --- @param junkFilterSpy MockSpy
 --- @param sellItems BagItem[]
 --- @param destroyItems BagItem[]
-local function stubIsJunkItem(junkFilterSpy, sellItems, destroyItems)
-  junkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item, filterType)
+local function stubGetResult(junkFilterSpy, sellItems, destroyItems)
+  junkFilterSpy:Stub("GetResult"):Invokes(function(_, item, filterType)
     for _, junkItem in ipairs(filterType == "SELL" and sellItems or destroyItems) do
-      if junkItem == item then return true end
+      if junkItem == item then return JUNK end
     end
-    return false
+    return PASS
   end)
 end
 
---- Stubs `JunkFilter:IsJunkItem()` to return `isJunk` and `"<filterType> reason"`, such as `"SELL reason"`.
+--- Stubs `JunkFilter:GetResult()` to return `JUNK` or `NOT_JUNK`, as `isJunk` says, and `"<filterType> reason"`, such as
+--- `"SELL reason"`.
 --- @param junkFilterSpy MockSpy
 --- @param isJunk boolean
-local function stubIsJunkItemReason(junkFilterSpy, isJunk)
-  junkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, _, filterType) return isJunk, filterType .. " reason" end)
+local function stubGetResultReason(junkFilterSpy, isJunk)
+  junkFilterSpy:Stub("GetResult"):Invokes(function(_, _, filterType)
+    return isJunk and JUNK or NOT_JUNK, filterType .. " reason"
+  end)
 end
 
 -- ============================================================================
@@ -215,7 +226,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local itemA, itemB, itemC, itemD = { id = 1 }, { id = 2 }, { id = 3 }, { id = 4 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item == itemC end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, item) return item == itemC and JUNK or PASS end)
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -229,7 +240,7 @@ do
   local both = { name = "a", price = 2, quantity = 1, quality = 1 }
   local notJunk = { name = "a", price = 3, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { sellOnly, both, notJunk })
-  stubIsJunkItem(spies.JunkFilterSpy, { sellOnly, both }, { both })
+  stubGetResult(spies.JunkFilterSpy, { sellOnly, both }, { both })
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -243,7 +254,7 @@ do
   local both = { name = "a", price = 2, quantity = 1, quality = 1 }
   local notJunk = { name = "a", price = 3, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { destroyOnly, both, notJunk })
-  stubIsJunkItem(spies.JunkFilterSpy, { both }, { destroyOnly, both })
+  stubGetResult(spies.JunkFilterSpy, { both }, { destroyOnly, both })
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -257,7 +268,7 @@ do
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   local result = JunkItemsCache:GetJunkItems()
 
@@ -272,7 +283,7 @@ do
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
   local itemD = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   local result = JunkItemsCache:GetJunkItems(nil, 2)
 
@@ -285,7 +296,7 @@ do
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   local result = JunkItemsCache:GetJunkItems(nil, 10)
 
@@ -298,7 +309,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   local result = JunkItemsCache:GetJunkItems()
@@ -313,7 +324,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   JunkItemsCache:GetJunkItems()
 
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= itemA end)
@@ -331,7 +342,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  local IsJunkItemStub = spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  local GetResultStub = spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   JunkItemsCache:GetJunkItems()
   JunkItemsCache:GetSellableJunkItems()
@@ -339,22 +350,22 @@ do
   JunkItemsCache:IsSellableJunkItem(item)
   JunkItemsCache:IsDestroyableJunkItem(item)
 
-  assert(#IsJunkItemStub.calls == 2)
-  assert(IsJunkItemStub.calls[1][2] == "SELL")
-  assert(IsJunkItemStub.calls[2][2] == "DESTROY")
+  assert(#GetResultStub.calls == 2)
+  assert(GetResultStub.calls[1][2] == "SELL")
+  assert(GetResultStub.calls[2][2] == "DESTROY")
 end
 
 -- Test: runs the filters again when the version changes.
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
-  local IsJunkItemStub = spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  local GetResultStub = spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   JunkItemsCache:GetJunkItems()
 
   spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
   JunkItemsCache:GetJunkItems()
 
-  assert(#IsJunkItemStub.calls == 4)
+  assert(#GetResultStub.calls == 4)
 end
 
 -- Test: finds the junk items in the bag items of the new version.
@@ -364,7 +375,7 @@ do
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local bagItems = { itemA }
   stubGetItems(spies.BagItemsCacheSpy, bagItems)
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   JunkItemsCache:GetJunkItems()
 
   bagItems[1] = itemB
@@ -384,7 +395,7 @@ do
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   local result = JunkItemsCache:GetSellableJunkItems(nil, 1)
 
@@ -397,7 +408,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  stubIsJunkItem(spies.JunkFilterSpy, { itemB }, { itemA, itemB })
+  stubGetResult(spies.JunkFilterSpy, { itemB }, { itemA, itemB })
 
   local result = JunkItemsCache:GetSellableJunkItems()
 
@@ -412,7 +423,7 @@ do
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1, isLocked = true }
   local itemD = { name = "a", price = 4, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC, itemD })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetSellableJunkItems()
@@ -427,7 +438,7 @@ do
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   local itemC = { name = "a", price = 3, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetSellableJunkItems(nil, 1)
@@ -441,7 +452,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1, isBlocked = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Invokes(function(_, item)
     return item.isBlocked and "reason" or nil
   end)
@@ -457,7 +468,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   JunkItemsCache:GetSellableJunkItems()
 
   spies.ItemsSpy:GetStub("IsItemStillInBags"):Invokes(function(_, item) return item ~= itemA end)
@@ -476,7 +487,7 @@ do
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
 
   local result = JunkItemsCache:GetDestroyableJunkItems(nil, 1)
 
@@ -489,7 +500,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  stubIsJunkItem(spies.JunkFilterSpy, { itemA, itemB }, { itemB })
+  stubGetResult(spies.JunkFilterSpy, { itemA, itemB }, { itemB })
 
   local result = JunkItemsCache:GetDestroyableJunkItems()
 
@@ -502,7 +513,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1, isLocked = true }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local result = JunkItemsCache:GetDestroyableJunkItems()
@@ -515,7 +526,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("reason")
 
   local result = JunkItemsCache:GetDestroyableJunkItems()
@@ -536,7 +547,7 @@ do
   local destroyOnly = { name = "a", price = 1, quantity = 1, quality = 1 }
   local notJunk = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { sellOnlyA, sellOnlyB, both, destroyOnly, notJunk })
-  stubIsJunkItem(spies.JunkFilterSpy, { sellOnlyA, sellOnlyB, both }, { both, destroyOnly })
+  stubGetResult(spies.JunkFilterSpy, { sellOnlyA, sellOnlyB, both }, { both, destroyOnly })
 
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
 
@@ -552,7 +563,7 @@ do
   local lockedDestroy = { name = "a", price = 3, quantity = 1, quality = 1, isLocked = true }
   local destroy = { name = "a", price = 4, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { lockedSell, sell, lockedDestroy, destroy })
-  stubIsJunkItem(spies.JunkFilterSpy, { lockedSell, sell }, { lockedDestroy, destroy })
+  stubGetResult(spies.JunkFilterSpy, { lockedSell, sell }, { lockedDestroy, destroy })
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
@@ -565,7 +576,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
 
   assert(numSellable == 1)
@@ -583,7 +594,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
 
   assert(numSellable == 1)
@@ -601,7 +612,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local numSellable, numDestroyable = JunkItemsCache:GetNumJunkItems()
 
   assert(numSellable == 1)
@@ -631,7 +642,7 @@ do
   local itemA = { name = "a", price = 1, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  stubIsJunkItem(spies.JunkFilterSpy, { itemA, itemB }, { itemB })
+  stubGetResult(spies.JunkFilterSpy, { itemA, itemB }, { itemB })
   spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
 
   assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[2]/red[1])]")
@@ -641,7 +652,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 1, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.BagItemsCacheSpy:GetStub("GetVersion"):Returns(1)
 
   assert(JunkItemsCache:GetNumJunkItemsText() == "grey[(white[1]/red[1])]")
@@ -666,7 +677,7 @@ do
     { name = "a", price = 1, quantity = 1, quality = 1, isBlocked = true },
     { name = "a", price = 1, quantity = 1, quality = 1 }
   })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.isJunk == true end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, item) return item.isJunk == true and JUNK or PASS end)
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Invokes(function(_, item)
     return item.isBlocked and "reason" or nil
   end)
@@ -685,7 +696,7 @@ do
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canSell = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canSell = false }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.canSell end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, item) return item.canSell and JUNK or PASS end)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == itemB)
 end
@@ -694,7 +705,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { {} })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(false)
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(PASS)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == nil)
 end
@@ -705,7 +716,7 @@ do
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, isLocked = true }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == itemA)
@@ -715,7 +726,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   assert(JunkItemsCache:GetNextSellableJunkItem() == nil)
@@ -729,7 +740,7 @@ do
     { name = "a", price = 2, quantity = 1, quality = 1 },
     { name = "a", price = 3, quantity = 1, quality = 1 }
   })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(false)
 
   JunkItemsCache:GetNextSellableJunkItem()
@@ -748,7 +759,7 @@ do
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, canDestroy = true }
   local itemC = { name = "a", price = 1, quantity = 1, quality = 1, canDestroy = false }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, itemC })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function(_, item) return item.canDestroy end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, item) return item.canDestroy and JUNK or PASS end)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == itemB)
 end
@@ -757,7 +768,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { {} })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(false)
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(PASS)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == nil)
 end
@@ -768,7 +779,7 @@ do
   local itemA = { name = "a", price = 5, quantity = 1, quality = 1 }
   local itemB = { name = "a", price = 2, quantity = 1, quality = 1, isLocked = true }
   stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == itemA)
@@ -778,7 +789,7 @@ end
 do
   local JunkItemsCache, spies = setupContext()
   stubGetItems(spies.BagItemsCacheSpy, { { name = "a", price = 2, quantity = 1, quality = 1 } })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   spies.ItemsSpy:GetStub("IsItemLocked"):Returns(true)
 
   assert(JunkItemsCache:GetNextDestroyableJunkItem() == nil)
@@ -792,12 +803,64 @@ do
     { name = "a", price = 2, quantity = 1, quality = 1 },
     { name = "a", price = 3, quantity = 1, quality = 1 }
   })
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Returns(true, "reason")
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
   local IsItemLockedStub = spies.ItemsSpy:GetStub("IsItemLocked"):Returns(false)
 
   JunkItemsCache:GetNextDestroyableJunkItem()
 
   assert(#IsItemLockedStub.calls == 1)
+end
+
+-- ============================================================================
+-- Tests - JunkItemsCache:GetResult()
+-- ============================================================================
+
+-- Test: returns the result and the reason of each filter type.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, _, filterType)
+    if filterType == "SELL" then return JUNK, "sell reason" end
+    return NOT_JUNK, "destroy reason"
+  end)
+
+  local sellResult, sellReason = JunkItemsCache:GetResult(item, "SELL")
+  local destroyResult, destroyReason = JunkItemsCache:GetResult(item, "DESTROY")
+
+  assert(sellResult == JUNK)
+  assert(sellReason == "sell reason")
+  assert(destroyResult == NOT_JUNK)
+  assert(destroyReason == "destroy reason")
+end
+
+-- Test: returns NOT_JUNK for an item that a filter excluded, and PASS for one that no filter matched.
+do
+  local JunkItemsCache, spies = setupContext()
+  local excluded = { name = "a", price = 1, quantity = 1, quality = 1 }
+  local unmatched = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { excluded, unmatched })
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function(_, item) return item == excluded and NOT_JUNK or PASS end)
+
+  local excludedResult = JunkItemsCache:GetResult(excluded, "DESTROY")
+  local unmatchedResult = JunkItemsCache:GetResult(unmatched, "DESTROY")
+
+  assert(excludedResult == NOT_JUNK)
+  assert(unmatchedResult == PASS)
+end
+
+-- Test: returns nil for an item that is not one of the bag items.
+do
+  local JunkItemsCache, spies = setupContext()
+  local item = { name = "a", price = 1, quantity = 1, quality = 1 }
+  local otherItem = { name = "a", price = 2, quantity = 1, quality = 1 }
+  stubGetItems(spies.BagItemsCacheSpy, { item })
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
+
+  local result, reason = JunkItemsCache:GetResult(otherItem, "SELL")
+
+  assert(result == nil)
+  assert(reason == nil)
 end
 
 -- ============================================================================
@@ -809,7 +872,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  stubGetResultReason(spies.JunkFilterSpy, true)
 
   local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
 
@@ -822,7 +885,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  stubGetResultReason(spies.JunkFilterSpy, true)
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
 
   local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
@@ -836,7 +899,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, false)
+  stubGetResultReason(spies.JunkFilterSpy, false)
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
 
   local isSellableJunk, reason = JunkItemsCache:IsSellableJunkItem(item)
@@ -853,7 +916,7 @@ do
   local bagItems = { oldItem }
   local reason = "old reason"
   stubGetItems(spies.BagItemsCacheSpy, bagItems)
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function() return true, reason end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function() return JUNK, reason end)
   JunkItemsCache:IsSellableJunkItem(oldItem)
 
   bagItems[1] = newItem
@@ -877,7 +940,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  stubGetResultReason(spies.JunkFilterSpy, true)
 
   local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
 
@@ -890,7 +953,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, false)
+  stubGetResultReason(spies.JunkFilterSpy, false)
 
   local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
 
@@ -903,7 +966,7 @@ do
   local JunkItemsCache, spies = setupContext()
   local item = { name = "a", price = 1, quantity = 1, quality = 1 }
   stubGetItems(spies.BagItemsCacheSpy, { item })
-  stubIsJunkItemReason(spies.JunkFilterSpy, true)
+  stubGetResultReason(spies.JunkFilterSpy, true)
   spies.JunkFilterSpy:GetStub("GetSellBlockReason"):Returns("block reason")
 
   local isDestroyableJunk, reason = JunkItemsCache:IsDestroyableJunkItem(item)
@@ -920,7 +983,7 @@ do
   local bagItems = { oldItem }
   local reason = "old reason"
   stubGetItems(spies.BagItemsCacheSpy, bagItems)
-  spies.JunkFilterSpy:Stub("IsJunkItem"):Invokes(function() return true, reason end)
+  spies.JunkFilterSpy:Stub("GetResult"):Invokes(function() return JUNK, reason end)
   JunkItemsCache:IsDestroyableJunkItem(oldItem)
 
   bagItems[1] = newItem
