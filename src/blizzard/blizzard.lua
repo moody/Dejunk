@@ -34,6 +34,7 @@ local BACKPACK_CONTAINER = BACKPACK_CONTAINER or throw("BACKPACK_CONTAINER")
 local C_Container = C_Container or throw("C_Container")
 local GetContainerItemID = C_Container.GetContainerItemID or throw("C_Container.GetContainerItemID")
 local GetContainerItemInfo = C_Container.GetContainerItemInfo or throw("C_Container.GetContainerItemInfo")
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots or throw("C_Container.GetContainerNumFreeSlots")
 local GetContainerNumSlots = C_Container.GetContainerNumSlots or throw("C_Container.GetContainerNumSlots")
 local GetContainerItemPurchaseInfo = C_Container.GetContainerItemPurchaseInfo or throw("C_Container.GetContainerItemPurchaseInfo")
 local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or throw("NUM_BAG_SLOTS")
@@ -262,6 +263,17 @@ function B.Container:IterateSlots()
 
     return bag, slot, GetContainerItemID(bag, slot)
   end
+end
+
+--- Returns `true` if a bag that holds any kind of item has a free slot. Specialty bags, such as a quiver, are left out.
+--- @return boolean
+function B.Container:HasFreeSlots()
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+    local numFreeSlots, bagType = GetContainerNumFreeSlots(bag)
+    if bagType == 0 and numFreeSlots > 0 then return true end
+  end
+
+  return false
 end
 
 -- B.Container:GetItemInfo()

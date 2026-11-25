@@ -105,8 +105,9 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     box:AddChoiceLine(
       L.AUTO_SHOW,
       {
-        { value = "NEVER", text = L.NEVER },
-        { value = "ALWAYS", text = L.ALWAYS }
+        { value = "NEVER", text = L.NEVER, tooltipText = L.AUTO_SHOW_NEVER_TOOLTIP },
+        { value = "BAGS_FULL", text = L.BAGS_FULL, tooltipText = L.AUTO_SHOW_BAGS_FULL_TOOLTIP },
+        { value = "ALWAYS", text = L.ALWAYS, tooltipText = L.AUTO_SHOW_ALWAYS_TOOLTIP }
       },
       function() return getState().autoShow end,
       function(value) StateManager:Dispatch(mergeAction({ autoShow = value })) end

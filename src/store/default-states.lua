@@ -37,9 +37,9 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
---- When the Cheapest Items frame shows by itself. `NEVER` leaves it to the player, and `ALWAYS` shows it whenever the
---- loot window opens.
---- @alias CheapestItemsAutoShow "NEVER" | "ALWAYS"
+--- When the Cheapest Items frame shows by itself. `NEVER` leaves it to the player, `BAGS_FULL` shows it when the bags
+--- are full while looting, and `ALWAYS` shows it whenever the loot window opens.
+--- @alias CheapestItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
 
 --- The Cheapest Items frame shown while looting.
 --- @class CheapestItemsFrameState
@@ -81,7 +81,7 @@ DefaultStates.Global = {
   chatMessages = { enabled = true, detail = "REDUCED" },
   --- @type CheapestItemsFrameState
   cheapestItemsFrame = {
-    autoShow = "NEVER",
+    autoShow = "BAGS_FULL",
     qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false }
   },
   itemIcons = false,

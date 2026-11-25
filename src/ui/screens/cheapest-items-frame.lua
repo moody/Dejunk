@@ -74,7 +74,7 @@ local CheapestItems = {
   --- @type BagItem[]
   junk = {},
 
-  --- The junk items and the items of a selected quality that are not quest items, cheapest stack first.
+  --- The junk items and the other items that pass `Filters`, cheapest stack first.
   --- @type BagItem[]
   all = {}
 }
@@ -147,7 +147,7 @@ function Tabs:Select(tab)
   Components.AllTab:SetSelected(tab == "ALL")
 end
 
---- Shows the number of items each tab lists. A label changes only when its count does.
+--- Shows the number of items each tab lists.
 --- @param numJunk integer
 --- @param numAll integer
 function Tabs:SetCounts(numJunk, numAll)
@@ -268,13 +268,54 @@ function CheapestItemsFrame:Toggle()
 end
 
 -- ============================================================================
+-- AutoShow
+-- ============================================================================
+
+--- Shows the frame by itself while looting, as the Auto Show option says.
+local AutoShow = {
+  --- `true` from the loot opened event to the loot closed event.
+  isLooting = false,
+
+  --- `true` if the bags had a free slot at the last check.
+  hadFreeSlots = true
+}
+
+--- Starts a loot session, and shows the frame if the option says to.
+function AutoShow:StartLooting()
+  self.isLooting = true
+  self.hadFreeSlots = B.Container:HasFreeSlots()
+
+  local autoShow = StateManager:GetGlobalState().cheapestItemsFrame.autoShow
+  if autoShow == "ALWAYS" or (autoShow == "BAGS_FULL" and not self.hadFreeSlots) then
+    CheapestItemsFrame:Show()
+  end
+end
+
+--- Ends the loot session, and hides the frame.
+function AutoShow:StopLooting()
+  self.isLooting = false
+  CheapestItemsFrame:Hide()
+end
+
+--- Shows the frame if the bags filled up while looting. Emptying them does not hide it.
+function AutoShow:CheckBags()
+  if not self.isLooting then return end
+
+  local hadFreeSlots = self.hadFreeSlots
+  self.hadFreeSlots = B.Container:HasFreeSlots()
+
+  if StateManager:GetGlobalState().cheapestItemsFrame.autoShow ~= "BAGS_FULL" then return end
+  if hadFreeSlots and not self.hadFreeSlots and not Components.Root:IsVisible() then
+    CheapestItemsFrame:Show()
+  end
+end
+
+-- ============================================================================
 -- Events
 -- ============================================================================
 
-EventManager:On(E.Wow.LootOpened, function()
-  if StateManager:GetGlobalState().cheapestItemsFrame.autoShow == "ALWAYS" then
-    CheapestItemsFrame:Show()
-  end
-end)
+EventManager:On(E.Wow.LootOpened, function() AutoShow:StartLooting() end)
 
-EventManager:On(E.Wow.LootClosed, function() CheapestItemsFrame:Hide() end)
+EventManager:On(E.Wow.LootClosed, function() AutoShow:StopLooting() end)
+
+EventManager:On(E.BagsUpdated, function() AutoShow:CheckBags() end)
