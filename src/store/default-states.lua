@@ -43,10 +43,10 @@ DefaultStates.UNBOUND_KEY = ""
 
 --- The item types that the Cheapest Items frame's All tab shows.
 --- @class CheapestItemsTypesState
---- @field equipment boolean Weapons and armor.
+--- @field equipment boolean Weapons, armor, rings, necklaces, and trinkets.
 --- @field tradeGoods boolean
 --- @field consumables boolean
---- @field other boolean Every item class that is not in the other three.
+--- @field other boolean Every item that is not in the other three.
 
 --- The Cheapest Items frame shown while looting.
 --- @class CheapestItemsFrameState

@@ -58,8 +58,9 @@ end
 --- @param types CheapestItemsTypesState
 --- @return boolean
 function Filters:IsTypeSelected(item, types)
+  if Items:IsItemEquipment(item) then return types.equipment end
+
   local classId = item.classId
-  if classId == Enum.ItemClass.Weapon or classId == Enum.ItemClass.Armor then return types.equipment end
   if classId == Enum.ItemClass.Tradegoods then return types.tradeGoods end
   if classId == Enum.ItemClass.Consumable then return types.consumables end
   return types.other
