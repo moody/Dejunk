@@ -39,10 +39,12 @@ function ComponentFactory:ItemCard(options)
   local frame ---@type FrameWidget?
   local accent ---@type Texture?
   local icon ---@type Texture?
+  local count ---@type FontString?
   local item ---@type (BagItem | ListItem)?
   local isEnabled = true
   local accentR, accentG, accentB = 1, 1, 1
   local iconTexture ---@type (string | number)?
+  local countText = ""
 
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
@@ -135,6 +137,12 @@ function ComponentFactory:ItemCard(options)
       icon = parent:CreateTexture(nil, "ARTWORK")
       icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
       icon:SetTexture(iconTexture)
+
+      -- Stack count, in the bottom right corner of the icon.
+      count = parent:CreateFontString(nil, "OVERLAY", B.FontObjects.Number:GetName())
+      count:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 0, 0)
+      count:SetText(countText)
+
       return icon
     end
   })
@@ -155,7 +163,7 @@ function ComponentFactory:ItemCard(options)
     }))
   end
 
-  -- Item link and quantity.
+  -- Item link.
   local title = linkParent:AttachComponent(ComponentFactory:Text({
     fontObject = options.fontObject,
     wordWrap = false,
@@ -249,8 +257,12 @@ function ComponentFactory:ItemCard(options)
     shown.texture = newItem.texture
     shown.quality = newItem.quality
 
-    title:SetText(newItem.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
+    title:SetText(newItem.link)
     if subtextLabel then subtextLabel:SetText(subtext) end
+
+    -- Stack count.
+    countText = quantity > 1 and quantity or ""
+    if count then count:SetText(countText) end
 
     -- Icon.
     iconTexture = newItem.texture

@@ -161,7 +161,7 @@ B.Strings = {
 -- Blizzard - Font Objects
 -- =============================================================================
 
---- The game's own font objects, from smallest to largest.
+--- The game's own font objects.
 B.FontObjects = {
   --- Small text, 10 pixels high on a Latin client.
   --- @type Font
@@ -178,6 +178,10 @@ B.FontObjects = {
   --- Large text, 16 pixels high on a Latin client.
   --- @type Font
   Large = GameFontNormalLarge or throw("GameFontNormalLarge"),
+
+  --- Outlined numbers, as in the stack count of a bag item.
+  --- @type Font
+  Number = NumberFontNormal or throw("NumberFontNormal"),
 }
 
 -- =============================================================================
