@@ -241,6 +241,23 @@ Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemLi
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
   iconButtons = {
+    -- Exclude button.
+    {
+      icon = Addon:GetAsset("ban-icon"),
+      highlightColor = Colors.Green,
+      onClick = function(item)
+        local list = IsShiftKeyDown() and Lists.GlobalExclusions or Lists.ProfileExclusions
+        list:Add(item.id)
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.EXCLUDE)
+        tooltip:AddDoubleLine(L.LEFT_CLICK, L.ADD_TO_LIST:format(Lists.ProfileExclusions.name))
+        tooltip:AddDoubleLine(
+          Addon:Concat("+", B.Strings.SHIFT_KEY_TEXT, L.LEFT_CLICK),
+          L.ADD_TO_LIST:format(Lists.GlobalExclusions.name)
+        )
+      end
+    },
     -- Destroy button.
     {
       icon = Addon:GetAsset("trash-icon"),
