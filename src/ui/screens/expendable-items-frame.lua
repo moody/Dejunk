@@ -111,8 +111,8 @@ end
 
 Components.Root = ComponentFactory:Window({
   name = "ExpendableItemsFrame",
-  width = 250,
-  height = 250,
+  width = 275,
+  height = 275,
   isSpecialFrame = false,
   titleText = Colors.Yellow(L.EXPENDABLE_ITEMS),
   getPoint = function() return StateManager:GetGlobalState().points.expendableItemsFrame end,
@@ -136,7 +136,7 @@ Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:Titl
 }))
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
-  cardCount = 4,
+  cardCount = 5,
   getItems = function() return expendableItems end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
