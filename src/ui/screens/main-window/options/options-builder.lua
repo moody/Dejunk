@@ -29,7 +29,9 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @field warningText? string Shown in pink below the description.
 --- @field ignoresSpecialEquipment? boolean Marks the label with an asterisk explained by `AddSpecialEquipmentFootnote()`.
 
---- @class OptionsBuilderCardOptions : OptionCardOptions, OptionsBuilderTextOptions
+--- @class OptionsBuilderToggleCardOptions : ToggleOptionCardOptions, OptionsBuilderTextOptions
+
+--- @class OptionsBuilderActionCardOptions : ActionOptionCardOptions, OptionsBuilderTextOptions
 
 --- @class OptionsBuilderChoice
 --- @field value any Value selected by this choice's chip.
@@ -231,8 +233,8 @@ local function addWeaponsLine(self, getState, mergeAction)
 end
 
 --- Adds a divider and a settings box to the card, below its description. The
---- box is disabled and dimmed while the card is unchecked.
---- @param self OptionsBuilderCard
+--- box is disabled and dimmed while a toggle card is unchecked.
+--- @param self OptionsBuilderToggleCard | OptionsBuilderActionCard
 --- @return OptionsBuilderSettingsBox box
 local function addSettingsBox(self)
   local divider = self.Content:AttachComponent(ComponentFactory:Divider())
@@ -240,7 +242,7 @@ local function addSettingsBox(self)
 
   --- @class OptionsBuilderSettingsBox : SettingsBoxComponent
   local box = self.Content:AttachComponent(ComponentFactory:SettingsBox({
-    isEnabled = function() return self:IsChecked() end
+    isEnabled = self.IsChecked and function() return self:IsChecked() end
   }))
   box:SetMarginTop(Widgets:Padding(0.25))
 
@@ -254,6 +256,29 @@ local function addSettingsBox(self)
   box.AddWeaponsLine = addWeaponsLine
 
   return box
+end
+
+--- Adds the label, description, and warning of `options` to the card's content.
+--- @param card OptionCardComponent
+--- @param options OptionsBuilderTextOptions
+local function addCardText(card, options)
+  card.Content:AttachComponent(ComponentFactory:Text({
+    text = options.ignoresSpecialEquipment and (options.labelText .. Colors.Pink("*")) or options.labelText
+  }))
+
+  card.Content:AttachComponent(ComponentFactory:Text({
+    text = options.descriptionText,
+    fontObject = "GameFontNormalSmall",
+    color = Colors.Grey
+  }))
+
+  if options.warningText then
+    card.Content:AttachComponent(ComponentFactory:Text({
+      text = options.warningText,
+      fontObject = "GameFontNormalSmall",
+      color = Colors.Pink
+    }))
+  end
 end
 
 -- ============================================================================
@@ -283,34 +308,27 @@ function OptionsBuilder:CreatePanel(options)
   return panel, content
 end
 
---- Adds an option card with a label and description to `container`.
+--- Adds an option card with a label, a description, and a checkbox to `container`.
 --- @param container WaffleFlexComponent
---- @param options OptionsBuilderCardOptions
---- @return OptionsBuilderCard card
+--- @param options OptionsBuilderToggleCardOptions
+--- @return OptionsBuilderToggleCard card
 function OptionsBuilder:AddOptionCard(container, options)
-  --- @class OptionsBuilderCard : OptionCardComponent
-  local card = container:AttachComponent(ComponentFactory:OptionCard(options))
-
-  card.Content:AttachComponent(ComponentFactory:Text({
-    text = options.ignoresSpecialEquipment and (options.labelText .. Colors.Pink("*")) or options.labelText
-  }))
-
-  card.Content:AttachComponent(ComponentFactory:Text({
-    text = options.descriptionText,
-    fontObject = "GameFontNormalSmall",
-    color = Colors.Grey
-  }))
-
-  if options.warningText then
-    card.Content:AttachComponent(ComponentFactory:Text({
-      text = options.warningText,
-      fontObject = "GameFontNormalSmall",
-      color = Colors.Pink
-    }))
-  end
-
+  --- @class OptionsBuilderToggleCard : ToggleOptionCardComponent
+  local card = container:AttachComponent(ComponentFactory:ToggleOptionCard(options))
+  addCardText(card, options)
   card.AddSettingsBox = addSettingsBox
+  return card
+end
 
+--- Adds an option card with a label, a description, and an icon to `container`. Clicking it calls `onLeftClick`.
+--- @param container WaffleFlexComponent
+--- @param options OptionsBuilderActionCardOptions
+--- @return OptionsBuilderActionCard card
+function OptionsBuilder:AddActionCard(container, options)
+  --- @class OptionsBuilderActionCard : ActionOptionCardComponent
+  local card = container:AttachComponent(ComponentFactory:ActionOptionCard(options))
+  addCardText(card, options)
+  card.AddSettingsBox = addSettingsBox
   return card
 end
 
@@ -350,10 +368,17 @@ function OptionsBuilder:AddGroup(container, headingText, descriptionText)
   end
 
   --- Adds an option card to the group.
-  --- @param options OptionsBuilderCardOptions
-  --- @return OptionsBuilderCard card
+  --- @param options OptionsBuilderToggleCardOptions
+  --- @return OptionsBuilderToggleCard card
   function group:AddOptionCard(options)
     return OptionsBuilder:AddOptionCard(self, options)
+  end
+
+  --- Adds an action card to the group.
+  --- @param options OptionsBuilderActionCardOptions
+  --- @return OptionsBuilderActionCard card
+  function group:AddActionCard(options)
+    return OptionsBuilder:AddActionCard(self, options)
   end
 
   --- Adds a keybinding card to the group.

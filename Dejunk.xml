@@ -111,6 +111,8 @@
   <Script file="src\ui\components\log-card.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\toggle-option-card.lua"/>
+  <Script file="src\ui\components\action-option-card.lua"/>
   <Script file="src\ui\components\profile-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
