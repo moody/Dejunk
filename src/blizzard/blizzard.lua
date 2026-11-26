@@ -144,6 +144,10 @@ B.Strings = {
   --- @type string
   VENDOR_DOESNT_BUY_ERROR_TEXT = ERR_VENDOR_DOESNT_BUY or throw("ERR_VENDOR_DOESNT_BUY"),
 
+  --- Error message shown when the bags have no room for an item.
+  --- @type string
+  INVENTORY_FULL_ERROR_TEXT = ERR_INV_FULL or throw("ERR_INV_FULL"),
+
   --- Format of a number of hours, abbreviated. Takes the number.
   --- @type string
   HOURS_ABBREVIATED_TEXT = HOUR_ONELETTER_ABBR or throw("HOUR_ONELETTER_ABBR"),

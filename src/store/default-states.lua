@@ -38,8 +38,9 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field detail ChatMessageDetail
 
 --- When the Expendable Items frame shows by itself. `NEVER` leaves it to the player, `BAGS_FULL` shows it when the bags
---- are full while looting, and `ALWAYS` shows it whenever the loot window opens.
---- @alias ExpendableItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
+--- are full while looting, `ON_ERROR` shows it when the game says the inventory is full, and `ALWAYS` shows it whenever
+--- the loot window opens. Only `BAGS_FULL` and `ALWAYS` hide it when the loot window closes.
+--- @alias ExpendableItemsAutoShow "NEVER" | "BAGS_FULL" | "ON_ERROR" | "ALWAYS"
 
 --- The item types that the Expendable Items frame lists besides junk items.
 --- @class ExpendableItemsTypesState
