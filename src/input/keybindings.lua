@@ -57,6 +57,7 @@ local handlers = {
   toggleMainWindow = Commands.options,
   toggleJunkFrame = Commands.junk,
   toggleLootableFrame = Commands.loot,
+  toggleExpendableItemsFrame = Commands.expendable,
   startSelling = Commands.sell,
   destroyNextItem = Commands.destroy,
   addOrRemoveProfileInclusions = function() addOrRemoveTooltipItem("ProfileInclusions") end,

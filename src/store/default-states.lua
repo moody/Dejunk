@@ -115,6 +115,7 @@ DefaultStates.Global = {
     toggleMainWindow = DefaultStates.UNBOUND_KEY,
     toggleJunkFrame = DefaultStates.UNBOUND_KEY,
     toggleLootableFrame = DefaultStates.UNBOUND_KEY,
+    toggleExpendableItemsFrame = DefaultStates.UNBOUND_KEY,
     startSelling = DefaultStates.UNBOUND_KEY,
     destroyNextItem = DefaultStates.UNBOUND_KEY,
     addOrRemoveProfileInclusions = DefaultStates.UNBOUND_KEY,

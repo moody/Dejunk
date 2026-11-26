@@ -131,6 +131,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
   addKeybindingCard(windows, footer, "toggleMainWindow", L.TOGGLE_MAIN_WINDOW)
   addKeybindingCard(windows, footer, "toggleJunkFrame", L.TOGGLE_JUNK_FRAME)
   addKeybindingCard(windows, footer, "toggleLootableFrame", L.TOGGLE_LOOTABLE_FRAME)
+  addKeybindingCard(windows, footer, "toggleExpendableItemsFrame", L.TOGGLE_EXPENDABLE_ITEMS_FRAME)
 
   -- Actions.
   local actions = OptionsBuilder:AddGroup(container, L.ACTIONS)
