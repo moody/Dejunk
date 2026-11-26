@@ -4,80 +4,134 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 
 ![Dejunk](/.github/images/Dejunk.png?raw=true)
 
+[Getting Started](#getting-started) · [Profile Options and Lists](#profile-options-and-lists) · [Junk Items](#junk-items) · [Expendable Items](#expendable-items) · [Lootable Items](#lootable-items) · [Log](#log) · [Keybindings and Commands](#keybindings-and-commands)
+
 ## Features
 
-- Sell junk automatically or on demand
-- Destroy junk one at a time, with optional confirmation
-- Separate settings and lists per profile, shareable across characters
-- Tooltips explain why an item is considered junk
-- Log what was sold or destroyed, and why, for the current session
-- Auto-repair equipment at merchants
-- Overlay icons on junk in your bags
-- Open lootable items one at a time from a dedicated frame
-- Free up bag space from a frame that lists your cheapest items to destroy
-- Use keybindings or chat commands for most actions
+- Options and lists decide what is junk, separately for each profile, and characters can share a profile
+- Tooltips and a log show why an item is considered junk
+- A frame lists your junk with its sell value, with buttons to sell, exclude, or destroy each item
+- A second frame lists your cheapest items to destroy when your bags are full
+- Lootable items open one at a time from their own frame
+- Sell automatically at merchants, repair equipment, and mark junk in your bags with icons
 
-### Getting Started
+## Compatibility
 
-Out of the box, only poor-quality items are junk, and nothing is sold automatically. Open a merchant and click the merchant button, or run `/dejunk sell`, to sell the junk. Turn on `Auto Sell` in `Profile Options` to sell as soon as a merchant opens. Check the Junk Items frame (`/dejunk junk`) first to see what would be sold, and run `/dejunk` to open the options.
+Dejunk works on Retail, Mists of Pandaria Classic, TBC Classic, Classic Era, and WoW Forever. Some options are not available everywhere: `Include Artifact Relics` and `Exclude Warband Equipment` are Retail only, and `Exclude Equipment Sets` is not available on Classic Era or TBC Classic.
 
-### Profile Options
+## Getting Started
 
-The `Profile Options` screen has three groups. `General` holds `Auto Repair` and `Auto Sell`. `Include` and `Exclude` determine what is considered junk, and most of their options have per-quality checkboxes that limit them to specific quality tiers.
+Out of the box, only poor-quality items are junk, and nothing is sold automatically. To set it up:
 
-#### Include
+1. **Add items to lists.** Left-click the minimap icon to open the main window, then open `Lists`. Drop an item into `Inclusions (Profile)` to consider it junk, or into `Exclusions (Profile)` to never consider it junk. The `Global` lists do the same for every character.
+2. **Set the broader rules.** Open `Profile Options` to decide what is junk by quality, item level, price, or equipment type, and to exclude items such as quest items. `Include By Quality` is on for poor-quality items.
+3. **Open the Junk Items frame.** Click the junk item counts in the footer of the main window, which show how many items can be sold and destroyed. The frame lists the junk items you currently possess, so you can see the result of your lists and options. Mouse over an item in your bags to see whether it would be sold or destroyed, and why.
+4. **Keep an item.** In the Junk Items frame, click an item's Exclude button to add it to your `Exclusions`, so it is no longer considered junk. Dropping an item into the frame adds it to your `Inclusions`.
+5. **Sell your junk.** At a merchant, click the button on the merchant frame to sell all of it, or the Sell button on an item in the Junk Items frame to sell only that item.
+6. **Let it run by itself.** Turn on `Auto Sell` in `Profile Options` to sell as soon as a merchant opens, and `Auto Junk Frame` in `Global Options` to show the Junk Items frame at a merchant when you have junk items.
 
-- **Include Artifact Relics** — Include artifact relic gems _(Retail only)_
-- **Include By Quality** — Include items by quality tier (poor quality included by default)
-- **Include Below Item Level** — Include equipment below a set item level
-- **Include Below Price** — Include items with a stack price below a set value
-- **Include By Equipment Type** — Include equipment of the selected armor and weapon types (cloaks never match)
+If the minimap icon is hidden, `/dejunk` opens the main window and `/dejunk help` lists every command. Frames can be dragged to move them, and Shift+right-click resets a frame's position.
 
-#### Exclude
+## Profile Options and Lists
 
-- **Exclude Above Item Level** — Exclude equipment above a set item level, even if it is on an Inclusions list
-- **Exclude Above Price** — Exclude items with a stack price above a set value, even if it is on an Inclusions list
-- **Exclude By Equipment Type** — Exclude equipment of the selected armor and weapon types (cloaks never match)
-- **Exclude Equipment Sets** — Exclude equipment saved to an equipment set _(Not available on Classic Era or TBC Classic)_
-- **Exclude Quest Items** — Exclude items that the game classifies as quest items
-- **Exclude Unbound Equipment** — Exclude equipment that is not yet bound
-- **Exclude Warband Equipment** — Exclude equipment eligible for the warband bank _(Retail only)_
+Two things decide what is junk:
 
-Each `Include` and `Exclude` option applies to selling, destroying, or both, except `Exclude Quest Items`, which always applies to both. They start on both, except `Include Below Price` on selling and `Exclude Above Price` on destroying. `Include By Quality`, `Exclude Equipment Sets`, and `Exclude Quest Items` are on by default, and every other option is off.
+- **Profile Options** — Include items by quality, item level, price, or equipment type, and exclude items you want to keep, such as quest items and equipment sets
+- **Lists** — Put specific items on an `Inclusions` list to consider them junk, or on an `Exclusions` list to never consider them junk. `Global` lists apply to every character, and `Profile` lists apply to the active profile and take precedence over the global ones
 
-The price options compare the price of the whole stack and never affect items with no vendor price.
+A profile holds a character's options and lists, and characters can share one, so you can set up once and reuse it. A list can be exported as item IDs and imported into another list. See [How Dejunk Decides What Is Junk](#how-dejunk-decides-what-is-junk) for the order they are checked in.
 
-### Global Options
+![Profile Options](/.github/images/ProfileOptions.png?raw=true)
 
-The `Global Options` screen applies to every character, regardless of profile.
+## Junk Items
 
-- **Safe Destroy** — Require confirmation before destroying an item
-- **Safe Sell** — Only sell up to 12 items at a time
-- **Merchant Button** — Add a button to the merchant window
-- **Minimap Icon** — Add an icon to the minimap
-- **Auto Junk Frame** — Show the Junk Items frame automatically at a merchant
-- **Auto Lootable Frame** — Show the Lootable Items frame automatically
-- **Expendable Items Frame** — Quickly destroy your cheapest bag items to free up space, with choices for when the frame shows and which items it lists
-- **Chat Messages** — Print messages to chat, with reduced or verbose detail
-- **Bag Item Tooltips** — Add Dejunk information to the tooltips of items in your bags
-- **Bag Item Icons** — Overlay a small or large icon on junk items in your bags
+The Junk Items frame lists the junk items you currently possess, with their total sell value, so you can check what Dejunk would sell before it does.
 
-Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`. The Expendable Items frame starts on `Loot: Bags Full`.
+- Each item has Sell, Exclude, and Destroy buttons
+- Drop an item into the frame to add it to `Inclusions (Profile)`
+- Hold Shift while dropping an item, or clicking Exclude, to use the `Global` list instead
+- Ctrl+Alt+right-click the bar that shows the total value to add every listed item to `Exclusions (Profile)`
+- An item you can still refund is listed, but selling skips it. Destroying it works
 
-`Chat Messages` has a `Detail` choice, `Reduced` by default. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. An item sold on its own, without `Start Selling`, prints with either detail.
+Open it with:
 
-The merchant button sells on left-click, toggles the Junk Items frame on right-click, destroys the next item on Alt+right-click, and resets its position on Shift+right-click. The minimap icon toggles the main window on left-click, toggles the Junk Items frame on right-click, and destroys the next item on Alt+right-click. Its tooltip shows how many junk items can be sold and destroyed. Holding Alt over the merchant button or the minimap icon shows the item that Alt+right-click would destroy, or says there is none.
+- A click on the junk item counts in the footer of the main window
+- A right-click on the minimap icon
+- A right-click on the merchant button, at a merchant
+- The `Auto Junk Frame` option, which shows it at a merchant when you have junk items
+- `/dejunk junk`
+- A keybinding
 
-### Lists
+Alt+right-click on the minimap icon or the merchant button destroys the next junk item instead.
 
-Inclusions and Exclusions lists are available at both the global and per-profile level.
+![Junk Items](/.github/images/JunkFrame.png?raw=true)
 
-- **`Inclusions (Global)`** — Considered junk across all characters
-- **`Exclusions (Global)`** — Never considered junk across all characters
-- **`Inclusions (Profile)`** — Considered junk for the active profile only
-- **`Exclusions (Profile)`** — Never considered junk for the active profile only
+## Expendable Items
 
-An item is checked in this order, and the first match decides:
+Use the Expendable Items frame to quickly destroy your cheapest bag items to free up space, such as when your bags are full and you cannot loot something. It lists items cheapest stack first, with a Destroy button on each.
+
+It lists items differently from the Junk Items frame, which lists only junk:
+
+- Junk items always show, with a black and white icon
+- Items excluded from destroying never show
+- Everything else shows only if its type and quality are selected in its `Types` and `Qualities` options. By default, that is poor and common quality equipment, trade goods, and consumables
+
+Open it with:
+
+- A click on the `Expendable Items Frame` card in `Global Options`, which also has its options
+- The `Auto Show` option, which by default shows it when your bags are full while the loot window is open
+- `/dejunk expendable`
+- A keybinding
+
+![Expendable Items](/.github/images/ExpendableItems.png?raw=true)
+
+## Lootable Items
+
+The Lootable Items frame lists items in your bags that open when right-clicked, such as clams. Click an item in the frame to open it.
+
+Open it with:
+
+- A click on the lootable item count in the footer of the main window
+- The `Auto Lootable Frame` option, which shows it when you have items to loot
+- `/dejunk loot`
+- A keybinding
+
+![Lootable Items frame](/.github/images/LootablesFrame.png?raw=true)
+
+## Log
+
+The `Log` screen lists what Dejunk sold or destroyed this session, newest first, with the reason each item was junk and its value. It is not saved, so a reload clears it.
+
+Open it with:
+
+- The `Log` row in the sidebar of the main window
+- `/dejunk log`
+
+![Log](/.github/images/Log.png?raw=true)
+
+## Keybindings and Commands
+
+The `Keybindings` screen sets keys for the frames, `Start Selling`, and `Destroy Next Item`. It also sets a key for each list that adds the item shown in the game tooltip to the list, or removes it if the list already has it, so mouse over an item and press the key.
+
+- Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels
+- Right-click a row to unbind it
+- Keys set here take priority over the game's own keybindings
+
+The chat commands are:
+
+- `/dejunk` — Toggle the main window
+- `/dejunk sell` — Start selling junk items
+- `/dejunk destroy` — Destroy the next junk item
+- `/dejunk junk` — Toggle the junk frame
+- `/dejunk loot` — Toggle the lootable items frame
+- `/dejunk expendable` — Toggle the expendable items frame
+- `/dejunk log` — Toggle the log screen
+- `/dejunk profiles` — Toggle the profiles screen
+- `/dejunk help` — Display a list of commands
+
+## How Dejunk Decides What Is Junk
+
+An item is checked against the options and lists in this order, and the first match decides:
 
 1. `Exclude Above Item Level` and `Exclude Above Price`, when enabled
 2. `Exclusions (Profile)`
@@ -87,118 +141,7 @@ An item is checked in this order, and the first match decides:
 6. The other `Exclude` options
 7. The `Include` options
 
-An item that matches nothing is not junk, and an item with no vendor price is never junk for selling.
-
-Items can be added to lists by dropping them into the list frame or the Junk Items frame, or with the list keybindings. The search box at the top of the `Lists` screen filters all four lists by item name.
-
-### Import/Export
-
-Each list has its own Import/Export frame, opened from a button on the list frame itself. It shows the list's item IDs as plain text, ready to copy out. Paste in a new set of IDs and click `Import` to add them to the list, or click `Export` to refill the box with the list's current IDs.
-
-![Import/Export](/.github/images/TransportFrame.png?raw=true)
-
-### Junk Items
-
-The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the junk item counts in the footer of the main window, or a right-click on the merchant button or the minimap icon, lists items currently considered junk along with their total sell value. The gear button in its title bar toggles the main window on `Profile Options`.
-
-- Each item has three buttons:
-  - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold, such as away from a merchant or when the item has no vendor price
-  - **Destroy** (trash can icon) — Destroys the item. Dimmed while it cannot be destroyed
-  - **Exclude** (ban icon, a circle with a slash) — Adds the item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
-- Sell and destroy work on any listed item, even one that is junk only for the other action. Their tooltips show whether the item is being sold or destroyed, and why. While dimmed, they ignore clicks
-- Drop an item into the frame to add it to `Inclusions (Profile)`, or to `Inclusions (Global)` while holding Shift
-- Ctrl+Alt+right-click the bar that shows the total value to add every listed item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
-- An item with no vendor price shows `No sell price` in place of its price
-- A locked item, such as one on the cursor or in a trade, stays listed but dimmed, shows `Item is locked` in place of its price, and cannot be clicked until it unlocks
-- An item you can still refund is listed, but selling skips it; its tooltip says why, and destroying it works
-- `Start Selling`, available at a merchant, and `Destroy Next Item` act on the listed items that are junk for selling and destroying, respectively
-
-The `Auto Junk Frame` option shows the frame automatically at a merchant when you have junk items, and closes it when you have none left or leave the merchant.
-
-![Junk Items](/.github/images/JunkFrame.png?raw=true)
-
-### Profiles
-
-Each character is assigned a profile, which holds its own `Inclusions (Profile)` and `Exclusions (Profile)` lists along with its own `Auto Repair`, `Auto Sell`, `Include`, and `Exclude` options. Multiple characters can share the same profile.
-
-Every character starts on the `Default` profile. Profiles are created, duplicated, activated, renamed, reset, and deleted on the `Profiles` screen of the main window, which `/dejunk profiles` also toggles. Each profile card shows whether `Auto Sell` is on and the size of its `Inclusions` and `Exclusions` lists; hover it for the characters that use the profile. The footer shows the active profile; click it to open the `Profiles` screen. Duplicating a profile copies its options and lists into a new profile and switches to it. Resetting a profile returns its options and lists to their defaults. The `Default` profile cannot be renamed or deleted, and characters using a deleted profile return to `Default`.
-
-![Profiles](/.github/images/Profiles.png?raw=true)
-
-### Lootable Items
-
-Lootable bag items, such as those that need to be right-clicked to open, are listed in the Lootable Items frame, opened via `/dejunk loot`, its keybind, or a click on the lootable item count in the footer of the main window. Click an item to attempt to open it; a loot window may prompt for confirmation depending on your own auto-loot setting. Each item also has a button to ignore all instances of that item for the remainder of the session. The `Auto Lootable Frame` option shows the frame automatically whenever you have lootable items, and closes it once you have none; opening it manually with nothing to loot prints a message instead.
-
-![Lootable Items frame](/.github/images/LootablesFrame.png?raw=true)
-
-### Expendable Items
-
-The Expendable Items frame lists the bag items you could destroy to make room, cheapest stack first, so you can free a slot in a few clicks. Stacks are ordered by their total vendor price, and items with no vendor price come first. It is opened via `/dejunk expendable`, its keybind, or a click on its card in `Global Options`. Its title shows how many items it lists, and its `Free Slots` heading shows how many free slots your bags have, not counting specialty bags such as a quiver. It opens scrolled to the cheapest item.
-
-- Junk items always show, with a black and white icon. An item counts if Dejunk considers it junk for destroying
-- Excluded items never show, whether by one of the `Exclusions` lists or by an `Exclude` option that applies to destroying. Items the game does not let you destroy do not show either
-- Every other item shows only if its type and quality are selected in the frame's options:
-  - **Types** — `Equipment` (weapons, armor, rings, necklaces, and trinkets), `Trade Goods` (crafting materials, such as cloth, ore, and herbs), `Consumables` (food, drinks, potions, and similar items), and `Other` (everything else, such as ammo, reagents, and keys). Everything but `Other` is selected by default
-  - **Qualities** — `Poor` to `Epic`. `Poor` and `Common` are selected by default
-- Each item has two buttons:
-  - **Exclude** (ban icon) — Adds the item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
-  - **Destroy** (trash can icon) — Destroys the item, asking first if `Safe Destroy` is on
-
-The `Auto Show` choice on the `Expendable Items Frame` card in `Global Options` sets when the frame shows by itself:
-
-- **Never** — Do not show or hide the frame automatically
-- **Loot: Bags Full** — Show the frame when your bags are full while the loot window is open, and hide it when the loot window closes
-- **Loot: Always** — Show the frame when the loot window opens, and hide it when the loot window closes
-- **Error: Inventory Full** — Show the frame when the game says your inventory is full, whatever the cause, and leave it open until you close it
-
-![Expendable Items](/.github/images/ExpendableItems.png?raw=true)
-
-### Keybindings
-
-The `Keybindings` screen of the main window sets keys for the Main Window, Junk Items, Lootable Items, and Expendable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
-
-- A key set here takes priority over the game's own binding for it, and a note names the binding it covers.
-- Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
-- Keys cannot be changed in combat, and gamepad buttons cannot be bound.
-
-![Keybindings](/.github/images/Keybindings.png?raw=true)
-
-### Log
-
-The `Log` screen of the main window, which `/dejunk log` also toggles, lists what Dejunk sold or destroyed this session, newest first. Each entry shows the outcome, the item, its value, the reason it was junk, and how long ago it happened. A sale is yellow and a destroyed item is red. An item that failed to sell or destroy, or that may not have, is grey, since the game did not confirm it. An item you chose yourself is marked `Manual`, and the profile is named if it is not the active one. The tabs show all entries, only selling, or only destroying. The line under the list totals the items sold, the profit, and the items destroyed this session. The log is not saved, so a reload clears it, and it keeps only the most recent entries.
-
-![Log](/.github/images/Log.png?raw=true)
-
-## Chat Commands
-
-```bash
-# Toggle the main window.
-/dejunk
-
-# Start selling junk items.
-/dejunk sell
-
-# Destroy the next junk item.
-/dejunk destroy
-
-# Toggle the junk frame.
-/dejunk junk
-
-# Toggle the lootable items frame.
-/dejunk loot
-
-# Toggle the expendable items frame.
-/dejunk expendable
-
-# Toggle the log screen.
-/dejunk log
-
-# Toggle the profiles screen.
-/dejunk profiles
-
-# Display a list of commands.
-/dejunk help
-```
+In short, a profile's lists come before the global lists, and exclusions come before inclusions at each level. An item that matches nothing is not junk, and an item with no vendor price is never junk for selling.
 
 ## Developer API
 
