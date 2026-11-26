@@ -98,7 +98,7 @@ Components.Root = ComponentFactory:Window({
   name = "MainWindow",
   width = 800,
   height = 640,
-  titleText = "", -- unused; MainWindow builds its own title-bar content below
+  titleText = Colors.Blue(ADDON_NAME),
   getPoint = function() return StateManager:GetGlobalState().points.mainWindow end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end,
   onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset()) end,
@@ -110,40 +110,9 @@ Components.Root:WhenFrameReady(function(frame)
   frame:HookScript("OnHide", function() Components.SearchBox:SetText("") end)
 end)
 
--- Window()'s generic title text goes unused in favor of the title bar below.
-Components.Root.TitleText:Detach()
-Components.Root.TitleText = nil
-
 -- ============================================================================
 -- Title Bar Components
 -- ============================================================================
-
-Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ gap = Widgets:Padding(0.5) })
-
--- Addon icon, to the left of the name.
-Components.TitleBarNameText:AddChild({
-  width = 20,
-  height = 20,
-  shrink = 0,
-  alignSelf = "CENTER",
-
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local icon = parent:CreateTexture("$parent_TitleIcon", "ARTWORK")
-    icon:SetTexture(Addon:GetAsset("dejunk-icon"))
-    return icon
-  end
-})
-
-Components.TitleBarNameText:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Blue(ADDON_NAME))
-    return fontString
-  end
-})
 
 Components.TitleBarVersionText = Components.Root.TitleRow:AddRow({ justify = "CENTER" })
 Components.TitleBarVersionText:AddChild({

@@ -27,7 +27,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - Window
 -- =============================================================================
 
---- Creates a draggable floating window with a title bar and close button.
+--- Creates a draggable floating window with a title bar, addon icon, and close button.
 --- Position is persisted and resettable with Shift+Right-Click.
 --- @param options WindowComponentOptions
 --- @return WindowComponent root
@@ -36,6 +36,8 @@ function ComponentFactory:Window(options)
 
   --- @class WindowComponent : WaffleFlexComponent
   --- @field TitleRow WaffleFlexComponent
+  --- @field TitleNameRow WaffleFlexComponent
+  --- @field TitleIcon WaffleFlexComponent
   --- @field TitleText WaffleFlexComponent
   --- @field CloseButton WaffleFlexComponent
   root = Addon.Waffle:Flex({
@@ -92,7 +94,23 @@ function ComponentFactory:Window(options)
     end
   })
 
-  root.TitleText = root.TitleRow:AddChild({
+  root.TitleNameRow = root.TitleRow:AddRow({ gap = Widgets:Padding(0.5) })
+
+  root.TitleIcon = root.TitleNameRow:AddChild({
+    width = 22,
+    height = 22,
+    shrink = 0,
+    alignSelf = "CENTER",
+
+    --- @param parent Frame
+    frameFactory = function(parent)
+      local texture = parent:CreateTexture("$parent_TitleIcon", "ARTWORK")
+      texture:SetTexture(Addon:GetAsset("dejunk-icon"))
+      return texture
+    end
+  })
+
+  root.TitleText = root.TitleNameRow:AddChild({
     --- @param parent Frame
     frameFactory = function(parent)
       local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
