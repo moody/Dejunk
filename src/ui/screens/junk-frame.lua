@@ -21,6 +21,8 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class JunkFrame
 local JunkFrame = Addon:GetModule("JunkFrame")
 
+local TITLE_TEXT_FORMAT = Colors.Yellow(L.JUNK_ITEMS) .. " %s"
+
 local Components = {}
 
 -- ============================================================================
@@ -48,7 +50,7 @@ local function refreshComponents()
   local countsText = JunkItemsCache:GetNumJunkItemsText()
   if countsText ~= titleCountsText then
     titleCountsText = countsText
-    Components.Root.TitleText:SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
+    Components.Root.TitleText:SetText(TITLE_TEXT_FORMAT:format(countsText))
   end
 
   local totalJunkValue = 0

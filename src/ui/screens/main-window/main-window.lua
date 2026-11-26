@@ -22,6 +22,13 @@ local MainWindow = Addon:GetModule("MainWindow")
 local LIST_PANEL_CARD_COUNT = 7
 local LIST_PANEL_ICON_SIZE = 18
 
+local ACTIVE_PROFILE_TEXT_FORMAT = Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White("%s")
+local JUNK_ITEMS_TEXT_FORMAT = Colors.Yellow(L.JUNK_ITEMS) .. " %s"
+local LOOTABLE_ITEMS_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Yellow(L.LOOTABLE_ITEMS),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
+
 local Components = {}
 
 -- ============================================================================
@@ -388,7 +395,7 @@ end
 addFooterSegment({
   justify = "LEFT",
   getValue = function() return StateManager:GetProfileState().name end,
-  formatText = function(name) return Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White(name) end,
+  formatText = function(name) return ACTIVE_PROFILE_TEXT_FORMAT:format(name) end,
   onClick = function() Controller:SelectSidebarRow("PROFILES") end
 })
 
@@ -396,7 +403,7 @@ addFooterSegment({
 addFooterSegment({
   justify = "CENTER",
   getValue = function() return JunkItemsCache:GetNumJunkItemsText() end,
-  formatText = function(countsText) return Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText end,
+  formatText = function(countsText) return JUNK_ITEMS_TEXT_FORMAT:format(countsText) end,
   onClick = function() JunkFrame:Toggle() end,
 
   --- Spells out the two counts.
@@ -412,12 +419,7 @@ addFooterSegment({
   justify = "RIGHT",
   getValue = function() return LootableFrame:GetNumLootableItems() end,
 
-  formatText = function(numLootable)
-    return (
-      Colors.Yellow(L.LOOTABLE_ITEMS) ..
-      Colors.Grey(" (") .. Colors.White(numLootable) .. Colors.Grey(")")
-    )
-  end,
+  formatText = function(numLootable) return LOOTABLE_ITEMS_TEXT_FORMAT:format(numLootable) end,
 
   onClick = function() LootableFrame:Toggle() end
 })

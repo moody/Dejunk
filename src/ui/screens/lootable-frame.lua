@@ -14,7 +14,10 @@ local Widgets = Addon:GetModule("Widgets")
 local LootableFrame = Addon:GetModule("LootableFrame")
 
 local LOOTABLE_CARD_COUNT = 5
-local TITLE_TEXT_FORMAT = Colors.Yellow(("%s (%s)"):format(L.LOOTABLE_ITEMS, Colors.White("%s")))
+local TITLE_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Yellow(L.LOOTABLE_ITEMS),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
 
 local Components = {}
 

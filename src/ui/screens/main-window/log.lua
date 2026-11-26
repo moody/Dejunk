@@ -13,8 +13,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindowLog
 local MainWindowLog = Addon:GetModule("MainWindowLog")
 
---- Format for the outcome of a manual entry. Takes the outcome text.
-local MANUAL_OUTCOME_FORMAT = "%s " .. Colors.Grey("(") .. Colors.White(L.MANUAL) .. Colors.Grey(")")
+local MANUAL_OUTCOME_FORMAT = "%s " .. Colors.Grey("(%s)"):format(Colors.White(L.MANUAL))
+local REASON_TEXT_FORMAT = Colors.Grey(L.REASON .. ": ") .. "%s"
+local PROFILE_TEXT_FORMAT = Colors.Grey(L.PROFILE .. ": ") .. "%s"
 
 --- The label and color of each outcome.
 --- @type table<LogOutcome, { text: string, color: Color }>
@@ -110,11 +111,11 @@ local function getSubtext(entry)
   local parts = { outcomeText }
 
   local reason = entry.attempt.reason
-  if reason then parts[#parts + 1] = Colors.Grey(L.REASON .. ": ") .. Colors:Strip(reason) end
+  if reason then parts[#parts + 1] = REASON_TEXT_FORMAT:format(Colors:Strip(reason)) end
 
   if entry.profileId ~= StateManager:GetProfileState().id then
     local profile = StateManager:GetProfileStateById(entry.profileId)
-    if profile then parts[#parts + 1] = Colors.Grey(L.PROFILE .. ": ") .. profile.name end
+    if profile then parts[#parts + 1] = PROFILE_TEXT_FORMAT:format(profile.name) end
   end
 
   return Addon:Concat(" · ", unpack(parts))

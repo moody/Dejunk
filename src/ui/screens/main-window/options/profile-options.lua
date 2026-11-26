@@ -10,6 +10,11 @@ local StateManager = Addon:GetModule("StateManager")
 --- @class MainWindowOptions
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 
+local TITLE_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Blue(L.PROFILE_OPTIONS_TEXT),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
+
 -- ============================================================================
 -- MainWindowOptions - Profile
 -- ============================================================================
@@ -27,7 +32,7 @@ function MainWindowOptions:CreateProfileOptionsPanel()
   EventManager:WaitForFirst(E.StoreCreated, function()
     local function refreshTitle()
       local profileName = StateManager:GetProfileState().name
-      panel:SetTitleText(Colors.Blue("%s (%s)"):format(L.PROFILE_OPTIONS_TEXT, Colors.White(profileName)))
+      panel:SetTitleText(TITLE_TEXT_FORMAT:format(profileName))
     end
     EventManager:On(E.StateUpdated, refreshTitle)
     refreshTitle()

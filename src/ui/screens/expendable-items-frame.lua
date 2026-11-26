@@ -18,7 +18,10 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ExpendableItemsFrame
 local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 
-local TITLE_TEXT_FORMAT = Colors.Yellow(("%s (%s)"):format(L.EXPENDABLE_ITEMS, Colors.White("%s")))
+local TITLE_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Yellow(L.EXPENDABLE_ITEMS),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
 local FREE_SLOTS_TEXT_FORMAT = Colors.Grey(("%s: %s"):format(L.FREE_SLOTS, Colors.White("%s")))
 
 local Components = {}
