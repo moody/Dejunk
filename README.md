@@ -62,7 +62,7 @@ The `Global Options` screen applies to every character, regardless of profile.
 - **Bag Item Tooltips** — Add Dejunk information to the tooltips of items in your bags
 - **Bag Item Icons** — Overlay a small or large icon on junk items in your bags
 
-Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`. The Expendable Items frame starts on `Bags Full`.
+Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`. The Expendable Items frame starts on `Loot: Bags Full`.
 
 `Chat Messages` has a `Detail` choice, `Reduced` by default. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. An item sold on its own, without `Start Selling`, prints with either detail.
 
@@ -147,9 +147,9 @@ The Expendable Items frame lists the bag items you could destroy to make room, c
 The `Auto Show` choice on the `Expendable Items Frame` card in `Global Options` sets when the frame shows by itself:
 
 - **Never** — Do not show or hide the frame automatically
-- **Bags Full** — Show the frame when your bags are full while the loot window is open, and hide it when the loot window closes
-- **On Error** — Show the frame when the game says your inventory is full, whatever the cause, and leave it open until you close it
-- **Always** — Show the frame when the loot window opens, and hide it when the loot window closes
+- **Loot: Bags Full** — Show the frame when your bags are full while the loot window is open, and hide it when the loot window closes
+- **Loot: Always** — Show the frame when the loot window opens, and hide it when the loot window closes
+- **Error: Inventory Full** — Show the frame when the game says your inventory is full, whatever the cause, and leave it open until you close it
 
 ![Expendable Items](/.github/images/ExpendableItems.png?raw=true)
 
