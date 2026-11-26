@@ -240,11 +240,10 @@ function MainWindowLog:CreateLogPanel()
     end
   }))
 
-  local totalsLabel = panel.Content:AttachComponent(ComponentFactory:Text({
+  local totalsLabel = panel:AddFooter({
     text = getTotalsText(),
-    fontObject = B.FontObjects.Small,
-    justifyH = "CENTER"
-  }))
+    fontObject = B.FontObjects.Small
+  })
 
   EventManager:On(E.ItemLogged, function() totalsLabel:SetText(getTotalsText()) end)
 

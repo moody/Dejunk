@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Coins = Addon:GetModule("Coins")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -17,11 +18,6 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @class OptionsBuilderPanelOptions : TitledPanelComponentOptions
 --- @field descriptionText? string Small grey text above the first group, followed by a divider.
 --- @field interceptMouseWheel? fun(delta: number): boolean Called first on each wheel notch over the panel. Return `true` to take the notch so the panel does not scroll.
-
---- @class OptionsBuilderMessageFooterOptions
---- @field fontObject? string Font of the message. Defaults to `GameFontNormal`.
---- @field color? Color Default color of the message. Defaults to `Colors.Grey`.
---- @field defaultMessage? string Shown in grey while there is no message, which keeps the footer visible.
 
 --- @class OptionsBuilderTextOptions
 --- @field labelText string Option name.
@@ -393,63 +389,12 @@ function OptionsBuilder:AddGroup(container, headingText, descriptionText)
   return group
 end
 
---- Adds a footer below `panel`'s scroll panel, under a divider, that shows a centered message. It is hidden
---- until a message is set, unless it has a `defaultMessage`.
---- @param panel TitledPanelComponent
---- @param options? OptionsBuilderMessageFooterOptions
---- @return OptionsBuilderMessageFooter footer
-function OptionsBuilder:AddMessageFooter(panel, options)
-  options = options or {}
-
-  local hasDefaultMessage = options.defaultMessage ~= nil
-  local idleText = hasDefaultMessage and Colors.Grey(options.defaultMessage) or " "
-
-  --- @class OptionsBuilderMessageFooter : WaffleFlexComponent
-  local footer = panel.Content:AttachComponent(Addon.Waffle:Flex({
-    direction = "COLUMN",
-    height = "AUTO",
-    gap = Widgets:Padding(),
-    visibility = hasDefaultMessage and "VISIBLE" or "GONE",
-    marginTop = Widgets:Padding()
-  }))
-
-  footer:AttachComponent(ComponentFactory:Divider())
-
-  local text = footer:AttachComponent(ComponentFactory:Text({
-    text = idleText,
-    fontObject = options.fontObject or "GameFontNormal",
-    color = options.color or Colors.Grey,
-    justifyH = "CENTER"
-  }))
-
-  --- Shows the message, or clears it when it is `nil`. Clearing hides the footer unless it has a default message.
-  --- @param message? string
-  function footer:SetMessage(message)
-    if message or hasDefaultMessage then
-      text:WhenFrameReady(function(fontString) fontString:SetText(message or idleText) end)
-      text:MarkDirty()
-    end
-
-    if not hasDefaultMessage then
-      self:SetVisibility(message and "VISIBLE" or "GONE")
-    end
-  end
-
-  return footer
-end
-
---- Adds a centered footnote below `panel`'s scroll panel, under a divider,
---- explaining that options marked with an asterisk ignore special equipment.
+--- Adds a footer to `panel` explaining that options marked with an asterisk ignore special equipment.
 --- @param panel TitledPanelComponent
 function OptionsBuilder:AddSpecialEquipmentFootnote(panel)
-  local divider = panel.Content:AttachComponent(ComponentFactory:Divider())
-  divider:SetMarginTop(Widgets:Padding())
-
-  local footnote = panel.Content:AttachComponent(ComponentFactory:Text({
+  panel:AddFooter({
     text = Colors.Pink("*") .. " " .. L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT,
-    fontObject = "GameFontNormalSmall",
+    fontObject = B.FontObjects.Small,
     color = Colors.Grey
-  }))
-  footnote:SetMarginTop(Widgets:Padding())
-  footnote:SetMarginBottom(Widgets:Padding(0.5))
+  })
 end

@@ -23,11 +23,10 @@ local labels = {}
 
 --- Adds a card to `group` for the key of a binding.
 --- @param group OptionsBuilderGroup
---- @param footer OptionsBuilderMessageFooter
 --- @param bindingName BindingName
 --- @param labelText string
 --- @param descriptionText? string
-local function addKeybindingCard(group, footer, bindingName, labelText, descriptionText)
+local function addKeybindingCard(group, bindingName, labelText, descriptionText)
   labels[bindingName] = labelText
 
   group:AddKeybindingCard({
@@ -50,7 +49,6 @@ local function addKeybindingCard(group, footer, bindingName, labelText, descript
       elseif mouseButton == "RightButton" then
         if Keybindings:GetKey(bindingName) ~= DefaultStates.UNBOUND_KEY then
           Keybindings:RemoveKey(bindingName)
-          footer:SetMessage(nil)
         end
       else
         Keybindings:ProcessInput(mouseButton)
@@ -77,14 +75,18 @@ function MainWindowOptions:CreateKeybindingsPanel()
   })
 
   -- Footer.
-  local footer = OptionsBuilder:AddMessageFooter(panel, { color = Colors.White, defaultMessage = L.KEYBINDINGS_PRIORITY_NOTE })
-  footer:SetOrder(1000) -- Position at the end.
+  local defaultMessage = Colors.Grey(L.KEYBINDINGS_PRIORITY_NOTE)
+  local footer = panel:AddFooter({ text = defaultMessage, color = Colors.White })
+
+  --- Shows the message in the footer, or the default message for `nil`.
+  --- @param message? string
+  local function setMessage(message) footer:SetText(message or defaultMessage) end
 
   -- Stop listening and reset the footer when hidden. Disable and dim the panel while keybindings cannot be changed.
   panel:WhenFrameReady(function(frame)
     frame:HookScript("OnHide", function()
       Keybindings:StopListening()
-      footer:SetMessage(nil)
+      setMessage(nil)
     end)
 
     TickerManager:NewTicker(0.1, function()
@@ -95,7 +97,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
   end)
 
   EventManager:On(E.KeybindingListeningChanged, function(bindingName)
-    footer:SetMessage(
+    setMessage(
       bindingName and
       Colors.Gold(
         B.Strings.ASSIGN_KEY_PROMPT_TEXT:format(
@@ -107,6 +109,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
     )
   end)
 
+  EventManager:On(E.KeybindingRemoved, function() setMessage(nil) end)
   EventManager:On(E.KeybindingBound, function(_, key, replacedBindingName, gameBindingName)
     local lines = {}
 
@@ -123,20 +126,20 @@ function MainWindowOptions:CreateKeybindingsPanel()
       )
     end
 
-    footer:SetMessage(#lines > 0 and table.concat(lines, "|n") or B.Strings.KEY_BOUND_TEXT)
+    setMessage(#lines > 0 and table.concat(lines, "|n") or B.Strings.KEY_BOUND_TEXT)
   end)
 
   -- Windows.
   local windows = OptionsBuilder:AddGroup(container, L.WINDOWS)
-  addKeybindingCard(windows, footer, "toggleMainWindow", L.TOGGLE_MAIN_WINDOW)
-  addKeybindingCard(windows, footer, "toggleJunkFrame", L.TOGGLE_JUNK_FRAME)
-  addKeybindingCard(windows, footer, "toggleLootableFrame", L.TOGGLE_LOOTABLE_FRAME)
-  addKeybindingCard(windows, footer, "toggleExpendableItemsFrame", L.TOGGLE_EXPENDABLE_ITEMS_FRAME)
+  addKeybindingCard(windows, "toggleMainWindow", L.TOGGLE_MAIN_WINDOW)
+  addKeybindingCard(windows, "toggleJunkFrame", L.TOGGLE_JUNK_FRAME)
+  addKeybindingCard(windows, "toggleLootableFrame", L.TOGGLE_LOOTABLE_FRAME)
+  addKeybindingCard(windows, "toggleExpendableItemsFrame", L.TOGGLE_EXPENDABLE_ITEMS_FRAME)
 
   -- Actions.
   local actions = OptionsBuilder:AddGroup(container, L.ACTIONS)
-  addKeybindingCard(actions, footer, "startSelling", L.START_SELLING, L.KEYBIND_DESCRIPTION_START_SELLING)
-  addKeybindingCard(actions, footer, "destroyNextItem", L.DESTROY_NEXT_ITEM)
+  addKeybindingCard(actions, "startSelling", L.START_SELLING, L.KEYBIND_DESCRIPTION_START_SELLING)
+  addKeybindingCard(actions, "destroyNextItem", L.DESTROY_NEXT_ITEM)
 
   -- Lists.
   local profileLists = OptionsBuilder:AddGroup(container, L.PROFILE_LISTS, L.LIST_KEYBINDINGS_DESCRIPTION)
@@ -148,7 +151,7 @@ function MainWindowOptions:CreateKeybindingsPanel()
     { group = profileLists, list = Lists.ProfileInclusions, bindingName = "addOrRemoveProfileInclusions" },
     { group = profileLists, list = Lists.ProfileExclusions, bindingName = "addOrRemoveProfileExclusions" }
   }) do
-    addKeybindingCard(entry.group, footer, entry.bindingName, L.ADD_OR_REMOVE_LIST:format(entry.list.name))
+    addKeybindingCard(entry.group, entry.bindingName, L.ADD_OR_REMOVE_LIST:format(entry.list.name))
   end
 
   return panel

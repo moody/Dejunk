@@ -142,6 +142,7 @@ end
 --- @param bindingName BindingName
 function Keybindings:RemoveKey(bindingName)
   StateManager:Dispatch(ActionCreators.Global.patchKeybindings({ [bindingName] = DefaultStates.UNBOUND_KEY }))
+  EventManager:Fire(E.KeybindingRemoved, bindingName)
 end
 
 --- Sets the saved keys again, debouncing until lockdown ends if necessary.
