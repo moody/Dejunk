@@ -53,7 +53,7 @@ local function refreshComponents()
 
   local totalJunkValue = 0
   for _, item in pairs(junkItems) do
-    totalJunkValue = totalJunkValue + (item.noValue and 0 or (item.price * item.quantity))
+    totalJunkValue = totalJunkValue + Items:GetStackPrice(item)
   end
   Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(totalJunkValue)))
 
@@ -148,7 +148,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   getItemSubtext = function(item)
     if Items:IsItemLocked(item) then return Colors.Grey(L.ITEM_IS_LOCKED) end
     if item.noValue then return Colors.Grey(B.Strings.NO_SELL_PRICE_TEXT) end
-    return Colors.White(B.Money:GetCoinText(item.price * item.quantity))
+    return Colors.White(B.Money:GetCoinText(Items:GetStackPrice(item)))
   end,
 
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,

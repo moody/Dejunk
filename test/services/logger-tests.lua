@@ -33,6 +33,10 @@ local function setupContext()
   GlobalsSpy:Stub("time"):Returns(TIME)
   Context:SetGlobal("time", Globals.time)
 
+  local Items = {}
+  Mocks:CreateSpy(Items):Stub("GetStackPrice"):Invokes(function(_, item) return item.price * item.quantity end)
+  Context:SetModule("Items", Items)
+
   Context:Load("src/services/logger.lua")
 
   --- @class LoggerTestSpies

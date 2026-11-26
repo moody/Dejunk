@@ -4,6 +4,7 @@ local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
 local L = Addon:GetModule("Locale")
 local Logger = Addon:GetModule("Logger")
 local StateManager = Addon:GetModule("StateManager")
@@ -125,11 +126,8 @@ end
 --- @param entry LogEntry
 --- @return string
 local function getValueText(entry)
-  local item = entry.attempt.item
-
-  if not (item.noValue or item.price == 0) then
-    return B.Money:GetCoinText(item.price * item.quantity)
-  end
+  local price = Items:GetStackPrice(entry.attempt.item)
+  if price > 0 then return B.Money:GetCoinText(price) end
 
   return ""
 end

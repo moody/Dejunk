@@ -48,6 +48,7 @@ local function setupContext()
   local ItemsSpy = Mocks:CreateSpy(Items)
   ItemsSpy:Stub("IsItemStillInBags"):Returns(true)
   ItemsSpy:Stub("IsItemLocked"):Returns(false)
+  ItemsSpy:Stub("GetStackPrice"):Returns(10)
 
   local Popup = {}
   local PopupSpy = Mocks:CreateSpy(Popup)
@@ -81,7 +82,7 @@ local function setupContext()
     --- Stubs `JunkItemsCache:GetNextDestroyableJunkItem()`, which returns no item.
     JunkItemsCacheSpy = JunkItemsCacheSpy,
 
-    --- Stubs the `Items` methods that check whether an item can be destroyed.
+    --- Stubs the `Items` methods that check whether an item can be destroyed, and `GetStackPrice()`.
     ItemsSpy = ItemsSpy,
 
     --- Records the `Popup:Confirm()` calls.

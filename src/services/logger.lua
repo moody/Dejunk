@@ -1,6 +1,7 @@
 local Addon = select(2, ...) ---@type Addon
 local E = Addon:GetModule("Events")
 local EventManager = Addon:GetModule("EventManager")
+local Items = Addon:GetModule("Items")
 local StateManager = Addon:GetModule("StateManager")
 
 --- @class Logger
@@ -70,7 +71,7 @@ end
 EventManager:On(E.ConfirmedItemSold, function(attempt)
   local item = attempt.item
   totals.numSold = totals.numSold + 1
-  totals.profit = totals.profit + item.price * item.quantity
+  totals.profit = totals.profit + Items:GetStackPrice(item)
   addEntry(attempt, Logger.Outcomes.SOLD)
 end)
 

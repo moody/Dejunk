@@ -55,7 +55,7 @@ local function handleItem(item, attemptType)
   end
 
   local link = item.quantity > 1 and (item.link .. "x" .. item.quantity) or item.link
-  local price = item.noValue and 0 or (item.price * item.quantity)
+  local price = Items:GetStackPrice(item)
   link = link .. " " .. Colors.Grey("(%s)"):format(Colors.White(GetCoinTextureString(price)))
   Popup:Confirm({
     text = L.DESTROY_ITEM_POPUP_HELP:format(link),

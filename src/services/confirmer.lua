@@ -97,7 +97,7 @@ TickerManager:NewTicker(0, function()
     local item = attempt.item
     if not Items:IsItemStillInBags(item) then
       sellAttempts[attempt] = nil
-      profit = profit + item.price * item.quantity
+      profit = profit + Items:GetStackPrice(item)
 
       -- Items sold in a run are summarized. Any other sale is always printed.
       if attempt.type == "RUN" then

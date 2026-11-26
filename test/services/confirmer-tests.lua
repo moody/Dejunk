@@ -30,7 +30,9 @@ local function setupContext()
 
   local removedItems = {}
   local Items = {}
-  Mocks:CreateSpy(Items):Stub("IsItemStillInBags"):Invokes(function(_, item) return not removedItems[item] end)
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemStillInBags"):Invokes(function(_, item) return not removedItems[item] end)
+  ItemsSpy:Stub("GetStackPrice"):Invokes(function(_, item) return item.price * item.quantity end)
 
   --- Takes the item out of the bags, as a sale does once the game confirms it.
   --- @param item BagItem
