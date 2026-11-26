@@ -13,6 +13,7 @@
 
 - The Junk Items, Lootable Items, and Expendable Items frames show a stack's count on the item's icon, instead of after its link.
 - Every Dejunk window/frame now shows the Dejunk icon beside its title, not just the main window.
+- The footers of the `Keybindings`, `Log`, and `Profile Options` screens are now bars like the main window's footer.
 
 ### Fixed
 
