@@ -14,6 +14,7 @@ Dejunk is an addon for World of Warcraft that helps determine which items are co
 - Auto-repair equipment at merchants
 - Overlay icons on junk in your bags
 - Open lootable items one at a time from a dedicated frame
+- Free up bag space from a frame that lists your cheapest items to destroy
 - Use keybindings or chat commands for most actions
 
 ### Getting Started
@@ -56,11 +57,12 @@ The `Global Options` screen applies to every character, regardless of profile.
 - **Minimap Icon** — Add an icon to the minimap
 - **Auto Junk Frame** — Show the Junk Items frame automatically at a merchant
 - **Auto Lootable Frame** — Show the Lootable Items frame automatically
+- **Expendable Items Frame** — Quickly destroy your cheapest bag items to free up space, with choices for when the frame shows and which items it lists
 - **Chat Messages** — Print messages to chat, with reduced or verbose detail
 - **Bag Item Tooltips** — Add Dejunk information to the tooltips of items in your bags
 - **Bag Item Icons** — Overlay a small or large icon on junk items in your bags
 
-Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`.
+Everything is off by default except `Safe Destroy`, `Chat Messages`, `Bag Item Tooltips`, `Merchant Button`, and `Minimap Icon`. The Expendable Items frame starts on `Bags Full`.
 
 `Chat Messages` has a `Detail` choice, `Reduced` by default. `Reduced` prints only the main messages, such as the number of items sold and the profit after selling, and `Verbose` also prints details, such as each item sold. An item sold on its own, without `Start Selling`, prints with either detail.
 
@@ -102,10 +104,10 @@ The Junk Items frame, opened via `/dejunk junk`, its keybind, a click on the jun
 - Each item has three buttons:
   - **Sell** (coins icon) — Sells the item. Dimmed while it cannot be sold, such as away from a merchant or when the item has no vendor price
   - **Destroy** (trash can icon) — Destroys the item. Dimmed while it cannot be destroyed
-  - **Exclude** (ban icon, a circle with a slash) — Adds the item to an Exclusions list, or the global one while holding Shift
+  - **Exclude** (ban icon, a circle with a slash) — Adds the item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
 - Sell and destroy work on any listed item, even one that is junk only for the other action. Their tooltips show whether the item is being sold or destroyed, and why. While dimmed, they ignore clicks
-- Drop an item into the frame to add it to an Inclusions list, or the global one while holding Shift
-- Ctrl+Alt+right-click the bar that shows the total value to add every listed item to an Exclusions list, or the global one while holding Shift
+- Drop an item into the frame to add it to `Inclusions (Profile)`, or to `Inclusions (Global)` while holding Shift
+- Ctrl+Alt+right-click the bar that shows the total value to add every listed item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
 - An item with no vendor price shows `No sell price` in place of its price
 - A locked item, such as one on the cursor or in a trade, stays listed but dimmed, shows `Item is locked` in place of its price, and cannot be clicked until it unlocks
 - An item you can still refund is listed, but selling skips it; its tooltip says why, and destroying it works
@@ -129,9 +131,31 @@ Lootable bag items, such as those that need to be right-clicked to open, are lis
 
 ![Lootable Items frame](/.github/images/LootablesFrame.png?raw=true)
 
+### Expendable Items
+
+The Expendable Items frame lists the bag items you could destroy to make room, cheapest stack first, so you can free a slot in a few clicks. Stacks are ordered by their total vendor price, and items with no vendor price come first. It is opened via `/dejunk expendable`, its keybind, or a click on its card in `Global Options`. Its title shows how many items it lists, and its `Free Slots` heading shows how many free slots your bags have, not counting specialty bags such as a quiver. It opens scrolled to the cheapest item.
+
+- Junk items always show, with a black and white icon. An item counts if Dejunk considers it junk for destroying
+- Excluded items never show, whether by one of the `Exclusions` lists or by an `Exclude` option that applies to destroying. Items the game does not let you destroy do not show either
+- Every other item shows only if its type and quality are selected in the frame's options:
+  - **Types** — `Equipment` (weapons, armor, rings, necklaces, and trinkets), `Trade Goods` (crafting materials, such as cloth, ore, and herbs), `Consumables` (food, drinks, potions, and similar items), and `Other` (everything else, such as ammo, reagents, and keys). Everything but `Other` is selected by default
+  - **Qualities** — `Poor` to `Epic`. `Poor` and `Common` are selected by default
+- Each item has two buttons:
+  - **Exclude** (ban icon) — Adds the item to `Exclusions (Profile)`, or to `Exclusions (Global)` while holding Shift
+  - **Destroy** (trash can icon) — Destroys the item, asking first if `Safe Destroy` is on
+
+The `Auto Show` choice on the `Expendable Items Frame` card in `Global Options` sets when the frame shows by itself:
+
+- **Never** — Do not show or hide the frame automatically
+- **Bags Full** — Show the frame when your bags are full while the loot window is open, and hide it when the loot window closes
+- **On Error** — Show the frame when the game says your inventory is full, whatever the cause, and leave it open until you close it
+- **Always** — Show the frame when the loot window opens, and hide it when the loot window closes
+
+![Expendable Items](/.github/images/ExpendableItems.png?raw=true)
+
 ### Keybindings
 
-The `Keybindings` screen of the main window sets keys for the Main Window, Junk Items, and Lootable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
+The `Keybindings` screen of the main window sets keys for the Main Window, Junk Items, Lootable Items, and Expendable Items frames, for `Start Selling` and `Destroy Next Item`, and for adding an item to each list, or removing it if it is already there. Click a row, then press a key, a mouse button other than left or right, or the mouse wheel to bind it. Escape cancels. Right-click a row to unbind it. The list actions use the item shown in the game tooltip, so mouse over an item and press the key.
 
 - A key set here takes priority over the game's own binding for it, and a note names the binding it covers.
 - Dejunk saves these keys itself, so they do not appear in the game's own Keybindings page.
@@ -160,6 +184,9 @@ The `Log` screen of the main window, which `/dejunk log` also toggles, lists wha
 
 # Toggle the lootable items frame.
 /dejunk loot
+
+# Toggle the expendable items frame.
+/dejunk expendable
 
 # Toggle the log screen.
 /dejunk log
