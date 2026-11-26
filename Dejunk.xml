@@ -104,6 +104,7 @@
   <Script file="src\ui\components\component-factory.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\item-icon.lua"/>
   <Script file="src\ui\components\item-card.lua"/>
   <Script file="src\ui\components\item-list.lua"/>
   <Script file="src\ui\components\keybinding-card.lua"/>

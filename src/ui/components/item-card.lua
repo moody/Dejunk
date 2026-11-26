@@ -39,14 +39,9 @@ local DEFAULT_ICON_SIZE = 24
 function ComponentFactory:ItemCard(options)
   local frame ---@type FrameWidget?
   local accent ---@type Texture?
-  local icon ---@type Texture?
-  local count ---@type FontString?
   local item ---@type (BagItem | ListItem)?
   local isEnabled = true
   local accentR, accentG, accentB = 1, 1, 1
-  local iconTexture ---@type (string | number)?
-  local isIconDesaturated = false
-  local countText = ""
 
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
@@ -130,25 +125,7 @@ function ComponentFactory:ItemCard(options)
   })
 
   -- Icon.
-  content:AddChild({
-    width = options.iconSize or DEFAULT_ICON_SIZE,
-    height = options.iconSize or DEFAULT_ICON_SIZE,
-
-    --- @param parent Frame
-    frameFactory = function(parent)
-      icon = parent:CreateTexture(nil, "ARTWORK")
-      icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-      icon:SetTexture(iconTexture)
-      icon:SetDesaturated(isIconDesaturated)
-
-      -- Stack count, in the bottom right corner of the icon.
-      count = parent:CreateFontString(nil, "OVERLAY", B.FontObjects.Number:GetName())
-      count:SetPoint("BOTTOMRIGHT", icon, "BOTTOMRIGHT", 0, 0)
-      count:SetText(countText)
-
-      return icon
-    end
-  })
+  local icon = content:AttachComponent(ComponentFactory:ItemIcon({ size = options.iconSize or DEFAULT_ICON_SIZE }))
 
   -- With subtext, the link and subtext are stacked in a column.
   local linkParent = content
@@ -266,17 +243,7 @@ function ComponentFactory:ItemCard(options)
     title:SetText(newItem.link)
     if subtextLabel then subtextLabel:SetText(subtext) end
 
-    -- Stack count.
-    countText = quantity > 1 and quantity or ""
-    if count then count:SetText(countText) end
-
-    -- Icon.
-    iconTexture = newItem.texture
-    isIconDesaturated = desaturated
-    if icon then
-      icon:SetTexture(iconTexture)
-      icon:SetDesaturated(isIconDesaturated)
-    end
+    icon:SetItem(newItem, desaturated)
 
     -- Quality strip.
     accentR, accentG, accentB = (Colors.ByQuality[newItem.quality] or Colors.QualityCommon):GetRGB()
