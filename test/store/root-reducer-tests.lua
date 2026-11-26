@@ -102,7 +102,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
   { action = ActionCreators.Global.mergeChatMessages({ enabled = false }), path = "global.chatMessages.enabled", expected = false },
   { action = ActionCreators.Global.mergeChatMessages({ detail = "VERBOSE" }), path = "global.chatMessages.detail", expected = "VERBOSE" },
-  { action = ActionCreators.Global.mergeExpendableItemsFrame({ autoShow = "ALWAYS" }), path = "global.expendableItemsFrame.autoShow", expected = "ALWAYS" },
+  { action = ActionCreators.Global.mergeExpendableItemsFrame({ autoShow = "LOOT_ALWAYS" }), path = "global.expendableItemsFrame.autoShow", expected = "LOOT_ALWAYS" },
   { action = ActionCreators.Global.mergeExpendableItemsFrame({ qualities = { uncommon = true } }), path = "global.expendableItemsFrame.qualities.uncommon", expected = true },
   { action = ActionCreators.Global.mergeExpendableItemsFrame({ types = { other = true } }), path = "global.expendableItemsFrame.types.other", expected = true },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },

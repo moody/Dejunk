@@ -37,10 +37,10 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
---- When the Expendable Items frame shows by itself. `NEVER` leaves it to the player, `BAGS_FULL` shows it when the bags
---- are full while looting, `ON_ERROR` shows it when the game says the inventory is full, and `ALWAYS` shows it whenever
---- the loot window opens. Only `BAGS_FULL` and `ALWAYS` hide it when the loot window closes.
---- @alias ExpendableItemsAutoShow "NEVER" | "BAGS_FULL" | "ON_ERROR" | "ALWAYS"
+--- When the Expendable Items frame shows by itself. `NEVER` leaves it to the player, `LOOT_BAGS_FULL` shows it when the
+--- bags are full while looting, `LOOT_ALWAYS` shows it whenever the loot window opens, and `ERROR_INVENTORY_FULL` shows
+--- it when the game says the inventory is full. Only the two `LOOT_` choices hide it when the loot window closes.
+--- @alias ExpendableItemsAutoShow "NEVER" | "LOOT_BAGS_FULL" | "LOOT_ALWAYS" | "ERROR_INVENTORY_FULL"
 
 --- The item types that the Expendable Items frame lists besides junk items.
 --- @class ExpendableItemsTypesState
@@ -90,7 +90,7 @@ DefaultStates.Global = {
   chatMessages = { enabled = true, detail = "REDUCED" },
   --- @type ExpendableItemsFrameState
   expendableItemsFrame = {
-    autoShow = "BAGS_FULL",
+    autoShow = "LOOT_BAGS_FULL",
     qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false },
     types = { equipment = true, tradeGoods = true, consumables = true, other = false }
   },

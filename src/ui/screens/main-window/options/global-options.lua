@@ -110,9 +110,9 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
       L.AUTO_SHOW,
       {
         { value = "NEVER", text = L.NEVER, tooltipText = L.AUTO_SHOW_NEVER_TOOLTIP },
-        { value = "BAGS_FULL", text = L.BAGS_FULL, tooltipText = L.AUTO_SHOW_BAGS_FULL_TOOLTIP },
-        { value = "ALWAYS", text = L.ALWAYS, tooltipText = L.AUTO_SHOW_ALWAYS_TOOLTIP },
-        { value = "ON_ERROR", text = L.ON_ERROR, tooltipText = L.AUTO_SHOW_ON_ERROR_TOOLTIP }
+        { value = "LOOT_BAGS_FULL", text = L.LOOT_BAGS_FULL, tooltipText = L.AUTO_SHOW_LOOT_BAGS_FULL_TOOLTIP },
+        { value = "LOOT_ALWAYS", text = L.LOOT_ALWAYS, tooltipText = L.AUTO_SHOW_LOOT_ALWAYS_TOOLTIP },
+        { value = "ERROR_INVENTORY_FULL", text = L.ERROR_INVENTORY_FULL, tooltipText = L.AUTO_SHOW_ERROR_INVENTORY_FULL_TOOLTIP }
       },
       function() return getState().autoShow end,
       function(value) StateManager:Dispatch(mergeAction({ autoShow = value })) end

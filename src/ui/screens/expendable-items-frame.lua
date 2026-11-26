@@ -236,16 +236,16 @@ function AutoShow:StartLooting()
   self.isLooting = true
   self.hadFreeSlots = B.Container:HasFreeSlots()
 
-  if self:IsSetTo("ALWAYS") or (self:IsSetTo("BAGS_FULL") and not self.hadFreeSlots) then
+  if self:IsSetTo("LOOT_ALWAYS") or (self:IsSetTo("LOOT_BAGS_FULL") and not self.hadFreeSlots) then
     ExpendableItemsFrame:Show()
   end
 end
 
---- Ends the loot session, and hides the frame if the option is `BAGS_FULL` or `ALWAYS`.
+--- Ends the loot session, and hides the frame if the option is `LOOT_BAGS_FULL` or `LOOT_ALWAYS`.
 function AutoShow:StopLooting()
   self.isLooting = false
 
-  if self:IsSetTo("BAGS_FULL") or self:IsSetTo("ALWAYS") then ExpendableItemsFrame:Hide() end
+  if self:IsSetTo("LOOT_BAGS_FULL") or self:IsSetTo("LOOT_ALWAYS") then ExpendableItemsFrame:Hide() end
 end
 
 --- Shows the frame if the bags filled up while looting. Emptying them does not hide it.
@@ -255,7 +255,7 @@ function AutoShow:CheckBags()
   local hadFreeSlots = self.hadFreeSlots
   self.hadFreeSlots = B.Container:HasFreeSlots()
 
-  if not self:IsSetTo("BAGS_FULL") then return end
+  if not self:IsSetTo("LOOT_BAGS_FULL") then return end
   if hadFreeSlots and not self.hadFreeSlots and not Components.Root:IsVisible() then
     ExpendableItemsFrame:Show()
   end
@@ -264,7 +264,7 @@ end
 --- Shows the frame if it is hidden and the game says the inventory is full.
 --- @param message string
 function AutoShow:CheckError(message)
-  if not self:IsSetTo("ON_ERROR") then return end
+  if not self:IsSetTo("ERROR_INVENTORY_FULL") then return end
   if message == B.Strings.INVENTORY_FULL_ERROR_TEXT and not Components.Root:IsVisible() then
     ExpendableItemsFrame:Show()
   end
