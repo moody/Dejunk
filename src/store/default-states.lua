@@ -41,7 +41,7 @@ DefaultStates.UNBOUND_KEY = ""
 --- are full while looting, and `ALWAYS` shows it whenever the loot window opens.
 --- @alias ExpendableItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
 
---- The item types that the Expendable Items frame's All tab shows.
+--- The item types that the Expendable Items frame lists besides junk items.
 --- @class ExpendableItemsTypesState
 --- @field equipment boolean Weapons, armor, rings, necklaces, and trinkets.
 --- @field tradeGoods boolean

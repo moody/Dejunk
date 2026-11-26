@@ -92,8 +92,7 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
       labelText = L.EXPENDABLE_ITEMS_FRAME_TEXT,
       descriptionText = L.EXPENDABLE_ITEMS_FRAME_DESCRIPTION:format(
         Colors.White(L.TYPES),
-        Colors.White(L.QUALITIES),
-        Colors.White(L.ALL)
+        Colors.White(L.QUALITIES)
       ),
       onLeftClick = function() ExpendableItemsFrame:Toggle() end,
       onRightClick = function()

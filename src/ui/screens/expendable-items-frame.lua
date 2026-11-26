@@ -20,7 +20,9 @@ local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 
 local Components = {}
 
---- @alias ExpendableItemsTab "JUNK" | "ALL"
+--- The junk items and the unprotected items that pass `Selection`, cheapest stack first.
+--- @type BagItem[]
+local expendableItems = {}
 
 -- ============================================================================
 -- Local Functions
@@ -34,17 +36,17 @@ local function trimItems(items, count)
 end
 
 -- ============================================================================
--- Filters
+-- Selection
 -- ============================================================================
 
---- The rules that the Qualities and Types options set for the All tab.
-local Filters = {}
+--- The qualities and types that the player selected in the options.
+local Selection = {}
 
 --- Returns `true` if the item's quality is selected in `qualities`.
 --- @param item BagItem
 --- @param qualities ItemQualitiesState
 --- @return boolean
-function Filters:IsQualitySelected(item, qualities)
+function Selection:IsQualitySelected(item, qualities)
   return (
     (qualities.poor and item.quality == Enum.ItemQuality.Poor) or
     (qualities.common and item.quality == (Enum.ItemQuality.Common or Enum.ItemQuality.Standard)) or
@@ -58,7 +60,7 @@ end
 --- @param item BagItem
 --- @param types ExpendableItemsTypesState
 --- @return boolean
-function Filters:IsTypeSelected(item, types)
+function Selection:IsTypeSelected(item, types)
   if Items:IsItemEquipment(item) then return types.equipment end
   if item.classId == Enum.ItemClass.Tradegoods then return types.tradeGoods end
   if item.classId == Enum.ItemClass.Consumable then return types.consumables end
@@ -69,127 +71,48 @@ end
 --- @param item BagItem
 --- @param state ExpendableItemsFrameState
 --- @return boolean
-function Filters:IsItemAllowed(item, state)
+function Selection:IsItemSelected(item, state)
   return self:IsQualitySelected(item, state.qualities) and self:IsTypeSelected(item, state.types)
-end
-
--- ============================================================================
--- CheapestItems
--- ============================================================================
-
---- The destroyable bag items, and the lists of them that the tabs show.
-local CheapestItems = {
-  --- The reusable list that `Update()` fills with the destroyable items, cheapest stack first.
-  --- @type BagItem[]
-  buffer = {},
-
-  --- The items the junk filter calls junk for destroying, cheapest stack first.
-  --- @type BagItem[]
-  junk = {},
-
-  --- The junk items and the items that no filter matched and that pass `Filters`, cheapest stack first.
-  --- @type BagItem[]
-  all = {}
-}
-
---- Repopulates the lists from the bags.
---- @param state ExpendableItemsFrameState
-function CheapestItems:Update(state)
-  local buffer, junk, all = self.buffer, self.junk, self.all
-
-  BagItemsCache:GetItems(buffer)
-
-  local numBuffered = 0
-  for i = 1, #buffer do
-    local item = buffer[i]
-    if Items:IsItemDestroyable(item) then
-      numBuffered = numBuffered + 1
-      buffer[numBuffered] = item
-    end
-  end
-  trimItems(buffer, numBuffered)
-
-  table.sort(buffer, Items.compareByStackPrice)
-
-  local numJunk, numAll = 0, 0
-  for i = 1, numBuffered do
-    local item = buffer[i]
-    local result = JunkItemsCache:GetResult(item, "DESTROY")
-    local isJunk = result == ItemFilters.JUNK
-
-    if isJunk then
-      numJunk = numJunk + 1
-      junk[numJunk] = item
-    end
-
-    if isJunk or (result == ItemFilters.PASS and Filters:IsItemAllowed(item, state)) then
-      numAll = numAll + 1
-      all[numAll] = item
-    end
-  end
-  trimItems(junk, numJunk)
-  trimItems(all, numAll)
-end
-
--- ============================================================================
--- Tabs
--- ============================================================================
-
---- The Junk and All tabs, and the one the list shows.
-local Tabs = {
-  --- Format of a tab's text: its name, then the number of items it lists.
-  TEXT_FORMAT = "%s (%d)",
-
-  --- The tab the list shows.
-  --- @type ExpendableItemsTab
-  selected = "JUNK",
-
-  --- The count last shown on the Junk tab.
-  --- @type integer?
-  shownJunk = nil,
-
-  --- The count last shown on the All tab.
-  --- @type integer?
-  shownAll = nil
-}
-
---- Selects the given tab.
---- @param tab ExpendableItemsTab
-function Tabs:Select(tab)
-  self.selected = tab
-  Components.JunkTab:SetSelected(tab == "JUNK")
-  Components.AllTab:SetSelected(tab == "ALL")
-end
-
---- Shows the number of items each tab lists.
---- @param numJunk integer
---- @param numAll integer
-function Tabs:SetCounts(numJunk, numAll)
-  if numJunk ~= self.shownJunk then
-    self.shownJunk = numJunk
-    Components.JunkTab:SetLabelText(self.TEXT_FORMAT:format(L.JUNK, numJunk))
-  end
-
-  if numAll ~= self.shownAll then
-    self.shownAll = numAll
-    Components.AllTab:SetLabelText(self.TEXT_FORMAT:format(L.ALL, numAll))
-  end
 end
 
 -- ============================================================================
 -- Root Component
 -- ============================================================================
 
---- Updates the cheapest items, and shows their counts on the tabs.
+--- Repopulates `expendableItems` from the bags.
+local function updateExpendableItems()
+  local state = StateManager:GetGlobalState().expendableItemsFrame
+  BagItemsCache:GetItems(expendableItems)
+
+  local numItems = 0
+  for i = 1, #expendableItems do
+    local item = expendableItems[i]
+    local result = JunkItemsCache:GetResult(item, "DESTROY")
+
+    if result == ItemFilters.JUNK or (result == ItemFilters.PASS and Selection:IsItemSelected(item, state)) then
+      numItems = numItems + 1
+      expendableItems[numItems] = item
+    end
+  end
+  trimItems(expendableItems, numItems)
+
+  table.sort(expendableItems, Items.compareByStackPrice)
+end
+
+--- Updates the expendable items, and shows their count and the number of free slots.
 local function refreshComponents()
-  CheapestItems:Update(StateManager:GetGlobalState().expendableItemsFrame)
-  Tabs:SetCounts(#CheapestItems.junk, #CheapestItems.all)
+  updateExpendableItems()
+
+  Components.Root.TitleText:GetFrame():SetText(
+    Colors.Yellow(("%s (%s)"):format(L.EXPENDABLE_ITEMS, Colors.White(#expendableItems)))
+  )
+  Components.ItemsPanel:SetTitleText(Colors.White(("%s: %d"):format(L.FREE_SLOTS, B.Container:GetNumFreeSlots())))
 end
 
 Components.Root = ComponentFactory:Window({
   name = "ExpendableItemsFrame",
   width = 250,
-  height = 230,
+  height = 250,
   isSpecialFrame = false,
   titleText = Colors.Yellow(L.EXPENDABLE_ITEMS),
   getPoint = function() return StateManager:GetGlobalState().points.expendableItemsFrame end,
@@ -204,29 +127,17 @@ Components.Root = ComponentFactory:Window({
 
 Components.Content = Components.Root:AddChild({
   direction = "COLUMN",
-  padding = Widgets:Padding(),
-  gap = Widgets:Padding(0.5)
+  padding = Widgets:Padding()
 })
 
--- Tabs, with no gap so their underlines form one line.
-Components.TabRow = Components.Content:AddRow({ height = "AUTO" })
-
-Components.JunkTab = Components.TabRow:AttachComponent(ComponentFactory:Tab({
-  labelText = L.JUNK,
-  onClick = function() Tabs:Select("JUNK") end
+-- Title bar shows the number of free slots.
+Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:TitledPanel({
+  titleText = Colors.White(L.FREE_SLOTS)
 }))
 
-Components.AllTab = Components.TabRow:AttachComponent(ComponentFactory:Tab({
-  labelText = L.ALL,
-  onClick = function() Tabs:Select("ALL") end
-}))
-
-Tabs:Select(Tabs.selected)
-
-Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemList({
+Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
   cardCount = 4,
-  getItems = function() return Tabs.selected == "JUNK" and CheapestItems.junk or CheapestItems.all end,
-  emptyText = function() return Tabs.selected == "JUNK" and L.NO_JUNK_ITEMS or L.NO_ITEMS end,
+  getItems = function() return expendableItems end,
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,
 
   iconButtons = {
@@ -266,6 +177,9 @@ Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemLi
     return Colors.White(B.Money:GetCoinText(Items:GetStackPrice(item)))
   end,
 
+  -- The icon of an item the junk filter picked is in black and white.
+  isIconDesaturated = function(item) return JunkItemsCache:GetResult(item, "DESTROY") == ItemFilters.JUNK end,
+
   onUpdateItemTooltip = function(item, tooltip)
     tooltip:SetBagItem(item.bag, item.slot)
   end
@@ -275,10 +189,8 @@ Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemLi
 -- ExpendableItemsFrame
 -- ============================================================================
 
---- Shows the frame on the Junk tab if it has items, otherwise on All.
+--- Shows the frame.
 function ExpendableItemsFrame:Show()
-  refreshComponents()
-  Tabs:Select(#CheapestItems.junk > 0 and "JUNK" or "ALL")
   Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end

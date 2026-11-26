@@ -280,6 +280,20 @@ function B.Container:HasFreeSlots()
   return false
 end
 
+--- Returns the number of free slots in the bags that hold any kind of item. Specialty bags, such as a quiver, are left
+--- out.
+--- @return integer
+function B.Container:GetNumFreeSlots()
+  local numFreeSlots = 0
+
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+    local numBagFreeSlots, bagType = GetContainerNumFreeSlots(bag)
+    if bagType == 0 then numFreeSlots = numFreeSlots + numBagFreeSlots end
+  end
+
+  return numFreeSlots
+end
+
 -- B.Container:GetItemInfo()
 do
   --- @class BagItemInfoBuffer : ContainerItemInfo
