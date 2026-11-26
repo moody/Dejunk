@@ -105,6 +105,11 @@ function ComponentFactory:CardList(options)
 
   slider:SetScript("OnValueChanged", refresh)
 
+  --- Scrolls to the first entry.
+  function root:ScrollToTop()
+    slider:SetValue(0)
+  end
+
   root:WhenFrameReady(function(frame)
     frame:HookScript("OnShow", refresh)
     TickerManager:NewTicker(1 / 30, refresh):BindFrame(frame)

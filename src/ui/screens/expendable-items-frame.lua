@@ -189,8 +189,9 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
 -- ExpendableItemsFrame
 -- ============================================================================
 
---- Shows the frame.
+--- Shows the frame, scrolled to the cheapest item.
 function ExpendableItemsFrame:Show()
+  Components.ItemList:ScrollToTop()
   Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
 end
