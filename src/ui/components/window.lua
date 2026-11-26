@@ -1,5 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -38,7 +39,7 @@ function ComponentFactory:Window(options)
   --- @field TitleRow WaffleFlexComponent
   --- @field TitleNameRow WaffleFlexComponent
   --- @field TitleIcon WaffleFlexComponent
-  --- @field TitleText WaffleFlexComponent
+  --- @field TitleText TextComponent
   --- @field CloseButton WaffleFlexComponent
   root = Addon.Waffle:Flex({
     width = options.width,
@@ -94,13 +95,12 @@ function ComponentFactory:Window(options)
     end
   })
 
-  root.TitleNameRow = root.TitleRow:AddRow({ gap = Widgets:Padding(0.5) })
+  root.TitleNameRow = root.TitleRow:AddRow({ gap = Widgets:Padding(0.5), align = "CENTER" })
 
   root.TitleIcon = root.TitleNameRow:AddChild({
     width = 22,
     height = 22,
     shrink = 0,
-    alignSelf = "CENTER",
 
     --- @param parent Frame
     frameFactory = function(parent)
@@ -110,16 +110,11 @@ function ComponentFactory:Window(options)
     end
   })
 
-  root.TitleText = root.TitleNameRow:AddChild({
-    --- @param parent Frame
-    frameFactory = function(parent)
-      local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-      fontString:SetWordWrap(false)
-      fontString:SetJustifyH("LEFT")
-      fontString:SetText(options.titleText)
-      return fontString
-    end
-  })
+  root.TitleText = root.TitleNameRow:AttachComponent(ComponentFactory:Text({
+    text = options.titleText,
+    fontObject = B.FontObjects.Large,
+    wordWrap = false
+  }))
 
   root.CloseButton = root.TitleRow:AttachComponent(
     ComponentFactory:IconButton({

@@ -105,7 +105,7 @@ end
 --- Updates the expendable items, and shows their count and the number of free slots.
 local function refreshComponents()
   updateExpendableItems()
-  Components.Root.TitleText:GetFrame():SetText(TITLE_TEXT_FORMAT:format(#expendableItems))
+  Components.Root.TitleText:SetText(TITLE_TEXT_FORMAT:format(#expendableItems))
   Components.ItemsPanel:SetTitleText(FREE_SLOTS_TEXT_FORMAT:format(B.Container:GetNumFreeSlots()))
 end
 

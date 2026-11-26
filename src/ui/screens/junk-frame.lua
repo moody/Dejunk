@@ -48,7 +48,7 @@ local function refreshComponents()
   local countsText = JunkItemsCache:GetNumJunkItemsText()
   if countsText ~= titleCountsText then
     titleCountsText = countsText
-    Components.Root.TitleText:GetFrame():SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
+    Components.Root.TitleText:SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
   end
 
   local totalJunkValue = 0

@@ -14,6 +14,7 @@ local Widgets = Addon:GetModule("Widgets")
 local LootableFrame = Addon:GetModule("LootableFrame")
 
 local LOOTABLE_CARD_COUNT = 5
+local TITLE_TEXT_FORMAT = Colors.Yellow(("%s (%s)"):format(L.LOOTABLE_ITEMS, Colors.White("%s")))
 
 local Components = {}
 
@@ -46,9 +47,7 @@ local function refreshComponents()
     return
   end
 
-  Components.Root.TitleText:GetFrame():SetText(
-    Colors.Yellow(("%s (%s)"):format(L.LOOTABLE_ITEMS, Colors.White(#lootableItems)))
-  )
+  Components.Root.TitleText:SetText(TITLE_TEXT_FORMAT:format(#lootableItems))
 end
 
 -- ============================================================================
@@ -61,7 +60,7 @@ Components.Root = ComponentFactory:Window({
   height = 250,
   frameStrata = "LOW",
   isSpecialFrame = false,
-  titleText = Colors.Yellow(L.LOOTABLE_ITEMS),
+  titleText = TITLE_TEXT_FORMAT:format("-"),
   getPoint = function() return StateManager:GetGlobalState().points.lootableFrame end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.set(point)) end,
   onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.lootableFrame.reset()) end,
