@@ -82,7 +82,7 @@ function RootReducer:Build()
       autoJunkFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_JUNK_FRAME, DefaultStates.Global.autoJunkFrame),
       autoLootableFrame = Wux:CreatePayloadReducer(ActionTypes.Global.SET_AUTO_LOOTABLE_FRAME, DefaultStates.Global.autoLootableFrame),
       chatMessages = Wux:CreateMergeReducer(ActionTypes.Global.MERGE_CHAT_MESSAGES, DefaultStates.Global.chatMessages),
-      cheapestItemsFrame = Wux:CreateMergeReducer(ActionTypes.Global.MERGE_CHEAPEST_ITEMS_FRAME, DefaultStates.Global.cheapestItemsFrame),
+      expendableItemsFrame = Wux:CreateMergeReducer(ActionTypes.Global.MERGE_EXPENDABLE_ITEMS_FRAME, DefaultStates.Global.expendableItemsFrame),
       itemIcons = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICONS, DefaultStates.Global.itemIcons),
       itemIconStyle = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_ICON_STYLE, DefaultStates.Global.itemIconStyle),
       itemTooltips = Wux:CreatePayloadReducer(ActionTypes.Global.SET_ITEM_TOOLTIPS, DefaultStates.Global.itemTooltips),
@@ -127,10 +127,10 @@ function RootReducer:Build()
           DefaultStates.Global.points.merchantButton
         ),
 
-        cheapestItemsFrame = createPointsReducer(
-          ActionTypes.Global.SET_CHEAPEST_ITEMS_FRAME_POINT,
-          ActionTypes.Global.RESET_CHEAPEST_ITEMS_FRAME_POINT,
-          DefaultStates.Global.points.cheapestItemsFrame
+        expendableItemsFrame = createPointsReducer(
+          ActionTypes.Global.SET_EXPENDABLE_ITEMS_FRAME_POINT,
+          ActionTypes.Global.RESET_EXPENDABLE_ITEMS_FRAME_POINT,
+          DefaultStates.Global.points.expendableItemsFrame
         )
       })
     }),

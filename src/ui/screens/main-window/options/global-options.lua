@@ -1,6 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
-local CheapestItemsFrame = Addon:GetModule("CheapestItemsFrame")
+local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
@@ -83,24 +83,24 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
   })
 
-  -- Cheapest items frame.
+  -- Expendable items frame.
   do
-    local function getState() return StateManager:GetGlobalState().cheapestItemsFrame end
-    local mergeAction = ActionCreators.Global.mergeCheapestItemsFrame
+    local function getState() return StateManager:GetGlobalState().expendableItemsFrame end
+    local mergeAction = ActionCreators.Global.mergeExpendableItemsFrame
 
     local box = interface:AddOptionCard({
-      labelText = L.CHEAPEST_ITEMS_FRAME_TEXT,
-      descriptionText = L.CHEAPEST_ITEMS_FRAME_DESCRIPTION:format(
+      labelText = L.EXPENDABLE_ITEMS_FRAME_TEXT,
+      descriptionText = L.EXPENDABLE_ITEMS_FRAME_DESCRIPTION:format(
         Colors.White(L.TYPES),
         Colors.White(L.QUALITIES),
         Colors.White(L.ALL)
       ),
-      onLeftClick = function() CheapestItemsFrame:Toggle() end,
+      onLeftClick = function() ExpendableItemsFrame:Toggle() end,
       onRightClick = function()
-        StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset())
+        StateManager:Dispatch(ActionCreators.Global.points.expendableItemsFrame.reset())
       end,
       onUpdateTooltip = function(_, tooltip)
-        tooltip:SetText(L.CHEAPEST_ITEMS_FRAME_TEXT)
+        tooltip:SetText(L.EXPENDABLE_ITEMS_FRAME_TEXT)
         tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE))
         tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.RESET_POSITION))
       end

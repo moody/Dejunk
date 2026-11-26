@@ -160,9 +160,9 @@ local function addQualitiesLine(self, getState, mergeAction)
   }))
 end
 
---- Adds a line of a chip per item type to the box for the Cheapest Items frame's `types` field.
+--- Adds a line of a chip per item type to the box for the Expendable Items frame's `types` field.
 --- @param self OptionsBuilderSettingsBox
---- @param getState fun(): CheapestItemsFrameState
+--- @param getState fun(): ExpendableItemsFrameState
 --- @param mergeAction fun(t: table): WuxPayloadAction
 local function addTypesLine(self, getState, mergeAction)
   local itemTypes = {

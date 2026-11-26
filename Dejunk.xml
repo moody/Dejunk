@@ -123,7 +123,7 @@
   <Script file="src\ui\components\window.lua"/>
 
   <!-- UI Screens -->
-  <Script file="src\ui\screens\cheapest-items-frame.lua"/>
+  <Script file="src\ui\screens\expendable-items-frame.lua"/>
   <Script file="src\ui\screens\junk-frame.lua"/>
   <Script file="src\ui\screens\lootable-frame.lua"/>
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>

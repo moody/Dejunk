@@ -15,12 +15,12 @@ local Lists = Addon:GetModule("Lists")
 local StateManager = Addon:GetModule("StateManager")
 local Widgets = Addon:GetModule("Widgets")
 
---- @class CheapestItemsFrame
-local CheapestItemsFrame = Addon:GetModule("CheapestItemsFrame")
+--- @class ExpendableItemsFrame
+local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 
 local Components = {}
 
---- @alias CheapestItemsTab "JUNK" | "ALL"
+--- @alias ExpendableItemsTab "JUNK" | "ALL"
 
 -- ============================================================================
 -- Local Functions
@@ -56,7 +56,7 @@ end
 
 --- Returns `true` if the item's type is selected in `types`.
 --- @param item BagItem
---- @param types CheapestItemsTypesState
+--- @param types ExpendableItemsTypesState
 --- @return boolean
 function Filters:IsTypeSelected(item, types)
   if Items:IsItemEquipment(item) then return types.equipment end
@@ -67,7 +67,7 @@ end
 
 --- Returns `true` if the item's quality and type are selected.
 --- @param item BagItem
---- @param state CheapestItemsFrameState
+--- @param state ExpendableItemsFrameState
 --- @return boolean
 function Filters:IsItemAllowed(item, state)
   return self:IsQualitySelected(item, state.qualities) and self:IsTypeSelected(item, state.types)
@@ -93,7 +93,7 @@ local CheapestItems = {
 }
 
 --- Repopulates the lists from the bags.
---- @param state CheapestItemsFrameState
+--- @param state ExpendableItemsFrameState
 function CheapestItems:Update(state)
   local buffer, junk, all = self.buffer, self.junk, self.all
 
@@ -141,7 +141,7 @@ local Tabs = {
   TEXT_FORMAT = "%s (%d)",
 
   --- The tab the list shows.
-  --- @type CheapestItemsTab
+  --- @type ExpendableItemsTab
   selected = "JUNK",
 
   --- The count last shown on the Junk tab.
@@ -154,7 +154,7 @@ local Tabs = {
 }
 
 --- Selects the given tab.
---- @param tab CheapestItemsTab
+--- @param tab ExpendableItemsTab
 function Tabs:Select(tab)
   self.selected = tab
   Components.JunkTab:SetSelected(tab == "JUNK")
@@ -182,19 +182,19 @@ end
 
 --- Updates the cheapest items, and shows their counts on the tabs.
 local function refreshComponents()
-  CheapestItems:Update(StateManager:GetGlobalState().cheapestItemsFrame)
+  CheapestItems:Update(StateManager:GetGlobalState().expendableItemsFrame)
   Tabs:SetCounts(#CheapestItems.junk, #CheapestItems.all)
 end
 
 Components.Root = ComponentFactory:Window({
-  name = "CheapestItemsFrame",
+  name = "ExpendableItemsFrame",
   width = 250,
   height = 230,
   isSpecialFrame = false,
-  titleText = Colors.Yellow(L.CHEAPEST_ITEMS),
-  getPoint = function() return StateManager:GetGlobalState().points.cheapestItemsFrame end,
-  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.set(point)) end,
-  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.cheapestItemsFrame.reset()) end,
+  titleText = Colors.Yellow(L.EXPENDABLE_ITEMS),
+  getPoint = function() return StateManager:GetGlobalState().points.expendableItemsFrame end,
+  setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.expendableItemsFrame.set(point)) end,
+  onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.expendableItemsFrame.reset()) end,
   refresh = refreshComponents
 })
 
@@ -272,11 +272,11 @@ Components.ItemList = Components.Content:AttachComponent(ComponentFactory:ItemLi
 }))
 
 -- ============================================================================
--- CheapestItemsFrame
+-- ExpendableItemsFrame
 -- ============================================================================
 
 --- Shows the frame on the Junk tab if it has items, otherwise on All.
-function CheapestItemsFrame:Show()
+function ExpendableItemsFrame:Show()
   refreshComponents()
   Tabs:Select(#CheapestItems.junk > 0 and "JUNK" or "ALL")
   Components.Root:SetVisibility("VISIBLE")
@@ -284,13 +284,13 @@ function CheapestItemsFrame:Show()
 end
 
 --- Hides the frame.
-function CheapestItemsFrame:Hide()
+function ExpendableItemsFrame:Hide()
   Components.Root:SetVisibility("GONE")
   Components.Root:Layout()
 end
 
 --- Hides the frame if it is showing, otherwise shows it.
-function CheapestItemsFrame:Toggle()
+function ExpendableItemsFrame:Toggle()
   if Components.Root:IsVisible() then
     self:Hide()
   else
@@ -316,16 +316,16 @@ function AutoShow:StartLooting()
   self.isLooting = true
   self.hadFreeSlots = B.Container:HasFreeSlots()
 
-  local autoShow = StateManager:GetGlobalState().cheapestItemsFrame.autoShow
+  local autoShow = StateManager:GetGlobalState().expendableItemsFrame.autoShow
   if autoShow == "ALWAYS" or (autoShow == "BAGS_FULL" and not self.hadFreeSlots) then
-    CheapestItemsFrame:Show()
+    ExpendableItemsFrame:Show()
   end
 end
 
 --- Ends the loot session, and hides the frame.
 function AutoShow:StopLooting()
   self.isLooting = false
-  CheapestItemsFrame:Hide()
+  ExpendableItemsFrame:Hide()
 end
 
 --- Shows the frame if the bags filled up while looting. Emptying them does not hide it.
@@ -335,9 +335,9 @@ function AutoShow:CheckBags()
   local hadFreeSlots = self.hadFreeSlots
   self.hadFreeSlots = B.Container:HasFreeSlots()
 
-  if StateManager:GetGlobalState().cheapestItemsFrame.autoShow ~= "BAGS_FULL" then return end
+  if StateManager:GetGlobalState().expendableItemsFrame.autoShow ~= "BAGS_FULL" then return end
   if hadFreeSlots and not self.hadFreeSlots and not Components.Root:IsVisible() then
-    CheapestItemsFrame:Show()
+    ExpendableItemsFrame:Show()
   end
 end
 

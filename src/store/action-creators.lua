@@ -45,9 +45,9 @@ ActionCreators.Global = {
   --- @type WuxActionCreator<table<string, any>>
   mergeChatMessages = Wux:CreateActionCreator(ActionTypes.Global.MERGE_CHAT_MESSAGES),
 
-  --- Action creator for `ActionTypes.Global.MERGE_CHEAPEST_ITEMS_FRAME`.
+  --- Action creator for `ActionTypes.Global.MERGE_EXPENDABLE_ITEMS_FRAME`.
   --- @type WuxActionCreator<table<string, any>>
-  mergeCheapestItemsFrame = Wux:CreateActionCreator(ActionTypes.Global.MERGE_CHEAPEST_ITEMS_FRAME),
+  mergeExpendableItemsFrame = Wux:CreateActionCreator(ActionTypes.Global.MERGE_EXPENDABLE_ITEMS_FRAME),
 
   --- Action creator for `ActionTypes.Global.SET_ITEM_ICONS`.
   --- @type WuxActionCreator<boolean>
@@ -140,14 +140,14 @@ ActionCreators.Global = {
       reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_MERCHANT_BUTTON_POINT)
     },
 
-    cheapestItemsFrame = {
-      --- Action creator for `ActionTypes.Global.SET_CHEAPEST_ITEMS_FRAME_POINT`.
+    expendableItemsFrame = {
+      --- Action creator for `ActionTypes.Global.SET_EXPENDABLE_ITEMS_FRAME_POINT`.
       --- @type WuxActionCreator<table>
-      set = Wux:CreateActionCreator(ActionTypes.Global.SET_CHEAPEST_ITEMS_FRAME_POINT),
+      set = Wux:CreateActionCreator(ActionTypes.Global.SET_EXPENDABLE_ITEMS_FRAME_POINT),
 
-      --- Action creator for `ActionTypes.Global.RESET_CHEAPEST_ITEMS_FRAME_POINT`.
+      --- Action creator for `ActionTypes.Global.RESET_EXPENDABLE_ITEMS_FRAME_POINT`.
       --- @type fun(): WuxAction
-      reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_CHEAPEST_ITEMS_FRAME_POINT)
+      reset = Wux:CreateActionCreator(ActionTypes.Global.RESET_EXPENDABLE_ITEMS_FRAME_POINT)
     }
   }
 }

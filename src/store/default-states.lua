@@ -37,22 +37,22 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
---- When the Cheapest Items frame shows by itself. `NEVER` leaves it to the player, `BAGS_FULL` shows it when the bags
+--- When the Expendable Items frame shows by itself. `NEVER` leaves it to the player, `BAGS_FULL` shows it when the bags
 --- are full while looting, and `ALWAYS` shows it whenever the loot window opens.
---- @alias CheapestItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
+--- @alias ExpendableItemsAutoShow "NEVER" | "BAGS_FULL" | "ALWAYS"
 
---- The item types that the Cheapest Items frame's All tab shows.
---- @class CheapestItemsTypesState
+--- The item types that the Expendable Items frame's All tab shows.
+--- @class ExpendableItemsTypesState
 --- @field equipment boolean Weapons, armor, rings, necklaces, and trinkets.
 --- @field tradeGoods boolean
 --- @field consumables boolean
 --- @field other boolean Every item that is not in the other three.
 
---- The Cheapest Items frame shown while looting.
---- @class CheapestItemsFrameState
---- @field autoShow CheapestItemsAutoShow
+--- The Expendable Items frame shown while looting.
+--- @class ExpendableItemsFrameState
+--- @field autoShow ExpendableItemsAutoShow
 --- @field qualities ItemQualitiesState
---- @field types CheapestItemsTypesState
+--- @field types ExpendableItemsTypesState
 
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
@@ -87,8 +87,8 @@ DefaultStates.Global = {
   autoLootableFrame = false,
   --- @type ChatMessagesState
   chatMessages = { enabled = true, detail = "REDUCED" },
-  --- @type CheapestItemsFrameState
-  cheapestItemsFrame = {
+  --- @type ExpendableItemsFrameState
+  expendableItemsFrame = {
     autoShow = "BAGS_FULL",
     qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false },
     types = { equipment = true, tradeGoods = true, consumables = true, other = false }
@@ -128,7 +128,7 @@ DefaultStates.Global = {
     lootableFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 },
-    cheapestItemsFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 300, offsetY = 50 }
+    expendableItemsFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 300, offsetY = 50 }
   }
 }
 

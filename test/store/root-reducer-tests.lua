@@ -102,9 +102,9 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.setAutoLootableFrame(true), path = "global.autoLootableFrame", expected = true },
   { action = ActionCreators.Global.mergeChatMessages({ enabled = false }), path = "global.chatMessages.enabled", expected = false },
   { action = ActionCreators.Global.mergeChatMessages({ detail = "VERBOSE" }), path = "global.chatMessages.detail", expected = "VERBOSE" },
-  { action = ActionCreators.Global.mergeCheapestItemsFrame({ autoShow = "ALWAYS" }), path = "global.cheapestItemsFrame.autoShow", expected = "ALWAYS" },
-  { action = ActionCreators.Global.mergeCheapestItemsFrame({ qualities = { uncommon = true } }), path = "global.cheapestItemsFrame.qualities.uncommon", expected = true },
-  { action = ActionCreators.Global.mergeCheapestItemsFrame({ types = { other = true } }), path = "global.cheapestItemsFrame.types.other", expected = true },
+  { action = ActionCreators.Global.mergeExpendableItemsFrame({ autoShow = "ALWAYS" }), path = "global.expendableItemsFrame.autoShow", expected = "ALWAYS" },
+  { action = ActionCreators.Global.mergeExpendableItemsFrame({ qualities = { uncommon = true } }), path = "global.expendableItemsFrame.qualities.uncommon", expected = true },
+  { action = ActionCreators.Global.mergeExpendableItemsFrame({ types = { other = true } }), path = "global.expendableItemsFrame.types.other", expected = true },
   { action = ActionCreators.Global.setItemIcons(true), path = "global.itemIcons", expected = true },
   { action = ActionCreators.Global.setItemIconStyle("LARGE"), path = "global.itemIconStyle", expected = "LARGE" },
   { action = ActionCreators.Global.setItemTooltips(false), path = "global.itemTooltips", expected = false },
@@ -120,7 +120,7 @@ local GLOBAL_ROWS = {
   { action = ActionCreators.Global.points.lootableFrame.set(POINT), path = "global.points.lootableFrame", expected = POINT },
   { action = ActionCreators.Global.points.transportFrame.set(POINT), path = "global.points.transportFrame", expected = POINT },
   { action = ActionCreators.Global.points.merchantButton.set(POINT), path = "global.points.merchantButton", expected = POINT },
-  { action = ActionCreators.Global.points.cheapestItemsFrame.set(POINT), path = "global.points.cheapestItemsFrame", expected = POINT },
+  { action = ActionCreators.Global.points.expendableItemsFrame.set(POINT), path = "global.points.expendableItemsFrame", expected = POINT },
 }
 
 -- Test: each `global` action changes only its own field.
