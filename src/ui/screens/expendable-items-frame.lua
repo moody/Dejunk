@@ -18,6 +18,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ExpendableItemsFrame
 local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 
+local TITLE_TEXT_FORMAT = Colors.Yellow(("%s (%s)"):format(L.EXPENDABLE_ITEMS, Colors.White("%s")))
+local FREE_SLOTS_TEXT_FORMAT = Colors.Grey(("%s: %s"):format(L.FREE_SLOTS, Colors.White("%s")))
+
 local Components = {}
 
 --- The junk items and the unprotected items that pass `Selection`, cheapest stack first.
@@ -102,11 +105,8 @@ end
 --- Updates the expendable items, and shows their count and the number of free slots.
 local function refreshComponents()
   updateExpendableItems()
-
-  Components.Root.TitleText:GetFrame():SetText(
-    Colors.Yellow(("%s (%s)"):format(L.EXPENDABLE_ITEMS, Colors.White(#expendableItems)))
-  )
-  Components.ItemsPanel:SetTitleText(Colors.White(("%s: %d"):format(L.FREE_SLOTS, B.Container:GetNumFreeSlots())))
+  Components.Root.TitleText:GetFrame():SetText(TITLE_TEXT_FORMAT:format(#expendableItems))
+  Components.ItemsPanel:SetTitleText(FREE_SLOTS_TEXT_FORMAT:format(B.Container:GetNumFreeSlots()))
 end
 
 Components.Root = ComponentFactory:Window({
@@ -132,7 +132,7 @@ Components.Content = Components.Root:AddChild({
 
 -- Title bar shows the number of free slots.
 Components.ItemsPanel = Components.Content:AttachComponent(ComponentFactory:TitledPanel({
-  titleText = Colors.White(L.FREE_SLOTS)
+  titleText = FREE_SLOTS_TEXT_FORMAT:format("-")
 }))
 
 Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFactory:ItemList({
