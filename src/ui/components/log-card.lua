@@ -6,18 +6,14 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class ComponentFactory
 local ComponentFactory = Addon:GetModule("ComponentFactory")
 
---- Format of the item icon in the link line, without its border and sized to the font. Takes the texture.
-local ICON_FORMAT = "|T%s:0:0:0:0:64:64:5:59:5:59|t "
-
 -- =============================================================================
 -- LuaCATS Annotations
 -- =============================================================================
 
 --- @class LogCardComponentOptions
---- @field getOutcomeText fun(entry: LogEntry): string Returns the outcome with its colors, to go before the link.
 --- @field getAccentColor fun(entry: LogEntry): Color Returns the color of the strip on the left edge.
 --- @field getValueText fun(entry: LogEntry): string Returns the value at the right of the link.
---- @field getSubtext fun(entry: LogEntry): string Returns the small text at the left of the second line. Called again when the time changes.
+--- @field getSubtext fun(entry: LogEntry): string Returns the small text at the left of the second line, with its own colors. Called again when the time changes.
 --- @field getTimeText fun(entry: LogEntry): string Returns the small grey text at the right of the second line. Called again when the time changes.
 --- @field onUpdateTooltip? fun(entry: LogEntry, tooltip: Tooltip) Shown while hovering the card.
 
@@ -25,7 +21,7 @@ local ICON_FORMAT = "|T%s:0:0:0:0:64:64:5:59:5:59|t "
 -- ComponentFactory - LogCard
 -- =============================================================================
 
---- Creates a card for a log entry, with a link line (the outcome, the item's icon, link, and quantity, and the value),
+--- Creates a card for a log entry, with the item's icon and stack count, a link line (the link and the value),
 --- a line of small text (the subtext and the time), and a strip on the left edge. Hidden until it has an entry.
 --- @param options LogCardComponentOptions
 --- @return LogCardComponent root
@@ -89,16 +85,23 @@ function ComponentFactory:LogCard(options)
   })
 
   -- Content, beside the accent strip.
-  local content = root:AddColumn({
+  local content = root:AddRow({
     height = "AUTO",
-    gap = Widgets:Padding(0.5),
+    align = "CENTER",
+    gap = Widgets:Padding(),
     padding = Widgets:Padding(0.75),
     paddingLeft = Widgets:Padding(),
     paddingRight = Widgets:Padding()
   })
 
+  -- Icon.
+  local icon = content:AttachComponent(ComponentFactory:ItemIcon({ size = 32 }))
+
+  -- Text, beside the icon.
+  local textColumn = content:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.5) })
+
   -- Link line: the link at the left, the value at the right.
-  local linkLine = content:AddRow({ height = "AUTO", align = "CENTER", gap = Widgets:Padding() })
+  local linkLine = textColumn:AddRow({ height = "AUTO", align = "CENTER", gap = Widgets:Padding() })
 
   local linkLabel = linkLine:AttachComponent(ComponentFactory:Text({
     fontObject = B.FontObjects.Large,
@@ -114,7 +117,7 @@ function ComponentFactory:LogCard(options)
   }))
 
   -- Second line: the subtext at the left, the time at the right.
-  local detailLine = content:AddRow({ height = "AUTO", align = "CENTER", gap = Widgets:Padding() })
+  local detailLine = textColumn:AddRow({ height = "AUTO", align = "CENTER", gap = Widgets:Padding() })
 
   local subtextLabel = detailLine:AttachComponent(ComponentFactory:Text({
     fontObject = B.FontObjects.Small,
@@ -160,9 +163,8 @@ function ComponentFactory:LogCard(options)
     shownEntry = newEntry
 
     local item = newEntry.attempt.item
-    local iconText = item.texture and ICON_FORMAT:format(item.texture) or ""
-    local quantityText = item.quantity > 1 and Colors.White("x" .. item.quantity) or ""
-    linkLabel:SetText(options.getOutcomeText(newEntry) .. iconText .. item.link .. quantityText)
+    icon:SetItem(item)
+    linkLabel:SetText(item.link)
     valueLabel:SetText(options.getValueText(newEntry))
 
     accentColor = options.getAccentColor(newEntry)

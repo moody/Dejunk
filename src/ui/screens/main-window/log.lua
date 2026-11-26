@@ -13,6 +13,9 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class MainWindowLog
 local MainWindowLog = Addon:GetModule("MainWindowLog")
 
+--- Format for the outcome of a manual entry. Takes the outcome text.
+local MANUAL_OUTCOME_FORMAT = "%s " .. Colors.Grey("(") .. Colors.White(L.MANUAL) .. Colors.Grey(")")
+
 --- The label and color of each outcome.
 --- @type table<LogOutcome, { text: string, color: Color }>
 local OutcomeStyles = {
@@ -73,14 +76,6 @@ end)
 -- Local Functions
 -- ============================================================================
 
---- Returns the outcome in its color, followed by a colon and space.
---- @param entry LogEntry
---- @return string
-local function getOutcomeText(entry)
-  local style = OutcomeStyles[entry.outcome]
-  return style.color(style.text) .. Colors.Grey(": ")
-end
-
 --- Returns the color of the entry's outcome.
 --- @param entry LogEntry
 --- @return Color
@@ -103,13 +98,16 @@ local function getTimeText(entry)
   return B.Strings.SECONDS_ABBREVIATED_TEXT:format(seconds)
 end
 
---- Returns the details of the entry, such as its reason and profile.
+--- Returns the details of the entry, such as its outcome, reason, and profile.
 --- @param entry LogEntry
 --- @return string
 local function getSubtext(entry)
-  local parts = {}
+  local style = OutcomeStyles[entry.outcome]
+  local outcomeText = style.color(style.text)
 
-  if entry.attempt.type == "MANUAL" then parts[#parts + 1] = Colors.White(L.MANUAL) end
+  if entry.attempt.type == "MANUAL" then outcomeText = MANUAL_OUTCOME_FORMAT:format(outcomeText) end
+
+  local parts = { outcomeText }
 
   local reason = entry.attempt.reason
   if reason then parts[#parts + 1] = Colors.Grey(L.REASON .. ": ") .. Colors:Strip(reason) end
@@ -225,7 +223,6 @@ function MainWindowLog:CreateLogPanel()
     getEntries = getEntries,
     createCard = function()
       return ComponentFactory:LogCard({
-        getOutcomeText = getOutcomeText,
         getAccentColor = getAccentColor,
         getValueText = getValueText,
         getSubtext = getSubtext,
