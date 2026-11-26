@@ -88,12 +88,13 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     local function getState() return StateManager:GetGlobalState().expendableItemsFrame end
     local mergeAction = ActionCreators.Global.mergeExpendableItemsFrame
 
-    local box = interface:AddOptionCard({
+    local box = interface:AddActionCard({
       labelText = L.EXPENDABLE_ITEMS_FRAME_TEXT,
       descriptionText = L.EXPENDABLE_ITEMS_FRAME_DESCRIPTION:format(
         Colors.White(L.TYPES),
         Colors.White(L.QUALITIES)
       ),
+      icon = Addon:GetAsset("trash-icon"),
       onLeftClick = function() ExpendableItemsFrame:Toggle() end,
       onRightClick = function()
         StateManager:Dispatch(ActionCreators.Global.points.expendableItemsFrame.reset())
