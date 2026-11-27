@@ -69,6 +69,7 @@
   <Script file="src\services\seller.lua"/>
   <Script file="src\services\destroyer.lua"/>
   <Script file="src\services\confirmer.lua"/>
+  <Script file="src\services\logger.lua"/>
 
   <!-- UI -->
   <Script file="src\ui\item-icons.lua"/>
@@ -103,23 +104,29 @@
   <Script file="src\ui\components\component-factory.lua"/>
   <Script file="src\ui\components\divider.lua"/>
   <Script file="src\ui\components\icon-button.lua"/>
+  <Script file="src\ui\components\item-icon.lua"/>
   <Script file="src\ui\components\item-card.lua"/>
   <Script file="src\ui\components\item-list.lua"/>
   <Script file="src\ui\components\keybinding-card.lua"/>
   <Script file="src\ui\components\list-panel.lua"/>
+  <Script file="src\ui\components\log-card.lua"/>
   <Script file="src\ui\components\number-input.lua"/>
   <Script file="src\ui\components\option-card.lua"/>
+  <Script file="src\ui\components\toggle-option-card.lua"/>
+  <Script file="src\ui\components\action-option-card.lua"/>
   <Script file="src\ui\components\profile-card.lua"/>
   <Script file="src\ui\components\quality-toggles.lua"/>
   <Script file="src\ui\components\scroll-panel.lua"/>
   <Script file="src\ui\components\selectable-row.lua"/>
   <Script file="src\ui\components\settings-box.lua"/>
+  <Script file="src\ui\components\tab.lua"/>
   <Script file="src\ui\components\text.lua"/>
   <Script file="src\ui\components\text-input.lua"/>
   <Script file="src\ui\components\titled-panel.lua"/>
   <Script file="src\ui\components\window.lua"/>
 
   <!-- UI Screens -->
+  <Script file="src\ui\screens\expendable-items-frame.lua"/>
   <Script file="src\ui\screens\junk-frame.lua"/>
   <Script file="src\ui\screens\lootable-frame.lua"/>
   <Script file="src\ui\screens\main-window\options\options-builder.lua"/>
@@ -127,6 +134,7 @@
   <Script file="src\ui\screens\main-window\options\profile-options.lua"/>
   <Script file="src\ui\screens\main-window\options\profiles.lua"/>
   <Script file="src\ui\screens\main-window\options\keybindings.lua"/>
+  <Script file="src\ui\screens\main-window\log.lua"/>
   <Script file="src\ui\screens\main-window\main-window.lua"/>
   <Script file="src\ui\screens\merchant-button.lua"/>
   <Script file="src\ui\screens\transport-frame.lua"/>

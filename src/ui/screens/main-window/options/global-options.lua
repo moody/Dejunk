@@ -1,5 +1,6 @@
 local Addon = select(2, ...) ---@type Addon
 local ActionCreators = Addon:GetModule("ActionCreators")
+local ExpendableItemsFrame = Addon:GetModule("ExpendableItemsFrame")
 local Colors = Addon:GetModule("Colors")
 local L = Addon:GetModule("Locale")
 local MinimapIcon = Addon:GetModule("MinimapIcon")
@@ -81,6 +82,45 @@ function MainWindowOptions:CreateGlobalOptionsPanel()
     get = function() return StateManager:GetGlobalState().autoLootableFrame end,
     set = function(value) StateManager:Dispatch(ActionCreators.Global.setAutoLootableFrame(value)) end
   })
+
+  -- Expendable items frame.
+  do
+    local function getState() return StateManager:GetGlobalState().expendableItemsFrame end
+    local mergeAction = ActionCreators.Global.mergeExpendableItemsFrame
+
+    local box = interface:AddActionCard({
+      labelText = L.EXPENDABLE_ITEMS_FRAME_TEXT,
+      descriptionText = L.EXPENDABLE_ITEMS_FRAME_DESCRIPTION:format(
+        Colors.White(L.TYPES),
+        Colors.White(L.QUALITIES)
+      ),
+      icon = Addon:GetAsset("trash-icon"),
+      onLeftClick = function() ExpendableItemsFrame:Toggle() end,
+      onRightClick = function()
+        StateManager:Dispatch(ActionCreators.Global.points.expendableItemsFrame.reset())
+      end,
+      onUpdateTooltip = function(_, tooltip)
+        tooltip:SetText(L.EXPENDABLE_ITEMS_FRAME_TEXT)
+        tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE))
+        tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.RESET_POSITION))
+      end
+    }):AddSettingsBox()
+
+    box:AddChoiceLine(
+      L.AUTO_SHOW,
+      {
+        { value = "NEVER", text = L.NEVER, tooltipText = L.AUTO_SHOW_NEVER_TOOLTIP },
+        { value = "LOOT_BAGS_FULL", text = L.LOOT_BAGS_FULL, tooltipText = L.AUTO_SHOW_LOOT_BAGS_FULL_TOOLTIP },
+        { value = "LOOT_ALWAYS", text = L.LOOT_ALWAYS, tooltipText = L.AUTO_SHOW_LOOT_ALWAYS_TOOLTIP },
+        { value = "ERROR_INVENTORY_FULL", text = L.ERROR_INVENTORY_FULL, tooltipText = L.AUTO_SHOW_ERROR_INVENTORY_FULL_TOOLTIP }
+      },
+      function() return getState().autoShow end,
+      function(value) StateManager:Dispatch(mergeAction({ autoShow = value })) end
+    )
+
+    box:AddTypesLine(getState, mergeAction)
+    box:AddQualitiesLine(getState, mergeAction)
+  end
 
   -- Chat messages.
   interface:AddOptionCard({

@@ -10,6 +10,7 @@ local JunkItemsCache = Addon:GetModule("JunkItemsCache")
 local L = Addon:GetModule("Locale")
 local Lists = Addon:GetModule("Lists")
 local LootableFrame = Addon:GetModule("LootableFrame")
+local MainWindowLog = Addon:GetModule("MainWindowLog")
 local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 local StateManager = Addon:GetModule("StateManager")
 local TickerManager = Addon:GetModule("TickerManager")
@@ -21,13 +22,20 @@ local MainWindow = Addon:GetModule("MainWindow")
 local LIST_PANEL_CARD_COUNT = 7
 local LIST_PANEL_ICON_SIZE = 18
 
+local ACTIVE_PROFILE_TEXT_FORMAT = Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White("%s")
+local JUNK_ITEMS_TEXT_FORMAT = Colors.Yellow(L.JUNK_ITEMS) .. " %s"
+local LOOTABLE_ITEMS_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Yellow(L.LOOTABLE_ITEMS),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
+
 local Components = {}
 
 -- ============================================================================
 -- Controller
 -- ============================================================================
 
---- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS"
+--- @alias SidebarRowKey "LISTS" | "GLOBAL_OPTIONS" | "PROFILES" | "PROFILE_OPTIONS" | "KEYBINDINGS" | "LOG"
 
 --- @class SidebarRowOptions
 --- @field key SidebarRowKey
@@ -97,7 +105,7 @@ Components.Root = ComponentFactory:Window({
   name = "MainWindow",
   width = 800,
   height = 640,
-  titleText = "", -- unused; MainWindow builds its own title-bar content below
+  titleText = Colors.Blue(ADDON_NAME),
   getPoint = function() return StateManager:GetGlobalState().points.mainWindow end,
   setPoint = function(point) StateManager:Dispatch(ActionCreators.Global.points.mainWindow.set(point)) end,
   onResetPoint = function() StateManager:Dispatch(ActionCreators.Global.points.mainWindow.reset()) end,
@@ -109,40 +117,9 @@ Components.Root:WhenFrameReady(function(frame)
   frame:HookScript("OnHide", function() Components.SearchBox:SetText("") end)
 end)
 
--- Window()'s generic title text goes unused in favor of the title bar below.
-Components.Root.TitleText:Detach()
-Components.Root.TitleText = nil
-
 -- ============================================================================
 -- Title Bar Components
 -- ============================================================================
-
-Components.TitleBarNameText = Components.Root.TitleRow:AddRow({ gap = Widgets:Padding(0.5) })
-
--- Addon icon, to the left of the name.
-Components.TitleBarNameText:AddChild({
-  width = 20,
-  height = 20,
-  shrink = 0,
-  alignSelf = "CENTER",
-
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local icon = parent:CreateTexture("$parent_TitleIcon", "ARTWORK")
-    icon:SetTexture(Addon:GetAsset("dejunk-icon"))
-    return icon
-  end
-})
-
-Components.TitleBarNameText:AddChild({
-  --- @param parent Frame
-  frameFactory = function(parent)
-    local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-    fontString:SetJustifyH("LEFT")
-    fontString:SetText(Colors.Blue(ADDON_NAME))
-    return fontString
-  end
-})
 
 Components.TitleBarVersionText = Components.Root.TitleRow:AddRow({ justify = "CENTER" })
 Components.TitleBarVersionText:AddChild({
@@ -330,6 +307,12 @@ Controller:AddSidebarRow({
   createScreen = function(screen) screen:AttachComponent(MainWindowOptions:CreateKeybindingsPanel()) end
 })
 
+Controller:AddSidebarRow({
+  key = "LOG",
+  labelText = L.LOG,
+  createScreen = function(screen) screen:AttachComponent(MainWindowLog:CreateLogPanel()) end
+})
+
 -- ============================================================================
 -- Footer Components
 -- ============================================================================
@@ -412,7 +395,7 @@ end
 addFooterSegment({
   justify = "LEFT",
   getValue = function() return StateManager:GetProfileState().name end,
-  formatText = function(name) return Colors.Yellow(L.ACTIVE_PROFILE) .. " " .. Colors.White(name) end,
+  formatText = function(name) return ACTIVE_PROFILE_TEXT_FORMAT:format(name) end,
   onClick = function() Controller:SelectSidebarRow("PROFILES") end
 })
 
@@ -420,7 +403,7 @@ addFooterSegment({
 addFooterSegment({
   justify = "CENTER",
   getValue = function() return JunkItemsCache:GetNumJunkItemsText() end,
-  formatText = function(countsText) return Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText end,
+  formatText = function(countsText) return JUNK_ITEMS_TEXT_FORMAT:format(countsText) end,
   onClick = function() JunkFrame:Toggle() end,
 
   --- Spells out the two counts.
@@ -436,12 +419,7 @@ addFooterSegment({
   justify = "RIGHT",
   getValue = function() return LootableFrame:GetNumLootableItems() end,
 
-  formatText = function(numLootable)
-    return (
-      Colors.Yellow(L.LOOTABLE_ITEMS) ..
-      Colors.Grey(" (") .. Colors.White(numLootable) .. Colors.Grey(")")
-    )
-  end,
+  formatText = function(numLootable) return LOOTABLE_ITEMS_TEXT_FORMAT:format(numLootable) end,
 
   onClick = function() LootableFrame:Toggle() end
 })

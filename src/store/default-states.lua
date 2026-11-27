@@ -37,6 +37,24 @@ DefaultStates.UNBOUND_KEY = ""
 --- @field enabled boolean
 --- @field detail ChatMessageDetail
 
+--- When the Expendable Items frame shows by itself. `NEVER` leaves it to the player, `LOOT_BAGS_FULL` shows it when the
+--- bags are full while looting, `LOOT_ALWAYS` shows it whenever the loot window opens, and `ERROR_INVENTORY_FULL` shows
+--- it when the game says the inventory is full. Only the two `LOOT_` choices hide it when the loot window closes.
+--- @alias ExpendableItemsAutoShow "NEVER" | "LOOT_BAGS_FULL" | "LOOT_ALWAYS" | "ERROR_INVENTORY_FULL"
+
+--- The item types that the Expendable Items frame lists besides junk items.
+--- @class ExpendableItemsTypesState
+--- @field equipment boolean Weapons, armor, rings, necklaces, and trinkets.
+--- @field tradeGoods boolean
+--- @field consumables boolean
+--- @field other boolean Every item that is not in the other three.
+
+--- The Expendable Items frame shown while looting.
+--- @class ExpendableItemsFrameState
+--- @field autoShow ExpendableItemsAutoShow
+--- @field qualities ItemQualitiesState
+--- @field types ExpendableItemsTypesState
+
 --- Option that decides which items are junk. It can be turned on or off, and applies to selling, destroying, or both.
 --- @class FilterOptionState
 --- @field enabled boolean
@@ -70,6 +88,12 @@ DefaultStates.Global = {
   autoLootableFrame = false,
   --- @type ChatMessagesState
   chatMessages = { enabled = true, detail = "REDUCED" },
+  --- @type ExpendableItemsFrameState
+  expendableItemsFrame = {
+    autoShow = "LOOT_BAGS_FULL",
+    qualities = { poor = true, common = true, uncommon = false, rare = false, epic = false },
+    types = { equipment = true, tradeGoods = true, consumables = true, other = false }
+  },
   itemIcons = false,
   --- @type ItemIconStyle
   itemIconStyle = "SMALL",
@@ -91,6 +115,7 @@ DefaultStates.Global = {
     toggleMainWindow = DefaultStates.UNBOUND_KEY,
     toggleJunkFrame = DefaultStates.UNBOUND_KEY,
     toggleLootableFrame = DefaultStates.UNBOUND_KEY,
+    toggleExpendableItemsFrame = DefaultStates.UNBOUND_KEY,
     startSelling = DefaultStates.UNBOUND_KEY,
     destroyNextItem = DefaultStates.UNBOUND_KEY,
     addOrRemoveProfileInclusions = DefaultStates.UNBOUND_KEY,
@@ -104,7 +129,8 @@ DefaultStates.Global = {
     junkFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     lootableFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
     transportFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 },
-    merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 }
+    merchantButton = { point = "TOPLEFT", relativeTo = "MerchantFrame", relativePoint = "TOPLEFT", offsetX = 60, offsetY = -28 },
+    expendableItemsFrame = { point = "CENTER", relativePoint = "CENTER", offsetX = 0, offsetY = 50 }
   }
 }
 

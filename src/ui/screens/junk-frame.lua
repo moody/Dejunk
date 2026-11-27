@@ -21,6 +21,8 @@ local Widgets = Addon:GetModule("Widgets")
 --- @class JunkFrame
 local JunkFrame = Addon:GetModule("JunkFrame")
 
+local TITLE_TEXT_FORMAT = Colors.Yellow(L.JUNK_ITEMS) .. " %s"
+
 local Components = {}
 
 -- ============================================================================
@@ -48,14 +50,10 @@ local function refreshComponents()
   local countsText = JunkItemsCache:GetNumJunkItemsText()
   if countsText ~= titleCountsText then
     titleCountsText = countsText
-    Components.Root.TitleText:GetFrame():SetText(Colors.Yellow(L.JUNK_ITEMS) .. " " .. countsText)
+    Components.Root.TitleText:SetText(TITLE_TEXT_FORMAT:format(countsText))
   end
 
-  local totalJunkValue = 0
-  for _, item in pairs(junkItems) do
-    totalJunkValue = totalJunkValue + (item.noValue and 0 or (item.price * item.quantity))
-  end
-  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(totalJunkValue)))
+  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(JunkItemsCache:GetTotalJunkPrice())))
 
   if Addon:IsBusy() then
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)
@@ -148,7 +146,7 @@ Components.ItemList = Components.ItemsPanel.Content:AttachComponent(ComponentFac
   getItemSubtext = function(item)
     if Items:IsItemLocked(item) then return Colors.Grey(L.ITEM_IS_LOCKED) end
     if item.noValue then return Colors.Grey(B.Strings.NO_SELL_PRICE_TEXT) end
-    return Colors.White(B.Money:GetCoinText(item.price * item.quantity))
+    return Colors.White(B.Money:GetCoinText(Items:GetStackPrice(item)))
   end,
 
   isItemEnabled = function(item) return not (Addon:IsBusy() or B.Cursor:GetItemId() or Items:IsItemLocked(item)) end,

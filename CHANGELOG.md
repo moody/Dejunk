@@ -1,7 +1,21 @@
 # Changelog
 
-## [3.5.1] - 2026-11-04
+## [3.6.0] - Unreleased
+
+### Added
+
+- Added a `Log` screen to the main window, opened with `/dejunk log`. It lists what Dejunk sold or destroyed this session, newest first, with the reason each item was junk, how long ago it happened, and its value. Items that failed to sell or destroy, or that may not have, are listed too, in grey. Tabs show all entries, only selling, or only destroying, and a line under the list totals the items sold, the profit, and the items destroyed. The log is cleared when the game reloads.
+- Added an `Expendable Items` frame that lists the bag items you could destroy to make room, cheapest stack first, so you can free a slot in a few clicks. Items Dejunk considers junk for destroying are always listed, with a black and white icon, and items excluded from destroying never are. Other items are listed only if their type (`Equipment`, `Trade Goods`, `Consumables`, or `Other`) and quality are selected in the frame's options. A `Free Slots` heading shows how many free slots your bags have, and each item has an Exclude and a Destroy button.
+- Added an `Auto Show` choice for the Expendable Items frame: `Never`, `Loot: Bags Full`, `Loot: Always`, or `Error: Inventory Full`. `Loot: Bags Full` shows it when your bags are full while the loot window is open, and is the default. `Loot: Always` shows it whenever the loot window opens. `Error: Inventory Full` shows it when the game says your inventory is full. The two `Loot` choices hide it when the loot window closes, and `Never` and `Error: Inventory Full` leave it for you to close.
+- Added `/dejunk expendable` and a `Toggle Expendable Items Frame` keybinding.
+
+### Changed
+
+- The Junk Items, Lootable Items, and Expendable Items frames show a stack's count on the item's icon, instead of after its link.
+- Every Dejunk window/frame now shows the Dejunk icon beside its title, not just the main window.
+- The footers of the `Keybindings`, `Log`, and `Profile Options` screens are now bars like the main window's footer.
+- The tooltips of the minimap icon and the merchant button show a `Junk Items` line with the junk item counts and their total sell value, instead of the counts beside the title.
 
 ### Fixed
 
-- Fixed a character's profile sometimes resetting to `Default` on WoW Forever. A character is now identified by its full name alone, and existing profile assignments are kept.
+- Fixed bag item icons being missing or in the wrong bag with ElvUI on WoW Forever.

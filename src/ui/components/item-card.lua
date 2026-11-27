@@ -23,6 +23,7 @@ local DEFAULT_ICON_SIZE = 24
 --- @class ItemCardComponentOptions
 --- @field getSubtext? fun(item: BagItem | ListItem): string? Adds a line of small text under the link, with the text it returns. Called on every `SetItem()`.
 --- @field iconSize? integer Width and height of the icon. Defaults to `24`.
+--- @field isIconDesaturated? fun(item: BagItem | ListItem): boolean Returns `true` to show the item's icon in black and white. Called on every `SetItem()`.
 --- @field fontObject? Font Font of the link. Defaults to `B.FontObjects.Normal`.
 --- @field iconButtons? ItemCardIconButtonOptions[] Adds a button at the right edge for each entry, the full height of the card.
 --- @field onUpdateTooltip? fun(item: BagItem | ListItem, tooltip: Tooltip) Shown while hovering the card. Defaults to the item's tooltip.
@@ -38,11 +39,9 @@ local DEFAULT_ICON_SIZE = 24
 function ComponentFactory:ItemCard(options)
   local frame ---@type FrameWidget?
   local accent ---@type Texture?
-  local icon ---@type Texture?
   local item ---@type (BagItem | ListItem)?
   local isEnabled = true
   local accentR, accentG, accentB = 1, 1, 1
-  local iconTexture ---@type (string | number)?
 
   --- Values last shown, to skip an item that has not changed.
   local shown = {}
@@ -126,18 +125,7 @@ function ComponentFactory:ItemCard(options)
   })
 
   -- Icon.
-  content:AddChild({
-    width = options.iconSize or DEFAULT_ICON_SIZE,
-    height = options.iconSize or DEFAULT_ICON_SIZE,
-
-    --- @param parent Frame
-    frameFactory = function(parent)
-      icon = parent:CreateTexture(nil, "ARTWORK")
-      icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
-      icon:SetTexture(iconTexture)
-      return icon
-    end
-  })
+  local icon = content:AttachComponent(ComponentFactory:ItemIcon({ size = options.iconSize or DEFAULT_ICON_SIZE }))
 
   -- With subtext, the link and subtext are stacked in a column.
   local linkParent = content
@@ -155,7 +143,7 @@ function ComponentFactory:ItemCard(options)
     }))
   end
 
-  -- Item link and quantity.
+  -- Item link.
   local title = linkParent:AttachComponent(ComponentFactory:Text({
     fontObject = options.fontObject,
     wordWrap = false,
@@ -233,11 +221,13 @@ function ComponentFactory:ItemCard(options)
 
     local quantity = newItem.quantity or 1
     local subtext = options.getSubtext and options.getSubtext(newItem) or ""
+    local desaturated = options.isIconDesaturated ~= nil and options.isIconDesaturated(newItem)
 
     local isChanged = (
       newItem.link ~= shown.link or
       quantity ~= shown.quantity or
       subtext ~= shown.subtext or
+      desaturated ~= shown.desaturated or
       newItem.texture ~= shown.texture or
       newItem.quality ~= shown.quality
     )
@@ -246,15 +236,14 @@ function ComponentFactory:ItemCard(options)
     shown.link = newItem.link
     shown.quantity = quantity
     shown.subtext = subtext
+    shown.desaturated = desaturated
     shown.texture = newItem.texture
     shown.quality = newItem.quality
 
-    title:SetText(newItem.link .. (quantity > 1 and Colors.White("x" .. quantity) or ""))
+    title:SetText(newItem.link)
     if subtextLabel then subtextLabel:SetText(subtext) end
 
-    -- Icon.
-    iconTexture = newItem.texture
-    if icon then icon:SetTexture(iconTexture) end
+    icon:SetItem(newItem, desaturated)
 
     -- Quality strip.
     accentR, accentG, accentB = (Colors.ByQuality[newItem.quality] or Colors.QualityCommon):GetRGB()

@@ -49,11 +49,19 @@ local function onUpdateTooltip(frame)
     return
   end
 
-  local title = Colors.Blue(ADDON_NAME) .. " " .. JunkItemsCache:GetNumJunkItemsText()
-  Tooltip:AddDoubleLine(title, Colors.Grey(Addon.VERSION))
-  Tooltip:AddLine(Addon:SubjectDescription(L.LEFT_CLICK, L.TOGGLE_MAIN_WINDOW))
-  Tooltip:AddLine(Addon:SubjectDescription(L.RIGHT_CLICK, L.TOGGLE_JUNK_FRAME))
-  Tooltip:AddLine(Addon:SubjectDescription(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK), Colors.Red(L.DESTROY_NEXT_ITEM)))
+  Tooltip:AddDoubleLine(Colors.Blue(ADDON_NAME), Colors.Grey(Addon.VERSION))
+  Tooltip:AddLine(" ")
+  Tooltip:AddDoubleLine(
+    Colors.Yellow(L.JUNK_ITEMS) .. " " .. JunkItemsCache:GetNumJunkItemsText(),
+    B.Money:GetCoinText(JunkItemsCache:GetTotalJunkPrice())
+  )
+  Tooltip:AddLine(" ")
+  Tooltip:AddDoubleLine(Colors.Gold(L.LEFT_CLICK), L.TOGGLE_MAIN_WINDOW)
+  Tooltip:AddDoubleLine(Colors.Gold(L.RIGHT_CLICK), L.TOGGLE_JUNK_FRAME)
+  Tooltip:AddDoubleLine(
+    Colors.Gold(Addon:Concat("+", B.Strings.ALT_KEY_TEXT, L.RIGHT_CLICK)),
+    Colors.Red(L.DESTROY_NEXT_ITEM)
+  )
   Tooltip:Show()
 end
 

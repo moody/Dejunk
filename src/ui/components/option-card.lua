@@ -1,7 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
 local Colors = Addon:GetModule("Colors")
-local E = Addon:GetModule("Events")
-local EventManager = Addon:GetModule("EventManager")
 local Widgets = Addon:GetModule("Widgets")
 
 --- @class ComponentFactory
@@ -11,23 +9,24 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- LuaCATS Annotations
 -- =============================================================================
 
---- @class OptionCardOptions
---- @field get fun(): boolean Returns `true` if the option is on.
---- @field set fun(value: boolean) Called with the new value when the card is clicked.
+--- @class OptionCardBaseOptions
 --- @field onRightClick? fun() Called when the card is right-clicked.
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the card.
+
+--- @class OptionCardOptions : OptionCardBaseOptions
+--- @field leading? WaffleFlexComponent Component shown beside the content.
+--- @field onLeftClick? fun() Called when the card is left-clicked.
 
 -- =============================================================================
 -- ComponentFactory - OptionCard
 -- =============================================================================
 
---- Creates a full-width card with a checkbox beside its content. Clicking
---- anywhere on the card toggles the option.
+--- Creates a full-width card with its content in a column, beside a `leading` component.
 --- @param options OptionCardOptions
 --- @return OptionCardComponent root
 function ComponentFactory:OptionCard(options)
   --- @class OptionCardComponent : WaffleFlexComponent
-  --- @field Content WaffleFlexComponent Column beside the checkbox.
+  --- @field Content WaffleFlexComponent Column beside the leading component.
   local root = Addon.Waffle:Flex({
     direction = "ROW",
     height = "AUTO",
@@ -45,51 +44,21 @@ function ComponentFactory:OptionCard(options)
       })
       frame:SetBackdropColor(Colors.White:GetRGBA(0.03))
       frame:SetBackdropBorderColor(0, 0, 0, 0)
-      frame:SetClickHandler("LeftButton", "NONE", function() options.set(not options.get()) end)
+
+      -- Brighten while hovered.
+      frame:OnEvent("HOVERED", function()
+        frame:SetBackdropColor(Colors.White:GetRGBA(frame:GetEventValue("HOVERED") and 0.06 or 0.03))
+      end)
+
+      if options.onLeftClick then frame:SetClickHandler("LeftButton", "NONE", options.onLeftClick) end
       if options.onRightClick then frame:SetClickHandler("RightButton", "NONE", options.onRightClick) end
       return frame
     end
   })
 
-  -- Checkbox.
-  root:AddChild({
-    width = 18,
-    height = 18,
-
-    --- @param parent Frame
-    frameFactory = function(parent)
-      return Widgets:Checkbox({ parent = parent })
-    end
-  }):WhenFrameReady(function(checkbox) -- Refresh on hover, show, and state changes.
-    --- @cast checkbox CheckboxWidget
-    --- @type FrameWidget
-    local frame = root:GetFrame()
-
-    --- Applies the hover fill to the card, and updates the checkbox.
-    local function refresh()
-      local isHovered = frame:GetEventValue("HOVERED")
-      frame:SetBackdropColor(Colors.White:GetRGBA(isHovered and 0.06 or 0.03))
-      checkbox:SetChecked(options.get())
-      checkbox:FireEvent("HOVERED", isHovered)
-    end
-
-    -- The checked state reads the store.
-    EventManager:WaitForFirst(E.StoreCreated, function()
-      frame:OnEvent("HOVERED", refresh)
-      frame:HookScript("OnShow", refresh)
-      EventManager:On(E.StateUpdated, function()
-        if frame:IsVisible() then refresh() end
-      end)
-    end)
-  end)
+  if options.leading then root:AttachComponent(options.leading) end
 
   root.Content = root:AddColumn({ height = "AUTO", gap = Widgets:Padding(0.25) })
-
-  --- Returns `true` if the option is on.
-  --- @return boolean
-  function root:IsChecked()
-    return options.get()
-  end
 
   return root
 end

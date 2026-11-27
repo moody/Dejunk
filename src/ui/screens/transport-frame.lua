@@ -111,7 +111,7 @@ function TransportFrame:Show(list)
   currentList = list
   Components.Root:SetVisibility("VISIBLE")
   Components.Root:Layout()
-  Components.Root.TitleText:GetFrame():SetText(list.name)
+  Components.Root.TitleText:SetText(Colors.Yellow(list.name))
   export()
 end
 

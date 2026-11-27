@@ -1,5 +1,6 @@
 local ADDON_NAME = ... ---@type string
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Colors = Addon:GetModule("Colors")
 local TickerManager = Addon:GetModule("TickerManager")
 local Widgets = Addon:GetModule("Widgets")
@@ -27,7 +28,7 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 -- ComponentFactory - Window
 -- =============================================================================
 
---- Creates a draggable floating window with a title bar and close button.
+--- Creates a draggable floating window with a title bar, addon icon, and close button.
 --- Position is persisted and resettable with Shift+Right-Click.
 --- @param options WindowComponentOptions
 --- @return WindowComponent root
@@ -36,7 +37,9 @@ function ComponentFactory:Window(options)
 
   --- @class WindowComponent : WaffleFlexComponent
   --- @field TitleRow WaffleFlexComponent
-  --- @field TitleText WaffleFlexComponent
+  --- @field TitleNameRow WaffleFlexComponent
+  --- @field TitleIcon WaffleFlexComponent
+  --- @field TitleText TextComponent
   --- @field CloseButton WaffleFlexComponent
   root = Addon.Waffle:Flex({
     width = options.width,
@@ -92,16 +95,26 @@ function ComponentFactory:Window(options)
     end
   })
 
-  root.TitleText = root.TitleRow:AddChild({
+  root.TitleNameRow = root.TitleRow:AddRow({ gap = Widgets:Padding(0.5), align = "CENTER" })
+
+  root.TitleIcon = root.TitleNameRow:AddChild({
+    width = 22,
+    height = 22,
+    shrink = 0,
+
     --- @param parent Frame
     frameFactory = function(parent)
-      local fontString = parent:CreateFontString("$parent_TitleText", "ARTWORK", "GameFontNormalLarge")
-      fontString:SetWordWrap(false)
-      fontString:SetJustifyH("LEFT")
-      fontString:SetText(options.titleText)
-      return fontString
+      local texture = parent:CreateTexture("$parent_TitleIcon", "ARTWORK")
+      texture:SetTexture(Addon:GetAsset("dejunk-icon"))
+      return texture
     end
   })
+
+  root.TitleText = root.TitleNameRow:AttachComponent(ComponentFactory:Text({
+    text = options.titleText,
+    fontObject = B.FontObjects.Large,
+    wordWrap = false
+  }))
 
   root.CloseButton = root.TitleRow:AttachComponent(
     ComponentFactory:IconButton({

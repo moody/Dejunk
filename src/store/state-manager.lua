@@ -104,6 +104,13 @@ function StateManager:GetProfileState()
   return state.profiles.profileMap[state.profiles.activeProfileId] or DefaultStates.Profile
 end
 
+--- Returns the state of a profile by ID, if one exists.
+--- @param profileId string
+--- @return ProfileState?
+function StateManager:GetProfileStateById(profileId)
+  return _Store:GetState().profiles.profileMap[profileId]
+end
+
 -- StateManager:GetAllProfiles()
 do
   local profiles = {}

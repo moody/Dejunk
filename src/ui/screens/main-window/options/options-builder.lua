@@ -1,4 +1,5 @@
 local Addon = select(2, ...) ---@type Addon
+local B = Addon:GetModule("Blizzard")
 local Coins = Addon:GetModule("Coins")
 local Colors = Addon:GetModule("Colors")
 local ComponentFactory = Addon:GetModule("ComponentFactory")
@@ -18,18 +19,15 @@ local OptionsBuilder = Addon:GetModule("OptionsBuilder")
 --- @field descriptionText? string Small grey text above the first group, followed by a divider.
 --- @field interceptMouseWheel? fun(delta: number): boolean Called first on each wheel notch over the panel. Return `true` to take the notch so the panel does not scroll.
 
---- @class OptionsBuilderMessageFooterOptions
---- @field fontObject? string Font of the message. Defaults to `GameFontNormal`.
---- @field color? Color Default color of the message. Defaults to `Colors.Grey`.
---- @field defaultMessage? string Shown in grey while there is no message, which keeps the footer visible.
-
 --- @class OptionsBuilderTextOptions
 --- @field labelText string Option name.
 --- @field descriptionText string Shown in grey below the label.
 --- @field warningText? string Shown in pink below the description.
 --- @field ignoresSpecialEquipment? boolean Marks the label with an asterisk explained by `AddSpecialEquipmentFootnote()`.
 
---- @class OptionsBuilderCardOptions : OptionCardOptions, OptionsBuilderTextOptions
+--- @class OptionsBuilderToggleCardOptions : ToggleOptionCardOptions, OptionsBuilderTextOptions
+
+--- @class OptionsBuilderActionCardOptions : ActionOptionCardOptions, OptionsBuilderTextOptions
 
 --- @class OptionsBuilderChoice
 --- @field value any Value selected by this choice's chip.
@@ -160,6 +158,36 @@ local function addQualitiesLine(self, getState, mergeAction)
   }))
 end
 
+--- Adds a line of a chip per item type to the box for the Expendable Items frame's `types` field.
+--- @param self OptionsBuilderSettingsBox
+--- @param getState fun(): ExpendableItemsFrameState
+--- @param mergeAction fun(t: table): WuxPayloadAction
+local function addTypesLine(self, getState, mergeAction)
+  local itemTypes = {
+    { key = "equipment", text = L.EQUIPMENT, tooltipText = L.EQUIPMENT_TOOLTIP },
+    { key = "tradeGoods", text = L.TRADE_GOODS, tooltipText = L.TRADE_GOODS_TOOLTIP },
+    { key = "consumables", text = L.CONSUMABLES, tooltipText = L.CONSUMABLES_TOOLTIP },
+    { key = "other", text = L.OTHER, tooltipText = L.OTHER_TOOLTIP }
+  }
+
+  local chips = {}
+
+  for _, itemType in ipairs(itemTypes) do
+    chips[#chips + 1] = {
+      text = itemType.text,
+      get = function() return getState().types[itemType.key] end,
+      set = function(value) StateManager:Dispatch(mergeAction({ types = { [itemType.key] = value } })) end,
+      onUpdateTooltip = function(chip, tooltip)
+        tooltip:SetOwner(chip, "ANCHOR_RIGHT")
+        tooltip:SetText(itemType.text)
+        tooltip:AddLine(itemType.tooltipText)
+      end
+    }
+  end
+
+  self:AddLine(L.TYPES):AttachComponent(ComponentFactory:CheckChipGroup({ chips = chips }))
+end
+
 --- Adds a line of a chip per equipment type to `box`, for a setting's selected
 --- subclasses in `field`.
 --- @param box OptionsBuilderSettingsBox
@@ -201,8 +229,8 @@ local function addWeaponsLine(self, getState, mergeAction)
 end
 
 --- Adds a divider and a settings box to the card, below its description. The
---- box is disabled and dimmed while the card is unchecked.
---- @param self OptionsBuilderCard
+--- box is disabled and dimmed while a toggle card is unchecked.
+--- @param self OptionsBuilderToggleCard | OptionsBuilderActionCard
 --- @return OptionsBuilderSettingsBox box
 local function addSettingsBox(self)
   local divider = self.Content:AttachComponent(ComponentFactory:Divider())
@@ -210,7 +238,7 @@ local function addSettingsBox(self)
 
   --- @class OptionsBuilderSettingsBox : SettingsBoxComponent
   local box = self.Content:AttachComponent(ComponentFactory:SettingsBox({
-    isEnabled = function() return self:IsChecked() end
+    isEnabled = self.IsChecked and function() return self:IsChecked() end
   }))
   box:SetMarginTop(Widgets:Padding(0.25))
 
@@ -220,9 +248,33 @@ local function addSettingsBox(self)
   box.AddItemLevelLine = addItemLevelLine
   box.AddPriceLine = addPriceLine
   box.AddQualitiesLine = addQualitiesLine
+  box.AddTypesLine = addTypesLine
   box.AddWeaponsLine = addWeaponsLine
 
   return box
+end
+
+--- Adds the label, description, and warning of `options` to the card's content.
+--- @param card OptionCardComponent
+--- @param options OptionsBuilderTextOptions
+local function addCardText(card, options)
+  card.Content:AttachComponent(ComponentFactory:Text({
+    text = options.ignoresSpecialEquipment and (options.labelText .. Colors.Pink("*")) or options.labelText
+  }))
+
+  card.Content:AttachComponent(ComponentFactory:Text({
+    text = options.descriptionText,
+    fontObject = "GameFontNormalSmall",
+    color = Colors.Grey
+  }))
+
+  if options.warningText then
+    card.Content:AttachComponent(ComponentFactory:Text({
+      text = options.warningText,
+      fontObject = "GameFontNormalSmall",
+      color = Colors.Pink
+    }))
+  end
 end
 
 -- ============================================================================
@@ -252,34 +304,27 @@ function OptionsBuilder:CreatePanel(options)
   return panel, content
 end
 
---- Adds an option card with a label and description to `container`.
+--- Adds an option card with a label, a description, and a checkbox to `container`.
 --- @param container WaffleFlexComponent
---- @param options OptionsBuilderCardOptions
---- @return OptionsBuilderCard card
+--- @param options OptionsBuilderToggleCardOptions
+--- @return OptionsBuilderToggleCard card
 function OptionsBuilder:AddOptionCard(container, options)
-  --- @class OptionsBuilderCard : OptionCardComponent
-  local card = container:AttachComponent(ComponentFactory:OptionCard(options))
-
-  card.Content:AttachComponent(ComponentFactory:Text({
-    text = options.ignoresSpecialEquipment and (options.labelText .. Colors.Pink("*")) or options.labelText
-  }))
-
-  card.Content:AttachComponent(ComponentFactory:Text({
-    text = options.descriptionText,
-    fontObject = "GameFontNormalSmall",
-    color = Colors.Grey
-  }))
-
-  if options.warningText then
-    card.Content:AttachComponent(ComponentFactory:Text({
-      text = options.warningText,
-      fontObject = "GameFontNormalSmall",
-      color = Colors.Pink
-    }))
-  end
-
+  --- @class OptionsBuilderToggleCard : ToggleOptionCardComponent
+  local card = container:AttachComponent(ComponentFactory:ToggleOptionCard(options))
+  addCardText(card, options)
   card.AddSettingsBox = addSettingsBox
+  return card
+end
 
+--- Adds an option card with a label, a description, and an icon to `container`. Clicking it calls `onLeftClick`.
+--- @param container WaffleFlexComponent
+--- @param options OptionsBuilderActionCardOptions
+--- @return OptionsBuilderActionCard card
+function OptionsBuilder:AddActionCard(container, options)
+  --- @class OptionsBuilderActionCard : ActionOptionCardComponent
+  local card = container:AttachComponent(ComponentFactory:ActionOptionCard(options))
+  addCardText(card, options)
+  card.AddSettingsBox = addSettingsBox
   return card
 end
 
@@ -319,10 +364,17 @@ function OptionsBuilder:AddGroup(container, headingText, descriptionText)
   end
 
   --- Adds an option card to the group.
-  --- @param options OptionsBuilderCardOptions
-  --- @return OptionsBuilderCard card
+  --- @param options OptionsBuilderToggleCardOptions
+  --- @return OptionsBuilderToggleCard card
   function group:AddOptionCard(options)
     return OptionsBuilder:AddOptionCard(self, options)
+  end
+
+  --- Adds an action card to the group.
+  --- @param options OptionsBuilderActionCardOptions
+  --- @return OptionsBuilderActionCard card
+  function group:AddActionCard(options)
+    return OptionsBuilder:AddActionCard(self, options)
   end
 
   --- Adds a keybinding card to the group.
@@ -337,63 +389,12 @@ function OptionsBuilder:AddGroup(container, headingText, descriptionText)
   return group
 end
 
---- Adds a footer below `panel`'s scroll panel, under a divider, that shows a centered message. It is hidden
---- until a message is set, unless it has a `defaultMessage`.
---- @param panel TitledPanelComponent
---- @param options? OptionsBuilderMessageFooterOptions
---- @return OptionsBuilderMessageFooter footer
-function OptionsBuilder:AddMessageFooter(panel, options)
-  options = options or {}
-
-  local hasDefaultMessage = options.defaultMessage ~= nil
-  local idleText = hasDefaultMessage and Colors.Grey(options.defaultMessage) or " "
-
-  --- @class OptionsBuilderMessageFooter : WaffleFlexComponent
-  local footer = panel.Content:AttachComponent(Addon.Waffle:Flex({
-    direction = "COLUMN",
-    height = "AUTO",
-    gap = Widgets:Padding(),
-    visibility = hasDefaultMessage and "VISIBLE" or "GONE",
-    marginTop = Widgets:Padding()
-  }))
-
-  footer:AttachComponent(ComponentFactory:Divider())
-
-  local text = footer:AttachComponent(ComponentFactory:Text({
-    text = idleText,
-    fontObject = options.fontObject or "GameFontNormal",
-    color = options.color or Colors.Grey,
-    justifyH = "CENTER"
-  }))
-
-  --- Shows the message, or clears it when it is `nil`. Clearing hides the footer unless it has a default message.
-  --- @param message? string
-  function footer:SetMessage(message)
-    if message or hasDefaultMessage then
-      text:WhenFrameReady(function(fontString) fontString:SetText(message or idleText) end)
-      text:MarkDirty()
-    end
-
-    if not hasDefaultMessage then
-      self:SetVisibility(message and "VISIBLE" or "GONE")
-    end
-  end
-
-  return footer
-end
-
---- Adds a centered footnote below `panel`'s scroll panel, under a divider,
---- explaining that options marked with an asterisk ignore special equipment.
+--- Adds a footer to `panel` explaining that options marked with an asterisk ignore special equipment.
 --- @param panel TitledPanelComponent
 function OptionsBuilder:AddSpecialEquipmentFootnote(panel)
-  local divider = panel.Content:AttachComponent(ComponentFactory:Divider())
-  divider:SetMarginTop(Widgets:Padding())
-
-  local footnote = panel.Content:AttachComponent(ComponentFactory:Text({
+  panel:AddFooter({
     text = Colors.Pink("*") .. " " .. L.DOES_NOT_APPLY_TO_SPECIAL_EQUIPMENT,
-    fontObject = "GameFontNormalSmall",
+    fontObject = B.FontObjects.Small,
     color = Colors.Grey
-  }))
-  footnote:SetMarginTop(Widgets:Padding())
-  footnote:SetMarginBottom(Widgets:Padding(0.5))
+  })
 end

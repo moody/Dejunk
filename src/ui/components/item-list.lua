@@ -11,8 +11,10 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @class ItemListComponentOptions
 --- @field getItems fun(): (BagItem | ListItem)[] Returns the items to list, in order.
 --- @field cardCount integer Number of items shown at once. The rest are reached by scrolling.
+--- @field emptyText? string | fun(): string Shown while there are no items. A function is called on each refresh. Defaults to `L.NO_ITEMS`.
 --- @field addItem? fun(itemId: number) Called with the ID of an item dropped on the list. Drops do nothing without it.
 --- @field getItemSubtext? fun(item: BagItem | ListItem): string? Adds a line of small text under each link, with the text it returns.
+--- @field isIconDesaturated? fun(item: BagItem | ListItem): boolean Returns `true` to show the item's icon in black and white.
 --- @field iconSize? integer Defaults to the `ItemCard` default.
 --- @field fontObject? Font Defaults to the `ItemCard` default.
 --- @field iconButtons? ItemCardIconButtonOptions[] Adds buttons to the right of each card.
@@ -41,11 +43,13 @@ function ComponentFactory:ItemList(options)
   local root = ComponentFactory:CardList({
     cardCount = options.cardCount,
     getEntries = options.getItems,
+    emptyText = options.emptyText,
     onMouseDown = addCursorItem,
 
     createCard = function()
       return ComponentFactory:ItemCard({
         getSubtext = options.getItemSubtext,
+        isIconDesaturated = options.isIconDesaturated,
         iconSize = options.iconSize,
         fontObject = options.fontObject,
         iconButtons = options.iconButtons,

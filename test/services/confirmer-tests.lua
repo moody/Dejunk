@@ -30,7 +30,9 @@ local function setupContext()
 
   local removedItems = {}
   local Items = {}
-  Mocks:CreateSpy(Items):Stub("IsItemStillInBags"):Invokes(function(_, item) return not removedItems[item] end)
+  local ItemsSpy = Mocks:CreateSpy(Items)
+  ItemsSpy:Stub("IsItemStillInBags"):Invokes(function(_, item) return not removedItems[item] end)
+  ItemsSpy:Stub("GetStackPrice"):Invokes(function(_, item) return item.price * item.quantity end)
 
   --- Takes the item out of the bags, as a sale does once the game confirms it.
   --- @param item BagItem
@@ -47,8 +49,11 @@ local function setupContext()
   Context:SetModule("Colors", Colors)
   Context:SetModule("Items", Items)
   Context:SetModule("Locale", {
+    DESTROYED_ITEM = "DESTROYED_ITEM %s",
+    FAILED_TO_DESTROY_ITEM = "FAILED_TO_DESTROY_ITEM %s",
     FAILED_TO_SELL_ITEM = "FAILED_TO_SELL_ITEM %s",
     ITEMS_SOLD = "ITEMS_SOLD %s",
+    MAY_NOT_HAVE_DESTROYED_ITEM = "MAY_NOT_HAVE_DESTROYED_ITEM %s",
     MAY_NOT_HAVE_SOLD_ITEM = "MAY_NOT_HAVE_SOLD_ITEM %s",
     PROFIT = "PROFIT %s",
     SOLD_ITEM = "SOLD_ITEM %s"
@@ -67,6 +72,31 @@ local function createItem(link, price)
   return { bag = 0, slot = 1, link = link, quantity = 1, price = price }
 end
 
+--- Returns an attempt to sell the item.
+--- @param item BagItem
+--- @param attemptType SellAttemptType
+--- @return SellAttempt
+local function createSellAttempt(item, attemptType)
+  return { item = item, type = attemptType }
+end
+
+--- Returns an attempt to destroy the item.
+--- @param item BagItem
+--- @return DestroyAttempt
+local function createDestroyAttempt(item)
+  return { item = item }
+end
+
+--- Returns a list that receives the attempt of every `eventName` event fired in the game.
+--- @param Game TestGameInstance
+--- @param eventName string
+--- @return (SellAttempt | DestroyAttempt)[] attempts
+local function recordEventAttempts(Game, eventName)
+  local attempts = {}
+  Game.EventManager:On(eventName, function(attempt) attempts[#attempts + 1] = attempt end)
+  return attempts
+end
+
 -- ============================================================================
 -- Tests - Confirmer, items sold during a run
 -- ============================================================================
@@ -77,7 +107,7 @@ do
   local item = createItem("link", 10)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "RUN"))
   removeFromBags(item)
   Game:Advance(CONFIRM_SECONDS)
 
@@ -92,8 +122,8 @@ do
   local itemB = createItem("linkB", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemA, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemB, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemA, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemB, "RUN"))
   removeFromBags(itemA)
   removeFromBags(itemB)
   Game.EventManager:Fire(Game.E.SellerStopped)
@@ -109,8 +139,8 @@ do
   local itemB = createItem("linkB", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemA, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, itemB, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemA, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(itemB, "RUN"))
   removeFromBags(itemA)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
@@ -131,8 +161,8 @@ do
   failedItem.slot = 2
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, soldItem, "RUN")
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, failedItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(soldItem, "RUN"))
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(failedItem, "RUN"))
   removeFromBags(soldItem)
   Game:Fire(Game.E.Wow.ItemUnlocked, failedItem.bag, failedItem.slot)
   Game.EventManager:Fire(Game.E.SellerStopped)
@@ -150,7 +180,7 @@ do
   local item = createItem("link", 10)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "RUN"))
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
 
@@ -164,13 +194,13 @@ do
   local secondItem = createItem("second", 20)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, firstItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(firstItem, "RUN"))
   removeFromBags(firstItem)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
 
   Game.EventManager:Fire(Game.E.SellerStarted)
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, secondItem, "RUN")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(secondItem, "RUN"))
   removeFromBags(secondItem)
   Game.EventManager:Fire(Game.E.SellerStopped)
   Game:Advance(CONFIRM_SECONDS)
@@ -188,10 +218,108 @@ do
   local Game, AddonSpy, removeFromBags = setupContext()
   local item = createItem("link", 10)
 
-  Game.EventManager:Fire(Game.E.AttemptedToSellItem, item, "MANUAL")
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, createSellAttempt(item, "MANUAL"))
   removeFromBags(item)
   Game:Advance(CONFIRM_SECONDS)
 
   assert(Matchers:IsDeepEqual(AddonSpy:GetStub("Print").calls, { { "SOLD_ITEM link" } }))
   assert(#AddonSpy:GetStub("PrintVerbose").calls == 0)
+end
+
+-- ============================================================================
+-- Tests - Confirmer, outcome events
+-- ============================================================================
+
+-- Test: `ConfirmedItemSold` fires with the sell attempt once its item has left the bags.
+do
+  local Game, _, removeFromBags = setupContext()
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local attempts = recordEventAttempts(Game, Game.E.ConfirmedItemSold)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#attempts == 0)
+
+  removeFromBags(attempt.item)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
+end
+
+-- Test: `ConfirmedItemDestroyed` fires with the destroy attempt once its item has left the bags.
+do
+  local Game, _, removeFromBags = setupContext()
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local attempts = recordEventAttempts(Game, Game.E.ConfirmedItemDestroyed)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#attempts == 0)
+
+  removeFromBags(attempt.item)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
+end
+
+-- Test: `FailedToSellItem` fires with the sell attempt when its item unlocks, not `ConfirmedItemSold`.
+do
+  local Game = setupContext()
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local failedAttempts = recordEventAttempts(Game, Game.E.FailedToSellItem)
+  local soldAttempts = recordEventAttempts(Game, Game.E.ConfirmedItemSold)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
+  Game:Fire(Game.E.Wow.ItemUnlocked, attempt.item.bag, attempt.item.slot)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#failedAttempts == 1)
+  assert(failedAttempts[1] == attempt)
+  assert(#soldAttempts == 0)
+end
+
+-- Test: `FailedToDestroyItem` fires with the destroy attempt when its item unlocks, not `ConfirmedItemDestroyed`.
+do
+  local Game = setupContext()
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local failedAttempts = recordEventAttempts(Game, Game.E.FailedToDestroyItem)
+  local destroyedAttempts = recordEventAttempts(Game, Game.E.ConfirmedItemDestroyed)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
+  Game:Fire(Game.E.Wow.ItemUnlocked, attempt.item.bag, attempt.item.slot)
+  Game:Advance(CONFIRM_SECONDS)
+
+  assert(#failedAttempts == 1)
+  assert(failedAttempts[1] == attempt)
+  assert(#destroyedAttempts == 0)
+end
+
+-- Test: `MayNotHaveSoldItem` fires with the sell attempt when it is not confirmed in time.
+do
+  local Game = setupContext()
+  local attempt = createSellAttempt(createItem("link", 10), "MANUAL")
+  local attempts = recordEventAttempts(Game, Game.E.MayNotHaveSoldItem)
+
+  Game.EventManager:Fire(Game.E.AttemptedToSellItem, attempt)
+  Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
+
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
+end
+
+-- Test: `MayNotHaveDestroyedItem` fires with the destroy attempt when it is not confirmed in time.
+do
+  local Game = setupContext()
+  local attempt = createDestroyAttempt(createItem("link", 10))
+  local attempts = recordEventAttempts(Game, Game.E.MayNotHaveDestroyedItem)
+
+  Game.EventManager:Fire(Game.E.AttemptedToDestroyItem, attempt)
+  Game:Advance(TIMEOUT_SECONDS + CONFIRM_SECONDS)
+
+  assert(#attempts == 1)
+  assert(attempts[1] == attempt)
 end

@@ -18,6 +18,11 @@ local MainWindowOptions = Addon:GetModule("MainWindowOptions")
 --- Number of profiles shown at once.
 local PROFILE_CARD_COUNT = 9
 
+local TITLE_TEXT_FORMAT = ("%s %s"):format(
+  Colors.Blue(L.PROFILES),
+  Colors.Grey("(%s)"):format(Colors.White("%s"))
+)
+
 --- Most characters listed in the tooltip of a profile. The rest are counted as hidden.
 local MAX_LISTED_CHARACTERS = 10
 
@@ -197,7 +202,7 @@ function MainWindowOptions:CreateProfilesPanel()
   EventManager:WaitForFirst(E.StoreCreated, function()
     local function refreshTitle()
       local profileName = StateManager:GetProfileState().name
-      panel:SetTitleText(Colors.Blue("%s (%s)"):format(L.PROFILES, Colors.White(profileName)))
+      panel:SetTitleText(TITLE_TEXT_FORMAT:format(profileName))
     end
     EventManager:On(E.StateUpdated, refreshTitle)
     refreshTitle()

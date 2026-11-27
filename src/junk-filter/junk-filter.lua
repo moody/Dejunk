@@ -36,6 +36,118 @@ function JunkFilter:IsSellableJunkItem(item)
   return isJunk, reason
 end
 
+--- Returns the result of the filters for the given `item`, and the reason. `PASS` means no filter matched.
+--- @param item BagItem
+--- @param filterType ItemFilterType
+--- @return ItemFilterResult result, string? reason
+function JunkFilter:GetResult(item, filterType)
+  if not Items:IsItemStillInBags(item) then
+    return ItemFilters.NOT_JUNK
+  end
+
+  -- Check if item can be sold or destroyed, depending on the filter type.
+  if filterType == "SELL" and not Items:IsItemSellable(item) then
+    return ItemFilters.NOT_JUNK, L.ITEM_CANNOT_BE_SOLD
+  end
+
+  if filterType == "DESTROY" and not Items:IsItemDestroyable(item) then
+    return ItemFilters.NOT_JUNK, L.ITEM_CANNOT_BE_DESTROYED
+  end
+
+  --- @type ItemFilterResult, string?
+  local result, reason
+
+  local profileSettings = StateManager:GetProfileState().settings
+
+  -- Exclude equipment above item level. Runs before the lists so it can
+  -- override an Inclusions match.
+  result, reason = ItemFilters:ExcludeAboveItemLevel(item, profileSettings.excludeAboveItemLevel, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Exclude above price.
+  result, reason = ItemFilters:ExcludeAbovePrice(item, profileSettings.excludeAbovePrice, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Lists.
+  result, reason = ItemFilters:ByLists(item)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Exclude equipment sets.
+  if not (Addon.IS_VANILLA or Addon.IS_TBC) then
+    result, reason = ItemFilters:ExcludeEquipmentSets(item, profileSettings.excludeEquipmentSets, filterType)
+    if result ~= ItemFilters.PASS then
+      return result, reason
+    end
+  end
+
+  -- Exclude unbound equipment.
+  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Exclude warband equipment.
+  if Addon.IS_RETAIL then
+    result, reason = ItemFilters:ExcludeWarbandEquipment(item, profileSettings.excludeWarbandEquipment, filterType)
+    if result ~= ItemFilters.PASS then
+      return result, reason
+    end
+  end
+
+  -- Exclude by equipment type.
+  result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Exclude quest items.
+  result, reason = ItemFilters:ExcludeQuestItems(item, profileSettings.excludeQuestItems, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Include by quality.
+  result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Include below item level.
+  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Include below price.
+  result, reason = ItemFilters:IncludeBelowPrice(item, profileSettings.includeBelowPrice, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Include by equipment type.
+  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType, filterType)
+  if result ~= ItemFilters.PASS then
+    return result, reason
+  end
+
+  -- Include artifact relics.
+  if Addon.IS_RETAIL then
+    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics, filterType)
+    if result ~= ItemFilters.PASS then
+      return result, reason
+    end
+  end
+
+  -- No filters matched.
+  return ItemFilters.PASS, L.NO_FILTERS_MATCHED
+end
+
 --- Returns `true` and a reason string if the given `item` is junk for the given `filterType`, or for
 --- either type if none is given.
 --- @param item BagItem
@@ -52,109 +164,6 @@ function JunkFilter:IsJunkItem(item, filterType)
     return false, sellReason or destroyReason
   end
 
-  if not Items:IsItemStillInBags(item) then
-    return false
-  end
-
-  -- Check if item can be sold or destroyed, depending on the filter type.
-  if filterType == "SELL" and not Items:IsItemSellable(item) then
-    return false, L.ITEM_CANNOT_BE_SOLD
-  end
-
-  if filterType == "DESTROY" and not Items:IsItemDestroyable(item) then
-    return false, L.ITEM_CANNOT_BE_DESTROYED
-  end
-
-  --- @type ItemFilterResult, string?
-  local result, reason
-
-  local profileSettings = StateManager:GetProfileState().settings
-
-  -- Exclude equipment above item level. Runs before the lists so it can
-  -- override an Inclusions match.
-  result, reason = ItemFilters:ExcludeAboveItemLevel(item, profileSettings.excludeAboveItemLevel, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Exclude above price.
-  result, reason = ItemFilters:ExcludeAbovePrice(item, profileSettings.excludeAbovePrice, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Lists.
-  result, reason = ItemFilters:ByLists(item)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Exclude equipment sets.
-  if not (Addon.IS_VANILLA or Addon.IS_TBC) then
-    result, reason = ItemFilters:ExcludeEquipmentSets(item, profileSettings.excludeEquipmentSets, filterType)
-    if result ~= ItemFilters.PASS then
-      return result == ItemFilters.JUNK, reason
-    end
-  end
-
-  -- Exclude unbound equipment.
-  result, reason = ItemFilters:ExcludeUnboundEquipment(item, profileSettings.excludeUnboundEquipment, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Exclude warband equipment.
-  if Addon.IS_RETAIL then
-    result, reason = ItemFilters:ExcludeWarbandEquipment(item, profileSettings.excludeWarbandEquipment, filterType)
-    if result ~= ItemFilters.PASS then
-      return result == ItemFilters.JUNK, reason
-    end
-  end
-
-  -- Exclude by equipment type.
-  result, reason = ItemFilters:ExcludeByEquipmentType(item, profileSettings.excludeByEquipmentType, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Exclude quest items.
-  result, reason = ItemFilters:ExcludeQuestItems(item, profileSettings.excludeQuestItems, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Include by quality.
-  result, reason = ItemFilters:IncludeByQuality(item, profileSettings.includeByQuality, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Include below item level.
-  result, reason = ItemFilters:IncludeBelowItemLevel(item, profileSettings.includeBelowItemLevel, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Include below price.
-  result, reason = ItemFilters:IncludeBelowPrice(item, profileSettings.includeBelowPrice, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Include by equipment type.
-  result, reason = ItemFilters:IncludeByEquipmentType(item, profileSettings.includeByEquipmentType, filterType)
-  if result ~= ItemFilters.PASS then
-    return result == ItemFilters.JUNK, reason
-  end
-
-  -- Include artifact relics.
-  if Addon.IS_RETAIL then
-    result, reason = ItemFilters:IncludeArtifactRelics(item, profileSettings.includeArtifactRelics, filterType)
-    if result ~= ItemFilters.PASS then
-      return result == ItemFilters.JUNK, reason
-    end
-  end
-
-  -- No filters matched.
-  return false, L.NO_FILTERS_MATCHED
+  local result, reason = self:GetResult(item, filterType)
+  return result == ItemFilters.JUNK, reason
 end

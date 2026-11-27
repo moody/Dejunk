@@ -34,6 +34,7 @@ local BACKPACK_CONTAINER = BACKPACK_CONTAINER or throw("BACKPACK_CONTAINER")
 local C_Container = C_Container or throw("C_Container")
 local GetContainerItemID = C_Container.GetContainerItemID or throw("C_Container.GetContainerItemID")
 local GetContainerItemInfo = C_Container.GetContainerItemInfo or throw("C_Container.GetContainerItemInfo")
+local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots or throw("C_Container.GetContainerNumFreeSlots")
 local GetContainerNumSlots = C_Container.GetContainerNumSlots or throw("C_Container.GetContainerNumSlots")
 local GetContainerItemPurchaseInfo = C_Container.GetContainerItemPurchaseInfo or throw("C_Container.GetContainerItemPurchaseInfo")
 local NUM_BAG_SLOTS = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS or throw("NUM_BAG_SLOTS")
@@ -142,13 +143,29 @@ B.Strings = {
   --- Error message shown when a vendor does not buy an item.
   --- @type string
   VENDOR_DOESNT_BUY_ERROR_TEXT = ERR_VENDOR_DOESNT_BUY or throw("ERR_VENDOR_DOESNT_BUY"),
+
+  --- Error message shown when the bags have no room for an item.
+  --- @type string
+  INVENTORY_FULL_ERROR_TEXT = ERR_INV_FULL or throw("ERR_INV_FULL"),
+
+  --- Format of a number of hours, abbreviated. Takes the number.
+  --- @type string
+  HOURS_ABBREVIATED_TEXT = HOUR_ONELETTER_ABBR or throw("HOUR_ONELETTER_ABBR"),
+
+  --- Format of a number of minutes, abbreviated. Takes the number.
+  --- @type string
+  MINUTES_ABBREVIATED_TEXT = MINUTE_ONELETTER_ABBR or throw("MINUTE_ONELETTER_ABBR"),
+
+  --- Format of a number of seconds, abbreviated. Takes the number.
+  --- @type string
+  SECONDS_ABBREVIATED_TEXT = SECOND_ONELETTER_ABBR or throw("SECOND_ONELETTER_ABBR"),
 }
 
 -- =============================================================================
 -- Blizzard - Font Objects
 -- =============================================================================
 
---- The game's own font objects, from smallest to largest.
+--- The game's own font objects.
 B.FontObjects = {
   --- Small text, 10 pixels high on a Latin client.
   --- @type Font
@@ -165,6 +182,10 @@ B.FontObjects = {
   --- Large text, 16 pixels high on a Latin client.
   --- @type Font
   Large = GameFontNormalLarge or throw("GameFontNormalLarge"),
+
+  --- Outlined numbers, as in the stack count of a bag item.
+  --- @type Font
+  Number = NumberFontNormal or throw("NumberFontNormal"),
 }
 
 -- =============================================================================
@@ -250,6 +271,31 @@ function B.Container:IterateSlots()
 
     return bag, slot, GetContainerItemID(bag, slot)
   end
+end
+
+--- Returns `true` if a bag that holds any kind of item has a free slot. Specialty bags, such as a quiver, are left out.
+--- @return boolean
+function B.Container:HasFreeSlots()
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+    local numFreeSlots, bagType = GetContainerNumFreeSlots(bag)
+    if bagType == 0 and numFreeSlots > 0 then return true end
+  end
+
+  return false
+end
+
+--- Returns the number of free slots in the bags that hold any kind of item. Specialty bags, such as a quiver, are left
+--- out.
+--- @return integer
+function B.Container:GetNumFreeSlots()
+  local numFreeSlots = 0
+
+  for bag = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+    local numBagFreeSlots, bagType = GetContainerNumFreeSlots(bag)
+    if bagType == 0 then numFreeSlots = numFreeSlots + numBagFreeSlots end
+  end
+
+  return numFreeSlots
 end
 
 -- B.Container:GetItemInfo()

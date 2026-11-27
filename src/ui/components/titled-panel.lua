@@ -15,6 +15,11 @@ local ComponentFactory = Addon:GetModule("ComponentFactory")
 --- @field onUpdateTooltip? fun(self: FrameWidget, tooltip: Tooltip) Shown while hovering the title bar.
 --- @field onClick? fun(button: string) Called when the title bar is clicked with the left or right button.
 
+--- @class TitledPanelFooterOptions
+--- @field text string
+--- @field fontObject? Font | string Defaults to `B.FontObjects.Normal`.
+--- @field color? Color Defaults to `Colors.White`.
+
 -- =============================================================================
 -- ComponentFactory - TitledPanel
 -- =============================================================================
@@ -85,6 +90,28 @@ function ComponentFactory:TitledPanel(options)
     titleBarText:WhenFrameReady(function(fontString)
       fontString:SetText(text)
     end)
+  end
+
+  --- Adds a bar below the content with a centered line of text. Call it after the content is built.
+  --- @param footerOptions TitledPanelFooterOptions
+  --- @return TextComponent text
+  function root:AddFooter(footerOptions)
+    local footer = self:AddRow({
+      height = "AUTO",
+      padding = Widgets:Padding(),
+      frameFactory = function(parent)
+        local frame = Widgets:Frame({ parent = parent })
+        frame:SetBackdropColor(Colors.DarkGrey:GetRGB())
+        return frame
+      end
+    })
+
+    return footer:AttachComponent(ComponentFactory:Text({
+      text = footerOptions.text,
+      fontObject = footerOptions.fontObject,
+      color = footerOptions.color,
+      justifyH = "CENTER"
+    }))
   end
 
   return root
