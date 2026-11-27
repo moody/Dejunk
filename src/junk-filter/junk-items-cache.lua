@@ -257,6 +257,16 @@ function JunkItemsCache:GetNumJunkItemsText()
   return Counts.text
 end
 
+--- Returns the total sell price of the junk items in copper, including locked ones.
+--- @return integer
+function JunkItemsCache:GetTotalJunkPrice()
+  local value = 0
+  for _, item in ipairs(self:GetJunkItems(itemsBuffer)) do
+    value = value + Items:GetStackPrice(item)
+  end
+  return value
+end
+
 --- Returns the next sellable junk item that is not locked, if one exists.
 --- @return BagItem|nil
 function JunkItemsCache:GetNextSellableJunkItem()

@@ -53,11 +53,7 @@ local function refreshComponents()
     Components.Root.TitleText:SetText(TITLE_TEXT_FORMAT:format(countsText))
   end
 
-  local totalJunkValue = 0
-  for _, item in pairs(junkItems) do
-    totalJunkValue = totalJunkValue + Items:GetStackPrice(item)
-  end
-  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(totalJunkValue)))
+  Components.ItemsPanel:SetTitleText(Colors.White(B.Money:GetCoinText(JunkItemsCache:GetTotalJunkPrice())))
 
   if Addon:IsBusy() then
     Components.StartSellingButton:GetFrame():FireEvent("ENABLED", false)

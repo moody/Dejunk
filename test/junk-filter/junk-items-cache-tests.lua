@@ -686,6 +686,46 @@ do
 end
 
 -- ============================================================================
+-- Tests - JunkItemsCache:GetTotalJunkPrice()
+-- ============================================================================
+
+-- Test: returns the total of the stack prices of the junk items.
+do
+  local JunkItemsCache, spies = setupContext()
+  local itemA = { price = 1, stackPrice = 30 }
+  local itemB = { price = 2, stackPrice = 12 }
+  local notJunk = { price = 3, stackPrice = 500 }
+  stubGetItems(spies.BagItemsCacheSpy, { itemA, itemB, notJunk })
+  stubGetResult(spies.JunkFilterSpy, { itemA, itemB }, { itemA })
+  spies.ItemsSpy:Stub("GetStackPrice"):Invokes(function(_, item) return item.stackPrice end)
+
+  assert(JunkItemsCache:GetTotalJunkPrice() == 42)
+end
+
+-- Test: returns 0 when there are no junk items.
+do
+  local JunkItemsCache, spies = setupContext()
+  stubGetItems(spies.BagItemsCacheSpy, { { price = 1, stackPrice = 30 } })
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(PASS)
+  spies.ItemsSpy:Stub("GetStackPrice"):Invokes(function(_, item) return item.stackPrice end)
+
+  assert(JunkItemsCache:GetTotalJunkPrice() == 0)
+end
+
+-- Test: includes locked items.
+do
+  local JunkItemsCache, spies = setupContext()
+  local locked = { price = 1, stackPrice = 30, isLocked = true }
+  local unlocked = { price = 2, stackPrice = 12 }
+  stubGetItems(spies.BagItemsCacheSpy, { locked, unlocked })
+  spies.JunkFilterSpy:Stub("GetResult"):Returns(JUNK, "reason")
+  spies.ItemsSpy:GetStub("IsItemLocked"):Invokes(function(_, item) return item.isLocked == true end)
+  spies.ItemsSpy:Stub("GetStackPrice"):Invokes(function(_, item) return item.stackPrice end)
+
+  assert(JunkItemsCache:GetTotalJunkPrice() == 42)
+end
+
+-- ============================================================================
 -- Tests - JunkItemsCache:GetNextSellableJunkItem()
 -- ============================================================================
 
